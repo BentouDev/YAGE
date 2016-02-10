@@ -31,6 +31,6 @@ add_executable(ScriptTests
         Tests/BindingTest.cpp)
 
 target_link_libraries(ScriptTests
-        Script)
+        Script googletest)
 
 add_test(ScriptTests ScriptTests)

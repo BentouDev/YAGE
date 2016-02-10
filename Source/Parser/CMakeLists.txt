@@ -31,6 +31,6 @@ add_executable(ParserTests
         Tests/ParserTests.cpp)
 
 target_link_libraries(ParserTests
-        Parser)
+        Parser googletest)
 
 add_test(ParserTests ParserTests)
