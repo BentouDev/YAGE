@@ -12,10 +12,6 @@ target_compile_features(Parser
         PUBLIC cxx_auto_type
         PRIVATE cxx_variadic_templates)
 
-# Depend on a library that we defined in the top-level file
-#target_link_libraries(Parser
-#        boost)
-
 # 'make install' to the correct location
 install(TARGETS Parser
         ARCHIVE  DESTINATION lib
@@ -31,6 +27,6 @@ add_executable(ParserTests
         Tests/ParserTests.cpp)
 
 target_link_libraries(ParserTests
-        Parser googletest)
+        Parser gtest gtest_main)
 
 add_test(ParserTests ParserTests)

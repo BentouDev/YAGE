@@ -5,6 +5,8 @@
 #ifndef VOLKHVY_MESH_H
 #define VOLKHVY_MESH_H
 
+#include "glm/vec3.hpp"
+
 namespace Core
 {
     class Mesh
@@ -12,6 +14,8 @@ namespace Core
     public:
          Mesh();
         ~Mesh();
+
+        glm::vec3 someVec;
     };
 }
 

@@ -12,7 +12,6 @@ target_compile_features(Core
         PUBLIC cxx_auto_type
         PRIVATE cxx_variadic_templates)
 
-# Depend on a library that we defined in the top-level file
 target_link_libraries(Core glm)
 
 # 'make install' to the correct location
@@ -30,6 +29,6 @@ add_executable(CoreTests
         Tests/MeshTest.cpp)
 
 target_link_libraries(CoreTests
-        Core googletest)
+        Core gtest gtest_main)
 
 add_test(CoreTests CoreTests)
