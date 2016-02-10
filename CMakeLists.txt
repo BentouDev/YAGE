@@ -1,3 +1,4 @@
+## Simple game engine
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 
@@ -13,7 +14,7 @@ project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 # opengl, glm, squirell, lua, sdl2, bullet
 #add_subdirectory(Dependencies/glm EXCLUDE_FROM_ALL)
 
-# Targets that we develop
+# Include all modules
 enable_testing()
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Parser)
