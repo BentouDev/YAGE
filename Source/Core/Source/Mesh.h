@@ -6,6 +6,7 @@
 #define VOLKHVY_MESH_H
 
 #include "glm/vec3.hpp"
+#include "cpplinq.hpp"
 
 namespace Core
 {

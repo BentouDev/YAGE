@@ -4,3 +4,9 @@
 [submodule "Dependencies/GLM"]
 	path = Dependencies/GLM
 	url = https://github.com/g-truc/glm.git
+[submodule "Dependencies/CppLinq"]
+	path = Dependencies/CppLinq
+	url = https://github.com/mrange/cpplinq.git
+[submodule "Dependencies/SDL2"]
+	path = Dependencies/SDL2
+	url = https://github.com/spurious/SDL-mirror.git
