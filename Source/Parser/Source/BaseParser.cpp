@@ -2,16 +2,16 @@
 // Created by MrJaqbq on 2016-02-10.
 //
 
-#include "Parser.h"
+#include "BaseParser.h"
 
 namespace Parser
 {
-    Parser::Parser()
+    BaseParser::BaseParser()
     {
 
     }
 
-    Parser::~Parser()
+    BaseParser::~BaseParser()
     {
 
     }

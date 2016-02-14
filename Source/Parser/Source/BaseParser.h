@@ -7,11 +7,11 @@
 
 namespace Parser
 {
-    class Parser
+    class BaseParser
     {
     public:
-         Parser();
-        ~Parser();
+         BaseParser();
+        ~BaseParser();
     };
 }
 
