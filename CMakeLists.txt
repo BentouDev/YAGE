@@ -17,6 +17,7 @@ add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)
 include_directories(${GLM_INCLUDE_DIRS})
 
 # Add GoogleTest
+set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
 add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
