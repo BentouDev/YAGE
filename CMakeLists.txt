@@ -2,9 +2,15 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 
-# Add SDL2
-add_subdirectory(Dependencies/SDL2 EXCLUDE_FROM_ALL)
-include_directories(${SDL2_INCLUDE_DIRS})
+# Add ./CMake to modules path
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMake")
+
+# Add OpenGL
+find_package(OpenGL REQUIRED)
+
+# Add GLFW
+add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)
+include_directories(Dependencies/GLFW/include)
 
 # Add GLM
 add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)
@@ -14,13 +20,10 @@ include_directories(${GLM_INCLUDE_DIRS})
 add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-# Add OpenGL
-find_package(OpenGL REQUIRED)
-
 # Add CppLinq
 include_directories(Dependencies/CppLinq/CppLinq)
 
-## TODO: Add SDL2, generate OpenGL header, cppLinq
+## TODO: Add generate OpenGL header
 
 # Include all engine modules
 enable_testing()
