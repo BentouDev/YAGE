@@ -14,7 +14,7 @@ build:
   parallel: true
  
 test_script:
-  - cmd: C:\projects\volkhvy\Build\Source\Core\Debug\CoreTests.exe --gtest_output=xml:CoreTests.xml
+  - cmd: C:\projects\volkhvy\Build\Source\Core\Release\CoreTests.exe --gtest_output=xml:CoreTests.xml
   - exit /b 0
 on_finish:
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
