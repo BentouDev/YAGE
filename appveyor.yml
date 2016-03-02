@@ -1,0 +1,20 @@
+version: 1.0.{build}
+clone_script:
+- cmd: git clone -q --recursive --branch=master https://github.com/MrJaqbq/Volkhvy.git C:\projects\volkhvy
+
+before_build:
+- cmd: >-
+    mkdir Build
+
+    cd Build
+
+    cmake ..
+
+    dir
+build:
+  project: C:\projects\volkhvy\Build\ALL_BUILD.vcxproj
+ 
+test_script:
+  - cmd: C:\projects\volkhvy\Build\Source\Core\Debug\CoreTests.exe --gtest_output=xml:CoreTests.xml
+on_finish:
+  - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
