@@ -4,6 +4,13 @@ compiler:
   - clang
   - gcc
 
+addons:
+    apt:
+      packages:
+        - cmake
+      sources:
+        - kalakris-cmake
+
 before_install:
   - git submodule update --init --recursive
 
