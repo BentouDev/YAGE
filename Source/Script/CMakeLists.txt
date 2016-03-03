@@ -2,6 +2,7 @@
 project(Script VERSION 0.1 LANGUAGES CXX)
 
 add_library(Script Source/Binding.cpp Source/Binding.h)
+add_library(Volkhvy::Script ALIAS Script)
 
 target_include_directories(Script PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

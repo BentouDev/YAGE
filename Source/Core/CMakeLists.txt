@@ -2,6 +2,7 @@
 project(Core VERSION 0.1 LANGUAGES CXX)
 
 add_library(Core Source/Mesh.cpp Source/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Viewport.cpp Source/Viewport.h)
+add_library(Volkhvy::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

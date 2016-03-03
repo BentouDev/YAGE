@@ -2,6 +2,7 @@
 project(Parser VERSION 0.1 LANGUAGES CXX)
 
 add_library(Parser Source/BaseParser.cpp Source/BaseParser.h)
+add_library(Volkhvy::Parser ALIAS Parser)
 
 target_include_directories(Parser PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

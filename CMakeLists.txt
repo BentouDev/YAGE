@@ -2,9 +2,6 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 
-# Add ./CMake to modules path
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMake")
-
 # Add OpenGL
 find_package(OpenGL REQUIRED)
 
@@ -21,6 +18,8 @@ set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
 add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
+
+
 # Add CppLinq
 include_directories(Dependencies/CppLinq/CppLinq)
 
@@ -33,4 +32,4 @@ add_subdirectory(Source/Parser)
 add_subdirectory(Source/Script)
 
 add_library(Volkhvy)
-target_link_libraries(Volkhvy Core Parser Script)
+target_link_libraries(Volkhvy Volkhvy::Core Volkhvy::Parser Volkhvy::Script)
