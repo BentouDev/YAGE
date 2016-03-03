@@ -10,18 +10,16 @@ compiler:
   - clang
   - gcc
   
-addons:
-  apt:
-    sources:
-      - sudo add-apt-repository ppa:george-edison55/cmake-3.x --yes
-    packages:
-      - cmake
-      - cmake-data
-
 before_install:
   - git submodule update --init --recursive
 
 install:
+  - wget -quiet http://www.cmake.org/files/v3.3/cmake-3.3.2.tar.gz
+  - tar xf cmake-3.3.2.tar.gz
+  - cd cmake-3.3.2
+  - ./configure
+  - make
+  - sudo make install
   - $CXX --version
   - cmake --version
 
