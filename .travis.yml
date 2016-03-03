@@ -4,6 +4,7 @@ os:
   - linux
 
 sudo: required
+dist: trusty
 
 compiler:
   - clang
@@ -16,7 +17,7 @@ addons:
     packages:
       - cmake
       - cmake-data
-      
+
 before_install:
   - git submodule update --init --recursive
 
