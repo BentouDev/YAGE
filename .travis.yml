@@ -19,7 +19,8 @@ install:
   - cd cmake-3.3.2
   - ./configure
   - make
-  - sudo make install && ..
+  - sudo make install 
+  - cd ..
   - $CXX --version
   - cmake --version
 
