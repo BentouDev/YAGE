@@ -24,11 +24,8 @@ install:
   - cmake --version
 
 before_script:
-  - cd MrJaqbq/Volkhvy
-  - cmake --target all .
-  - ls
+  - cmake --target all MrJaqbq/Volkhvy
 
 script:
-  - cd /home/travis/build/MrJaqbq/Volkhvy/cmake-3.3.2
-  - ls
-  - make
+  - ls MrJaqbq/Volkhvy
+  - cd MrJaqbq/Volkhvy && make
