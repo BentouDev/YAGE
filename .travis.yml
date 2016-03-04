@@ -25,7 +25,7 @@ install:
   - cmake --version
 
 before_script:
-  - cmake --target all
+  - cmake --target all .
 
 script:
   - ls
