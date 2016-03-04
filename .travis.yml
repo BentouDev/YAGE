@@ -25,6 +25,8 @@ install:
 
 before_script:
   - cmake --target all .
+  - ls
 
 script:
+  - cd /home/travis/build/MrJaqbq/Volkhvy/cmake-3.3.2
   - make
