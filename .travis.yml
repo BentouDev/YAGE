@@ -29,4 +29,5 @@ before_script:
 
 script:
   - cd /home/travis/build/MrJaqbq/Volkhvy/cmake-3.3.2
+  - ls
   - make
