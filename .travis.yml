@@ -11,7 +11,7 @@ compiler:
   - gcc
   
 before_install:
-  - git submodule update --init --recursive
+  - git submodule update --init --recursive && ls
 
 install:
   - wget http://www.cmake.org/files/v3.3/cmake-3.3.2.tar.gz
@@ -24,8 +24,8 @@ install:
   - cmake --version
 
 before_script:
-  - cmake --target all MrJaqbq/Volkhvy
+  - cmake --target all
 
 script:
-  - ls MrJaqbq/Volkhvy
-  - cd MrJaqbq/Volkhvy && make
+  - ls
+  - make
