@@ -24,6 +24,7 @@ install:
   - cmake --version
 
 before_script:
+  - cd MrJaqbq/Volkhvy
   - cmake --target all .
   - ls
 
