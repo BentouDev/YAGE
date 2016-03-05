@@ -29,7 +29,7 @@ before_install:
 
 install:
   - |
-    if [ cmake --version != "cmake version 3.3.2"] then
+    if cmake --version != "cmake version 3.3.2"; then
       wget http://www.cmake.org/files/v3.3/cmake-3.3.2.tar.gz
       tar xf cmake-3.3.2.tar.gz
       cd cmake-3.3.2
@@ -37,7 +37,7 @@ install:
       make
       sudo make install
       cd ..
-    fi
+    fi;
   - $CXX --version
   - cmake --version
 
