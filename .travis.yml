@@ -16,7 +16,7 @@ branches:
   only:
     - travis
 
-cahce:
+cache:
   directories:
     - ./cmake-3.3.2
 
@@ -38,6 +38,7 @@ install:
       sudo make install
       cd ..
     fi;
+  - ls
   - $CXX --version
   - cmake --version
 
