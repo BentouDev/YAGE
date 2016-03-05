@@ -16,6 +16,10 @@ branches:
   only:
     - travis
 
+cahce:
+  directories:
+    - ./cmake-3.3.2
+
 compiler:
   - clang
   - gcc
