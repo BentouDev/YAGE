@@ -6,11 +6,6 @@
 
 namespace Core
 {
-    Mesh::Mesh()
-    {
-
-    }
-
     Mesh::~Mesh()
     {
 
