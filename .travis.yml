@@ -9,7 +9,6 @@ addons:
   apt:
     packages:
     - gcov
-    - lcov
     - xorg-dev
     - libxxf86vm-dev
     - libglu1-mesa-dev
@@ -44,5 +43,4 @@ script:
 after_success:
   - make test
   - make gcov
-  - make lcov
   - bash <(curl -s https://codecov.io/bash) -X gcov
