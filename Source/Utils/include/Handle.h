@@ -5,32 +5,34 @@
 #ifndef VOLKHVY_RESOURCEHANDLE_H
 #define VOLKHVY_RESOURCEHANDLE_H
 
-#define DECL_HANDLE(resource) using Handle = ResourceHandle<resource>
-
-namespace Core
+namespace Utils
 {
+	template<typename T>
+	class Container;
+
+	template<typename T>
+	class Index;
+
 	typedef uint32_t handle_t;
 
 	union RawHandle
 	{
+	public:
 		handle_t Key;
 
 		struct {
 			uint16_t LiveId;
 			uint16_t Index;
 		};
+
+		RawHandle() : Key(0) {}
 	};
 
-	class BaseHandle
+	template<typename T>
+	class Handle
 	{
-	protected:
-		RawHandle handle;
-	};
-
-	template<class Resource>
-	class ResourceHandle : BaseHandle
-	{
-
+	public:
+		RawHandle rawHandle;
 	};
 }
 

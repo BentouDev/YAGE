@@ -7,6 +7,7 @@
 
 namespace Core
 {
+	template<class Res>
 	class ResourceManager
 	{
 

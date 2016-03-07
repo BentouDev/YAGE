@@ -1,7 +1,7 @@
 ## Provides various utilities, such as memory management, logger etc.
 project(Utils VERSION 0.1 LANGUAGES CXX)
 
-add_library(Utils include/SafeDelete.h src/Debug.cpp)
+add_library(Utils include/SafeDelete.h src/Debug.cpp include/Container.h)
 add_library(Volkhvy::Utils ALIAS Utils)
 
 target_include_directories(Utils PUBLIC
@@ -24,7 +24,7 @@ install(DIRECTORY include/ DESTINATION include)
 export(TARGETS Utils FILE UtilsConfig.cmake)
 
 # Every library has unit tests, of course
-add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp)
+add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp)
 
 target_link_libraries(UtilsTests
         Utils gtest gtest_main gmock)

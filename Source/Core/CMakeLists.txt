@@ -1,10 +1,11 @@
 ## Provides basic classes, like meshes, shaders, materials
 project(Core VERSION 0.1 LANGUAGES CXX)
 
-add_library(Core Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Viewport.cpp Source/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h Source/Resources/ResourceHandle.h)
+add_library(Core Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Viewport.cpp Source/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h)
 add_library(Volkhvy::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         PRIVATE Source)
@@ -14,7 +15,7 @@ target_compile_features(Core
         PRIVATE cxx_variadic_templates
         cxx_nullptr)
 
-target_link_libraries(Core glm glfw)
+target_link_libraries(Core Volkhvy::Utils glm glfw)
 
 # 'make install' to the correct location
 install(TARGETS Core

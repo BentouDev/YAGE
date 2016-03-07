@@ -6,9 +6,10 @@
 #define VOLKHVY_RESOURCE_H
 
 #include <string>
-#include "ResourceHandle.h"
+#include "Handle.h"
+#include "ResourceManager.h"
 
-#define RESOURCE(name) class name : Resource<name>
+#define DECL_RESOURCE(name) class name : Resource<name>
 
 namespace Core
 {
@@ -16,11 +17,14 @@ namespace Core
 	class Resource
 	{
 	public:
-		DECL_HANDLE(T);
+		using Handle = Utils::Handle<T>;
+		using Manager = ResourceManager<T>;
 
-		Resource() = delete;
-		Resource(const Resource&) = delete;
-		Resource(Resource&&) = delete;
+		explicit Resource() = delete;
+		explicit Resource(const Resource&) = delete;
+		explicit Resource(Resource&&) = delete;
+
+		virtual ~Resource(){ }
 
 		std::string Filename;
 		std::string Name;

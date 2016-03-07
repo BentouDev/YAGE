@@ -18,10 +18,9 @@ namespace Core
 		std::vector<glm::vec3> Position;
 	};
 
-	RESOURCE(Mesh)
+	DECL_RESOURCE(Mesh)
 	{
 	public:
-	 	 Mesh();
 		~Mesh();
 
 		std::vector<SubMesh> SubMeshes;
