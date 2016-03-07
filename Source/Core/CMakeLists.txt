@@ -35,3 +35,4 @@ target_link_libraries(CoreTests
         Core glfw gtest gtest_main)
 
 add_test(CoreTests CoreTests)
+add_coverage(Core)

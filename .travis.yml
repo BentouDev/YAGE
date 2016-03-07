@@ -8,6 +8,8 @@ os:
 addons:
   apt:
     packages:
+    - gcov
+    - lcov
     - xorg-dev
     - libxxf86vm-dev
     - libglu1-mesa-dev
@@ -33,7 +35,7 @@ install:
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start" # X virtual framebuffer
-  - cmake -DENABLE_COVERAGE=On -ENABLE_COVERAGE_ALL=On --target all .
+  - cmake -DENABLE_COVERAGE=On --target all .
 
 script:
   - ls
@@ -41,4 +43,6 @@ script:
 
 after_success:
   - make test
-  - bash <(curl -s https://codecov.io/bash)
+  - make gcov
+  - make lcov
+  - bash <(curl -s https://codecov.io/bash) -X gcov

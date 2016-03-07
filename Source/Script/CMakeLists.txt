@@ -31,3 +31,4 @@ target_link_libraries(ScriptTests
         Script gtest gtest_main)
 
 add_test(ScriptTests ScriptTests)
+add_coverage(Script)

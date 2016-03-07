@@ -31,3 +31,4 @@ target_link_libraries(ParserTests
         Parser gtest gtest_main)
 
 add_test(ParserTests ParserTests)
+add_coverage(Parser)

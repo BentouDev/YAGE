@@ -37,3 +37,5 @@ add_subdirectory(Source/Script)
 
 add_library(Volkhvy)
 target_link_libraries(Volkhvy Volkhvy::Utils Volkhvy::Core Volkhvy::Parser Volkhvy::Script)
+
+coverage_evaluate()

@@ -30,3 +30,4 @@ target_link_libraries(UtilsTests
         Utils gtest gtest_main gmock)
 
 add_test(UtilsTests UtilsTests)
+add_coverage(Utils)
