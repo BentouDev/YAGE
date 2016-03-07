@@ -2,6 +2,10 @@
 cmake_minimum_required(VERSION 3.3 FATAL_ERROR)
 project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 
+# Add codecov scripts module to cmake
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
+find_package(codecov)
+
 # Add OpenGL
 find_package(OpenGL REQUIRED)
 

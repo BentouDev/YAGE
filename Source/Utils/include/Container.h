@@ -64,12 +64,12 @@ namespace Utils
 			}
 
 			FreelistBegin = 0;
-			FreelistEnd = --count;
+			FreelistEnd = count - 1;
 		}
 
 		inline bool Contains(const Handle<T> id) const
 		{
-			Index& in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
+			Index<T>& in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
 			return in.handle.rawHandle.LiveId == id.rawHandle.LiveId
 				   && in.index != count;
 		}
@@ -80,9 +80,9 @@ namespace Utils
 			return Objects[Indicies[i].index];
 		}
 
-		inline Handle Create()
+		inline Handle<T> Create()
 		{
-			Index &in = Indicies[FreelistBegin];
+			Index<T> &in = Indicies[FreelistBegin];
 
 			in.handle.rawHandle.Index++;
 			in.index = CurrentCount++;
@@ -95,7 +95,7 @@ namespace Utils
 			return in.handle;//GetHandler<T>(o);
 		}
 
-		/*inline void Remove(Handle id)
+		/*inline void Remove(Handle<T> id)
 		{
 			Index &in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
 
