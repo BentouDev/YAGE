@@ -38,8 +38,10 @@ namespace MemoryTests
 	TEST_F(ContainerTest, CanCreateContainer)
 	{
 		auto const count = 32;
-		auto container = new Utils::StaticContainer<FooMock>;
+		auto container = new Utils::StaticContainer<FooMock, count>;
 
 		EXPECT_NE(container, nullptr);
+
+		delete container;
 	}
 }
