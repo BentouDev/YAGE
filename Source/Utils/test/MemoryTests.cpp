@@ -69,7 +69,7 @@ namespace MemoryTests
 		for(auto i = 0; i < count; i++)
 			EXPECT_CALL(*foos[i], Die()).Times(1);
 
-		Memory::SafeDelete(foos);
+		Memory::SafeDeleteArray(foos);
 
 		EXPECT_EQ(foos, nullptr);
 	}
@@ -85,8 +85,8 @@ namespace MemoryTests
 		for(auto i = 0; i < count; i++)
 			EXPECT_CALL(*foos[i], Die()).Times(1);
 
-		Memory::SafeDelete(foos);
-		Memory::SafeDelete(foos);
+		Memory::SafeDeleteArray(foos);
+		Memory::SafeDeleteArray(foos);
 
 		EXPECT_EQ(foos, nullptr);
 	}

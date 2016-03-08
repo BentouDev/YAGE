@@ -5,11 +5,16 @@ dist: trusty
 
 addons:
   apt:
+    sources:
+      - sudo add-apt-repository ppa:george-edison55/cmake-3.x --yes
     packages:
-    - gcov
-    - xorg-dev
-    - libxxf86vm-dev
-    - libglu1-mesa-dev
+      - cmake
+      - cmake-data
+      - gcov
+      - xorg-dev
+      - libxxf86vm-dev
+      - libglu1-mesa-dev
+	
 
 matrix:
   include:
@@ -31,6 +36,7 @@ before_install:
   - git submodule update --init --recursive
 
 install:
+  - cmake --version
   - wget http://www.cmake.org/files/v3.3/cmake-3.3.2.tar.gz
   - tar xf cmake-3.3.2.tar.gz
   - cd cmake-3.3.2
