@@ -1,9 +1,7 @@
 language: cpp
+
 sudo: required
 dist: trusty
-
-os:
-  - linux
 
 addons:
   apt:
@@ -13,10 +11,22 @@ addons:
     - libxxf86vm-dev
     - libglu1-mesa-dev
 
-compiler:
-  - clang
-  - gcc
-  
+matrix:
+  include:
+    - os: linux
+      compiler: clang
+      before_script:
+        - cmake --target all .
+
+    - os: linux
+      compiler: gcc
+      before_script:
+        - cmake -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage " -DENABLE_COVERAGE=On --target all .
+      after_success:
+        - make test
+        - make gcov
+        - bash <(curl -s https://codecov.io/bash) -X gcov
+
 before_install:
   - git submodule update --init --recursive
 
@@ -34,13 +44,6 @@ install:
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start" # X virtual framebuffer
-  - cmake -DENABLE_COVERAGE=On --target all .
 
 script:
-  - ls
   - make
-
-after_success:
-  - make test
-  - make gcov
-  - bash <(curl -s https://codecov.io/bash) -X gcov
