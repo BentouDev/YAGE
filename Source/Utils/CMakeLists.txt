@@ -1,7 +1,7 @@
 ## Provides various utilities, such as memory management, logger etc.
 project(Utils VERSION 0.1 LANGUAGES CXX)
 
-add_library(Utils include/SafeDelete.h src/Debug.cpp include/Container.h)
+add_library(Utils include/SafeDelete.h src/Debug.cpp include/Container.h include/Color.hpp)
 add_library(Volkhvy::Utils ALIAS Utils)
 
 target_include_directories(Utils PUBLIC

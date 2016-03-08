@@ -3,38 +3,44 @@
 //
 
 #include "Window.h"
+#include "Gfx/Rectangle.h"
 
 namespace Core
 {
-    Window::Window() : hWindow(nullptr)
-    {
-        Create();
-    }
+	Window::Window() : hWindow(nullptr)
+	{
+		Create();
+	}
 
-    Window::~Window()
-    {
-        Destroy();
-    }
+	Window::~Window()
+	{
+		Destroy();
+	}
 
-    void Window::Create()
-    {
-        if(IsAlive())
-            return;
+	auto Window::Create() -> void
+	{
+		if(IsAlive())
+			return;
 
-        hWindow = glfwCreateWindow(200, 200, "Test", nullptr, nullptr);
-    }
+		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
+	}
 
-    void Window::Destroy()
-    {
-        if(!IsAlive())
-            return;
+	auto Window::Destroy() -> void
+	{
+		if(!IsAlive())
+			return;
 
-        glfwDestroyWindow(hWindow);
-        hWindow = nullptr;
-    }
+		glfwDestroyWindow(hWindow);
+		hWindow = nullptr;
+	}
 
-    bool Window::IsAlive()
-    {
-        return hWindow != nullptr;
-    }
+	auto Window::IsAlive() const noexcept -> bool
+	{
+		return hWindow != nullptr;
+	}
+
+	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void
+	{
+		Viewports.push_back(new Gfx::Viewport(rect));
+	}
 }

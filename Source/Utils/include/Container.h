@@ -11,7 +11,7 @@
 
 namespace Utils
 {
-	template<typename T>
+	/*template<typename T>
 	class Container;
 
 	template<typename T>
@@ -28,7 +28,7 @@ namespace Utils
 	private:
 		void Set(uint16_t index)
 		{
-			handle.rawHandle.LiveId = index;
+			handle.get().LiveId = index;
 			next = index + 1;
 		}
 	};
@@ -41,6 +41,11 @@ namespace Utils
 		{
 			index.Set(value);
 		}
+	};
+
+	class Dupa
+	{
+
 	};
 
 	template<typename T, uint16_t count = UINT16_MAX>
@@ -107,14 +112,14 @@ namespace Utils
 			in.index = count;
 			Indicies[FreelistEnd].next = id.rawHandle.LiveId & INDEX_MASK;
 			FreelistEnd = id.rawHandle.LiveId & INDEX_MASK;
-		}*/
+		}//
 
-		inline T& operator[](const int i) const
+		inline auto operator[](const int i) const noexcept -> T&
 		{
 			return Objects[i];
 		}
 
-		inline T& operator[](const Handle<T> id) const
+		inline auto operator[](const Handle<T> id) const noexcept -> T&
 		{
 			return Get(id);
 		}
@@ -124,7 +129,7 @@ namespace Utils
 	class VectorContainer : public Container<T>
 	{
 
-	};
+	};*/
 }
 
 #endif //VOLKHVY_CONTAINER_H

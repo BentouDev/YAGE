@@ -8,28 +8,31 @@
 #include <string>
 #include <vector>
 #include "Platform.h"
-#include "Viewport.h"
+#include "Gfx/Viewport.h"
 
 namespace Core
 {
-    class Window
-    {
-    public:
-        Window();
-        virtual ~Window();
+	class Window
+	{
+	public:
+		Window();
+		virtual ~Window();
 
-        void		Create();
-        void		Destroy();
-        bool		IsAlive();
+		auto Create() -> void;
+		auto Destroy() -> void;
+		auto IsAlive() const noexcept -> bool;
+		auto CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void;
 
-        std::string Title;
-        unsigned	Width;
-        unsigned	Height;
+		std::string Title;
+		unsigned	Width;
+		unsigned	Height;
 
-        std::vector<Viewport> Viewports;
+		// Replace with handle/pointer, store viewport elswhere (renderer? context?)
+		std::vector<Gfx::Viewport*> Viewports;
 
-        GLFWwindow* hWindow;
-    };
+		//Todo: wrap handle into smart pointer
+		GLFWwindow* hWindow;
+	};
 }
 
 #endif //VOLKHVY_WINDOW_H

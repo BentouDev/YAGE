@@ -8,7 +8,7 @@
 
 namespace MemoryTests
 {
-	class FooMock
+	/*class FooMock
 	{
 	public:
 		MOCK_METHOD0(Die, void());
@@ -43,5 +43,5 @@ namespace MemoryTests
 		EXPECT_NE(container, nullptr);
 
 		delete container;
-	}
+	}*/
 }
