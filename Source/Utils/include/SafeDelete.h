@@ -25,6 +25,20 @@ namespace Memory
 		}
 	}
 
+	template< class T > void SafeDeleteArray( T*& pVal, uint32_t count)
+	{
+		if(pVal != nullptr)
+		{
+			for(uint32_t i = 0; i < count; i++)
+			{
+				SafeDelete(pVal[i]);
+			}
+
+			delete[] pVal;
+			pVal = nullptr;
+		}
+	}
+
 	template< class T > void SafeFree( T*& pVal )
 	{
 		if(pVal != nullptr)
