@@ -6,8 +6,10 @@ project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
 find_package(codecov)
 
-# Add OpenGL
-find_package(OpenGL REQUIRED)
+# Add Vulkan
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_MODULE_PATH})
+find_package(Vulkan)
+include_directories(${VULKAN_INCLUDE_DIR})
 
 # Add GLFW
 add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)
@@ -26,8 +28,6 @@ include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 # Add CppLinq
 include_directories(Dependencies/CppLinq/CppLinq)
 
-## TODO: Add generate OpenGL header
-
 # Include all engine modules
 enable_testing()
 add_subdirectory(Source/Utils)
@@ -36,6 +36,6 @@ add_subdirectory(Source/Parser)
 add_subdirectory(Source/Script)
 
 add_library(Volkhvy)
-target_link_libraries(Volkhvy Volkhvy::Utils Volkhvy::Core Volkhvy::Parser Volkhvy::Script)
+target_link_libraries(Volkhvy Volkhvy::Utils Volkhvy::Core Volkhvy::Parser Volkhvy::Script ${VULKAN_LIBRARY})
 
 coverage_evaluate()

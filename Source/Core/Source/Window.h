@@ -21,6 +21,8 @@ namespace Core
 		auto Create() -> void;
 		auto Destroy() -> void;
 		auto IsAlive() const noexcept -> bool;
+		auto ShouldClose() const noexcept -> bool;
+		auto Show() const noexcept -> void;
 		auto CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void;
 
 		std::string Title;

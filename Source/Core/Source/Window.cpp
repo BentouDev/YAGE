@@ -7,7 +7,7 @@
 
 namespace Core
 {
-	Window::Window() : hWindow(nullptr)
+	Window::Window() : hWindow {nullptr}, Height {600}, Width {800}, Title {"Hello, Vulkan!"}
 	{
 		Create();
 	}
@@ -22,7 +22,16 @@ namespace Core
 		if(IsAlive())
 			return;
 
+		glfwWindowHint(GLFW_NO_API, GLFW_CLIENT_API);
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
+	}
+
+	auto Window::Show() const noexcept -> void
+	{
+		if(!IsAlive())
+			return;
+
+		glfwShowWindow(hWindow);
 	}
 
 	auto Window::Destroy() -> void
@@ -37,6 +46,11 @@ namespace Core
 	auto Window::IsAlive() const noexcept -> bool
 	{
 		return hWindow != nullptr;
+	}
+
+	auto Window::ShouldClose() const noexcept -> bool
+	{
+		return !IsAlive() || glfwWindowShouldClose(hWindow);
 	}
 
 	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void
