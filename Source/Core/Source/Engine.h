@@ -7,8 +7,12 @@
 
 #include <memory>
 #include <string>
-#include "Gfx/Api/VulkanApi.h"
 #include "Window.h"
+
+namespace Gfx
+{
+	class VulkanDevice;
+}
 
 namespace Core
 {
@@ -18,7 +22,7 @@ namespace Core
 		// todo: config object passed as a parameter in constructor
 		// todo: config object created in base constructor
 
-		Gfx::VulkanApi* _api;
+		Gfx::VulkanDevice* _api;
 
 		auto InitializeApi() -> bool;
 

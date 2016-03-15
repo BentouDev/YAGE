@@ -2,12 +2,12 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#include <Gfx/Api/VulkanApi.h>
+#include <Gfx/Api/VulkanDevice.h>
 #include "Engine.h"
 
 namespace Core
 {
-	Engine::Engine() : _api { new Gfx::VulkanApi() }
+	Engine::Engine() : _api { new Gfx::VulkanDevice() }
 	{
 
 	}
@@ -23,7 +23,7 @@ namespace Core
 
 	auto Engine::LoadConfig(std::string path) -> bool
 	{
-
+		return true;
 	}
 
 	auto Engine::Initialize() -> bool
@@ -40,16 +40,18 @@ namespace Core
 
 	auto Engine::InitializeApi() -> bool
 	{
-		_api->initialize();
+		return _api->initialize();
 	}
 
 	auto Engine::Draw() -> void
 	{
+		_api->beginDraw();
 		// todo: Synchronize commandlists with queue
 		/*for(RenderPass pass : _renderPasses)
 		{
 			Renderer.Draw(pass);
 		}*/
+		_api->endDraw();
 	}
 
 	auto Engine::ProcessEvents() -> void
