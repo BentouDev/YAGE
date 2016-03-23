@@ -4,21 +4,22 @@
 
 #include <Gfx/Api/VulkanDevice.h>
 #include "Engine.h"
+#include "Window.h"
 
 namespace Core
 {
-	Engine::Engine() : _api { new Gfx::VulkanDevice() }
+	Engine::Engine(std::string name) : _api { new Gfx::VulkanDevice() }
 	{
 
 	}
 
-	auto Engine::CreateWindow() const noexcept -> std::unique_ptr<Window>
+	auto Engine::CreateWindow() const noexcept -> Window&
 	{
-		auto window = std::unique_ptr<Window>(new Window());
+		Window* window = new Window();
 
-		_api->registerWindow(window->hWindow);
+		_api->registerWindow(*window);
 
-		return window;
+		return *window;
 	}
 
 	auto Engine::LoadConfig(std::string path) -> bool
@@ -57,6 +58,11 @@ namespace Core
 	auto Engine::ProcessEvents() -> void
 	{
 		glfwPollEvents();
+	}
+
+	auto Engine::Resize(const Window& window) -> void
+	{
+		_api->resizeWindow(window);
 	}
 
 	auto Engine::CleanUp() -> void

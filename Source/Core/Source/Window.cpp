@@ -3,11 +3,12 @@
 //
 
 #include "Window.h"
+#include "Platform.h"
 #include "Gfx/Rectangle.h"
 
 namespace Core
 {
-	Window::Window() : hWindow {nullptr}, Height {600}, Width {800}, Title {"Hello, Vulkan!"}
+	Window::Window() : hWindow {nullptr}, Height {600}, Width {800}, Title {"Hello, Volkhvy!"}
 	{
 		Create();
 	}
@@ -22,7 +23,6 @@ namespace Core
 		if(IsAlive())
 			return;
 
-		glfwWindowHint(GLFW_NO_API, GLFW_CLIENT_API);
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
 	}
 

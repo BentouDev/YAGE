@@ -5,17 +5,25 @@
 #ifndef VOLKHVY_VULKANAPI_H
 #define VOLKHVY_VULKANAPI_H
 
+#include <map>
 #include <vector>
 #include <string>
 #include <memory>
 #include <Handle.h>
 #include <vulkan/vulkan.h>
+#include "BaseDevice.h"
 #include "../../Platform.h"
-#include "BaseApi.h"
+
+namespace Core
+{
+	class Window;
+}
 
 namespace Gfx
 {
-	class VulkanDevice
+	class VulkanSwapchain;
+
+	class VulkanDevice : public BaseDevice
 	{
 		// Shold I put all those info structs into one?
 
@@ -33,25 +41,37 @@ namespace Gfx
 		// todo: handle, put into custom wrapper
 		VkDevice device;
 
-		// todo: non dispatchable handle, put into custom wrapper
-		// todo: since we can have many windows, assiociate this with one
-		// todo: container for surf&window in engine?
-		VkSurfaceKHR surface;
-
 		std::vector<const char*> instanceExtensions;
 		std::vector<const char*> deviceExtensions;
 		std::vector<VkPhysicalDevice> devices;
 		std::vector<VkDeviceQueueCreateInfo> requestedQueues;
+		std::vector<VulkanSwapchain*> swapchains;
 
 		auto createInstance() noexcept -> bool;
 
 		auto createDevice() -> bool;
 
+		auto createSurface(VulkanSwapchain& swapchain) -> bool;
+
+		auto createSwapchain(VulkanSwapchain&, uint32_t, uint32_t) -> bool;
+
+		auto selectSurfaceFormat(VulkanSwapchain &swapchain) -> bool;
+
 		auto queryInstanceExtensions() -> void;
 
 		auto queryDeviceExtensions() -> void;
 
+		auto queryDeviceSurfaceSupport(VkPhysicalDevice&, VulkanSwapchain&, std::vector<VkQueueFamilyProperties>&) -> std::vector<VkBool32>;
+
+		auto queryDeviceQueues(VkPhysicalDevice& physicalDevice) -> std::vector<VkQueueFamilyProperties>;
+
+		auto querySurfaceFormat(VkPhysicalDevice&, VulkanSwapchain&) -> bool;
+
+		auto queryPresentModes(VkPhysicalDevice&, VulkanSwapchain&) -> std::vector<VkPresentModeKHR>;
+
 		auto queryDevices() -> bool;
+
+		auto selectBestQueue(std::vector<VkQueueFamilyProperties>&, VulkanSwapchain&) -> void;
 
 		// Enable LunarG validation layers
 		auto enableValidation() -> void;
@@ -66,7 +86,13 @@ namespace Gfx
 		auto initialize() -> bool;
 
 		// Create surface for window
-		auto registerWindow(GLFWwindow* window) -> bool;
+		auto registerWindow(const Core::Window& window) -> bool;
+
+		auto resizeWindow(const Core::Window& window) -> void;
+
+		auto destroyWindow(const Core::Window& window) -> bool;
+
+		auto destroyWindows() -> void;
 
 		auto cleanUp() -> void;
 

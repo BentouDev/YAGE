@@ -7,30 +7,31 @@
 
 #include <memory>
 #include <string>
-#include "Window.h"
 
 namespace Gfx
 {
-	class VulkanDevice;
+	class BaseDevice;
 }
 
 namespace Core
 {
+	class Window;
+
 	class Engine
 	{
 		// todo: reference to config
 		// todo: config object passed as a parameter in constructor
 		// todo: config object created in base constructor
 
-		Gfx::VulkanDevice* _api;
+		Gfx::BaseDevice* _api;
 
 		auto InitializeApi() -> bool;
 
 	public:
-		explicit Engine();
+		explicit Engine(std::string name);
 
 		// Create Window based on current configuration
-		auto CreateWindow() const noexcept -> std::unique_ptr<Window>;
+		auto CreateWindow() const noexcept -> Window&;
 
 		// Load configuration
 		auto LoadConfig(std::string path) -> bool;
@@ -38,8 +39,6 @@ namespace Core
 		// Initialize graphics context based on current config
 		auto Initialize() -> bool;
 
-		// Free all resources
-		auto CleanUp() -> void;
 
 		// Draw all renderpasses
 		auto Draw() -> void;
@@ -47,6 +46,12 @@ namespace Core
 		// todo: each window should have queue of events to process
 		// Process user input
 		auto ProcessEvents() -> void;
+
+		// Resize window
+		auto Resize(const Window& window) -> void;
+
+		// Free all resources
+		auto CleanUp() -> void;
 
 		// todo: Decide what to do next basing on config
 		// todo: Render all
