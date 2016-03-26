@@ -8,6 +8,10 @@
 #include <memory>
 #include <string>
 
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 namespace Gfx
 {
 	class BaseDevice;
@@ -41,7 +45,7 @@ namespace Core
 
 
 		// Draw all renderpasses
-		auto Draw() -> void;
+		auto Draw(const Core::Window& window) -> void;
 
 		// todo: each window should have queue of events to process
 		// Process user input

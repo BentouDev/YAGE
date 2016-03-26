@@ -1,7 +1,7 @@
 ## Provides basic classes, like meshes, shaders, materials
 project(Core VERSION 0.1 LANGUAGES CXX)
 
-add_library(Core Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Gfx/Context.cpp Source/Gfx/Context.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Gfx/Api/BaseDevice.h Source/Gfx/Api/VulkanDevice.cpp Source/Gfx/Api/VulkanDevice.h Source/Gfx/Api/VulkanSwapchain.cpp Source/Gfx/Api/VulkanSwapchain.h)
+add_library(Core Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Gfx/Context.cpp Source/Gfx/Context.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Gfx/Api/BaseDevice.h Source/Gfx/Vulkan/VulkanDevice.cpp Source/Gfx/Vulkan/VulkanDevice.h Source/Gfx/Vulkan/VulkanSwapchain.cpp Source/Gfx/Vulkan/VulkanSwapchain.h Source/Gfx/OpenGl/OpenGlContext.cpp Source/Gfx/OpenGl/OpenGlContext.h)
 add_library(Volkhvy::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC
@@ -15,7 +15,7 @@ target_compile_features(Core
         PRIVATE cxx_variadic_templates
         cxx_nullptr)
 
-target_link_libraries(Core Volkhvy::Utils glm glfw ${VULKAN_LIBRARY})
+target_link_libraries(Core Volkhvy::Utils glm glfw ${VULKAN_LIBRARY} ${OPENGL_LIBRARIES})
 
 # 'make install' to the correct location
 install(TARGETS Core

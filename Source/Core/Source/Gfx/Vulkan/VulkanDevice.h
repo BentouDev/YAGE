@@ -11,8 +11,8 @@
 #include <memory>
 #include <Handle.h>
 #include <vulkan/vulkan.h>
-#include "BaseDevice.h"
-#include "../../Platform.h"
+#include "Gfx/Api/BaseDevice.h"
+#include "Platform.h"
 
 namespace Core
 {
@@ -96,9 +96,9 @@ namespace Gfx
 
 		auto cleanUp() -> void;
 
-		void beginDraw();
+		void beginDraw(const Core::Window& window);
 
-		void endDraw();
+		void endDraw(const Core::Window& window);
 	};
 }
 

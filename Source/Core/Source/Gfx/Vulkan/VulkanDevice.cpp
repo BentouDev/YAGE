@@ -4,7 +4,7 @@
 
 #include <CppLinq/cpplinq.hpp>
 #include <cstring>
-#include "../../Window.h"
+#include "Window.h"
 #include "VulkanSwapchain.h"
 #include "VulkanDevice.h"
 
@@ -434,12 +434,12 @@ namespace Gfx
 		vkDestroyInstance(instance, nullptr);
 	}
 
-	void VulkanDevice::beginDraw()
+	void VulkanDevice::beginDraw(const Core::Window& window)
 	{
 		// how do i clear screen?
 	}
 
-	void VulkanDevice::endDraw()
+	void VulkanDevice::endDraw(const Core::Window& window)
 	{
 		// how do i swap buffers?
 	}

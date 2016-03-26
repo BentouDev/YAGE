@@ -2,15 +2,20 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#include <Gfx/Api/VulkanDevice.h>
+#include <spdlog/spdlog.h>
+#include "Gfx/Vulkan/VulkanDevice.h"
+#include "Gfx/OpenGl/OpenGlContext.h"
 #include "Engine.h"
 #include "Window.h"
 
 namespace Core
 {
-	Engine::Engine(std::string name) : _api { new Gfx::VulkanDevice() }
+	Engine::Engine(std::string name) : _api { new Gfx::OpenGlContext() }
 	{
+		namespace spd = spdlog;
 
+		auto console = spd::stdout_logger_mt("console");
+		console->info("Initializing Volkhvy for '{}'...", name);
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -34,9 +39,7 @@ namespace Core
 			return false;
 		}
 
-		InitializeApi();
-
-		return true;
+		return InitializeApi();
 	}
 
 	auto Engine::InitializeApi() -> bool
@@ -44,15 +47,15 @@ namespace Core
 		return _api->initialize();
 	}
 
-	auto Engine::Draw() -> void
+	auto Engine::Draw(const Core::Window& window) -> void
 	{
-		_api->beginDraw();
+		_api->beginDraw(window);
 		// todo: Synchronize commandlists with queue
 		/*for(RenderPass pass : _renderPasses)
 		{
 			Renderer.Draw(pass);
 		}*/
-		_api->endDraw();
+		_api->endDraw(window);
 	}
 
 	auto Engine::ProcessEvents() -> void

@@ -30,9 +30,9 @@ namespace Gfx
 
         virtual auto cleanUp() -> void = 0;
 
-        virtual void beginDraw() = 0;
+        virtual void beginDraw(const Core::Window& window) = 0;
 
-        virtual void endDraw() = 0;
+        virtual void endDraw(const Core::Window& window) = 0;
 
         virtual ~BaseDevice() {}
     };
