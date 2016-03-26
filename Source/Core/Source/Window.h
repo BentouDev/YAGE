@@ -7,8 +7,9 @@
 
 #include <string>
 #include <vector>
-#include "Platform.h"
 #include "Gfx/Viewport.h"
+
+struct GLFWwindow;
 
 namespace Core
 {
@@ -21,6 +22,8 @@ namespace Core
 		auto Create() -> void;
 		auto Destroy() -> void;
 		auto IsAlive() const noexcept -> bool;
+		auto ShouldClose() const noexcept -> bool;
+		auto Show() const noexcept -> void;
 		auto CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void;
 
 		std::string Title;
@@ -32,7 +35,17 @@ namespace Core
 
 		//Todo: wrap handle into smart pointer
 		GLFWwindow* hWindow;
+
+		auto operator==(const Window& other) -> bool
+		{
+			return this->hWindow == other.hWindow;
+		}
 	};
+
+	/*auto operator==(const Window& first, const Window& second) -> bool
+	{
+		return first.hWindow == second.hWindow;
+	}*/
 }
 
 #endif //VOLKHVY_WINDOW_H

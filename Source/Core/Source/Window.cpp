@@ -3,11 +3,12 @@
 //
 
 #include "Window.h"
+#include "Platform.h"
 #include "Gfx/Rectangle.h"
 
 namespace Core
 {
-	Window::Window() : hWindow(nullptr)
+	Window::Window() : hWindow {nullptr}, Height {600}, Width {800}, Title {"Hello, Volkhvy!"}
 	{
 		Create();
 	}
@@ -25,6 +26,14 @@ namespace Core
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
 	}
 
+	auto Window::Show() const noexcept -> void
+	{
+		if(!IsAlive())
+			return;
+
+		glfwShowWindow(hWindow);
+	}
+
 	auto Window::Destroy() -> void
 	{
 		if(!IsAlive())
@@ -37,6 +46,11 @@ namespace Core
 	auto Window::IsAlive() const noexcept -> bool
 	{
 		return hWindow != nullptr;
+	}
+
+	auto Window::ShouldClose() const noexcept -> bool
+	{
+		return !IsAlive() || glfwWindowShouldClose(hWindow);
 	}
 
 	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void

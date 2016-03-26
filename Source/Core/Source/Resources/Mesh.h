@@ -7,8 +7,7 @@
 
 #include <vector>
 
-#include "glm/vec3.hpp"
-#include "cpplinq.hpp"
+#include <glm/vec3.hpp>
 #include "Resource.h"
 
 namespace Core

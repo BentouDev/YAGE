@@ -13,3 +13,9 @@
 [submodule "Dependencies/CMake-codecov"]
 	path = Dependencies/CMake-codecov
 	url = git://github.com/RWTH-ELP/CMake-codecov.git
+[submodule "Dependencies/Json"]
+	path = Dependencies/Json
+	url = https://github.com/nlohmann/json.git
+[submodule "Dependencies/Spdlog"]
+	path = Dependencies/Spdlog
+	url = https://github.com/gabime/spdlog.git

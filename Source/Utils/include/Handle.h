@@ -2,17 +2,11 @@
 // Created by mrjaqbq on 06.03.16.
 //
 
-#ifndef VOLKHVY_RESOURCEHANDLE_H
-#define VOLKHVY_RESOURCEHANDLE_H
+#ifndef VOLKHVY_HANDLE_H
+#define VOLKHVY_HANDLE_H
 
 namespace Utils
 {
-	template<typename T>
-	class Container;
-
-	template<typename T>
-	class Index;
-
 	typedef uint32_t handle_t;
 
 	union RawHandle
@@ -29,28 +23,6 @@ namespace Utils
 
 		RawHandle() : Key(0) {}
 	};
-
-	/*template<typename T>
-	class Handle
-	{
-		RawHandle rawHandle;
-	public:
-
-		explicit Handle() : rawHandle()
-		{
-
-		}
-
-		auto get() const noexcept -> RawHandle
-		{
-			return rawHandle;
-		}
-
-		explicit operator bool() const noexcept
-		{
-			return rawHandle.Key != 0;
-		}
-	};*/
 
 	template<typename Traits>
 	class Handle
@@ -119,7 +91,18 @@ namespace Utils
 
 			return static_cast<bool>(*this);
 		}
+
+		auto swap(Handle<Traits>& other) noexcept -> void
+		{
+			std::swap(value, other.value);
+		}
 	};
+
+	template<typename Traits>
+	auto swap(Handle<Traits>& left, Handle<Traits>& right) noexcept -> void
+	{
+		left.swap(right);
+	}
 }
 
-#endif //VOLKHVY_RESOURCEHANDLE_H
+#endif //VOLKHVY_HANDLE_H

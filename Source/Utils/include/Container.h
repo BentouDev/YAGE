@@ -43,11 +43,6 @@ namespace Utils
 		}
 	};
 
-	class Dupa
-	{
-
-	};
-
 	template<typename T, uint16_t count = UINT16_MAX>
 	class StaticContainer : public Container<T>
 	{
@@ -123,12 +118,6 @@ namespace Utils
 		{
 			return Get(id);
 		}
-	};
-
-	template<typename T>
-	class VectorContainer : public Container<T>
-	{
-
 	};*/
 }
 
