@@ -10,6 +10,9 @@ find_package(codecov REQUIRED)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_MODULE_PATH})
 find_package(Vulkan)
 
+# Add OpenGl
+find_package(OpenGl)
+
 # Add GLFW
 add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)
 include_directories(Dependencies/GLFW/include)
@@ -24,9 +27,9 @@ add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 
-# Add Log4z
-add_subdirectory(Dependencies/Log4z EXCLUDE_FROM_ALL)
-include_directories(Dependencies/Log4z)
+# Add Spdlog
+add_subdirectory(Dependencies/Spdlog EXCLUDE_FROM_ALL)
+include_directories(Dependencies/Spdlog/include)
 
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
