@@ -1,7 +1,7 @@
 ## Provides basic classes, like meshes, shaders, materials
 project(Core VERSION 0.1 LANGUAGES CXX)
 
-add_library(Core Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Gfx/Context.cpp Source/Gfx/Context.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Gfx/Api/BaseDevice.h Source/Gfx/Vulkan/VulkanDevice.cpp Source/Gfx/Vulkan/VulkanDevice.h Source/Gfx/Vulkan/VulkanSwapchain.cpp Source/Gfx/Vulkan/VulkanSwapchain.h Source/Gfx/OpenGl/OpenGlContext.cpp Source/Gfx/OpenGl/OpenGlContext.h)
+add_library(Core Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Gfx/Context.cpp Source/Gfx/Context.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Gfx/Api/BaseDevice.h Source/Gfx/Vulkan/VulkanDevice.cpp Source/Gfx/Vulkan/VulkanDevice.h Source/Gfx/Vulkan/VulkanSwapchain.cpp Source/Gfx/Vulkan/VulkanSwapchain.h Source/Gfx/OpenGl/OpenGlContext.cpp Source/Gfx/OpenGl/OpenGlContext.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.cpp Source/Gfx/Renderer.h)
 add_library(Volkhvy::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC

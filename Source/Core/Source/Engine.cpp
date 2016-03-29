@@ -3,14 +3,17 @@
 //
 
 #include <spdlog/spdlog.h>
+#include "Resources/ResourceManager.h"
 #include "Gfx/Vulkan/VulkanDevice.h"
 #include "Gfx/OpenGl/OpenGlContext.h"
+#include "Gfx/Renderer.h"
 #include "Engine.h"
 #include "Window.h"
 
 namespace Core
 {
-	Engine::Engine(std::string name) : _api { new Gfx::OpenGlContext() }
+	Engine::Engine(std::string name) :
+			_api { new Gfx::OpenGlContext() }
 	{
 		namespace spd = spdlog;
 

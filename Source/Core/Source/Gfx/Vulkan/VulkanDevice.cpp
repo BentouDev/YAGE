@@ -40,7 +40,11 @@ namespace Gfx
 		for (uint32_t i = 0; i < queueCount; i++)
 		{
 			// todo: handle errors
-			vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, swap.surface, &supportsPresent[i]);
+			auto result = vkGetPhysicalDeviceSurfaceSupportKHR(physicalDevice, i, swap.surface, &supportsPresent[i]);
+			if(result != VK_SUCCESS)
+			{
+				
+			}
 		}
 
 		return supportsPresent;
