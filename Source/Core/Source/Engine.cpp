@@ -2,20 +2,20 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#include <spdlog/spdlog.h>
+#include "Resources/ResourceManager.h"
 #include "Gfx/Vulkan/VulkanDevice.h"
 #include "Gfx/OpenGl/OpenGlContext.h"
+#include "Gfx/Renderer.h"
 #include "Engine.h"
 #include "Window.h"
+#include "Logger.h"
 
 namespace Core
 {
-	Engine::Engine(std::string name) : _api { new Gfx::OpenGlContext() }
+	Engine::Engine(std::string name) :
+			_api { new Gfx::OpenGlContext() }
 	{
-		namespace spd = spdlog;
-
-		auto console = spd::stdout_logger_mt("console");
-		console->info("Initializing Volkhvy for '{}'...", name);
+		Logger::getInstance().Console->info("Initializing Volkhvy for '{}'...", name);
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&

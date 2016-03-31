@@ -32,6 +32,10 @@ namespace Core
 		auto InitializeApi() -> bool;
 
 	public:
+
+		// Logger& Logger;
+		// Console& Console;
+
 		explicit Engine(std::string name);
 
 		// Create Window based on current configuration

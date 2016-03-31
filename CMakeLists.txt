@@ -11,7 +11,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_
 find_package(Vulkan)
 
 # Add OpenGl
-find_package(OpenGl)
+find_package(OpenGL)
 
 # Add GLFW
 add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)

@@ -43,6 +43,13 @@ namespace Core
 		hWindow = nullptr;
 	}
 
+	auto Window::GetDefaultViewport() -> Gfx::Viewport&
+	{
+		// todo: assert
+		//assert(Viewports.size() > 0);
+		return *Viewports[0];
+	}
+
 	auto Window::IsAlive() const noexcept -> bool
 	{
 		return hWindow != nullptr;

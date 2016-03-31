@@ -25,6 +25,7 @@ namespace Core
 		auto ShouldClose() const noexcept -> bool;
 		auto Show() const noexcept -> void;
 		auto CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void;
+		auto GetDefaultViewport() -> Gfx::Viewport&;
 
 		std::string Title;
 		unsigned	Width;
