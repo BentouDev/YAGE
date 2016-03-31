@@ -36,8 +36,13 @@ namespace Core
 	{
 		nlohmann::json* json;
 
-	public:
 		Config();
+
+	public:
+		auto get() -> Config& {
+			static Config config;
+			return config;
+		}
 
 		auto Load(std::string path) -> bool;
 
