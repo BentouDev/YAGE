@@ -45,8 +45,7 @@ namespace Core
 		auto LoadConfig(std::string path) -> bool;
 
 		// Initialize graphics context based on current config
-		auto Initialize() -> bool;
-
+		auto Initialize(Gfx::BaseDevice* api = nullptr) -> bool;
 
 		// Draw all renderpasses
 		auto Draw(const Core::Window& window) -> void;

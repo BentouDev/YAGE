@@ -12,8 +12,7 @@
 
 namespace Core
 {
-	Engine::Engine(std::string name) :
-			_api { new Gfx::OpenGlContext() }
+	Engine::Engine(std::string name)
 	{
 		Logger::getInstance().Console->info("Initializing Volkhvy for '{}'...", name);
 	}
@@ -32,12 +31,25 @@ namespace Core
 		return true;
 	}
 
-	auto Engine::Initialize() -> bool
+	auto Engine::Initialize(Gfx::BaseDevice* api) -> bool
 	{
+		if(api != nullptr)
+		{
+			_api = api;
+		}
+		else
+		{
+			// get from config
+			// but how do I instantiate?
+		}
+
 		if(!glfwInit())
 		{
 			return false;
 		}
+
+		// todo: assert macro
+		assert(_api);
 
 		return InitializeApi();
 	}

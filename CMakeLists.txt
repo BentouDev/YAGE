@@ -2,6 +2,11 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 project(Volkhvy VERSION 0.1 LANGUAGES CXX)
 
+# Supress warning for dependencies with old Cmake files
+cmake_policy(PUSH)
+cmake_policy(SET CMP0011 OLD)
+cmake_policy(SET CMP0048 OLD)
+
 # Add codecov scripts module to cmake
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
 find_package(codecov REQUIRED)
@@ -37,6 +42,9 @@ include_directories(Dependencies/Json/src)
 
 # Add CppLinq
 include_directories(Dependencies/CppLinq)
+
+# Revert to standard policy
+cmake_policy(POP)
 
 # Include all engine modules
 enable_testing()
