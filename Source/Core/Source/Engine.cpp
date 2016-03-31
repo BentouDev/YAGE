@@ -3,9 +3,9 @@
 //
 
 #include "Resources/ResourceManager.h"
-#include "Gfx/Vulkan/VulkanDevice.h"
-#include "Gfx/OpenGl/OpenGlContext.h"
+#include "Gfx/Api/BaseDevice.h"
 #include "Gfx/Renderer.h"
+#include "Platform.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
