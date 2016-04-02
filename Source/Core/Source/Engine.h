@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #ifdef CreateWindow
 #undef CreateWindow
@@ -27,6 +28,8 @@ namespace Core
 		// todo: config object passed as a parameter in constructor
 		// todo: config object created in base constructor
 
+		std::unordered_map<std::string, Gfx::BaseDevice*> _availableApis;
+
 		Gfx::BaseDevice* _api;
 
 		auto InitializeApi() -> bool;
@@ -42,7 +45,7 @@ namespace Core
 		auto CreateWindow() const noexcept -> Window&;
 
 		// Load configuration
-		auto LoadConfig(std::string path) -> bool;
+		auto LoadConfig(std::string path = "Config.json") -> bool;
 
 		// Initialize graphics context based on current config
 		auto Initialize(Gfx::BaseDevice* api = nullptr) -> bool;

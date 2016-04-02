@@ -12,7 +12,7 @@ namespace Core
 	class Logger
 	{
 	public:
-		static Logger& getInstance()
+		static Logger& get()
 		{
 			static Logger instance;
 			return instance;

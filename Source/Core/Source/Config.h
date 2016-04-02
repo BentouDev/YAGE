@@ -6,6 +6,7 @@
 #define VOLKHVY_CONFIG_H
 
 #include <string>
+#include <json.hpp>
 
 namespace Core
 {
@@ -34,12 +35,12 @@ namespace Core
 
 	class Config
 	{
-		nlohmann::json* json;
+		nlohmann::json json;
 
 		Config();
 
 	public:
-		auto get() -> Config& {
+		auto static get() -> Config& {
 			static Config config;
 			return config;
 		}
@@ -51,6 +52,7 @@ namespace Core
 		template <typename T>
 		auto Set(std::string, T& value) -> void;
 
+		ConfigProperty<std::string> RenderingApi;
 		ConfigProperty<std::string> WindowTitle;
 		ConfigProperty<uint32_t> WindowWidth;
 		ConfigProperty<uint32_t> WindowHeight;

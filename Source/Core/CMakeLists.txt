@@ -29,11 +29,13 @@ target_compile_features(Core
 target_link_libraries(Core Volkhvy::Utils glm glfw)
 
 if(VULKAN_FOUND)
+    target_compile_definitions(Core PRIVATE VOLKHVY_VULKAN=1)
     target_include_directories(Core PRIVATE ${VULKAN_INCLUDE_DIR})
     target_link_libraries(Core ${VULKAN_LIBRARY})
 endif()
 
 if(OPENGL_FOUND)
+    target_compile_definitions(Core PRIVATE VOLKHVY_OPENGL=1)
     target_include_directories(Core PRIVATE ${OPENGL_INCLUDE_DIR})
     target_link_libraries(Core ${OPENGL_LIBRARIES})
 endif()
@@ -44,6 +46,10 @@ install(TARGETS Core
         LIBRARY  DESTINATION lib
         RUNTIME  DESTINATION bin)  # This is for Windows
 install(DIRECTORY include/ DESTINATION include)
+
+add_custom_command(TARGET Core POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_CURRENT_SOURCE_DIR}/Config ${CMAKE_BINARY_DIR})
 
 # This makes the project importable from the build directory
 export(TARGETS glfw Core FILE CoreConfig.cmake)
