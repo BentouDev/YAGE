@@ -1,6 +1,4 @@
 version: 1.0.{build}
-clone_script:
-  - cmd: git clone -q --recursive https://github.com/MrJaqbq/Volkhvy.git C:\projects\volkhvy
 
 configuration:
   - Release
