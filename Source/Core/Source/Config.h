@@ -12,18 +12,27 @@ namespace Core
 {
 	class Config;
 
-	template <typename T>
-	class ConfigProperty
-	{
+	class PropertyBase {
+	protected:
+		PropertyBase(Config* config, std::string name) :
+			_config(*config),
+			_name(name) {}
+
 		Config& _config;
 		const std::string _name;
+	public:
+		virtual auto reload() -> void = 0;
+		auto name() -> std::string { return _name; }
+	};
+
+	template <typename T>
+	class ConfigProperty : public PropertyBase
+	{
 		T _value;
 	public:
-		explicit ConfigProperty(Config* config, std::string name, T def) :
-				_config(*config),
-				_value(def),
-				_name(name)
-		{ }
+		explicit ConfigProperty(Config* config, std::string name, T def);
+
+		void reload();
 
 		ConfigProperty<T>& operator = (const T& new_value);
 
@@ -35,6 +44,7 @@ namespace Core
 
 	class Config
 	{
+		std::vector<PropertyBase*> _properties;
 		nlohmann::json json;
 
 		Config();
@@ -49,8 +59,18 @@ namespace Core
 
 		auto Save(std::string path) -> bool;
 
+		auto Has(std::string) -> bool;
+
 		template <typename T>
 		auto Set(std::string, T& value) -> void;
+
+		template <typename T>
+		auto Get(std::string, T) -> T;
+
+		template <typename T>
+		auto Register(ConfigProperty<T>* prop) -> void;
+
+		auto ReloadProperties() -> void;
 
 		ConfigProperty<std::string> RenderingApi;
 		ConfigProperty<std::string> WindowTitle;
@@ -61,11 +81,25 @@ namespace Core
 	};
 
 	template <typename T>
+	ConfigProperty<T>::ConfigProperty(Config* config, std::string name, T def) :
+		_value(def),
+		PropertyBase(config, name)
+	{
+		_config.Register(this);
+	}
+
+	template <typename T>
 	ConfigProperty<T>& ConfigProperty<T>::operator = (const T& new_value)
 	{
 		_value = new_value;
 		_config.Set(_name, _value);
 		return *this;
+	}
+
+	template <typename T>
+	void ConfigProperty<T>::reload()
+	{
+		_value = _config.Get<T>(_name, _value);
 	}
 }
 

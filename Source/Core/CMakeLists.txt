@@ -47,10 +47,6 @@ install(TARGETS Core
         RUNTIME  DESTINATION bin)  # This is for Windows
 install(DIRECTORY include/ DESTINATION include)
 
-add_custom_command(TARGET Core POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/Config ${CMAKE_BINARY_DIR})
-
 # This makes the project importable from the build directory
 export(TARGETS glfw Core FILE CoreConfig.cmake)
 
