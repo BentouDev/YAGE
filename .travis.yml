@@ -21,7 +21,7 @@ addons:
 matrix:
   include:
     - os: linux
-      compiler: clang
+      compiler: clang-3.7
       before_script:
         - cmake --target all .
 
