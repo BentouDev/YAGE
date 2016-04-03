@@ -23,6 +23,7 @@ matrix:
     - os: linux
       compiler: clang-3.7
       before_script:
+        - export CXX=clang-3.7
         - cmake --target all .
 
     - os: linux

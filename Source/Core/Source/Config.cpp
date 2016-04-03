@@ -78,6 +78,8 @@ namespace Core
 			Logger::get().Console->alert("Uncaught exception while parsing config!");
 		}
 
+		f.close();
+
 		auto result = !json.empty();
 
 		if(result)
@@ -92,5 +94,11 @@ namespace Core
 	{
 		std::ofstream o(path);
 		o << json.dump();
+
+		bool result = !o.bad();
+
+		o.close();
+
+		return result;
 	}
 }
