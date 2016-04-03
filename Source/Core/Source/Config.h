@@ -36,6 +36,11 @@ namespace Core
 
 		ConfigProperty<T>& operator = (const T& new_value);
 
+		explicit operator T*() const
+		{
+			return nullptr;
+		}
+
 		operator const T&() const
 		{
 			return _value;
