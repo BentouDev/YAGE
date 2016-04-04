@@ -15,9 +15,13 @@ namespace Gfx
 
 	auto OpenGlContext::initialize() -> bool
 	{
+		if(!glfwInit())
+			return false;
+
 		// todo: pick from config
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+
 		return true;
 	}
 

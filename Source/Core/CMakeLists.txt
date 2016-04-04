@@ -52,10 +52,10 @@ export(TARGETS glfw Core FILE CoreConfig.cmake)
 
 # Every library has unit tests, of course
 add_executable(CoreTests
-        Tests/CoreTests.cpp)
+        Tests/CoreTests.cpp Tests/DeviceMock.h Tests/EngineTests.cpp)
 
 target_link_libraries(CoreTests
-        Core glfw gtest gtest_main)
+        Core glfw gtest gtest_main gmock)
 
 add_test(CoreTests CoreTests)
 add_coverage(Core)

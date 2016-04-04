@@ -242,6 +242,9 @@ namespace Gfx
 
 	auto VulkanDevice::initialize() -> bool
 	{
+		if(!glfwInit())
+			return false;
+
 		if(!glfwVulkanSupported())
 			return false;
 

@@ -41,6 +41,9 @@ namespace Core
 
 		explicit Engine(std::string name);
 
+		template <typename Api>
+		auto RegisterApi(std::string) -> void;
+
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Window&;
 

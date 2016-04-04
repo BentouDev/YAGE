@@ -12,16 +12,20 @@ namespace Core
 {
 	class Config;
 
-	class PropertyBase {
+	class PropertyBase
+	{
+		friend class Config;
 	protected:
+		Config& _config;
+		const std::string _name;
+
 		PropertyBase(Config* config, std::string name) :
 			_config(*config),
 			_name(name) {}
 
-		Config& _config;
-		const std::string _name;
-	public:
 		virtual auto reload() -> void = 0;
+
+	public:
 		auto name() -> std::string { return _name; }
 	};
 
@@ -29,10 +33,11 @@ namespace Core
 	class ConfigProperty : public PropertyBase
 	{
 		T _value;
-	public:
-		explicit ConfigProperty(Config* config, std::string name, T def);
 
 		void reload();
+
+	public:
+		explicit ConfigProperty(Config* config, std::string name, T def);
 
 		ConfigProperty<T>& operator = (const T& new_value);
 

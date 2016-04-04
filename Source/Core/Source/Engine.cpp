@@ -31,14 +31,19 @@ namespace Core
 		Logger::get().Console->info("Initializing Volkhvy for '{}'...", name);
 
 #ifdef VOLKHVY_VULKAN
-		_availableApis["vulkan"] = new Gfx::VulkanDevice();
-		Logger::get().Console->info("Found Vulkan renderer...");
+		RegisterApi<Gfx::VulkanDevice>("vulkan");
 #endif
 
 #ifdef VOLKHVY_OPENGL
-		_availableApis["opengl"] = new Gfx::OpenGlContext();
-		Logger::get().Console->info("Found OpenGL renderer...");
+		RegisterApi<Gfx::OpenGlContext>("opengl");
 #endif
+	}
+
+	template <typename Api>
+	auto Engine::RegisterApi(std::string name) -> void
+	{
+		_availableApis[name] = new Api();
+		Logger::get().Console->info("Found {} renderer...", name);
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -71,11 +76,6 @@ namespace Core
 			{
 				_api = itr->second;
 			}
-		}
-
-		if(!glfwInit())
-		{
-			return false;
 		}
 
 		// todo: assert macro
