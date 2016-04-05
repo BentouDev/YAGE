@@ -11,6 +11,8 @@
 class DeviceMock : public Gfx::BaseDevice
 {
 public:
+	DeviceMock() : BaseDevice("mock") { };
+
 	MOCK_METHOD0(initialize, bool());
 	MOCK_METHOD1(registerWindow, bool(const Core::Window& window));
 	MOCK_METHOD1(destroyWindow, bool(const Core::Window& window));

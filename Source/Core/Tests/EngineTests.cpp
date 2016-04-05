@@ -41,8 +41,9 @@ namespace EngineTests
 
 		mock->InitWillSucced();
 
-		auto result = engine->Initialize(new DeviceMock());
+		auto result = engine->Initialize(mock);
 
+		EXPECT_CALL(*mock, initialize()).Times(1);
 		ASSERT_TRUE(result);
 	}
 }

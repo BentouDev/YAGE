@@ -8,14 +8,19 @@
 namespace Core
 {
     class Window;
+	class Engine;
 }
 
 namespace Gfx
 {
 	class BaseDevice
 	{
+		const char* _name;
 	public:
-		BaseDevice() {}
+
+		BaseDevice(const char* name) : _name(name) {}
+
+		auto name() -> const char* { return _name; }
 
 		// todo: pass config
 		// Do necassary initialization, grab extensions, device info etc.

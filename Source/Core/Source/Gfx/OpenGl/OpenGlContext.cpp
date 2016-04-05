@@ -8,7 +8,7 @@
 
 namespace Gfx
 {
-	OpenGlContext::OpenGlContext()
+	OpenGlContext::OpenGlContext() : BaseDevice("opengl")
 	{
 
 	}

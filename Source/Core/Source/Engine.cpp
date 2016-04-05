@@ -31,19 +31,20 @@ namespace Core
 		Logger::get().Console->info("Initializing Volkhvy for '{}'...", name);
 
 #ifdef VOLKHVY_VULKAN
-		RegisterApi<Gfx::VulkanDevice>("vulkan");
+		RegisterApi<Gfx::VulkanDevice>();
 #endif
 
 #ifdef VOLKHVY_OPENGL
-		RegisterApi<Gfx::OpenGlContext>("opengl");
+		RegisterApi<Gfx::OpenGlContext>();
 #endif
 	}
 
 	template <typename Api>
-	auto Engine::RegisterApi(std::string name) -> void
+	auto Engine::RegisterApi() -> void
 	{
-		_availableApis[name] = new Api();
-		Logger::get().Console->info("Found {} renderer...", name);
+		auto api = new Api();
+		_availableApis[api->name()] = api;
+		Logger::get().Console->info("Found {} renderer...", api->name());
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -78,11 +79,14 @@ namespace Core
 			}
 		}
 
-		// todo: assert macro
-		// todo: log errors
-		assert(_api);
-
-		return InitializeApi();
+		if(_api == nullptr)
+		{
+			return false;
+		}
+		else
+		{
+			return InitializeApi();
+		}
 	}
 
 	auto Engine::InitializeApi() -> bool
