@@ -31,6 +31,8 @@ namespace EngineTests
 		auto engine = new Core::Engine(name);
 
 		ASSERT_NE(engine, nullptr);
+
+		delete engine;
 	}
 
 	TEST_F(EngineTest, CanInitializeEngineWithApi)
@@ -41,9 +43,13 @@ namespace EngineTests
 
 		mock->InitWillSucced();
 
+		EXPECT_CALL(*mock, initialize()).Times(1);
+
 		auto result = engine->Initialize(mock);
 
-		EXPECT_CALL(*mock, initialize()).Times(1);
 		ASSERT_TRUE(result);
+
+		delete engine;
+		delete mock;
 	}
 }
