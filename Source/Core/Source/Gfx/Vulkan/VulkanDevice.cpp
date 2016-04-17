@@ -10,7 +10,7 @@
 
 namespace Gfx
 {
-	VulkanDevice::VulkanDevice() : appInfo {}, instanceInfo {}, deviceInfo {}, instance {nullptr}
+	VulkanDevice::VulkanDevice() : appInfo {}, instanceInfo {}, deviceInfo {}, instance {nullptr}, BaseDevice("vulkan")
 	{
 
 	}
@@ -242,6 +242,9 @@ namespace Gfx
 
 	auto VulkanDevice::initialize() -> bool
 	{
+		if(!glfwInit())
+			return false;
+
 		if(!glfwVulkanSupported())
 			return false;
 

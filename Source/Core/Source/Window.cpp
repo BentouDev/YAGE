@@ -5,10 +5,15 @@
 #include "Window.h"
 #include "Platform.h"
 #include "Gfx/Rectangle.h"
+#include "Config.h"
 
 namespace Core
 {
-	Window::Window() : hWindow {nullptr}, Height {600}, Width {800}, Title {"Hello, Volkhvy!"}
+	Window::Window() :
+		hWindow {nullptr},
+		Height {Config::get().WindowHeight},
+		Width {Config::get().WindowWidth},
+		Title {Config::get().WindowTitle}
 	{
 		Create();
 	}

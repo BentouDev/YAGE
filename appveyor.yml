@@ -1,9 +1,10 @@
 version: 1.0.{build}
-clone_script:
-  - cmd: git clone -q --recursive --branch=master https://github.com/MrJaqbq/Volkhvy.git C:\projects\volkhvy
 
 configuration:
   - Release
+
+install:
+  - git submodule update --init --recursive
 
 before_build:
   - mkdir Build && cd Build

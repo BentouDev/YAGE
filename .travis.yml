@@ -7,6 +7,8 @@ addons:
   apt:
     sources:
       - sudo add-apt-repository ppa:george-edison55/cmake-3.x --yes
+      - llvm-toolchain-precise-3.7
+      - ubuntu-toolchain-r-test
     packages:
       - cmake
       - cmake-data
@@ -14,12 +16,15 @@ addons:
       - xorg-dev
       - libxxf86vm-dev
       - libglu1-mesa-dev
+      - clang-3.7
 
 matrix:
   include:
     - os: linux
-      compiler: clang
+      compiler: clang-3.7
       before_script:
+        - export CXX=clang++-3.7
+        - export CC=clang-3.7
         - cmake --target all .
 
     - os: linux

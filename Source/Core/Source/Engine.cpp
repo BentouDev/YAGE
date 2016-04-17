@@ -2,20 +2,49 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
+#include <algorithm>
+
 #include "Resources/ResourceManager.h"
-#include "Gfx/Vulkan/VulkanDevice.h"
-#include "Gfx/OpenGl/OpenGlContext.h"
+#include "Gfx/Api/BaseDevice.h"
 #include "Gfx/Renderer.h"
+#include "Platform.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
+#include "Config.h"
+
+#define CreateWindow
+#undef CreateWindow
+
+#ifdef VOLKHVY_VULKAN
+#include "Gfx/Vulkan/VulkanDevice.h"
+#endif
+
+#ifdef VOLKHVY_OPENGL
+#include "Gfx/OpenGl/OpenGlContext.h"
+#endif
 
 namespace Core
 {
-	Engine::Engine(std::string name) :
-			_api { new Gfx::OpenGlContext() }
+	Engine::Engine(std::string name)
 	{
-		Logger::getInstance().Console->info("Initializing Volkhvy for '{}'...", name);
+		Logger::get().Console->info("Initializing Volkhvy for '{}'...", name);
+
+#ifdef VOLKHVY_VULKAN
+		RegisterApi<Gfx::VulkanDevice>();
+#endif
+
+#ifdef VOLKHVY_OPENGL
+		RegisterApi<Gfx::OpenGlContext>();
+#endif
+	}
+
+	template <typename Api>
+	auto Engine::RegisterApi() -> void
+	{
+		auto api = new Api();
+		_availableApis[api->name()] = api;
+		Logger::get().Console->info("Found {} renderer...", api->name());
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -29,17 +58,35 @@ namespace Core
 
 	auto Engine::LoadConfig(std::string path) -> bool
 	{
-		return true;
+		return Config::get().Load(path);
 	}
 
-	auto Engine::Initialize() -> bool
+	auto Engine::Initialize(Gfx::BaseDevice* api) -> bool
 	{
-		if(!glfwInit())
+		if(api != nullptr)
+		{
+			_api = api;
+		}
+		else
+		{
+			std::string requestedApi = Config::get().RenderingApi;
+			std::transform(requestedApi.begin(), requestedApi.end(), requestedApi.begin(), ::tolower);
+
+			auto itr = _availableApis.find(requestedApi);
+			if(itr != _availableApis.end())
+			{
+				_api = itr->second;
+			}
+		}
+
+		if(_api == nullptr)
 		{
 			return false;
 		}
-
-		return InitializeApi();
+		else
+		{
+			return InitializeApi();
+		}
 	}
 
 	auto Engine::InitializeApi() -> bool
@@ -70,6 +117,7 @@ namespace Core
 
 	auto Engine::CleanUp() -> void
 	{
+		Logger::get().Console->info("Cleaning up...");
 		_api->cleanUp();
 		glfwTerminate();
 	}
