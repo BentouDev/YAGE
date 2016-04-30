@@ -11,6 +11,25 @@
 
 namespace Utils
 {
+	template<typename T>
+	struct Index
+	{
+
+	};
+
+	template<typename T>
+	class Container
+	{
+		T* Objects;
+
+	public:
+		Container(uint16_t size)
+		{
+			Objects = new T[size];
+		}
+	};
+
+
 	/*template<typename T>
 	class Container;
 
@@ -26,10 +45,10 @@ namespace Utils
 		uint16_t	next;
 
 	private:
-		void Set(uint16_t index)
+		void Set(uint16_t _index)
 		{
-			handle.get().LiveId = index;
-			next = index + 1;
+			handle.get().LiveId = _index;
+			next = ++_index;
 		}
 	};
 

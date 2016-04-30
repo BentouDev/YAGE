@@ -13,6 +13,11 @@
 #undef CreateWindow
 #endif
 
+namespace Logic
+{
+	class Scene;
+}
+
 namespace Gfx
 {
 	class BaseDevice;
@@ -21,6 +26,11 @@ namespace Gfx
 namespace Core
 {
 	class Window;
+
+	struct GameTime
+	{
+
+	};
 
 	class Engine
 	{
@@ -34,8 +44,14 @@ namespace Core
 
 		auto InitializeApi() -> bool;
 
+		Logic::Scene* activeScene;
+
 	public:
 
+		ResourceManager& ResManager;
+		// SceneManager&
+		// ScriptManager&
+		// Renderer&
 		// Logger& Logger;
 		// Console& Console;
 
@@ -53,7 +69,9 @@ namespace Core
 		// Initialize graphics context based on current config
 		auto Initialize(Gfx::BaseDevice* api = nullptr) -> bool;
 
-		// Draw all renderpasses
+		auto SwitchScene(Logic::Scene* scene) -> void;
+
+		// Draw all renderpasses for active scenes
 		auto Draw(const Core::Window& window) -> void;
 
 		// todo: each window should have queue of events to process

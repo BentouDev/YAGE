@@ -7,6 +7,7 @@
 #include "Resources/ResourceManager.h"
 #include "Gfx/Api/BaseDevice.h"
 #include "Gfx/Renderer.h"
+#include "Logic/Scene.h"
 #include "Platform.h"
 #include "Engine.h"
 #include "Window.h"
@@ -87,6 +88,16 @@ namespace Core
 		{
 			return InitializeApi();
 		}
+	}
+
+	auto Engine::SwitchScene(Logic::Scene* scene) -> void
+	{
+		// todo: refactor to handle instead of raw pointer
+		if(activeScene != nullptr) activeScene->End();
+
+		activeScene = scene;
+
+		if(activeScene != nullptr) activeScene->Start();
 	}
 
 	auto Engine::InitializeApi() -> bool

@@ -12,18 +12,24 @@
 
 namespace Core
 {
+	DECL_RESOURCE(MeshResource)
+	{
+	public:
+		~MeshResource();
+
+	};
+
 	struct SubMesh
 	{
 		std::vector<glm::vec3> Position;
 	};
 
-	DECL_RESOURCE(Mesh)
+	struct MeshData
 	{
-	public:
-		~Mesh();
-
 		std::vector<SubMesh> SubMeshes;
+		MeshResource::Handle Resource;
 	};
+
 }
 
 #endif
