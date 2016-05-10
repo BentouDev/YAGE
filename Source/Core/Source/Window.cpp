@@ -9,11 +9,11 @@
 
 namespace Core
 {
-	Window::Window() :
+	Window::Window(Context ctx) :
 		hWindow {nullptr},
-		Height {Config::get().WindowHeight},
-		Width {Config::get().WindowWidth},
-		Title {Config::get().WindowTitle}
+		Height {ctx.Config->WindowHeight},
+		Width {ctx.Config->WindowWidth},
+		Title {ctx.Config->WindowTitle}
 	{
 		Create();
 	}

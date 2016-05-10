@@ -19,16 +19,6 @@ namespace Core
 
 	};
 
-	struct SubMesh
-	{
-		std::vector<glm::vec3> Position;
-	};
-
-	struct MeshData
-	{
-		std::vector<SubMesh> SubMeshes;
-		MeshResource::Handle Resource;
-	};
 
 }
 

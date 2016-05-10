@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include "Handle.h"
+#include "Context.h"
 
 #ifdef CreateWindow
 #undef CreateWindow
@@ -16,46 +18,67 @@
 namespace Logic
 {
 	class Scene;
+
+	class SceneManager;
 }
 
 namespace Gfx
 {
 	class BaseDevice;
+
+	class Renderer;
+}
+
+namespace Scripts
+{
+	class ScriptManager;
 }
 
 namespace Core
 {
+	using namespace Utils;
+
+	class Config;
+
+	class Logger;
+
+	class Console;
+
 	class Window;
 
-	struct GameTime
-	{
+//	class ResourceManager;
 
-	};
+	struct Context;
+
+	struct GameTime;
 
 	class Engine
 	{
-		// todo: reference to config
-		// todo: config object passed as a parameter in constructor
-		// todo: config object created in base constructor
+		std::unordered_map<std::string, borrowed_ptr<Gfx::BaseDevice>> _availableApis;
 
-		std::unordered_map<std::string, Gfx::BaseDevice*> _availableApis;
-
-		Gfx::BaseDevice* _api;
+		borrowed_ptr<Gfx::BaseDevice> _api;
 
 		auto InitializeApi() -> bool;
 
-		Logic::Scene* activeScene;
+		borrowed_ptr<Logic::Scene> activeScene;
 
 	public:
 
-		ResourceManager& ResManager;
-		// SceneManager&
-		// ScriptManager&
-		// Renderer&
-		// Logger& Logger;
-		// Console& Console;
+		static void initializeReferences(Engine* engine);
+
+		const std::string Name;
+
+		borrowed_ptr<Core::Config> Config;
+
+		borrowed_ptr<Gfx::Renderer> Renderer;
+
+		borrowed_ptr<Core::Logger> Logger;
+
+		borrowed_ptr<Core::Console> Console;
 
 		explicit Engine(std::string name);
+
+		auto GetContext() const noexcept  -> Context;
 
 		template <typename Api>
 		auto RegisterApi() -> void;
@@ -67,9 +90,9 @@ namespace Core
 		auto LoadConfig(std::string path = "Config.json") -> bool;
 
 		// Initialize graphics context based on current config
-		auto Initialize(Gfx::BaseDevice* api = nullptr) -> bool;
+		auto Initialize(borrowed_ptr<Gfx::BaseDevice> api = borrowed_ptr<Gfx::BaseDevice>()) -> bool;
 
-		auto SwitchScene(Logic::Scene* scene) -> void;
+		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
 
 		// Draw all renderpasses for active scenes
 		auto Draw(const Core::Window& window) -> void;

@@ -9,7 +9,8 @@ namespace Gfx
 {
 	class Renderer
 	{
-
+	public:
+		void Draw();
 	};
 }
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include "Gfx/Viewport.h"
+#include "Context.h"
 
 struct GLFWwindow;
 
@@ -16,7 +17,7 @@ namespace Core
 	class Window
 	{
 	public:
-		Window();
+		Window(Context ctx);
 		virtual ~Window();
 
 		auto Create() -> void;

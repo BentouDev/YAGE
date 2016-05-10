@@ -5,6 +5,8 @@
 #ifndef GAME_SCENE_H
 #define GAME_SCENE_H
 
+#include <string>
+
 namespace Core
 {
 	class Engine;
@@ -18,6 +20,10 @@ namespace Logic
 		// Reference to script module
 		// Containers for entites
 		// Containers for entity components
+
+		std::string Path;
+
+		std::string Name;
 
 		Core::Engine& engine;
 

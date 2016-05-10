@@ -11,10 +11,7 @@ namespace Resources
 {
 	namespace MeshFactory
 	{
-		auto CreateMeshFromFile(std::string) -> Core::Mesh::Handle
-		{
 
-		}
 	}
 }
 

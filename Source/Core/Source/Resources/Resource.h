@@ -9,7 +9,7 @@
 #include "Handle.h"
 #include "ResourceManager.h"
 
-#define DECL_RESOURCE(name) class name : Resource<name>
+#define DECL_RESOURCE(name) class name : public Resource<name>
 
 namespace Core
 {

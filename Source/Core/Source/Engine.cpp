@@ -9,6 +9,7 @@
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
 #include "Platform.h"
+#include "Console.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
@@ -27,30 +28,48 @@
 
 namespace Core
 {
-	Engine::Engine(std::string name)
+	void Engine::initializeReferences(Engine* engine)
 	{
-		Logger::get().Console->info("Initializing Volkhvy for '{}'...", name);
+		engine->Logger->Console->info("Initializing Volkhvy for '{}'...", engine->Name);
 
 #ifdef VOLKHVY_VULKAN
-		RegisterApi<Gfx::VulkanDevice>();
+		engine->RegisterApi<Gfx::VulkanDevice>();
 #endif
 
 #ifdef VOLKHVY_OPENGL
-		RegisterApi<Gfx::OpenGlContext>();
+		engine->RegisterApi<Gfx::OpenGlContext>();
 #endif
+	}
+
+	Engine::Engine(std::string name)
+		: Name(name),
+		  Logger(new Core::Logger()),
+		  Config(new Core::Config()),
+		  Renderer(new Gfx::Renderer()),
+		  Console(new Core::Console())
+	{
+		Logger->setConfig(Config);
+		Config->setLogger(Logger);
+		Engine::initializeReferences(this);
+	}
+
+	auto Engine::GetContext() const noexcept -> Context
+	{
+		Context ctx(Config, Logger);
+		return ctx;
 	}
 
 	template <typename Api>
 	auto Engine::RegisterApi() -> void
 	{
 		auto api = new Api();
-		_availableApis[api->name()] = api;
-		Logger::get().Console->info("Found {} renderer...", api->name());
+		_availableApis[api->name()] = borrowed_ptr<Gfx::BaseDevice>(api);
+		Logger->Console->info("Found {} renderer...", api->name());
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
 	{
-		Window* window = new Window();
+		Window* window = new Window(GetContext());
 
 		_api->registerWindow(*window);
 
@@ -59,18 +78,18 @@ namespace Core
 
 	auto Engine::LoadConfig(std::string path) -> bool
 	{
-		return Config::get().Load(path);
+		return Config->Load(path);
 	}
 
-	auto Engine::Initialize(Gfx::BaseDevice* api) -> bool
+	auto Engine::Initialize(borrowed_ptr<Gfx::BaseDevice> api) -> bool
 	{
-		if(api != nullptr)
+		if(api)
 		{
 			_api = api;
 		}
 		else
 		{
-			std::string requestedApi = Config::get().RenderingApi;
+			std::string requestedApi = Config->RenderingApi;
 			std::transform(requestedApi.begin(), requestedApi.end(), requestedApi.begin(), ::tolower);
 
 			auto itr = _availableApis.find(requestedApi);
@@ -80,7 +99,7 @@ namespace Core
 			}
 		}
 
-		if(_api == nullptr)
+		if(!_api)
 		{
 			return false;
 		}
@@ -90,14 +109,14 @@ namespace Core
 		}
 	}
 
-	auto Engine::SwitchScene(Logic::Scene* scene) -> void
+	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
 	{
 		// todo: refactor to handle instead of raw pointer
-		if(activeScene != nullptr) activeScene->End();
+		if(activeScene) activeScene->End();
 
 		activeScene = scene;
 
-		if(activeScene != nullptr) activeScene->Start();
+		if(activeScene) activeScene->Start();
 	}
 
 	auto Engine::InitializeApi() -> bool
@@ -105,6 +124,7 @@ namespace Core
 		return _api->initialize();
 	}
 
+	// todo: remove this
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
 		_api->beginDraw(window);
@@ -128,7 +148,7 @@ namespace Core
 
 	auto Engine::CleanUp() -> void
 	{
-		Logger::get().Console->info("Cleaning up...");
+		Logger->Console->info("Cleaning up...");
 		_api->cleanUp();
 		glfwTerminate();
 	}
