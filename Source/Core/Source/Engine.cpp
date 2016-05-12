@@ -30,7 +30,7 @@ namespace Core
 {
 	void Engine::initializeReferences(Engine* engine)
 	{
-		engine->Logger->Console->info("Initializing Volkhvy for '{}'...", engine->Name);
+		engine->Logger->Default->info("Initializing Volkhvy for '{}'...", engine->Name);
 
 #ifdef VOLKHVY_VULKAN
 		engine->RegisterApi<Gfx::VulkanDevice>();
@@ -64,7 +64,7 @@ namespace Core
 	{
 		auto api = new Api();
 		_availableApis[api->name()] = borrowed_ptr<Gfx::BaseDevice>(api);
-		Logger->Console->info("Found {} renderer...", api->name());
+		Logger->Default->info("Found {} renderer...", api->name());
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -148,7 +148,7 @@ namespace Core
 
 	auto Engine::CleanUp() -> void
 	{
-		Logger->Console->info("Cleaning up...");
+		Logger->Default->info("Cleaning up...");
 		_api->cleanUp();
 		glfwTerminate();
 	}

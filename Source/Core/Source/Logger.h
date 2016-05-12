@@ -32,10 +32,10 @@ namespace Core
 	//		return instance;
 	//	}
 
-		std::shared_ptr<spdlog::logger> Console;
+		std::shared_ptr<spdlog::logger> Default;
 
 	private:
-		Logger() : Console(spdlog::stdout_logger_mt("console")) { };
+		Logger() : Default(spdlog::stdout_logger_mt("console", true)) { };
 
 	public:
 		Logger(Logger const&) = delete;
