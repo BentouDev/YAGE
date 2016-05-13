@@ -10,8 +10,8 @@
 #include <map>
 
 #include <glm/vec3.hpp>
+#include <Index.h>
 #include "Resource.h"
-#include "Handle.h"
 
 namespace Core
 {
@@ -36,6 +36,8 @@ namespace Core
 		// todo: those may be done as handles as well
 		std::vector<Submesh> Submeshes;
 	};
+
+	class MeshTrait : public ResourceTrait<MeshResource> {};
 
 	// this may work other way later one
 	// it will mainly depend on how i will want to use this data

@@ -19,11 +19,11 @@ namespace Resources
 //			return handle;
 //		}
 
-		auto LoadMeshFromObj(std::string path, Core::MeshResource& mesh) -> void
+		auto LoadMeshFromObj(Core::MeshResource& mesh) -> void
 		{
 			MeshObjParser parser;
 
-			std::ifstream file(path);
+			std::ifstream file(mesh.Path);
 
 			std::string line;
 			while(getline(file, line))

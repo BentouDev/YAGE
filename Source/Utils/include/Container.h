@@ -5,139 +5,102 @@
 #ifndef VOLKHVY_CONTAINER_H
 #define VOLKHVY_CONTAINER_H
 
-#include "Handle.h"
-
-#define INDEX_MASK 0xffff
+#include "Index.h"
 
 namespace Utils
 {
-	template<typename T>
-	struct Index
-	{
-
-	};
-
-	template<typename T>
+	template<typename Trait>
 	class Container
 	{
-		T* Objects;
+		using object_t = typename Trait::type;
+		using handle_t = typename Trait::handle;
 
-	public:
-		Container(uint16_t size)
+		object_t* 			elements;
+		Index<handle_t>*	indices;
+
+		uint16_t	_freelist_enqueue;
+		uint16_t	_freelist_dequeue;
+
+		uint16_t 	elementCount;
+
+		const uint16_t maxSize;
+
+		static auto initialize(Container* container) -> void
 		{
-			Objects = new T[size];
-		}
-	};
-
-
-	/*template<typename T>
-	class Container;
-
-	template<typename T>
-	struct Index
-	{
-		friend class Container<T>;
-
-		Index() : index(0), next(0) { }
-
-		Handle<T>	handle;
-		uint16_t	index;
-		uint16_t	next;
-
-	private:
-		void Set(uint16_t _index)
-		{
-			handle.get().LiveId = _index;
-			next = ++_index;
-		}
-	};
-
-	template<typename T>
-	class Container
-	{
-	protected:
-		void SetIndex(Index<T>& index, uint16_t value)
-		{
-			index.Set(value);
-		}
-	};
-
-	template<typename T, uint16_t count = UINT16_MAX>
-	class StaticContainer : public Container<T>
-	{
-	private:
-		T Objects[count];
-
-		uint16_t FreelistBegin;
-		uint16_t FreelistEnd;
-		uint16_t CurrentCount;
-
-		Index<T> Indicies[count];
-
-	public:
-		StaticContainer() : CurrentCount(0)
-		{
-			for(uint16_t i = 0; i < count; ++i)
-			{
-				this->SetIndex(Indicies[i], i);
+			container->elementCount = 0;
+			for (unsigned i = 0; i < container->maxSize; ++i) {
+				Trait::setIndex(container->indices[i], i);
+				container->indices[i].next = i + 1;
 			}
 
-			FreelistBegin = 0;
-			FreelistEnd = count - 1;
+			container->_freelist_dequeue = 0;
+			container->_freelist_enqueue = container->maxSize - 1;
 		}
 
-		inline bool Contains(const Handle<T> id) const
+	public:
+		Container(uint16_t size) : maxSize(size)
 		{
-			Index<T>& in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
-			return in.handle.rawHandle.LiveId == id.rawHandle.LiveId
-				   && in.index != count;
+			elements = new object_t[size];
+			initialize(this);
 		}
 
-		inline T& Get(const Handle<T> id) const
+		template <uint16_t size>
+		Container(char (*memory)[size]) : maxSize(size)
 		{
-			auto i = id.rawHandle.LiveId & INDEX_MASK;
-			return Objects[Indicies[i].index];
+			elements = new (memory) object_t[size];
+			initialize(this);
 		}
 
-		inline Handle<T> Create()
+		template <typename... Args>
+		auto create(Args... args) -> handle_t
 		{
-			Index<T> &in = Indicies[FreelistBegin];
+			Index<handle_t> &in = indices[_freelist_dequeue];
+			_freelist_dequeue = in.next;
 
-			in.handle.rawHandle.Index++;
-			in.index = CurrentCount++;
+			Trait::incrementLiveId(in);
 
-			FreelistBegin = in.next;
+			in.index = elementCount++;
 
-			//T &o = Objects[in.index];
-			// GetHandler<T>(o).liveID	= in.hand.liveID;
-			// GetHandler<T>(o).id		= in.hand.id;
-			return in.handle;//GetHandler<T>(o);
+			object_t &o = new (elements[in.index]) object_t(args...);
+			Trait::setHandle(o, in.handle);
+
+			return Trait::getHandle(o);
 		}
 
-		/*inline void Remove(Handle<T> id)
+		inline void remove(handle_t handle)
 		{
-			Index &in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
+			Index<handle_t> &in = indices[Trait::getIndex(handle)];
 
-			T &o = Objects[in.index];
-			o = Objects[--CurrentCount];
-			//GetHandler<T>(o)
-			Indicies[in.handle.rawHandle.LiveId & INDEX_MASK].index = in.index;// o.id & INDEX_MASK].index = in.index;
+			object_t &o = elements[in.index];
+			Trait::swap(o, elements[--elementCount]);
+			indices[Trait::getIndex(handle)].index = in.index;
 
-			in.index = count;
-			Indicies[FreelistEnd].next = id.rawHandle.LiveId & INDEX_MASK;
-			FreelistEnd = id.rawHandle.LiveId & INDEX_MASK;
-		}//
-
-		inline auto operator[](const int i) const noexcept -> T&
-		{
-			return Objects[i];
+			in.index = maxSize;
+			indices[_freelist_enqueue].next = Trait::getIndex(handle);
+			_freelist_enqueue = Trait::getIndex(handle);
 		}
 
-		inline auto operator[](const Handle<T> id) const noexcept -> T&
+		inline auto contains(handle_t handle) const noexcept -> bool
 		{
-			return Get(id);
+			Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			return in.handle == handle && in.index != maxSize;
 		}
-	};*/
+
+		inline auto get(handle_t handle) const -> object_t&
+		{
+			return elements[indices[Trait::getIndex(handle)].index];
+		}
+
+		inline auto operator[](handle_t handle) const -> object_t&
+		{
+			return get(handle);
+		}
+
+		inline auto operator[](uint32_t index) const -> object_t&
+		{
+			return elements[index];
+		}
+	};
 }
 
 #endif //VOLKHVY_CONTAINER_H
