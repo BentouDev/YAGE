@@ -33,7 +33,7 @@ public:
 		return id;
 	};
 
-	constexpr static auto name() -> std::string
+	static auto name() -> std::string
 	{
 		return AS_STRING(T);
 	}
