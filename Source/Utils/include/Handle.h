@@ -7,25 +7,71 @@
 
 #include <cstdint>
 #include <utility>
+#include "TypeInfo.h"
 
 namespace Utils
 {
-	typedef uint32_t handle_t;
-
-	union RawHandle
+	template <typename Resource>
+	union Handle
 	{
+	private:
+		auto release() -> uint32_t
+		{
+			auto oldVal = key;
+			key = invalid().key;
+			return oldVal;
+		}
 
 	public:
-		handle_t Key;
+		uint32_t key;
 
-		struct {
-			uint8_t LiveId;
-			uint8_t Type;
-			uint16_t Index;
+		struct
+		{
+			uint8_t liveId;
+			type_t typeId;
+			uint16_t index;
 		};
 
-		RawHandle() : Key(0) {}
+		Handle() : key(0) { typeId = TypeInfo<Resource>::id(); }
+		Handle(Handle&& other) : key(other.release()) { }
+		Handle(const Handle& other) : key(other.key) { }
+
+		auto operator=(const Handle& other) -> Handle& { key = other.key; return *this; }
+		auto operator=(Handle&& other) -> Handle& { key = other.release(); return *this; }
+
+		static auto invalid() -> Handle<Resource>
+		{
+			return Handle();
+		}
+
+		operator bool()
+		{
+			return key != invalid().key;
+		}
+
+		auto operator==(const Handle<Resource>& other) -> bool
+		{
+			return key == other.key;
+		}
+
+		auto operator!=(const Handle<Resource>& other) -> bool
+		{
+			return key != other.key;
+		}
+
+		auto swap(Handle<Resource>& other) noexcept -> void
+		{
+			std::swap(key, other.key);
+		}
 	};
+
+	template<typename Resource>
+	auto swap(Handle<Resource>& left, Handle<Resource>& right) noexcept -> void
+	{
+		left.swap(right);
+	}
+
+	/*typedef uint32_t handle_t;
 
 	template<typename Traits>
 	class Handle
@@ -108,91 +154,7 @@ namespace Utils
 	auto swap(Handle<Traits>& left, Handle<Traits>& right) noexcept -> void
 	{
 		left.swap(right);
-	}
-
-	template <typename T>
-	class borrowed_ptr
-	{
-		T* value;
-
-	public:
-		explicit borrowed_ptr(T* raw_value = nullptr) noexcept :
-		value { raw_value } { }
-
-		borrowed_ptr(borrowed_ptr && other) noexcept : value { other.release() } { }
-
-		borrowed_ptr(const borrowed_ptr& other) noexcept : value { other.getRaw() } { }
-
-		auto operator=(borrowed_ptr && other) noexcept -> borrowed_ptr&
-		{
-			value = other.release();
-			return *this;
-		}
-
-		auto operator=(const borrowed_ptr & other) noexcept -> borrowed_ptr&
-		{
-			value = other.getRaw();
-			return *this;
-		}
-
-		auto reset(T* new_value = nullptr) noexcept -> bool
-		{
-			if(new_value != value)
-			{
-				value = new_value;
-			}
-
-			return static_cast<bool>(*this);
-		}
-
-		auto release() noexcept -> T*
-		{
-			auto raw_value = value;
-			value = nullptr;
-			return raw_value;
-		}
-
-		explicit operator bool() const noexcept
-		{
-			return value != nullptr;
-		}
-
-		auto operator->() const noexcept -> T*
-		{
-			return getRaw();
-		}
-
-		auto operator*() const noexcept -> T&
-		{
-			return get();
-		}
-
-		auto get() const noexcept -> T&
-		{
-			return *value;
-		}
-
-		auto getRaw() const noexcept -> T*
-		{
-			return value;
-		}
-
-		auto swap(borrowed_ptr<T>& other) noexcept -> void
-		{
-			std::swap(value, other.value);
-		}
-
-		static auto invalid() -> borrowed_ptr <T>
-		{
-			return borrowed_ptr<T>();
-		}
-	};
-
-	template <typename T>
-	auto swap(borrowed_ptr<T>& left, borrowed_ptr<T>& right) noexcept -> void
-	{
-		left.swap(right);
-	}
+	}*/
 }
 
 #endif //VOLKHVY_HANDLE_H

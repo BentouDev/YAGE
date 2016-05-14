@@ -61,15 +61,15 @@ namespace MemoryTests
 	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjects)
 	{
 		int count = 6;
-		auto foos = new FooMock*[count];
+		auto foos = new FooMock[count];
+
+		//for(auto i = 0; i < count; i++)
+		//	auto obj = new (&foos[i]) FooMock();
 
 		for(auto i = 0; i < count; i++)
-			foos[i] = new FooMock();
+			EXPECT_CALL(foos[i], Die()).Times(1);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(*foos[i], Die()).Times(1);
-
-		Memory::SafeDeleteArray(foos, count);
+		Memory::SafeDeleteArray(foos);
 
 		EXPECT_EQ(foos, nullptr);
 	}
@@ -77,16 +77,16 @@ namespace MemoryTests
 	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjectsTwice)
 	{
 		int count = 6;
-		auto foos = new FooMock*[count];
+		auto foos = new FooMock[count];
+
+		//for(auto i = 0; i < count; i++)
+		//	auto = new (foos[i]) FooMock();
 
 		for(auto i = 0; i < count; i++)
-			foos[i] = new FooMock();
+			EXPECT_CALL(foos[i], Die()).Times(1);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(*foos[i], Die()).Times(1);
-
-		Memory::SafeDeleteArray(foos, count);
-		Memory::SafeDeleteArray(foos, count);
+		Memory::SafeDeleteArray(foos);
+		Memory::SafeDeleteArray(foos);
 
 		EXPECT_EQ(foos, nullptr);
 	}

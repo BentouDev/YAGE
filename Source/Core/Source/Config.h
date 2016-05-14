@@ -8,6 +8,7 @@
 #include <string>
 #include <json.hpp>
 #include <Handle.h>
+#include <BorrowedPtr.h>
 
 namespace Core
 {

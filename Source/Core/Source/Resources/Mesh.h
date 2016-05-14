@@ -11,6 +11,8 @@
 
 #include <glm/vec3.hpp>
 #include <Index.h>
+#include <BorrowedPtr.h>
+
 #include "Resource.h"
 
 namespace Core
@@ -33,7 +35,7 @@ namespace Core
 		~MeshResource();
 
 		// we do not care about memory over here. yet.
-		// todo: those may be done as handles as well
+		// todo: this has to be done as handles as well, real submeshes in their container (renderer?)
 		std::vector<Submesh> Submeshes;
 	};
 
@@ -66,7 +68,7 @@ namespace Core
 	struct MeshVertexComponentInfo
 	{
 		uint32_t count;
-		uint64_t type;
+		type_t type;
 		// todo: does it need this?
 		// todo: may want some sort of ID here
 		// to easy distinguish between those components

@@ -7,7 +7,8 @@
 
 #include <string>
 #include <Index.h>
-#include "Handle.h"
+#include <TypeInfo.h>
+#include <Handle.h>
 
 #define DECL_RESOURCE(name) class name : public Resource<name>
 
@@ -19,7 +20,10 @@ namespace Core
 	template<typename Res>
 	class Resource
 	{
-		using handle_t = Utils::ResourceHandle<Res>;
+		const void* _id;
+
+	public:
+		using handle_t = Utils::Handle<Res>;
 
 	protected:
 		explicit Resource(Resource&& other)
@@ -46,34 +50,39 @@ namespace Core
 	{
 	public:
 		using type = Res;
-		using handle = Utils::ResourceHandle<Res>;
+		using handle = Utils::Handle<Res>;
 
-		inline static auto swap(type& first, type& second) const noexcept -> void
+		inline static void cleanUp(type& first)
+		{
+			first.cleanUp();
+		}
+
+		inline static void swap(type& first, type& second) noexcept
 		{
 			first.swap(second);
 		}
 
-		inline static auto incrementLiveId(handle _handle) const noexcept -> void
+		inline static void incrementLiveId(Utils::Index<handle>& index) noexcept
 		{
-			handle.liveId++;
+			index.handle.liveId++;
 		}
 
-		inline static auto setIndex(Utils::Index<handle> index, uint16_t i) const noexcept -> void
+		inline static void setIndex(Utils::Index<handle>& index, uint16_t i) noexcept
 		{
 			index.handle.index = i;
 		}
 
-		inline static auto getIndex(Utils::Index<handle> index) const noexcept -> uint16_t
+		inline static uint16_t getIndex(Utils::Index<handle>& index) noexcept
 		{
 			return index.handle.index;
 		}
 
-		inline static auto setHandle(type& obj, handle _handle) const noexcept -> void
+		inline static void setHandle(type& obj, handle& _handle) noexcept
 		{
 			obj.Handle = _handle;
 		}
 
-		inline static auto getHandle(type& obj) const noexcept -> handle
+		inline static handle getHandle(type& obj) noexcept
 		{
 			return obj.Handle;
 		}

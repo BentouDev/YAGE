@@ -19,7 +19,7 @@ namespace Resources
 
 	namespace MeshFactory
 	{
-		auto CreateMeshFromObj(std::string path, Core::Engine& engine) -> Core::MeshResource::Handle;
+		auto CreateMeshFromObj(std::string path, Core::Engine& engine) -> typename Core::MeshResource::handle_t;
 
 		auto LoadMeshFromObj(std::string path, Core::MeshResource& mesh) -> void;
 	}
@@ -50,6 +50,7 @@ namespace Resources
 	{
 	public:
 		MeshObjParser();
+
 	protected:
 		static auto parseObject(std::string line, Core::MeshResource& mesh) -> bool;
 

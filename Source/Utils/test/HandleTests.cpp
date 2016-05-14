@@ -39,7 +39,7 @@ namespace ContainerTests
 		}
 	};
 
-	TEST_F(HandleTest, CanCreateHandleUninitialized)
+	/*TEST_F(HandleTest, CanCreateHandleUninitialized)
 	{
 		auto handle = Utils::Handle<FooTrait> {};
 
@@ -53,5 +53,5 @@ namespace ContainerTests
 
 		EXPECT_NE(handle.get(), FooTrait::invalid());
 		EXPECT_EQ((int*)handle.get(), &value);
-	}
+	}*/
 }
