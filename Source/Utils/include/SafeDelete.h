@@ -5,8 +5,18 @@
 #ifndef VOLKHVY_DEBUG_H
 #define VOLKHVY_DEBUG_H
 
+#include "BorrowedPtr.h"
+
 namespace Memory
 {
+	template <class T> void SafeDelete(Utils::borrowed_ptr<T>& pVal)
+	{
+		if(pVal)
+		{
+			delete pVal.release();
+		}
+	}
+
 	template< class T > void SafeDelete( T*& pVal )
 	{
 		if(pVal != nullptr)

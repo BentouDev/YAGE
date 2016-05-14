@@ -14,7 +14,6 @@
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
-
 namespace Logic
 {
 	class Scene;
@@ -57,10 +56,11 @@ namespace Core
 		std::unordered_map<std::string, borrowed_ptr<Gfx::BaseDevice>> _availableApis;
 
 		borrowed_ptr<Gfx::BaseDevice> _api;
+		borrowed_ptr<Logic::Scene> activeScene;
+
+		bool _cleanedUp = false;
 
 		auto InitializeApi() -> bool;
-
-		borrowed_ptr<Logic::Scene> activeScene;
 
 	public:
 
@@ -77,6 +77,8 @@ namespace Core
 		borrowed_ptr<Core::Console> Console;
 
 		explicit Engine(std::string name);
+
+		virtual ~Engine() { CleanUp(); }
 
 		auto GetContext() const noexcept  -> Context;
 

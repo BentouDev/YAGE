@@ -3,6 +3,7 @@
 //
 
 #include <algorithm>
+#include <TypeInfo.h>
 
 #include "Resources/ResourceManager.h"
 #include "Gfx/Api/BaseDevice.h"
@@ -69,6 +70,8 @@ namespace Core
 
 	auto Engine::CreateWindow() const noexcept -> Window&
 	{
+		// todo: save that goddamn pointer somewhere to be reachable!
+		// todo: also replace raw ptr with nice handler
 		Window* window = new Window(GetContext());
 
 		_api->registerWindow(*window);
@@ -148,8 +151,29 @@ namespace Core
 
 	auto Engine::CleanUp() -> void
 	{
+		if(_cleanedUp)
+			return;
+
+		_cleanedUp = true;
+
 		Logger->Default->info("Cleaning up...");
-		_api->cleanUp();
+
+		if(_api)
+		{
+			_api->cleanUp();
+			_api.release();
+		}
+
+		for(auto api : _availableApis)
+		{
+			Memory::SafeDelete(api.second);
+		}
+
+		Memory::SafeDelete(Console);
+		Memory::SafeDelete(Renderer);
+		Memory::SafeDelete(Config);
+		Memory::SafeDelete(Logger);
+
 		glfwTerminate();
 	}
 }

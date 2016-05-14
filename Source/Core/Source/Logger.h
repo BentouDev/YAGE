@@ -35,9 +35,12 @@ namespace Core
 		std::shared_ptr<spdlog::logger> Default;
 
 	private:
-		Logger() : Default(spdlog::stdout_logger_mt("console", true)) { };
+		static constexpr char const* sinkName = "console";
+		Logger() : Default(spdlog::stdout_logger_mt(sinkName, true)) { };
 
 	public:
+		virtual ~Logger() { spdlog::drop(sinkName); }
+
 		Logger(Logger const&) = delete;
 		Logger(Logger&&) = delete;
 		void operator=(Logger const&) = delete;

@@ -5,6 +5,7 @@
 #ifndef VOLKHVY_CONTAINER_H
 #define VOLKHVY_CONTAINER_H
 
+#include <vector>
 #include "Index.h"
 #include "SafeDelete.h"
 
