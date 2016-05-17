@@ -46,7 +46,6 @@ namespace Core
 		: Name(name),
 		  Logger(new Core::Logger()),
 		  Config(new Core::Config()),
-		  Renderer(new Gfx::Renderer()),
 		  Console(new Core::Console())
 	{
 		Logger->setConfig(Config);
@@ -72,6 +71,9 @@ namespace Core
 	{
 		// todo: save that goddamn pointer somewhere to be reachable!
 		// todo: also replace raw ptr with nice handler
+		// todo: use container with new, specialized for window trait, which depends on _api
+		// todo: _api may leak resources if we want to free them like we are doing now (in engine methods)!
+		// todo: pass _api to context!
 		Window* window = new Window(GetContext());
 
 		_api->registerWindow(*window);
@@ -127,15 +129,19 @@ namespace Core
 		return _api->initialize();
 	}
 
-	// todo: remove this
+	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
+		// todo: this should be connected to rendertarget
 		_api->beginDraw(window);
-		// todo: Synchronize commandlists with queue
+
+		// activeScene->Draw(GameTime(), (*Renderer));
 		/*for(RenderPass pass : _renderPasses)
 		{
 			Renderer.Draw(pass);
 		}*/
+
+
 		_api->endDraw(window);
 	}
 

@@ -30,8 +30,8 @@ namespace Core
 		Context(Context&& ctx) : Config(ctx.Config.release()), Logger(ctx.Logger.release())
 		{ }
 
-		Context(const Context& ctx) : Config(ctx.Config.getRaw()), Logger(ctx.Logger.getRaw())
-		{ }
+		//Context(const Context& ctx) : Config(ctx.Config.getRaw()), Logger(ctx.Logger.getRaw())
+		//{ }
 
 		auto operator=(Context&& ctx) -> Context&;
 

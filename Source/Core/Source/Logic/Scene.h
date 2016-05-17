@@ -13,6 +13,11 @@ namespace Core
 	struct GameTime;
 }
 
+namespace Gfx
+{
+	class Renderer;
+}
+
 namespace Logic
 {
 	class Scene
@@ -34,7 +39,7 @@ namespace Logic
 
 		virtual void Update(const Core::GameTime& time);
 
-		virtual void Draw(const Core::GameTime& time);
+		virtual void Draw(const Core::GameTime& time, Gfx::Renderer& renderer);
 
 		virtual void Start();
 

@@ -10,7 +10,7 @@ namespace Gfx
 	class Renderer
 	{
 	public:
-		void Draw();
+		virtual void Draw() = 0;
 	};
 }
 

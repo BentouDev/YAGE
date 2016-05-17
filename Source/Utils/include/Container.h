@@ -57,6 +57,7 @@ namespace Utils
 	public:
 		virtual ~Container()
 		{
+			clear();
 			elements.clear();
 			indices.clear();
 		}
@@ -138,6 +139,15 @@ namespace Utils
 		inline auto operator[](uint32_t index) const -> object_t&
 		{
 			return elements[index];
+		}
+
+		inline auto clear() -> void
+		{
+			// todo: check what vector::clear exactly does (in regards to reserved memory) and do accordingly
+			for(auto& obj : elements)
+			{
+				remove(Trait::getHandle(obj));
+			}
 		}
 	};
 }

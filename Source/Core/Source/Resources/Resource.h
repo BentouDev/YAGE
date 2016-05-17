@@ -44,49 +44,6 @@ namespace Core
 		std::string Path;
 		std::string Name;
 	};
-
-	template <typename Res>
-	class ResourceTrait
-	{
-	public:
-		using type = Res;
-		using handle = Utils::Handle<Res>;
-
-		inline static void cleanUp(type& first)
-		{
-			first.cleanUp();
-		}
-
-		inline static void swap(type& first, type& second) noexcept
-		{
-			first.swap(second);
-		}
-
-		inline static void incrementLiveId(Utils::Index<handle>& index) noexcept
-		{
-			index.handle.liveId++;
-		}
-
-		inline static void setIndex(Utils::Index<handle>& index, uint16_t i) noexcept
-		{
-			index.handle.index = i;
-		}
-
-		inline static uint16_t getIndex(Utils::Index<handle>& index) noexcept
-		{
-			return index.handle.index;
-		}
-
-		inline static void setHandle(type& obj, handle& _handle) noexcept
-		{
-			obj.Handle = _handle;
-		}
-
-		inline static handle getHandle(type& obj) noexcept
-		{
-			return obj.Handle;
-		}
-	};
 }
 
 #endif //VOLKHVY_RESOURCE_H

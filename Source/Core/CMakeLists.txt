@@ -9,10 +9,10 @@ if(VULKAN_FOUND)
 endif()
 
 if(OPENGL_FOUND)
-    set(GRAPHICS_API ${GRAPHICS_API} ${OPENGL_API} Source/Resources/Factory/MeshFactory.cpp Source/Resources/Factory/MeshFactory.h Source/Logic/Scene.cpp Source/Logic/Scene.h Source/Context.h Source/Console.cpp Source/Console.h Source/Context.cpp Source/Resources/Material.cpp Source/Resources/Material.h Source/Gfx/Buffer.cpp Source/Gfx/Buffer.h)
+    set(GRAPHICS_API ${GRAPHICS_API} ${OPENGL_API} )
 endif()
 
-add_library(Core ${GRAPHICS_API} Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Gfx/Context.cpp Source/Gfx/Context.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Gfx/Api/BaseDevice.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.cpp Source/Gfx/Renderer.h Source/Logger.h)
+add_library(Core ${GRAPHICS_API} Source/Resources/Mesh.cpp Source/Resources/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/InputManager.cpp Source/InputManager.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Gfx/Context.cpp Source/Gfx/Context.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Gfx/Api/BaseDevice.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.cpp Source/Gfx/Renderer.h Source/Logger.h Source/Resources/Factory/MeshFactory.cpp Source/Resources/Factory/MeshFactory.h Source/Logic/Scene.cpp Source/Logic/Scene.h Source/Context.h Source/Console.cpp Source/Console.h Source/Context.cpp Source/Resources/Material.cpp Source/Resources/Material.h Source/Gfx/Buffer.cpp Source/Gfx/Buffer.h Source/Gfx/CommandQueue.cpp Source/Gfx/CommandQueue.h)
 add_library(Volkhvy::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC

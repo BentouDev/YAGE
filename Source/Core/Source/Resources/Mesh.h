@@ -12,6 +12,7 @@
 #include <glm/vec3.hpp>
 #include <Index.h>
 #include <BorrowedPtr.h>
+#include <DefaultTrait.h>
 
 #include "Resource.h"
 
@@ -39,7 +40,7 @@ namespace Core
 		std::vector<Submesh> Submeshes;
 	};
 
-	class MeshTrait : public ResourceTrait<MeshResource> {};
+	class MeshTrait : public Utils::DefaultTrait<MeshResource> {};
 
 	// this may work other way later one
 	// it will mainly depend on how i will want to use this data

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <DefaultTrait.h>
 #include "Resource.h"
 
 namespace Core
@@ -26,7 +27,7 @@ namespace Core
 
 	};
 
-	class MaterialTrait : public ResourceTrait<Material> {};
+	class MaterialTrait : public Utils::DefaultTrait<Material> {};
 }
 
 #endif //GAME_MATERIAL_H

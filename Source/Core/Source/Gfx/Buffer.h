@@ -48,7 +48,7 @@ namespace
 		std::map<std::string, uint32_t > NameMap;
 		std::vector<BufferComponentInfo> Components;
 
-		auto GetComponent(std::string name) noexcept -> Utils::borrowed_ptr<BufferComponentInfo>
+		auto getComponentInfo(std::string name) noexcept -> Utils::borrowed_ptr<BufferComponentInfo>
 		{
 			Utils::borrowed_ptr<BufferComponentInfo> result;
 
