@@ -6,12 +6,12 @@
 #define GAME_DUMMYAPI_H
 
 #include <gmock/gmock.h>
-#include "../Source/Gfx/Api/BaseDevice.h"
+#include "../Source/Gfx/Api/BaseApi.h"
 
-class DeviceMock : public Gfx::BaseDevice
+class DeviceMock : public Gfx::BaseApi
 {
 public:
-	DeviceMock() : BaseDevice("mock") { };
+	DeviceMock() : BaseApi("mock") { };
 
 	MOCK_METHOD0(initialize, bool());
 	MOCK_METHOD1(registerWindow, bool(const Core::Window& window));

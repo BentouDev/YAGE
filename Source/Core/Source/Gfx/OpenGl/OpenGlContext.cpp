@@ -2,13 +2,15 @@
 // Created by MrJaqbq on 2016-03-23.
 //
 
+#include "Generated/gl_core_3_3.hpp"
+#include "OpenGlContext.h"
+
 #include <Platform.h>
 #include <Window.h>
-#include "OpenGlContext.h"
 
 namespace Gfx
 {
-	OpenGlContext::OpenGlContext() : BaseDevice("opengl")
+	OpenGlContext::OpenGlContext() : BaseApi("opengl")
 	{
 
 	}
@@ -53,8 +55,8 @@ namespace Gfx
 	void OpenGlContext::beginDraw(const Core::Window& window)
 	{
 		glfwMakeContextCurrent(window.hWindow);
-		glClearColor(0.5f, 0.75f, 0.25f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		gl::ClearColor(0.5f, 0.75f, 0.25f, 0.0f);
+		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 	}
 
 	void OpenGlContext::endDraw(const Core::Window& window)

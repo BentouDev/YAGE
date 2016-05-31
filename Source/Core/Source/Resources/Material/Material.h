@@ -8,7 +8,7 @@
 #include <map>
 #include <string>
 #include <DefaultTrait.h>
-#include "Resource.h"
+#include "Resources/Resource.h"
 
 namespace Core
 {

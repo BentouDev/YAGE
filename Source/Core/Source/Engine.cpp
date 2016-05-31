@@ -6,7 +6,7 @@
 #include <TypeInfo.h>
 
 #include "Resources/ResourceManager.h"
-#include "Gfx/Api/BaseDevice.h"
+#include "Gfx/Api/BaseApi.h"
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
 #include "Platform.h"
@@ -63,7 +63,7 @@ namespace Core
 	auto Engine::RegisterApi() -> void
 	{
 		auto api = new Api();
-		_availableApis[api->name()] = borrowed_ptr<Gfx::BaseDevice>(api);
+		_availableApis[api->name()] = borrowed_ptr<Gfx::BaseApi>(api);
 		Logger->Default->info("Found {} renderer...", api->name());
 	}
 
@@ -86,7 +86,7 @@ namespace Core
 		return Config->Load(path);
 	}
 
-	auto Engine::Initialize(borrowed_ptr<Gfx::BaseDevice> api) -> bool
+	auto Engine::Initialize(borrowed_ptr<Gfx::BaseApi> api) -> bool
 	{
 		if(api)
 		{

@@ -6,6 +6,9 @@
 #define VOLKHVY_CONTAINER_H
 
 #include <vector>
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
 #include "Index.h"
 #include "SafeDelete.h"
 
@@ -20,8 +23,10 @@ namespace Utils
 		using activeCondition = bool(*)(object_t&);
 
 	private:
-		std::vector<object_t> 		 elements;
+		//std::vector<object_t> 		 elements;
+		//std::vector<Index<handle_t>> indices;
 		std::vector<Index<handle_t>> indices;
+		object_t* elements;
 
 		uint16_t	freelistEnd;
 		uint16_t	freelistStart;
@@ -58,13 +63,16 @@ namespace Utils
 		virtual ~Container()
 		{
 			clear();
-			elements.clear();
+			//elements.clear();
+			Memory::SafeFreeArray(elements, maxSize);
 			indices.clear();
 		}
 
-		Container(uint16_t size) : maxSize(size)
+		Container(uint16_t size = 16) : maxSize(size)
 		{
-			elements.reserve(maxSize);
+			//elements.reserve(maxSize);
+			elements = (object_t*)malloc(sizeof(object_t) * maxSize);
+			memset(elements, 0, sizeof(object_t) * maxSize);
 			indices.reserve(maxSize);
 
 			initialize(this);
@@ -81,8 +89,9 @@ namespace Utils
 			in.index = elementCount++;
 			in.valid |= 1;
 
-			auto itr = elements.emplace(elements.begin() + in.index, args...);
-			object_t& o = (*itr);
+			//typename std::vector<object_t>::iterator itr = elements.emplace(elements.begin() + in.index, args...);
+			new (&elements[in.index]) object_t(args...);
+			object_t& o = elements[in.index];
 			Trait::setHandle(o, in.handle);
 
 			return Trait::getHandle(o);
@@ -144,9 +153,10 @@ namespace Utils
 		inline auto clear() -> void
 		{
 			// todo: check what vector::clear exactly does (in regards to reserved memory) and do accordingly
-			for(auto& obj : elements)
+			for(int i = 0; i < elementCount; i++)
 			{
-				remove(Trait::getHandle(obj));
+				object_t& o = elements[i];
+				remove(Trait::getHandle(o));
 			}
 		}
 	};

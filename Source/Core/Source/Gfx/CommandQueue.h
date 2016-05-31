@@ -7,19 +7,28 @@
 
 namespace Gfx
 {
-	template <typename T>
+	class Command
+	{
+	public:
+		auto setBuffer() -> void;
+
+		auto setIndexBuffer() -> void;
+
+		auto setCulling() -> void;
+
+		auto setAlphaBlending() -> void;
+	};
+
 	class CommandQueue
 	{
-		using Key = T;
+		Command* _commands;
 
-		Key* keys;
-		void** data;
+	public:
+		auto CreateCommand() -> Command&;
 
-		template <typename U>
-		void AddCommand(Key key);
+		auto SubmitCommand(Command& cmd) -> void;
 
-		void Submit();
-		void Sort();
+		auto CleanUp() -> void;
 	};
 }
 

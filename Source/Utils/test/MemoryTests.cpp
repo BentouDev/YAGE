@@ -4,6 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <stdlib.h>
+#include <malloc.h>
 #include "../include/SafeDelete.h"
 
 namespace MemoryTests
@@ -114,5 +116,38 @@ namespace MemoryTests
 		Memory::SafeFree(foo);
 
 		EXPECT_EQ(foo, nullptr);
+	}
+
+	TEST_F(MemoryTest, CanSafeFreeArray)
+	{
+		int count = 4;
+		FooMock* memory = (FooMock*)malloc(sizeof(FooMock) * count);
+
+		for(auto i = 0; i < count; i++)
+			new (&memory[i]) FooMock();
+
+		for(auto i = 0; i < count; i++)
+			EXPECT_CALL(memory[i], Die()).Times(1);
+
+		Memory::SafeFreeArray(memory, count);
+
+		EXPECT_EQ(memory, nullptr);
+	}
+
+	TEST_F(MemoryTest, CanSafeFreeArrayTwice)
+	{
+		int count = 4;
+		FooMock* memory = (FooMock*)malloc(sizeof(FooMock) * count);
+
+		for(auto i = 0; i < count; i++)
+			new (&memory[i]) FooMock();
+
+		for(auto i = 0; i < count; i++)
+			EXPECT_CALL(memory[i], Die()).Times(1);
+
+		Memory::SafeFreeArray(memory, count);
+		Memory::SafeFreeArray(memory, count);
+
+		EXPECT_EQ(memory, nullptr);
 	}
 }

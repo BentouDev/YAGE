@@ -58,6 +58,34 @@ namespace Memory
 			pVal = nullptr;
 		}
 	}
+
+	template< class T > void SafeFreeArray( T*& pVal, uint32_t count )
+	{
+		if(pVal != nullptr)
+		{
+			for(uint32_t i = 0; i < count; i++)
+			{
+				unsigned long long *current, result = 0;
+				T* mm = &pVal[i];
+
+				for(current = reinterpret_cast<unsigned long long *>(mm);
+					current != reinterpret_cast<unsigned long long *>(mm+1);
+					current++)
+				{
+					result |= *current;
+				}
+
+				bool isZeroed = !result;
+				if(!isZeroed)
+				{
+					pVal[i].~T();
+				}
+			}
+
+			free( pVal );
+			pVal = nullptr;
+		}
+	}
 }
 
 #endif //VOLKHVY_DEBUG_H

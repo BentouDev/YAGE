@@ -5,7 +5,7 @@
 #ifndef GAME_MESHFACTORY_H
 #define GAME_MESHFACTORY_H
 
-#include <Resources/Mesh.h>
+#include <Resources/Mesh/Mesh.h>
 #include <fstream>
 
 namespace Core
@@ -19,8 +19,6 @@ namespace Resources
 
 	namespace MeshFactory
 	{
-		auto CreateMeshFromObj(std::string path, Core::Engine& engine) -> typename Core::MeshResource::handle_t;
-
 		auto LoadMeshFromObj(std::string path, Core::MeshResource& mesh) -> void;
 	}
 

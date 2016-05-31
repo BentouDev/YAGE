@@ -10,13 +10,10 @@
 #include <TypeInfo.h>
 #include <Handle.h>
 
-#define DECL_RESOURCE(name) class name : public Resource<name>
+#define DECL_RESOURCE(name) class name : public Core::Resource<name>
 
 namespace Core
 {
-	template <typename Res>
-	class ResourceManager;
-
 	template<typename Res>
 	class Resource
 	{
@@ -26,19 +23,20 @@ namespace Core
 		using handle_t = Utils::Handle<Res>;
 
 	protected:
+		explicit Resource() { }
 		explicit Resource(Resource&& other)
 		{
 			std::swap(Path, other.Path);
 			std::swap(Name, other.Name);
 		}
 
-		virtual auto swap(Resource& other) noexcept -> void = 0;
-
 	public:
-		explicit Resource() = delete;
 		explicit Resource(const Resource&) = delete;
 
 		virtual ~Resource(){ }
+
+		virtual auto swap(Res& other) noexcept -> void = 0;
+		virtual auto cleanUp() noexcept -> void = 0;
 
 		handle_t 	Handle;
 		std::string Path;

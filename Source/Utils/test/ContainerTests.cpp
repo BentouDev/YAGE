@@ -9,26 +9,31 @@
 
 namespace MemoryTests
 {
-	class FooMock;
+	class MyFooMock;
 
-	class FooMock
+	class MyFooMock
 	{
 	public:
-		FooMock() {}
-		FooMock(unsigned t) : test(t) {}
+		MOCK_METHOD0(Die, void());
 
-		Utils::Handle<FooMock> Handle;
+		~MyFooMock() { Die(); }
+		MyFooMock() {}
+		MyFooMock(unsigned t) : test(t) {}
+
+		MyFooMock(const MyFooMock&) = delete;
+
+		Utils::Handle<MyFooMock> Handle;
 		unsigned test;
 
-		auto swap(FooMock& other) -> void { }
+		auto swap(MyFooMock& other) -> void { }
 		auto cleanUp() -> void { }
 	};
 
 	class FooTrait
 	{
 	public:
-		using type = FooMock;
-		using handle = Utils::Handle<FooMock>;
+		using type = MyFooMock;
+		using handle = Utils::Handle<MyFooMock>;
 
 		inline static void cleanUp(type& first)
 		{
@@ -104,7 +109,7 @@ namespace MemoryTests
 
 		ASSERT_NE(handle.key, 0);
 		ASSERT_NE(handle.liveId, 0);
-		ASSERT_EQ(handle.typeId, TypeInfo<FooMock>::id());
+		ASSERT_EQ(handle.typeId, TypeInfo<MyFooMock>::id());
 		ASSERT_EQ(container[handle].test, 13);
 		ASSERT_TRUE(container.contains(handle));
 	}
@@ -129,5 +134,16 @@ namespace MemoryTests
 		ASSERT_TRUE(container.contains(newHandle));
 		ASSERT_FALSE(container.contains(oldHandle));
 		ASSERT_NE(oldHandle.key, newHandle.key);
+	}
+
+	TEST_F(ContainerTest, CanFreeContainer)
+	{
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(32);
+		auto handle = container->create();
+		auto& obj = container->get(handle);
+
+		EXPECT_CALL(obj, Die()).Times(1);
+
+		delete container;
 	}
 }

@@ -6,7 +6,15 @@
 
 namespace Gfx
 {
-	void CommandQueue::Submit()
+	auto CommandQueue::CreateCommand() -> Command&
+	{
+//		Command* new_cmd = new (memory) Command();
+//		memory++;
+//		return *new_cmd;
+		return *new Command();
+	}
+
+	/*void CommandQueue::Submit()
 	{
 		// bind matrices
 		// bind rendertarget
@@ -25,5 +33,5 @@ namespace Gfx
 
 
 		// flush rendertarget
-	}
+	}*/
 }

@@ -45,7 +45,7 @@ namespace EngineTests
 
 		EXPECT_CALL(*mock, initialize()).Times(1);
 
-		auto result = engine->Initialize(Utils::borrowed_ptr<Gfx::BaseDevice>(mock));
+		auto result = engine->Initialize(Utils::borrowed_ptr<Gfx::BaseApi>(mock));
 
 		ASSERT_TRUE(result);
 

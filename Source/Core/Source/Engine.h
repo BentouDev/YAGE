@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_map>
 #include <Handle.h>
+
+#include "Gfx/Renderer.h"
 #include "Context.h"
 
 #ifdef CreateWindow
@@ -23,9 +25,7 @@ namespace Logic
 
 namespace Gfx
 {
-	class BaseDevice;
-
-	class Renderer;
+	class BaseApi;
 }
 
 namespace Scripts
@@ -53,9 +53,9 @@ namespace Core
 
 	class Engine
 	{
-		std::unordered_map<std::string, borrowed_ptr<Gfx::BaseDevice>> _availableApis;
+		std::unordered_map<std::string, borrowed_ptr<Gfx::BaseApi>> _availableApis;
 
-		borrowed_ptr<Gfx::BaseDevice> _api;
+		borrowed_ptr<Gfx::BaseApi> _api;
 		borrowed_ptr<Logic::Scene> activeScene;
 
 		bool _cleanedUp = false;
@@ -88,11 +88,15 @@ namespace Core
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Window&;
 
+		// Create renderer of requested type and initalize it internally
+		template <typename T, typename... Args>
+		auto CreateRenderer(Args... args) -> borrowed_ptr<T>;
+
 		// Load configuration
 		auto LoadConfig(std::string path = "Config.json") -> bool;
 
 		// Initialize graphics context based on current config
-		auto Initialize(borrowed_ptr<Gfx::BaseDevice> api = borrowed_ptr<Gfx::BaseDevice>()) -> bool;
+		auto Initialize(borrowed_ptr<Gfx::BaseApi> api = borrowed_ptr<Gfx::BaseApi>()) -> bool;
 
 		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
 
@@ -114,6 +118,19 @@ namespace Core
 		// todo: Gather all input
 		// todo: Threads, etc.
 	};
+
+	template <typename T, typename... Args>
+	auto Engine::CreateRenderer(Args... args) -> borrowed_ptr<T>
+	{
+		borrowed_ptr<T> result;
+		if(!Renderer)
+		{
+			result.reset(new T(args...));
+			Renderer.reset(result.getRaw());
+			Renderer->initialize(GetContext(), _api);
+		}
+		return result;
+	}
 }
 
 #endif //VOLKHVY_ENGINE_H

@@ -22,8 +22,8 @@ namespace Core
 	Window::~Window()
 	{
 		Destroy();
-		Viewports.clear();
-		_viewports.clear();
+	//	Viewports.clear();
+	//	_viewports.clear();
 	}
 
 	auto Window::Create() -> void
@@ -32,7 +32,7 @@ namespace Core
 			return;
 
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
-		_viewports.create(Gfx::Rectangle<int32_t>());
+	//	_viewports.create(Gfx::Rectangle<int32_t>());
 	}
 
 	auto Window::Show() const noexcept -> void
@@ -71,7 +71,7 @@ namespace Core
 
 	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void
 	{
-		Viewports.push_back(new Gfx::Viewport(rect));
-		_viewports.create(rect);
+	//	Viewports.push_back(new Gfx::Viewport(rect));
+	//	_viewports.create(rect);
 	}
 }

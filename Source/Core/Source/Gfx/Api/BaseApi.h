@@ -13,12 +13,12 @@ namespace Core
 
 namespace Gfx
 {
-	class BaseDevice
+	class BaseApi
 	{
 		const char* _name;
 	public:
 
-		BaseDevice(const char* name) : _name(name) {}
+		BaseApi(const char* name) : _name(name) {}
 
 		auto name() -> const char* { return _name; }
 
@@ -41,7 +41,7 @@ namespace Gfx
 
 		virtual void endDraw(const Core::Window& window) = 0;
 
-		virtual ~BaseDevice() {}
+		virtual ~BaseApi() {}
 	};
 }
 

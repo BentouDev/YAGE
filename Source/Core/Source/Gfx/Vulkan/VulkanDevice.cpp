@@ -10,7 +10,7 @@
 
 namespace Gfx
 {
-	VulkanDevice::VulkanDevice() : appInfo {}, instanceInfo {}, deviceInfo {}, instance {nullptr}, BaseDevice("vulkan")
+	VulkanDevice::VulkanDevice() : appInfo {}, instanceInfo {}, deviceInfo {}, instance {nullptr}, BaseApi("vulkan")
 	{
 
 	}

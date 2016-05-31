@@ -5,7 +5,7 @@
 #ifndef GAME_OPENGLCONTEXT_H
 #define GAME_OPENGLCONTEXT_H
 
-#include "Gfx/Api/BaseDevice.h"
+#include "Gfx/Api/BaseApi.h"
 
 namespace Core
 {
@@ -14,7 +14,7 @@ namespace Core
 
 namespace Gfx
 {
-    class OpenGlContext : public BaseDevice
+    class OpenGlContext : public BaseApi
     {
 
 	public:
