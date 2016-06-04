@@ -45,6 +45,10 @@ namespace Gfx
 			gl::DeleteShader(shader.apiHandle);
 
 			ctx.Logger->Default->warn(reinterpret_cast<const char*>(&errorLog[0]));
+
+			return false;
 		}
+
+		return true;
 	}
 }
