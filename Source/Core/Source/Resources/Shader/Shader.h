@@ -28,6 +28,11 @@ namespace Gfx
 	public:
 		using api_handle = unsigned long long;
 
+		Utils::Handle<Shader> Handle;
+
+		void cleanUp() {}
+		void swap(Shader& other) {}
+
 		api_handle apiHandle;
 		ShaderApi::ShaderType type;
 	};
@@ -40,6 +45,11 @@ namespace Gfx
 		using api_handle = unsigned long long;
 
 		api_handle apiHandle;
+
+		Utils::Handle<ShaderProgram> Handle;
+
+		void swap(ShaderProgram& other) {}
+		void cleanUp() {}
 	};
 
 	DECL_RESOURCE(ShaderResource)

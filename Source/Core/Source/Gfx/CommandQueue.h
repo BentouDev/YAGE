@@ -5,11 +5,23 @@
 #ifndef GAME_COMMANDQUEUE_H
 #define GAME_COMMANDQUEUE_H
 
+#include <cstdint>
+
 namespace Gfx
 {
+	class Command;
+
+	typedef void (*CommandFunction)(Command& cmd);
+
 	class Command
 	{
+
 	public:
+		uint32_t count;
+		uint32_t index;
+
+		CommandFunction* function;
+
 		auto setBuffer() -> void;
 
 		auto setIndexBuffer() -> void;
@@ -29,6 +41,8 @@ namespace Gfx
 		auto SubmitCommand(Command& cmd) -> void;
 
 		auto CleanUp() -> void;
+
+		void Submit();
 	};
 }
 

@@ -50,15 +50,6 @@ namespace Core
 	class ResourceManager
 	{
 	public:
-		auto createResource()
-		{
-
-		}
-
-		auto getResource()
-		{
-
-		}
 	};
 
 	class ResourceLoader

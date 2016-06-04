@@ -47,41 +47,41 @@ namespace Resources
 
 	auto MeshObjParser::parseObject(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseVertexPos(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseTexcoord(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseNormal(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseFace(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseMaterial(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseMaterialUse(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 
 	auto MeshObjParser::parseSmooth(std::string line, Core::MeshResource& mesh) -> bool
 	{
-
+		return true;
 	}
 }

@@ -11,14 +11,30 @@ namespace Gfx
 //		Command* new_cmd = new (memory) Command();
 //		memory++;
 //		return *new_cmd;
-		return *new Command();
+
+		Command* cmd  = new Command();
+
+		// cmd->function = _api->getDraw
+
+		return *cmd;
 	}
 
-	/*void CommandQueue::Submit()
+	void CommandQueue::SubmitCommand(Command& cmd)
+	{
+		_commands = &cmd;
+	}
+
+	void CommandQueue::Submit()
 	{
 		// bind matrices
 		// bind rendertarget
 		// clear rendertarget, if needed
+
+		if(_commands == nullptr)
+			return;
+
+		const CommandFunction fn = *_commands->function;
+		fn(*_commands);
 
 		// issue call on each command
 		// for(int i = 0; i < commandCount; i++)
@@ -31,7 +47,6 @@ namespace Gfx
 			// while (has cmd)
 		}
 
-
 		// flush rendertarget
-	}*/
+	}
 }

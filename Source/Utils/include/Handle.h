@@ -71,6 +71,34 @@ namespace Utils
 		left.swap(right);
 	}
 
+	union RawHandle
+	{
+	public:
+		RawHandle() : key(0)
+		{ }
+
+		RawHandle(uint32_t new_key) : key(new_key)
+		{ }
+
+		uint32_t key;
+
+		struct
+		{
+			uint8_t liveId;
+			type_t typeId;
+			uint16_t index;
+		};
+
+		static auto invalid() -> RawHandle
+		{
+			return RawHandle();
+		}
+
+		operator bool()
+		{
+			return key != invalid().key;
+		}
+	};
 	/*typedef uint32_t handle_t;
 
 	template<typename Traits>
