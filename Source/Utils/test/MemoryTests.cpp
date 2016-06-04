@@ -4,6 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <stdlib.h>
+#include <malloc.h>
 #include "../include/SafeDelete.h"
 
 namespace MemoryTests
@@ -61,15 +63,15 @@ namespace MemoryTests
 	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjects)
 	{
 		int count = 6;
-		auto foos = new FooMock*[count];
+		auto foos = new FooMock[count];
+
+		//for(auto i = 0; i < count; i++)
+		//	auto obj = new (&foos[i]) FooMock();
 
 		for(auto i = 0; i < count; i++)
-			foos[i] = new FooMock();
+			EXPECT_CALL(foos[i], Die()).Times(1);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(*foos[i], Die()).Times(1);
-
-		Memory::SafeDeleteArray(foos, count);
+		Memory::SafeDeleteArray(foos);
 
 		EXPECT_EQ(foos, nullptr);
 	}
@@ -77,16 +79,16 @@ namespace MemoryTests
 	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjectsTwice)
 	{
 		int count = 6;
-		auto foos = new FooMock*[count];
+		auto foos = new FooMock[count];
+
+		//for(auto i = 0; i < count; i++)
+		//	auto = new (foos[i]) FooMock();
 
 		for(auto i = 0; i < count; i++)
-			foos[i] = new FooMock();
+			EXPECT_CALL(foos[i], Die()).Times(1);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(*foos[i], Die()).Times(1);
-
-		Memory::SafeDeleteArray(foos, count);
-		Memory::SafeDeleteArray(foos, count);
+		Memory::SafeDeleteArray(foos);
+		Memory::SafeDeleteArray(foos);
 
 		EXPECT_EQ(foos, nullptr);
 	}
@@ -114,5 +116,38 @@ namespace MemoryTests
 		Memory::SafeFree(foo);
 
 		EXPECT_EQ(foo, nullptr);
+	}
+
+	TEST_F(MemoryTest, CanSafeFreeArray)
+	{
+		int count = 4;
+		FooMock* memory = (FooMock*)malloc(sizeof(FooMock) * count);
+
+		for(auto i = 0; i < count; i++)
+			new (&memory[i]) FooMock();
+
+		for(auto i = 0; i < count; i++)
+			EXPECT_CALL(memory[i], Die()).Times(1);
+
+		Memory::SafeFreeArray(memory, count);
+
+		EXPECT_EQ(memory, nullptr);
+	}
+
+	TEST_F(MemoryTest, CanSafeFreeArrayTwice)
+	{
+		int count = 4;
+		FooMock* memory = (FooMock*)malloc(sizeof(FooMock) * count);
+
+		for(auto i = 0; i < count; i++)
+			new (&memory[i]) FooMock();
+
+		for(auto i = 0; i < count; i++)
+			EXPECT_CALL(memory[i], Die()).Times(1);
+
+		Memory::SafeFreeArray(memory, count);
+		Memory::SafeFreeArray(memory, count);
+
+		EXPECT_EQ(memory, nullptr);
 	}
 }

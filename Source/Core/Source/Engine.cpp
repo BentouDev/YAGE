@@ -3,11 +3,14 @@
 //
 
 #include <algorithm>
+#include <TypeInfo.h>
 
 #include "Resources/ResourceManager.h"
-#include "Gfx/Api/BaseDevice.h"
+#include "Gfx/Api/BaseApi.h"
 #include "Gfx/Renderer.h"
+#include "Logic/Scene.h"
 #include "Platform.h"
+#include "Console.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
@@ -26,30 +29,52 @@
 
 namespace Core
 {
-	Engine::Engine(std::string name)
+	void Engine::initializeReferences(Engine* engine)
 	{
-		Logger::get().Console->info("Initializing Volkhvy for '{}'...", name);
+		engine->Logger->Default->info("Initializing Volkhvy for '{}'...", engine->Name);
 
 #ifdef VOLKHVY_VULKAN
-		RegisterApi<Gfx::VulkanDevice>();
+		engine->RegisterApi<Gfx::VulkanDevice>();
 #endif
 
 #ifdef VOLKHVY_OPENGL
-		RegisterApi<Gfx::OpenGlContext>();
+		engine->RegisterApi<Gfx::OpenGlContext>();
 #endif
+	}
+
+	Engine::Engine(std::string name)
+		: Name(name),
+		  Logger(new Core::Logger()),
+		  Config(new Core::Config()),
+		  Console(new Core::Console())
+	{
+		Logger->setConfig(Config);
+		Config->setLogger(Logger);
+		Engine::initializeReferences(this);
+	}
+
+	auto Engine::GetContext() const noexcept -> Context
+	{
+		Context ctx(Config, Logger);
+		return ctx;
 	}
 
 	template <typename Api>
 	auto Engine::RegisterApi() -> void
 	{
 		auto api = new Api();
-		_availableApis[api->name()] = api;
-		Logger::get().Console->info("Found {} renderer...", api->name());
+		_availableApis[api->name()] = borrowed_ptr<Gfx::BaseApi>(api);
+		Logger->Default->info("Found {} renderer...", api->name());
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
 	{
-		Window* window = new Window();
+		// todo: save that goddamn pointer somewhere to be reachable!
+		// todo: also replace raw ptr with nice handler
+		// todo: use container with new, specialized for window trait, which depends on _api
+		// todo: _api may leak resources if we want to free them like we are doing now (in engine methods)!
+		// todo: pass _api to context!
+		Window* window = new Window(GetContext());
 
 		_api->registerWindow(*window);
 
@@ -58,18 +83,18 @@ namespace Core
 
 	auto Engine::LoadConfig(std::string path) -> bool
 	{
-		return Config::get().Load(path);
+		return Config->Load(path);
 	}
 
-	auto Engine::Initialize(Gfx::BaseDevice* api) -> bool
+	auto Engine::Initialize(borrowed_ptr<Gfx::BaseApi> api) -> bool
 	{
-		if(api != nullptr)
+		if(api)
 		{
 			_api = api;
 		}
 		else
 		{
-			std::string requestedApi = Config::get().RenderingApi;
+			std::string requestedApi = Config->RenderingApi;
 			std::transform(requestedApi.begin(), requestedApi.end(), requestedApi.begin(), ::tolower);
 
 			auto itr = _availableApis.find(requestedApi);
@@ -79,7 +104,7 @@ namespace Core
 			}
 		}
 
-		if(_api == nullptr)
+		if(!_api)
 		{
 			return false;
 		}
@@ -89,19 +114,34 @@ namespace Core
 		}
 	}
 
+	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
+	{
+		// todo: refactor to handle instead of raw pointer
+		if(activeScene) activeScene->End();
+
+		activeScene = scene;
+
+		if(activeScene) activeScene->Start();
+	}
+
 	auto Engine::InitializeApi() -> bool
 	{
 		return _api->initialize();
 	}
 
+	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
+		// todo: this should be connected to rendertarget
 		_api->beginDraw(window);
-		// todo: Synchronize commandlists with queue
+
+		// activeScene->Draw(GameTime(), (*Renderer));
 		/*for(RenderPass pass : _renderPasses)
 		{
 			Renderer.Draw(pass);
 		}*/
+
+
 		_api->endDraw(window);
 	}
 
@@ -117,8 +157,29 @@ namespace Core
 
 	auto Engine::CleanUp() -> void
 	{
-		Logger::get().Console->info("Cleaning up...");
-		_api->cleanUp();
+		if(_cleanedUp)
+			return;
+
+		_cleanedUp = true;
+
+		Logger->Default->info("Cleaning up...");
+
+		if(_api)
+		{
+			_api->cleanUp();
+			_api.release();
+		}
+
+		for(auto api : _availableApis)
+		{
+			Memory::SafeDelete(api.second);
+		}
+
+		Memory::SafeDelete(Console);
+		Memory::SafeDelete(Renderer);
+		Memory::SafeDelete(Config);
+		Memory::SafeDelete(Logger);
+
 		glfwTerminate();
 	}
 }

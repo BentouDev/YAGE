@@ -7,7 +7,10 @@
 
 #include <string>
 #include <vector>
+#include <Container.h>
 #include "Gfx/Viewport.h"
+#include "Gfx/RenderTarget.h"
+#include "Context.h"
 
 struct GLFWwindow;
 
@@ -16,7 +19,7 @@ namespace Core
 	class Window
 	{
 	public:
-		Window();
+		Window(Context ctx);
 		virtual ~Window();
 
 		auto Create() -> void;
@@ -33,6 +36,7 @@ namespace Core
 
 		// Replace with handle/pointer, store viewport elswhere (renderer? context?)
 		std::vector<Gfx::Viewport*> Viewports;
+		Utils::Container<typename Gfx::Viewport::Trait> _viewports;
 
 		//Todo: wrap handle into smart pointer
 		GLFWwindow* hWindow;

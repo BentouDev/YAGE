@@ -7,9 +7,15 @@
 
 #include <string>
 #include <json.hpp>
+#include <Handle.h>
+#include <BorrowedPtr.h>
 
 namespace Core
 {
+	class Engine;
+
+	class Logger;
+
 	class Config;
 
 	class PropertyBase
@@ -54,16 +60,26 @@ namespace Core
 
 	class Config
 	{
+		friend class Engine;
+
+		Utils::borrowed_ptr<Logger> logger;
+
+		auto setLogger(Utils::borrowed_ptr<Logger> log) -> void
+		{
+			logger.reset(log.release());
+		}
+
 		std::vector<PropertyBase*> _properties;
 		nlohmann::json json;
 
 		Config();
 
 	public:
-		auto static get() -> Config& {
+
+		/*auto static get() -> Config& {
 			static Config config;
 			return config;
-		}
+		}*/
 
 		auto Load(std::string path) -> bool;
 

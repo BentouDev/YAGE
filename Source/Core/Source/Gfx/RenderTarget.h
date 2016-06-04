@@ -13,7 +13,8 @@ namespace Gfx
 	{
 	public:
 		virtual ~RenderTarget();
-		auto Clear(const Utils::Color& color) noexcept -> void;
+		virtual void Clear(const Utils::Color& color) = 0;
+		virtual void Submit() = 0;
 	};
 }
 

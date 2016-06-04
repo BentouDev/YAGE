@@ -56,6 +56,6 @@ add_subdirectory(Source/Script)
 add_library(Volkhvy INTERFACE)
 target_link_libraries(Volkhvy INTERFACE Volkhvy::Utils Volkhvy::Core Volkhvy::Parser Volkhvy::Script)
 
-configure_file(Config/Config.json . COPY_ONLY)
+configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 
 coverage_evaluate()

@@ -9,11 +9,12 @@
 
 namespace Core
 {
-	Window::Window() :
+	Window::Window(Context ctx) :
 		hWindow {nullptr},
-		Height {Config::get().WindowHeight},
-		Width {Config::get().WindowWidth},
-		Title {Config::get().WindowTitle}
+		Height {ctx.Config->WindowHeight},
+		Width {ctx.Config->WindowWidth},
+		Title {ctx.Config->WindowTitle},
+		_viewports(8)
 	{
 		Create();
 	}
@@ -21,6 +22,8 @@ namespace Core
 	Window::~Window()
 	{
 		Destroy();
+	//	Viewports.clear();
+	//	_viewports.clear();
 	}
 
 	auto Window::Create() -> void
@@ -29,6 +32,7 @@ namespace Core
 			return;
 
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
+	//	_viewports.create(Gfx::Rectangle<int32_t>());
 	}
 
 	auto Window::Show() const noexcept -> void
@@ -67,6 +71,7 @@ namespace Core
 
 	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void
 	{
-		Viewports.push_back(new Gfx::Viewport(rect));
+	//	Viewports.push_back(new Gfx::Viewport(rect));
+	//	_viewports.create(rect);
 	}
 }

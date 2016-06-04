@@ -5,120 +5,161 @@
 #ifndef VOLKHVY_CONTAINER_H
 #define VOLKHVY_CONTAINER_H
 
-#include "Handle.h"
-
-#define INDEX_MASK 0xffff
+#include <vector>
+#include <stdlib.h>
+#include <malloc.h>
+#include <memory.h>
+#include "Index.h"
+#include "SafeDelete.h"
 
 namespace Utils
 {
-	/*template<typename T>
-	class Container;
-
-	template<typename T>
-	struct Index
-	{
-		friend class Container<T>;
-
-		Index() : index(0), next(0) { }
-
-		Handle<T>	handle;
-		uint16_t	index;
-		uint16_t	next;
-
-	private:
-		void Set(uint16_t index)
-		{
-			handle.get().LiveId = index;
-			next = index + 1;
-		}
-	};
-
-	template<typename T>
+	template<typename Trait>
 	class Container
 	{
-	protected:
-		void SetIndex(Index<T>& index, uint16_t value)
-		{
-			index.Set(value);
-		}
-	};
-
-	template<typename T, uint16_t count = UINT16_MAX>
-	class StaticContainer : public Container<T>
-	{
-	private:
-		T Objects[count];
-
-		uint16_t FreelistBegin;
-		uint16_t FreelistEnd;
-		uint16_t CurrentCount;
-
-		Index<T> Indicies[count];
-
 	public:
-		StaticContainer() : CurrentCount(0)
+		using object_t = typename Trait::type;
+		using handle_t = typename Trait::handle;
+		using activeCondition = bool(*)(object_t&);
+
+	private:
+		//std::vector<object_t> 		 elements;
+		//std::vector<Index<handle_t>> indices;
+		std::vector<Index<handle_t>> indices;
+		object_t* elements;
+
+		uint16_t	freelistEnd;
+		uint16_t	freelistStart;
+
+		uint16_t	unactivelistEnd;
+		uint16_t	unactivelistStart;
+
+		uint16_t 	elementCount;
+		uint16_t 	activeCount;
+
+		const uint16_t maxSize;
+
+		activeCondition _condition;
+
+		static auto initialize(Container* container) -> void
 		{
-			for(uint16_t i = 0; i < count; ++i)
+			container->elementCount = 0;
+			container->activeCount = 0;
+
+			for (unsigned i = 0; i < container->maxSize; ++i)
 			{
-				this->SetIndex(Indicies[i], i);
+				container->indices.emplace(container->indices.begin() + i);
+				Trait::setIndex(container->indices[i], i);
+				container->indices[i].next = i + 1;
 			}
 
-			FreelistBegin = 0;
-			FreelistEnd = count - 1;
+			container->unactivelistStart = 0;
+			container->unactivelistEnd = 0;
+			container->freelistStart = 0;
+			container->freelistEnd = container->maxSize - 1;
 		}
 
-		inline bool Contains(const Handle<T> id) const
+	public:
+		virtual ~Container()
 		{
-			Index<T>& in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
-			return in.handle.rawHandle.LiveId == id.rawHandle.LiveId
-				   && in.index != count;
+			clear();
+			//elements.clear();
+			Memory::SafeFreeArray(elements, maxSize);
+			indices.clear();
 		}
 
-		inline T& Get(const Handle<T> id) const
+		Container(uint16_t size = 16) : maxSize(size)
 		{
-			auto i = id.rawHandle.LiveId & INDEX_MASK;
-			return Objects[Indicies[i].index];
+			//elements.reserve(maxSize);
+			elements = (object_t*)malloc(sizeof(object_t) * maxSize);
+			memset(elements, 0, sizeof(object_t) * maxSize);
+			indices.reserve(maxSize);
+
+			initialize(this);
 		}
 
-		inline Handle<T> Create()
+		template <typename... Args>
+		auto create(Args... args) -> handle_t
 		{
-			Index<T> &in = Indicies[FreelistBegin];
+			Index<handle_t> &in = indices[freelistStart];
+			freelistStart = in.next;
 
-			in.handle.rawHandle.Index++;
-			in.index = CurrentCount++;
+			Trait::incrementLiveId(in);
 
-			FreelistBegin = in.next;
+			in.index = elementCount++;
+			in.valid |= 1;
 
-			//T &o = Objects[in.index];
-			// GetHandler<T>(o).liveID	= in.hand.liveID;
-			// GetHandler<T>(o).id		= in.hand.id;
-			return in.handle;//GetHandler<T>(o);
+			//typename std::vector<object_t>::iterator itr = elements.emplace(elements.begin() + in.index, args...);
+			new (&elements[in.index]) object_t(args...);
+			object_t& o = elements[in.index];
+			Trait::setHandle(o, in.handle);
+
+			return Trait::getHandle(o);
 		}
 
-		/*inline void Remove(Handle<T> id)
+		inline void remove(handle_t handle)
 		{
-			Index &in = Indicies[id.rawHandle.LiveId & INDEX_MASK];
+			Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			object_t &o = elements[in.index];
 
-			T &o = Objects[in.index];
-			o = Objects[--CurrentCount];
-			//GetHandler<T>(o)
-			Indicies[in.handle.rawHandle.LiveId & INDEX_MASK].index = in.index;// o.id & INDEX_MASK].index = in.index;
+			Trait::cleanUp(o);
+			Trait::swap(o, elements[--elementCount]);
 
-			in.index = count;
-			Indicies[FreelistEnd].next = id.rawHandle.LiveId & INDEX_MASK;
-			FreelistEnd = id.rawHandle.LiveId & INDEX_MASK;
-		}//
+			indices[Trait::getIndex(Trait::getHandle(o))].index = in.index;
+			in.index = elementCount;
+			in.valid &= 0;
 
-		inline auto operator[](const int i) const noexcept -> T&
-		{
-			return Objects[i];
+			auto oldIndex = Trait::getIndex(handle);
+			indices[freelistEnd].next = oldIndex;
+			freelistEnd = oldIndex;
 		}
 
-		inline auto operator[](const Handle<T> id) const noexcept -> T&
+		inline auto activate(handle_t handle) noexcept -> void
 		{
-			return Get(id);
+			Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			object_t &o = elements[in.index];
+			in.active &= 1;
 		}
-	};*/
+
+		inline auto deactivate(handle_t handle) noexcept -> void
+		{
+			Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			object_t &o = elements[in.index];
+			in.active &= 0;
+		}
+
+		inline auto contains(handle_t handle) const noexcept -> bool
+		{
+			const Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			return in.handle.key == handle.key && (in.valid & 1) && in.index != maxSize;
+		}
+
+		inline auto get(handle_t handle) -> object_t&
+		{
+			const Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			return elements[in.index];
+		}
+
+		inline auto operator[](handle_t handle) -> object_t&
+		{
+			return get(handle);
+		}
+
+		inline auto operator[](uint32_t index) const -> object_t&
+		{
+			return elements[index];
+		}
+
+		inline auto clear() -> void
+		{
+			// todo: check what vector::clear exactly does (in regards to reserved memory) and do accordingly
+			for(int i = 0; i < elementCount; i++)
+			{
+				object_t& o = elements[i];
+				remove(Trait::getHandle(o));
+			}
+		}
+	};
 }
 
 #endif //VOLKHVY_CONTAINER_H

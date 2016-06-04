@@ -8,38 +8,79 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <Handle.h>
+
+#include "Gfx/Renderer.h"
+#include "Context.h"
 
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
+namespace Logic
+{
+	class Scene;
+
+	class SceneManager;
+}
 
 namespace Gfx
 {
-	class BaseDevice;
+	class BaseApi;
+}
+
+namespace Scripts
+{
+	class ScriptManager;
 }
 
 namespace Core
 {
+	using namespace Utils;
+
+	class Config;
+
+	class Logger;
+
+	class Console;
+
 	class Window;
+
+//	class ResourceManager;
+
+	struct Context;
+
+	struct GameTime;
 
 	class Engine
 	{
-		// todo: reference to config
-		// todo: config object passed as a parameter in constructor
-		// todo: config object created in base constructor
+		std::unordered_map<std::string, borrowed_ptr<Gfx::BaseApi>> _availableApis;
 
-		std::unordered_map<std::string, Gfx::BaseDevice*> _availableApis;
+		borrowed_ptr<Gfx::BaseApi> _api;
+		borrowed_ptr<Logic::Scene> activeScene;
 
-		Gfx::BaseDevice* _api;
+		bool _cleanedUp = false;
 
 		auto InitializeApi() -> bool;
 
 	public:
 
-		// Logger& Logger;
-		// Console& Console;
+		static void initializeReferences(Engine* engine);
+
+		const std::string Name;
+
+		borrowed_ptr<Core::Config> Config;
+
+		borrowed_ptr<Gfx::Renderer> Renderer;
+
+		borrowed_ptr<Core::Logger> Logger;
+
+		borrowed_ptr<Core::Console> Console;
 
 		explicit Engine(std::string name);
+
+		virtual ~Engine() { CleanUp(); }
+
+		auto GetContext() const noexcept  -> Context;
 
 		template <typename Api>
 		auto RegisterApi() -> void;
@@ -47,13 +88,19 @@ namespace Core
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Window&;
 
+		// Create renderer of requested type and initalize it internally
+		template <typename T, typename... Args>
+		auto CreateRenderer(Args... args) -> borrowed_ptr<T>;
+
 		// Load configuration
 		auto LoadConfig(std::string path = "Config.json") -> bool;
 
 		// Initialize graphics context based on current config
-		auto Initialize(Gfx::BaseDevice* api = nullptr) -> bool;
+		auto Initialize(borrowed_ptr<Gfx::BaseApi> api = borrowed_ptr<Gfx::BaseApi>()) -> bool;
 
-		// Draw all renderpasses
+		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
+
+		// Draw all renderpasses for active scenes
 		auto Draw(const Core::Window& window) -> void;
 
 		// todo: each window should have queue of events to process
@@ -71,6 +118,19 @@ namespace Core
 		// todo: Gather all input
 		// todo: Threads, etc.
 	};
+
+	template <typename T, typename... Args>
+	auto Engine::CreateRenderer(Args... args) -> borrowed_ptr<T>
+	{
+		borrowed_ptr<T> result;
+		if(!Renderer)
+		{
+			result.reset(new T(args...));
+			Renderer.reset(result.getRaw());
+			Renderer->initialize(GetContext(), _api);
+		}
+		return result;
+	}
 }
 
 #endif //VOLKHVY_ENGINE_H

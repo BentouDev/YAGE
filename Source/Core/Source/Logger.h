@@ -6,24 +6,41 @@
 #define GAME_LOGGER_H
 
 #include <spdlog/spdlog.h>
+#include "Handle.h"
 
 namespace Core
 {
+	class Engine;
+
+	class Config;
+
 	class Logger
 	{
-	public:
-		static Logger& get()
+		friend class Engine;
+
+		Utils::borrowed_ptr<Config> config;
+
+		auto setConfig(Utils::borrowed_ptr<Config> conf) -> void
 		{
-			static Logger instance;
-			return instance;
+			config.reset(conf.release());
 		}
 
-		std::shared_ptr<spdlog::logger> Console;
+	public:
+	//	static Logger& get()
+	//	{
+	//		static Logger instance;
+	//		return instance;
+	//	}
+
+		std::shared_ptr<spdlog::logger> Default;
 
 	private:
-		Logger() : Console(spdlog::stdout_logger_mt("console")) { };
+		static constexpr char const* sinkName = "console";
+		Logger() : Default(spdlog::stdout_logger_mt(sinkName, true)) { };
 
 	public:
+		virtual ~Logger() { spdlog::drop(sinkName); }
+
 		Logger(Logger const&) = delete;
 		Logger(Logger&&) = delete;
 		void operator=(Logger const&) = delete;

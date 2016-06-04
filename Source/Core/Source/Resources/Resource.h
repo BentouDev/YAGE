@@ -6,27 +6,40 @@
 #define VOLKHVY_RESOURCE_H
 
 #include <string>
-#include "Handle.h"
-#include "ResourceManager.h"
+#include <Index.h>
+#include <TypeInfo.h>
+#include <Handle.h>
 
-#define DECL_RESOURCE(name) class name : Resource<name>
+#define DECL_RESOURCE(name) class name : public Core::Resource<name>
 
 namespace Core
 {
-	template<typename T>
+	template<typename Res>
 	class Resource
 	{
-	public:
-		using Handle = Utils::Handle<T>;
-		using Manager = ResourceManager<T>;
+		const void* _id;
 
-		explicit Resource() = delete;
+	public:
+		using handle_t = Utils::Handle<Res>;
+
+	protected:
+		explicit Resource() { }
+		explicit Resource(Resource&& other)
+		{
+			std::swap(Path, other.Path);
+			std::swap(Name, other.Name);
+		}
+
+	public:
 		explicit Resource(const Resource&) = delete;
-		explicit Resource(Resource&&) = delete;
 
 		virtual ~Resource(){ }
 
-		std::string Filename;
+		virtual auto swap(Res& other) noexcept -> void = 0;
+		virtual auto cleanUp() noexcept -> void = 0;
+
+		handle_t 	Handle;
+		std::string Path;
 		std::string Name;
 	};
 }

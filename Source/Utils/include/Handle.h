@@ -5,29 +5,109 @@
 #ifndef VOLKHVY_HANDLE_H
 #define VOLKHVY_HANDLE_H
 
+#include <cstdint>
+#include <utility>
+#include "TypeInfo.h"
+
 namespace Utils
 {
-	typedef uint32_t handle_t;
+	template <typename Resource>
+	union Handle
+	{
+	private:
+		auto release() -> uint32_t
+		{
+			auto oldVal = key;
+			key = invalid().key;
+			return oldVal;
+		}
+
+	public:
+		uint32_t key;
+
+		struct
+		{
+			uint8_t liveId;
+			type_t typeId;
+			uint16_t index;
+		};
+
+		Handle() : key(0) { typeId = TypeInfo<Resource>::id(); }
+		Handle(Handle&& other) : key(other.release()) { }
+		Handle(const Handle& other) : key(other.key) { }
+
+		auto operator=(const Handle& other) -> Handle& { key = other.key; return *this; }
+		auto operator=(Handle&& other) -> Handle& { key = other.release(); return *this; }
+
+		static auto invalid() -> Handle<Resource>
+		{
+			return Handle();
+		}
+
+		operator bool()
+		{
+			return key != invalid().key;
+		}
+
+		auto operator==(const Handle<Resource>& other) -> bool
+		{
+			return key == other.key;
+		}
+
+		auto operator!=(const Handle<Resource>& other) -> bool
+		{
+			return key != other.key;
+		}
+
+		auto swap(Handle<Resource>& other) noexcept -> void
+		{
+			std::swap(key, other.key);
+		}
+	};
+
+	template<typename Resource>
+	auto swap(Handle<Resource>& left, Handle<Resource>& right) noexcept -> void
+	{
+		left.swap(right);
+	}
 
 	union RawHandle
 	{
-
 	public:
-		handle_t Key;
+		RawHandle() : key(0)
+		{ }
 
-		struct {
-			uint8_t LiveId;
-			uint8_t Type;
-			uint16_t Index;
+		RawHandle(uint32_t new_key) : key(new_key)
+		{ }
+
+		uint32_t key;
+
+		struct
+		{
+			uint8_t liveId;
+			type_t typeId;
+			uint16_t index;
 		};
 
-		RawHandle() : Key(0) {}
+		static auto invalid() -> RawHandle
+		{
+			return RawHandle();
+		}
+
+		operator bool()
+		{
+			return key != invalid().key;
+		}
 	};
+	/*typedef uint32_t handle_t;
 
 	template<typename Traits>
 	class Handle
 	{
+	public:
 		using ptr_t = typename Traits::ptr_t;
+
+	private:
 
 		ptr_t value;
 
@@ -102,7 +182,7 @@ namespace Utils
 	auto swap(Handle<Traits>& left, Handle<Traits>& right) noexcept -> void
 	{
 		left.swap(right);
-	}
+	}*/
 }
 
 #endif //VOLKHVY_HANDLE_H

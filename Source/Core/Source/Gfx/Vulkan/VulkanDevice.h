@@ -11,7 +11,7 @@
 #include <memory>
 #include <Handle.h>
 #include <vulkan/vulkan.h>
-#include "Gfx/Api/BaseDevice.h"
+#include "Gfx/Api/BaseApi.h"
 #include "Platform.h"
 
 namespace Core
@@ -23,7 +23,7 @@ namespace Gfx
 {
 	class VulkanSwapchain;
 
-	class VulkanDevice : public BaseDevice
+	class VulkanDevice : public BaseApi
 	{
 		// Shold I put all those info structs into one?
 
