@@ -29,7 +29,7 @@ namespace Core
 		MeshVertexComponentInfo(uint32_t new_count, type_t new_type)
 				: count(new_count), type(new_type) { }
 
-		uint32_t count;
+		uint32_t size;
 		type_t type;
 		// todo: may want some sort of ID here
 		// to easy distinguish between those components
@@ -43,7 +43,7 @@ namespace Core
 		template <typename T>
 		auto createComponent(uint32_t count, std::string name) -> void
 		{
-			VertexComponents.emplace_back(TypeInfo<T>::id(), count);
+			VertexComponents.emplace_back(TypeInfo<T>::id(), size);
 			Names[name] = VertexComponents.size() - 1;
 		}
 
@@ -78,7 +78,7 @@ namespace Core
 				: data(new_data), size(new_size)
 		{ }
 
-		auto count() const noexcept -> uint32_t
+		auto size() const noexcept -> uint32_t
 		{
 			return size;
 		}

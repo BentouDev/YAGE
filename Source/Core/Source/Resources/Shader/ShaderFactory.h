@@ -12,7 +12,7 @@ namespace Resources
 {
 	namespace ShaderFactory
 	{
-		auto LoadShaderFromFile(std::string path, Gfx::Shader& shader) -> void;
+		auto LoadShaderFromSource(std::string path, Gfx::Shader& shader) -> void;
 		auto LinkShaderProgram(Gfx::ShaderProgram& prog, Gfx::Shader& shader) -> void;
 	}
 }

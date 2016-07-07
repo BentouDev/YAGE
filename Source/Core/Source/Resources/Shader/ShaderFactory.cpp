@@ -14,7 +14,7 @@ namespace Resources
 {
 	namespace ShaderFactory
 	{
-		auto LoadShaderFromFile(std::string path, Gfx::Shader& shader, Core::Context& ctx, Gfx::ShaderApi& _api) -> void
+		auto LoadShaderFromSource(std::string path, Gfx::Shader& shader, Core::Context& ctx, Gfx::ShaderApi& _api) -> void
 		{
 			std::ifstream f(path);
 			std::string source;
@@ -29,8 +29,8 @@ namespace Resources
 							   std::istreambuf_iterator<char>());
 
 				_api.generateShader(shader);
-				_api.loadShaderSrc(shader, source);
-				_api.compileShader(shader);
+				_api.loadShaderSrc (shader, source);
+				_api.compileShader (shader);
 				_api.checkForErrors(shader, ctx);
 			}
 		}

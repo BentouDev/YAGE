@@ -22,7 +22,6 @@ namespace Gfx
 
 		auto name() -> const char* { return _name; }
 
-		// todo: pass config
 		// Do necassary initialization, grab extensions, device info etc.
 		virtual auto initialize() -> bool = 0;
 

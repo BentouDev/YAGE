@@ -65,7 +65,7 @@ namespace MemoryTests
 		int count = 6;
 		auto foos = new FooMock[count];
 
-		//for(auto i = 0; i < count; i++)
+		//for(auto i = 0; i < size; i++)
 		//	auto obj = new (&foos[i]) FooMock();
 
 		for(auto i = 0; i < count; i++)
@@ -81,7 +81,7 @@ namespace MemoryTests
 		int count = 6;
 		auto foos = new FooMock[count];
 
-		//for(auto i = 0; i < count; i++)
+		//for(auto i = 0; i < size; i++)
 		//	auto = new (foos[i]) FooMock();
 
 		for(auto i = 0; i < count; i++)

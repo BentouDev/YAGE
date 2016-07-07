@@ -6,7 +6,7 @@
 
 namespace Gfx
 {
-	auto CommandQueue::CreateCommand() -> Command&
+	/*auto CommandQueue::CreateCommand() -> Command&
 	{
 //		Command* new_cmd = new (memory) Command();
 //		memory++;
@@ -48,5 +48,5 @@ namespace Gfx
 		}
 
 		// flush rendertarget
-	}
+	}*/
 }

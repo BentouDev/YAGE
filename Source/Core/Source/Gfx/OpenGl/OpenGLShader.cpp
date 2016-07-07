@@ -24,7 +24,7 @@ namespace Gfx
 
 	auto OpenGLShader::loadShaderSrc(Gfx::Shader &shader, std::string src) -> void
 	{
-		int len = src.length();
+		int len = (int) src.length();
 		auto ptr = src.c_str();
 		gl::ShaderSource(shader.apiHandle, 1, &ptr, &len);
 	}
@@ -39,7 +39,7 @@ namespace Gfx
 			GLint maxLength = 0;
 			gl::GetShaderiv(shader.apiHandle, gl::INFO_LOG_LENGTH, &maxLength);
 
-			std::vector<GLchar> errorLog(maxLength);
+			std::vector<GLchar> errorLog((unsigned long) maxLength);
 			gl::GetShaderInfoLog(shader.apiHandle, maxLength, &maxLength, &errorLog[0]);
 
 			gl::DeleteShader(shader.apiHandle);

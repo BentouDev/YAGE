@@ -26,7 +26,7 @@ namespace Gfx
 	class Shader
 	{
 	public:
-		using api_handle = unsigned long long;
+		using api_handle = uint32_t;
 
 		Utils::Handle<Shader> Handle;
 

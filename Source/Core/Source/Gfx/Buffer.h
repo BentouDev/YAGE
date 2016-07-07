@@ -27,16 +27,16 @@ namespace Gfx
 		using byte = uint8_t;
 
 		byte* data;
-		uint32_t size;
+		uint32_t _size;
 
 	public:
 		BufferData(byte* new_data, uint32_t new_size)
-				: data(new_data), size(new_size)
+				: data(new_data), _size(new_size)
 		{ }
 
-		auto count() const noexcept -> uint32_t
+		auto size() const noexcept -> uint32_t
 		{
-			return size;
+			return _size;
 		}
 
 		auto getDataPtr() const noexcept -> byte*

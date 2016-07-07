@@ -9,7 +9,7 @@
 
 namespace Gfx
 {
-	class Command;
+	/*class Command;
 
 	typedef void (*CommandFunction)(Command& cmd);
 
@@ -17,7 +17,7 @@ namespace Gfx
 	{
 
 	public:
-		uint32_t count;
+		uint32_t size;
 		uint32_t index;
 
 		CommandFunction* function;
@@ -43,7 +43,7 @@ namespace Gfx
 		auto CleanUp() -> void;
 
 		void Submit();
-	};
+	};*/
 }
 
 #endif //GAME_COMMANDQUEUE_H
