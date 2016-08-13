@@ -21,6 +21,8 @@ public:
 	MOCK_METHOD0(cleanUp, void());
 	MOCK_METHOD1(beginDraw, void(const Core::Window& window));
 	MOCK_METHOD1(endDraw, void(const Core::Window& window));
+	MOCK_METHOD1(getMeshApi, MeshApi*(void));
+	MOCK_METHOD1(getShaderApi, ShaderApi*(void));
 
 	void InitWillFail()
 	{
