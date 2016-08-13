@@ -5,6 +5,8 @@
 #ifndef VOLKHVY_BASEAPI_H
 #define VOLKHVY_BASEAPI_H
 
+#include "ShaderApi.h"
+
 namespace Core
 {
     class Window;
@@ -13,6 +15,10 @@ namespace Core
 
 namespace Gfx
 {
+	class BufferApi;
+	class MeshApi;
+	class ShaderApi;
+
 	class BaseApi
 	{
 		const char* _name;
@@ -21,6 +27,10 @@ namespace Gfx
 		BaseApi(const char* name) : _name(name) {}
 
 		auto name() -> const char* { return _name; }
+
+		virtual auto getMeshApi() -> MeshApi* = 0;
+
+		virtual auto getShaderApi() -> ShaderApi* = 0;
 
 		// Do necassary initialization, grab extensions, device info etc.
 		virtual auto initialize() -> bool = 0;

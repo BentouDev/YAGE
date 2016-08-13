@@ -47,13 +47,18 @@ namespace Gfx
 
 	struct BufferComponentInfo
 	{
-		BufferComponentInfo(uint32_t new_count, type_t new_type)
-				: count(new_count), type(new_type) { }
+		BufferComponentInfo
+		(
+			uint32_t new_elementCount,
+			uint32_t new_size,
+			type_t new_type
+		) : elementCount(new_elementCount),
+			size(new_size),
+			type(new_type) { }
 
-		uint32_t count;
+		uint32_t elementCount;
+		uint32_t size;
 		type_t type;
-		// todo: may want some sort of ID here
-		// to easy distinguish between those components
 	};
 
 	struct BufferScheme
@@ -62,10 +67,10 @@ namespace Gfx
 		std::map<std::string, uint32_t > Names;
 
 		template <typename T>
-		auto createComponent(uint32_t count, std::string name) -> void
+		auto createComponent(uint32_t elementCount, std::string name) -> void
 		{
-			VertexComponents.emplace_back(TypeInfo<T>::id(), count);
-			Names[name] = VertexComponents.size() - 1;
+			VertexComponents.emplace_back(elementCount, sizeof(T), TypeInfo<T>::id());
+			Names[name] = (uint32_t) (VertexComponents.size() - 1);
 		}
 
 		auto getComponent(std::string name) noexcept -> Utils::borrowed_ptr<BufferComponentInfo>
@@ -84,7 +89,7 @@ namespace Gfx
 
 	class Buffer
 	{
-		std::vector<BufferData> Data;
+		BufferData Data;
 		BufferScheme scheme;
 	};
 }

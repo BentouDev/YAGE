@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <TypeInfo.h>
 
+#include "Resources/Mesh/MeshManager.h"
 #include "Resources/ResourceManager.h"
 #include "Gfx/Api/BaseApi.h"
 #include "Gfx/Renderer.h"
@@ -46,7 +47,8 @@ namespace Core
 		: Name(name),
 		  Logger(new Core::Logger()),
 		  Config(new Core::Config()),
-		  Console(new Core::Console())
+		  Console(new Core::Console()),
+		  MeshManager(new Resources::MeshManager(*this))
 	{
 		Logger->setConfig(Config);
 		Config->setLogger(Logger);
@@ -57,6 +59,11 @@ namespace Core
 	{
 		Context ctx(Config, Logger);
 		return ctx;
+	}
+
+	auto Engine::GetApi() const noexcept -> Gfx::BaseApi&
+	{
+		return *_api;
 	}
 
 	template <typename Api>
@@ -175,6 +182,7 @@ namespace Core
 			Memory::SafeDelete(api.second);
 		}
 
+		Memory::SafeDelete(MeshManager);
 		Memory::SafeDelete(Console);
 		Memory::SafeDelete(Renderer);
 		Memory::SafeDelete(Config);

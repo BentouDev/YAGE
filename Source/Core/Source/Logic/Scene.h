@@ -22,6 +22,7 @@ namespace Logic
 {
 	class Scene
 	{
+	protected:
 		// Reference to script module
 		// Containers for entites
 		// Containers for entity components

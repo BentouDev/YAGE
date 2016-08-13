@@ -5,6 +5,8 @@
 #ifndef GAME_INDEX_H
 #define GAME_INDEX_H
 
+#include <stdint.h>
+
 namespace Utils
 {
 	template<typename Handle>

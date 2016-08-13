@@ -6,7 +6,7 @@
 #define GAME_OPENGLSHADER_H
 
 #include "Generated/gl_core_3_3.hpp"
-#include <Gfx/Api/ShaderApi.h>
+#include "Gfx/Api/ShaderApi.h"
 
 namespace Core
 {
@@ -27,13 +27,13 @@ namespace Gfx
 		};
 
 	public:
-		virtual auto generateShader(Gfx::Shader& shader, Gfx::ShaderApi::ShaderType type) -> void;
+		auto generateShader(Gfx::Shader& shader, Gfx::ShaderApi::ShaderType type) -> void;
 
-		virtual auto loadShaderSrc(Gfx::Shader& shader, std::string src) -> void;
+		auto loadShaderSrc(Gfx::Shader& shader, std::string src) -> void;
 
-		virtual auto compileShader(Gfx::Shader& shader) -> void;
+		auto compileShader(Gfx::Shader& shader) -> void;
 
-		virtual auto checkForErrors(Gfx::Shader& shader, Core::Context& ctx) -> bool;
+		auto checkForErrors(Gfx::Shader& shader, Core::Context& ctx) -> bool;
 	};
 }
 

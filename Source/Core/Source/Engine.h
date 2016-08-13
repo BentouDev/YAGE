@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 #include <Handle.h>
-
 #include "Gfx/Renderer.h"
 #include "Context.h"
 
@@ -26,6 +25,11 @@ namespace Logic
 namespace Gfx
 {
 	class BaseApi;
+}
+
+namespace Resources
+{
+	class MeshManager;
 }
 
 namespace Scripts
@@ -76,11 +80,15 @@ namespace Core
 
 		borrowed_ptr<Core::Console> Console;
 
+		borrowed_ptr<Resources::MeshManager> MeshManager;
+
 		explicit Engine(std::string name);
 
 		virtual ~Engine() { CleanUp(); }
 
 		auto GetContext() const noexcept  -> Context;
+
+		auto GetApi() const noexcept -> Gfx::BaseApi&;
 
 		template <typename Api>
 		auto RegisterApi() -> void;

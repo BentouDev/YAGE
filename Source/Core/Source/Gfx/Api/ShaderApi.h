@@ -30,7 +30,7 @@ namespace Gfx
 			Compute = 5
 		};
 
-		virtual auto generateShader(Gfx::Shader& shader) -> void = 0;
+		virtual auto generateShader(Gfx::Shader& shader, Gfx::ShaderApi::ShaderType type) -> void = 0;
 		virtual auto loadShaderSrc(Gfx::Shader& shader, std::string src) -> void = 0;
 		virtual auto compileShader(Gfx::Shader& shader) -> void = 0;
 		virtual auto checkForErrors(Gfx::Shader& shader, Core::Context& ctx) -> bool = 0;

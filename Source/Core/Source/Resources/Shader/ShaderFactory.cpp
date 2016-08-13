@@ -28,7 +28,7 @@ namespace Resources
 				source.assign((std::istreambuf_iterator<char>(f)),
 							   std::istreambuf_iterator<char>());
 
-				_api.generateShader(shader);
+				_api.generateShader(shader, Gfx::ShaderApi::ShaderType::Vertex);
 				_api.loadShaderSrc (shader, source);
 				_api.compileShader (shader);
 				_api.checkForErrors(shader, ctx);

@@ -16,6 +16,8 @@ namespace Gfx
 {
     class OpenGlContext : public BaseApi
     {
+		MeshApi* meshApi;
+		ShaderApi* shaderApi;
 
 	public:
 		explicit OpenGlContext();
@@ -23,6 +25,10 @@ namespace Gfx
 		// todo: pass config
 		// Do necassary initialization, grab extensions, device info etc.
 		auto initialize() -> bool;
+
+		auto getMeshApi() -> MeshApi* { return meshApi; }
+
+		auto getShaderApi() -> ShaderApi* { return shaderApi; }
 
 		// Create surface for window
 		auto registerWindow(const Core::Window& window) -> bool;

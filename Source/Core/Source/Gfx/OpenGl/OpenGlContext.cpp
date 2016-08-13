@@ -4,13 +4,15 @@
 
 #include "Generated/gl_core_3_3.hpp"
 #include "OpenGlContext.h"
+#include "OpenGLMesh.h"
+#include "OpenGLShader.h"
 
 #include <Platform.h>
 #include <Window.h>
 
 namespace Gfx
 {
-	OpenGlContext::OpenGlContext() : BaseApi("opengl")
+	OpenGlContext::OpenGlContext() : BaseApi("opengl"), meshApi(new OpenGLMesh()), shaderApi(new OpenGLShader())
 	{
 
 	}
