@@ -45,8 +45,6 @@ namespace Core
 
 	class Logger;
 
-	class Console;
-
 	class Window;
 
 //	class ResourceManager;
@@ -77,8 +75,6 @@ namespace Core
 		borrowed_ptr<Gfx::Renderer> Renderer;
 
 		borrowed_ptr<Core::Logger> Logger;
-
-		borrowed_ptr<Core::Console> Console;
 
 		borrowed_ptr<Resources::MeshManager> MeshManager;
 

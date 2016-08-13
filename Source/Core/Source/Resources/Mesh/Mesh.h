@@ -14,10 +14,10 @@
 #include <BorrowedPtr.h>
 #include <DefaultTrait.h>
 #include <SafeDelete.h>
-#include <Gfx/Api/MeshApi.h>
 
 #include <Gfx/Buffer.h>
 #include <Gfx/Api/BaseApi.h>
+#include <Gfx/Api/MeshApi.h>
 
 #include "../Resource.h"
 

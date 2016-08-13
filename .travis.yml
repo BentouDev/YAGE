@@ -12,7 +12,6 @@ addons:
     packages:
       - cmake
       - cmake-data
-      - gcov
       - xorg-dev
       - libxxf86vm-dev
       - libglu1-mesa-dev

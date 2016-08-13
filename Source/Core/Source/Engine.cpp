@@ -11,7 +11,6 @@
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
 #include "Platform.h"
-#include "Console.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
@@ -47,7 +46,6 @@ namespace Core
 		: Name(name),
 		  Logger(new Core::Logger()),
 		  Config(new Core::Config()),
-		  Console(new Core::Console()),
 		  MeshManager(new Resources::MeshManager(*this))
 	{
 		Logger->setConfig(Config);
@@ -183,7 +181,6 @@ namespace Core
 		}
 
 		Memory::SafeDelete(MeshManager);
-		Memory::SafeDelete(Console);
 		Memory::SafeDelete(Renderer);
 		Memory::SafeDelete(Config);
 		Memory::SafeDelete(Logger);

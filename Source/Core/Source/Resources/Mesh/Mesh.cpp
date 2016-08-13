@@ -9,7 +9,7 @@ namespace Core
 {
     Gfx::MeshApi::ApiMeshHandle Submesh::getApiHandle()
     {
-        return nullptr;
+
     }
 
     void Submesh::uploadApiData(Gfx::MeshApi *pApi)

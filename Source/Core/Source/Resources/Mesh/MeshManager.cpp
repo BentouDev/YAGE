@@ -23,7 +23,7 @@ namespace Resources
         return meshes.get(handle);
     }
 
-    auto MeshManager::uploadMesh(Core::MeshResource::handle_t handle, Gfx::BufferUsage usage)
+    auto MeshManager::uploadMesh(Core::MeshResource::handle_t handle, Gfx::BufferUsage usage) -> void
     {
         Core::MeshResource& mesh = meshes.get(handle);
 
