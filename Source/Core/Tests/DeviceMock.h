@@ -7,6 +7,8 @@
 
 #include <gmock/gmock.h>
 #include "../Source/Gfx/Api/BaseApi.h"
+#include "../Source/Gfx/Api/ShaderApi.h"
+#include "../Source/Gfx/Api/MeshApi.h"
 
 class DeviceMock : public Gfx::BaseApi
 {
@@ -21,8 +23,8 @@ public:
 	MOCK_METHOD0(cleanUp, void());
 	MOCK_METHOD1(beginDraw, void(const Core::Window& window));
 	MOCK_METHOD1(endDraw, void(const Core::Window& window));
-	MOCK_METHOD1(getMeshApi, MeshApi*(void));
-	MOCK_METHOD1(getShaderApi, ShaderApi*(void));
+	MOCK_METHOD1(getMeshApi, Gfx::MeshApi*(void));
+	MOCK_METHOD1(getShaderApi, Gfx::ShaderApi*(void));
 
 	void InitWillFail()
 	{
