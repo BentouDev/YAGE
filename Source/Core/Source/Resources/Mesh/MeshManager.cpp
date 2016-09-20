@@ -4,7 +4,7 @@
 
 #include "MeshManager.h"
 #include <Engine.h>
-#include <Gfx/Api/MeshApi.h>
+// #include <Gfx/Api/MeshApi.h>
 
 namespace Resources
 {
@@ -23,7 +23,7 @@ namespace Resources
         return meshes.get(handle);
     }
 
-    auto MeshManager::uploadMesh(Core::MeshResource::handle_t handle, Gfx::BufferUsage usage) -> void
+    /*auto MeshManager::uploadMesh(Core::MeshResource::handle_t handle, Gfx::BufferUsage usage) -> void
     {
         Core::MeshResource& mesh = meshes.get(handle);
 
@@ -36,5 +36,5 @@ namespace Resources
                 sub.uploadApiData(api);
             }
         }
-    }
+    }*/
 }

@@ -15,9 +15,7 @@
 #include <DefaultTrait.h>
 #include <SafeDelete.h>
 
-#include <Gfx/Buffer.h>
-#include <Gfx/Api/BaseApi.h>
-#include <Gfx/Api/MeshApi.h>
+// #include "Gfx/Buffer.h"
 
 #include "../Resource.h"
 
@@ -30,19 +28,19 @@ namespace Core
 	// anyway, indexing may be used
 	class Submesh
 	{
-		Gfx::BufferScheme scheme;
+	//	Gfx::BufferScheme scheme;
 
 	public:
-		void uploadApiData(Gfx::MeshApi *pApi);
-		auto getApiHandle() -> Gfx::MeshApi::ApiMeshHandle;
-		auto setApiHandle(Gfx::MeshApi::ApiMeshHandle handle) -> void;
+//		void uploadApiData(Gfx::MeshApi *pApi);
+//		auto getApiHandle() -> Gfx::MeshApi::ApiMeshHandle;
+//		auto setApiHandle(Gfx::MeshApi::ApiMeshHandle handle) -> void;
 
 		template <typename T>
 		auto addProperty(std::string name, uint32_t count) noexcept -> void
 		{
 			// api will iterate through them, calc stride, offset
 			// and pick internal type of data
-			scheme.createComponent<T>(count, name);
+	//		scheme.createComponent<T>(count, name);
 		}
 	};
 

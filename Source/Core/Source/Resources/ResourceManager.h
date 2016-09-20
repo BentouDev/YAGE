@@ -14,12 +14,6 @@
 #include <Container.h>
 #include <Logger.h>
 #include <Context.h>
-#include <Gfx/Api/BaseApi.h>
-
-namespace Gfx
-{
-	class BaseApi;
-}
 
 namespace Core
 {
@@ -29,7 +23,7 @@ namespace Core
 
 	// todo: class for bin file, with offset and handle itself
 	// typedef void (*typeBinLoader)(FileOffsetHandle, Core::Context&, Gfx::BaseApi&);
-	typedef void (*typePathLoader)(std::string, std::string ext, Core::ResourceManager&, Core::Context&, Gfx::BaseApi&);
+//	typedef void (*typePathLoader)(std::string, std::string ext, Core::ResourceManager&, Core::Context&, Gfx::BaseApi&);
 
 	struct PathLoadCommand
 	{
@@ -55,20 +49,20 @@ namespace Core
 	class ResourceLoader
 	{
 		Core::Context& ctx;
-		Utils::borrowed_ptr<Gfx::BaseApi> api;
+	//	Utils::borrowed_ptr<Gfx::BaseApi> api;
 
 		Utils::borrowed_ptr<ResourceManager> resManager;
 		Utils::borrowed_ptr<Core::Logger> logger;
 
 		std::map<std::string, type_t> extensionMap;
-		std::map<type_t, typePathLoader> pathTypeLoaders;
+	//	std::map<type_t, typePathLoader> pathTypeLoaders;
 
 		std::queue<PathLoadCommand> pathLoadQueue;
 
 	public:
-		ResourceLoader(Context context, Utils::borrowed_ptr<Gfx::BaseApi> baseApi)
-			: ctx(context), api(baseApi)
-		{ }
+	//	ResourceLoader(Context context, Utils::borrowed_ptr<Gfx::BaseApi> baseApi)
+	//		: ctx(context), api(baseApi)
+	//	{ }
 
 		// take item from queue and load it
 		// if there is no more things to load, return true
@@ -77,13 +71,13 @@ namespace Core
 			if(pathLoadQueue.empty()) return true;
 
 			auto& res = pathLoadQueue.front();
-			pathTypeLoaders[res.type](res.path, res.ext, (*resManager), ctx, (*api));
+	//		pathTypeLoaders[res.type](res.path, res.ext, (*resManager), ctx, (*api));
 			pathLoadQueue.pop();
 
 			return false;
 		}
 
-		template <typename T>
+	/*	template <typename T>
 		auto registerTypeFile(std::vector<std::string>& file_extensions, typePathLoader loader) -> void
 		{
 			type_t type = TypeInfo<T>::id();
@@ -94,7 +88,7 @@ namespace Core
 			}
 
 			pathTypeLoaders[type] = loader;
-		}
+		}*/
 
 		auto extractExtension(std::string path) -> std::string
 		{

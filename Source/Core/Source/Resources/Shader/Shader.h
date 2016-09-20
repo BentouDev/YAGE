@@ -11,7 +11,7 @@
 #include <DefaultTrait.h>
 
 #include "../Resource.h"
-#include "../../Gfx/Api/ShaderApi.h"
+// #include "../../Gfx/Api/ShaderApi.h"
 
 namespace Gfx
 {
@@ -34,7 +34,7 @@ namespace Gfx
 		void swap(Shader& other) {}
 
 		api_handle apiHandle;
-		ShaderApi::ShaderType type;
+	//	ShaderApi::ShaderType type;
 	};
 
 	class ShaderProgram
@@ -56,7 +56,7 @@ namespace Gfx
 	{
 	public:
 		ShaderProgTrait::handle program;
-		std::map<ShaderApi::ShaderType, std::vector<ShaderTrait::handle>> shaderMap;
+	//	std::map<ShaderApi::ShaderType, std::vector<ShaderTrait::handle>> shaderMap;
 	};
 }
 

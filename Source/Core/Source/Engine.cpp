@@ -7,7 +7,7 @@
 
 #include "Resources/Mesh/MeshManager.h"
 #include "Resources/ResourceManager.h"
-#include "Gfx/Api/BaseApi.h"
+//#include "Gfx/Api/BaseApi.h"
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
 #include "Platform.h"
@@ -20,11 +20,11 @@
 #undef CreateWindow
 
 #ifdef VOLKHVY_VULKAN
-#include "Gfx/Vulkan/VulkanDevice.h"
+// #include "Gfx/Vulkan/VulkanDevice.h"
 #endif
 
 #ifdef VOLKHVY_OPENGL
-#include "Gfx/OpenGl/OpenGlContext.h"
+// #include "Gfx/OpenGl/OpenGlContext.h"
 #endif
 
 namespace Core
@@ -34,11 +34,11 @@ namespace Core
 		engine->Logger->Default->info("Initializing Volkhvy for '{}'...", engine->Name);
 
 #ifdef VOLKHVY_VULKAN
-		engine->RegisterApi<Gfx::VulkanDevice>();
+//		engine->RegisterApi<Gfx::VulkanDevice>();
 #endif
 
 #ifdef VOLKHVY_OPENGL
-		engine->RegisterApi<Gfx::OpenGlContext>();
+//		engine->RegisterApi<Gfx::OpenGlContext>();
 #endif
 	}
 
@@ -81,7 +81,7 @@ namespace Core
 		// todo: pass _api to context!
 		Window* window = new Window(GetContext());
 
-		_api->registerWindow(*window);
+	//	_api->registerWindow(*window);
 
 		return *window;
 	}
@@ -131,14 +131,14 @@ namespace Core
 
 	auto Engine::InitializeApi() -> bool
 	{
-		return _api->initialize();
+	//	return _api->initialize();
 	}
 
 	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
 		// todo: this should be connected to rendertarget
-		_api->beginDraw(window);
+	//	_api->beginDraw(window);
 
 		// activeScene->Draw(GameTime(), (*Renderer));
 		/*for(RenderPass pass : _renderPasses)
@@ -147,7 +147,7 @@ namespace Core
 		}*/
 
 
-		_api->endDraw(window);
+	//	_api->endDraw(window);
 	}
 
 	auto Engine::ProcessEvents() -> void
@@ -157,7 +157,7 @@ namespace Core
 
 	auto Engine::Resize(const Window& window) -> void
 	{
-		_api->resizeWindow(window);
+	//	_api->resizeWindow(window);
 	}
 
 	auto Engine::CleanUp() -> void
@@ -171,13 +171,13 @@ namespace Core
 
 		if(_api)
 		{
-			_api->cleanUp();
-			_api.release();
+	//		_api->cleanUp();
+	//		_api.release();
 		}
 
-		for(auto api : _availableApis)
+	//	for(auto api : _availableApis)
 		{
-			Memory::SafeDelete(api.second);
+	//		Memory::SafeDelete(api.second);
 		}
 
 		Memory::SafeDelete(MeshManager);
