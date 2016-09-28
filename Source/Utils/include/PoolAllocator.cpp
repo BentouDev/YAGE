@@ -19,24 +19,23 @@ namespace Memory
 		std::uintptr_t 	startAddress	= reinterpret_cast<uintptr_t>(_startPtr);
 		std::uintptr_t 	alignedAddress 	= startAddress + adjustment;
 
-		LinkedAddress current;
-		current.ptr = reinterpret_cast<void**>(alignedAddress);
+		void** current = reinterpret_cast<void**>(alignedAddress);
 
 		_usedSize 	+= adjustment;
-		_freePtr.ptr = current.ptr;
+		_freePtr 	 = current;
 
 		std::size_t maxObjCount = getFreeSize() / allocSize;
 
 		// build linked list using raw pointers
 		for(unsigned i = 0; i < maxObjCount - 1; i++)
 		{
-			std::uintptr_t address = reinterpret_cast<std::uintptr_t>(current.ptr);
-			current.next = reinterpret_cast<void*>(address + allocSize);
-			current.ptr	 = (void**) current.next;
+			std::uintptr_t address = reinterpret_cast<std::uintptr_t>(current);
+			*current = reinterpret_cast<void*>(address + allocSize);
+			current	 = (void**) *current;
 		}
 
 		// end linked list
-		current.next = nullptr;
+		*current = nullptr;
 	}
 
 	void* PoolAllocator::allocate(std::size_t size, std::size_t alignment, std::size_t offset)
@@ -44,16 +43,15 @@ namespace Memory
 		assert(size == _typeSize && alignment == _typeAlignment
 			   && "Cannot do allocation with other size and alignment");
 
-		if(_freePtr.ptr == nullptr)
+		if(_freePtr == nullptr)
 			return nullptr;
 
-		LinkedAddress newPtr = _freePtr;
+		void** newPtr = _freePtr;
 
-		_freePtr.ptr = (void**)(newPtr.next);
+		_freePtr	 = (void**)(*newPtr);
+		_usedSize	+= size;
 
-		_usedSize += size;
-
-		return newPtr.ptr;
+		return newPtr;
 	}
 
 	std::size_t PoolAllocator::getAllocationSize(const void *ptr) const
@@ -63,9 +61,9 @@ namespace Memory
 
 	void PoolAllocator::deallocate(void *ptr)
 	{
-		LinkedAddress oldPtr;
-		oldPtr.ptr = (void**) ptr;
-		oldPtr.next = _freePtr.ptr;
+		void** oldPtr = (void**) ptr;
+
+		*oldPtr = _freePtr;
 
 		_usedSize	-= _typeSize;
 		_freePtr	 = oldPtr;

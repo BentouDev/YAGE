@@ -1,15 +1,22 @@
 //
-// Created by bentoo on 9/28/16.
+// Created by bentoo on 9/29/16.
 //
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/StackAllocator.h"
+#include "../include/PoolAllocator.h"
 
-namespace StackAllocatorTests
+namespace PoolAllocatorTest
 {
-	class StackAllocatorTest : public ::testing::Test
+	struct FooMock
+	{
+		int i;
+		int j;
+		char c;
+	};
+
+	class PoolAllocatorTest : public ::testing::Test
 	{
 	public:
 		void SetUp()
@@ -23,26 +30,29 @@ namespace StackAllocatorTests
 		}
 	};
 
-	TEST_F(StackAllocatorTest, CanCreateAllocator)
+	TEST_F(PoolAllocatorTest, CanCreateAllocator)
 	{
 		const uint32_t memorySize = 1024;
 
-		void* memory = malloc(memorySize);
-		auto allocator = new Memory::StackAllocator(memory, memorySize);
+		void* poolPtr 	= malloc(sizeof(Memory::PoolAllocator));
+		void* memory 	= malloc(memorySize);
+		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, 0);
 
 		EXPECT_NE(nullptr, allocator);
 
+		free(poolPtr);
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanAllocateEnoughMemory)
+	TEST_F(PoolAllocatorTest, CanAllocateEnoughMemory)
 	{
-		const uint32_t memorySize = 32;
-		const uint32_t allocSize = 10;
-		const uint32_t alignSize = 2;
+		const uint32_t memorySize = 64;
+		const uint32_t allocSize = sizeof(FooMock);
+		const uint32_t alignSize = alignof(FooMock);
 
-		void* memory	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		void* poolPtr 	= malloc(sizeof(Memory::PoolAllocator));
+		void* memory 	= malloc(memorySize);
+		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, 0);
 
 		auto first  = allocator->allocate(allocSize, alignSize, 0);
 		auto second = allocator->allocate(allocSize, alignSize, 0);
@@ -53,18 +63,20 @@ namespace StackAllocatorTests
 		EXPECT_TRUE(secondAddress > firstAddress);
 		EXPECT_FALSE(firstAddress + allocSize > secondAddress);
 
+		free(poolPtr);
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanAllocateMemoryWithOffset)
+	TEST_F(PoolAllocatorTest, CanAllocateMemoryWithOffset)
 	{
 		const uint32_t memorySize = 64;
-		const uint32_t allocSize = 10;
-		const uint32_t alignSize = 2;
+		const uint32_t allocSize = sizeof(FooMock);
+		const uint32_t alignSize = alignof(FooMock);
 		const uint32_t offsetSize = 4;
 
-		void* memory	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		void* poolPtr 	= malloc(sizeof(Memory::PoolAllocator));
+		void* memory 	= malloc(memorySize);
+		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, offsetSize);
 
 		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
@@ -73,17 +85,19 @@ namespace StackAllocatorTests
 		EXPECT_FALSE(reinterpret_cast<std::uintptr_t>(first) + allocSize + offsetSize
 					 > reinterpret_cast<std::uintptr_t >(second));
 
+		free(poolPtr);
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanReallocateMemory)
+	TEST_F(PoolAllocatorTest, CanReallocateMemory)
 	{
-		const uint32_t memorySize = 32;
-		const uint32_t allocSize = 10;
-		const uint32_t alignSize = 2;
+		const uint32_t memorySize = 64;
+		const uint32_t allocSize = sizeof(FooMock);
+		const uint32_t alignSize = alignof(FooMock);
 
+		void* poolPtr 	= malloc(sizeof(Memory::PoolAllocator));
 		void* memory 	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, 0);
 
 		auto first  = allocator->allocate(allocSize, alignSize, 0);
 		auto second = allocator->allocate(allocSize, alignSize, 0);
@@ -97,18 +111,20 @@ namespace StackAllocatorTests
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);
 
+		free(poolPtr);
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanReallocateMemoryWithOffset)
+	TEST_F(PoolAllocatorTest, CanReallocateMemoryWithOffset)
 	{
 		const uint32_t memorySize = 64;
-		const uint32_t allocSize = 10;
-		const uint32_t alignSize = 2;
+		const uint32_t allocSize = sizeof(FooMock);
+		const uint32_t alignSize = alignof(FooMock);
 		const uint32_t offsetSize = 4;
 
+		void* poolPtr 	= malloc(sizeof(Memory::PoolAllocator));
 		void* memory 	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, offsetSize);
 
 		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
@@ -122,6 +138,7 @@ namespace StackAllocatorTests
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);
 
+		free(poolPtr);
 		free(memory);
 	}
 }

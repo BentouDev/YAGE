@@ -30,7 +30,9 @@ namespace LinearAllocatorTests
 		void* memory = malloc(memorySize);
 		auto allocator = new Memory::LinearAllocator(memory, memorySize);
 
-		EXPECT_NE(allocator, nullptr);
+		EXPECT_NE(nullptr, allocator);
+
+		free(memory);
 	}
 
 	TEST_F(LinearAllocatorTest, CanAllocateEnoughMemory)
@@ -50,6 +52,8 @@ namespace LinearAllocatorTests
 
 		EXPECT_TRUE(secondAddress > firstAddress);
 		EXPECT_FALSE(firstAddress + allocSize > secondAddress);
+
+		free(memory);
 	}
 
 	TEST_F(LinearAllocatorTest, CanAllocateMemoryWithOffset)
@@ -57,7 +61,7 @@ namespace LinearAllocatorTests
 		const uint32_t memorySize = 64;
 		const uint32_t allocSize = 10;
 		const uint32_t alignSize = 2;
-		const uint32_t offsetSize = 8;
+		const uint32_t offsetSize = 4;
 
 		void* memory	= malloc(memorySize);
 		auto allocator 	= new Memory::LinearAllocator(memory, memorySize);
@@ -68,6 +72,8 @@ namespace LinearAllocatorTests
 		EXPECT_TRUE(second > first);
 		EXPECT_FALSE(reinterpret_cast<std::uintptr_t>(first) + allocSize + offsetSize
 					 > reinterpret_cast<std::uintptr_t >(second));
+
+		free(memory);
 	}
 
 	TEST_F(LinearAllocatorTest, CanReallocateMemory)
@@ -89,5 +95,31 @@ namespace LinearAllocatorTests
 
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);
+
+		free(memory);
+	}
+
+	TEST_F(LinearAllocatorTest, CanReallocateMemoryWithOffset)
+	{
+		const uint32_t memorySize = 32;
+		const uint32_t allocSize = 10;
+		const uint32_t alignSize = 2;
+		const uint32_t offsetSize = 4;
+
+		void* memory 	= malloc(memorySize);
+		auto allocator 	= new Memory::LinearAllocator(memory, memorySize);
+
+		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
+
+		allocator->clear();
+
+		auto third  = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto fourth = allocator->allocate(allocSize, alignSize, offsetSize);
+
+		EXPECT_EQ(first, third);
+		EXPECT_EQ(second, fourth);
+
+		free(memory);
 	}
 }
