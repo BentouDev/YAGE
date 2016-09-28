@@ -57,7 +57,7 @@ namespace StackAllocatorTests
 		const uint32_t memorySize = 64;
 		const uint32_t allocSize = 10;
 		const uint32_t alignSize = 2;
-		const uint32_t offsetSize = 8;
+		const uint32_t offsetSize = 4;
 
 		void* memory	= malloc(memorySize);
 		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
@@ -87,6 +87,29 @@ namespace StackAllocatorTests
 
 		auto third  = allocator->allocate(allocSize, alignSize, 0);
 		auto fourth = allocator->allocate(allocSize, alignSize, 0);
+
+		EXPECT_EQ(first, third);
+		EXPECT_EQ(second, fourth);
+	}
+
+	TEST_F(StackAllocatorTest, CanReallocateMemoryWithOffset)
+	{
+		const uint32_t memorySize = 64;
+		const uint32_t allocSize = 10;
+		const uint32_t alignSize = 2;
+		const uint32_t offsetSize = 4;
+
+		void* memory 	= malloc(memorySize);
+		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+
+		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
+
+		allocator->deallocate(second);
+		allocator->deallocate(first);
+
+		auto third  = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto fourth = allocator->allocate(allocSize, alignSize, offsetSize);
 
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);

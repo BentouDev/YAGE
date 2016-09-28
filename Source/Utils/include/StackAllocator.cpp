@@ -27,11 +27,11 @@ namespace Memory
 
 		_usedSize 		+= size + adjustment;
 		_currentPtr 	 = reinterpret_cast<void*>(alignedAddress + size);
-		_lastAllocation  = reinterpret_cast<void*>(alignedAddress);
+		_lastAllocation  = reinterpret_cast<void*>(alignedAddress - offset);
 
 		*(reinterpret_cast<std::size_t*>(headerAddress)) = size + adjustment;
 
-		return reinterpret_cast<void*>(alignedAddress);
+		return _lastAllocation;
 	}
 
 	std::size_t StackAllocator::getAllocationSize(const void *ptr) const

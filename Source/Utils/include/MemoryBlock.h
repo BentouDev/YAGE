@@ -29,6 +29,8 @@ namespace Memory
 		{
 			std::size_t offset = 0;
 			void*		allocationAddress = _allocator.allocate(size, alignment, 0);
+			// + offset
+			// because returned addres is not aligned to it
 			return 		allocationAddress;
 		}
 
