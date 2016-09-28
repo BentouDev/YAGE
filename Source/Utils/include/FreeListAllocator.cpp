@@ -11,5 +11,25 @@ namespace Memory
 	{
 
 	}
+
+	void* FreeListAllocator::allocate(std::size_t size, std::size_t alignment, std::size_t offset)
+	{
+
+	}
+
+	std::size_t FreeListAllocator::getAllocationSize(const void *ptr) const
+	{
+
+	}
+
+	void FreeListAllocator::deallocate(void *ptr)
+	{
+
+	}
+
+	bool FreeListAllocator::hasAddress(const void *ptr) const
+	{
+
+	}
 }
 

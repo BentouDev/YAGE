@@ -1,7 +1,7 @@
 //
 // Created by mrjaqbq on 04.04.16.
 //
-
+/*
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "DeviceMock.h"
@@ -52,4 +52,4 @@ namespace EngineTests
 		delete engine;
 		delete mock;
 	}
-}
+}*/

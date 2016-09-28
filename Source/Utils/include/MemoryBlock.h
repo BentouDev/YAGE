@@ -16,13 +16,20 @@ namespace Memory
 	template <typename AllocatorType>
 	class MemoryBlock final
 	{
-		AllocatorType _allocator;
+		AllocatorType& _allocator;
 
 	public:
+		MemoryBlock(AllocatorType& allocator)
+			: _allocator(allocator)
+		{
+
+		}
+
 		void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo)
 		{
-			void*	allocationAddress = _allocator.allocate(size, alignment, 0);
-			return 	allocationAddress;
+			std::size_t offset = 0;
+			void*		allocationAddress = _allocator.allocate(size, alignment, 0);
+			return 		allocationAddress;
 		}
 
 		void deallocate(void* ptr)

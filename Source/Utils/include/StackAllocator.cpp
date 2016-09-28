@@ -22,8 +22,8 @@ namespace Memory
 			return nullptr;
 
 		std::uintptr_t currentAddress = reinterpret_cast<std::uintptr_t >(_currentPtr);
-		std::uintptr_t alignedAddress = reinterpret_cast<std::uintptr_t >(currentAddress + adjustment);
-		std::uintptr_t headerAddress  = reinterpret_cast<std::uintptr_t >(alignedAddress - headerSize);
+		std::uintptr_t alignedAddress = currentAddress + adjustment;
+		std::uintptr_t headerAddress  = alignedAddress - headerSize;
 
 		_usedSize 		+= size + adjustment;
 		_currentPtr 	 = reinterpret_cast<void*>(alignedAddress + size);

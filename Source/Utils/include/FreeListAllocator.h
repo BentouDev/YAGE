@@ -14,6 +14,10 @@ namespace Memory
 	public:
 		FreeListAllocator(void* memory, size_t size);
 
+		void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) override;
+		void 		deallocate(void* ptr) override;
+		std::size_t getAllocationSize(const void* ptr) const override;
+		bool 		hasAddress(const void* ptr) const override;
 	};
 }
 
