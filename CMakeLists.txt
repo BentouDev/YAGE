@@ -26,6 +26,10 @@ include_directories(Dependencies/GLFW/include)
 add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)
 include_directories(${GLM_INCLUDE_DIRS})
 
+# Add Assimp
+add_subdirectory(Dependencies/Assimp EXCLUDE_FROM_ALL)
+include_directories(Dependencies/Assimp/include)
+
 # Add GoogleTest
 set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
 add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)

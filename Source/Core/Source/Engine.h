@@ -24,7 +24,8 @@ namespace Logic
 
 namespace Gfx
 {
-	class BaseApi;
+	class BaseApi
+	{};
 }
 
 namespace Resources
@@ -76,7 +77,7 @@ namespace Core
 
 		borrowed_ptr<Core::Logger> Logger;
 
-		borrowed_ptr<Resources::MeshManager> MeshManager;
+	//	borrowed_ptr<Resources::MeshManager> MeshManager;
 
 		explicit Engine(std::string name);
 

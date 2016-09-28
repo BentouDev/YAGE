@@ -19,3 +19,6 @@
 [submodule "Dependencies/Spdlog"]
 	path = Dependencies/Spdlog
 	url = https://github.com/gabime/spdlog.git
+[submodule "Dependencies/Assimp"]
+	path = Dependencies/Assimp
+	url = https://github.com/assimp/assimp.git

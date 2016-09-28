@@ -4,7 +4,6 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <stdlib.h>
 #include <malloc.h>
 #include "../include/SafeDelete.h"
 
