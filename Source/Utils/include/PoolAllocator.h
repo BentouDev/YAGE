@@ -11,8 +11,29 @@ namespace Memory
 {
 	class PoolAllocator : public Allocator
 	{
+	private:
+		PoolAllocator(const PoolAllocator&) = delete;
+		PoolAllocator(PoolAllocator&&) = delete;
+
+		std::size_t _alignOffset;
+		std::size_t _typeSize;
+		std::size_t _typeAlignment;
+
+		union LinkedAddress
+		{
+			void** ptr;
+			void* next;
+		} _freePtr;
+
 	public:
-		PoolAllocator(void *memory, size_t size);
+		PoolAllocator(void *memory, std::size_t size,
+	  		std::size_t typeSize, std::size_t typeAlign, std::size_t alignOffset);
+
+		template <typename T>
+		static PoolAllocator* create(void* poolPtr, void* memory, std::size_t size, std::size_t offset)
+		{
+			return new (poolPtr) PoolAllocator(memory, size, sizeof(T), alignof(T), offset);
+		}
 
 		void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) override;
 		void 		deallocate(void* ptr) override;

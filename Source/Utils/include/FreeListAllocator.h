@@ -11,8 +11,18 @@ namespace Memory
 {
 	class FreeListAllocator : public Allocator
 	{
+	private:
+		FreeListAllocator(const FreeListAllocator&) = delete;
+		FreeListAllocator(FreeListAllocator&&) = delete;
+
+		union LinkedAddress
+		{
+			void** ptr;
+			void* next;
+		} _freePtr;
+
 	public:
-		FreeListAllocator(void* memory, size_t size);
+		FreeListAllocator(void* memory, std::size_t size);
 
 		void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) override;
 		void 		deallocate(void* ptr) override;

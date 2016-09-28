@@ -49,12 +49,12 @@ namespace Memory
 
 		_usedSize -= allocSize;
 
-		_currentPtr 	= _lastAllocation;
+		_currentPtr 	= reinterpret_cast<void*>(lastAddress - ALLOCATION_SIZE);
 		_lastAllocation = reinterpret_cast<void*>(lastAddress - allocSize);
 	}
 
 	bool StackAllocator::hasAddress(const void* ptr) const
 	{
-		return ptr >= getStart() && ptr <= _lastAllocation;
+		return ptr >= getStart() && ptr <= getEnd();
 	}
 }
