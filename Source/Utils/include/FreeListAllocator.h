@@ -15,11 +15,28 @@ namespace Memory
 		FreeListAllocator(const FreeListAllocator&) = delete;
 		FreeListAllocator(FreeListAllocator&&) = delete;
 
-		union LinkedAddress
+		struct FreeListHeader
 		{
-			void** ptr;
-			void* next;
-		} _freePtr;
+			uint32_t	size;
+			void* 	 	next;
+		};
+
+		struct AllocatedListHeader
+		{
+			uint32_t 	size;
+			void* 	 	previous;
+		};
+
+		static_assert(sizeof(FreeListHeader) == sizeof(AllocatedListHeader));
+
+		FreeListHeader* 	 _freeBlocks;
+		AllocatedListHeader* _allocatedBlocks;
+
+		void* findPreviousInFreeList(void *ptr);
+		void* findRawPreviousInFreeList(void *ptr);
+		void* findNextInAllocatedList(void *ptr);
+		void* findInFreeList(void* ptr);
+		void* findInAllocatedList(void* ptr);
 
 	public:
 		FreeListAllocator(void* memory, std::size_t size);

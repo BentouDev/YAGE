@@ -99,11 +99,15 @@ namespace PoolAllocatorTest
 		void* memory 	= malloc(memorySize);
 		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, 0);
 
+		const uint32_t emptySize = allocator->getUsedSize();
+
 		auto first  = allocator->allocate(allocSize, alignSize, 0);
 		auto second = allocator->allocate(allocSize, alignSize, 0);
 
 		allocator->deallocate(second);
 		allocator->deallocate(first);
+
+		EXPECT_EQ(emptySize, allocator->getUsedSize());
 
 		auto third  = allocator->allocate(allocSize, alignSize, 0);
 		auto fourth = allocator->allocate(allocSize, alignSize, 0);
@@ -126,11 +130,15 @@ namespace PoolAllocatorTest
 		void* memory 	= malloc(memorySize);
 		auto allocator 	= Memory::PoolAllocator::create<FooMock>(poolPtr, memory, memorySize, offsetSize);
 
+		const uint32_t emptySize = allocator->getUsedSize();
+
 		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
 
 		allocator->deallocate(second);
 		allocator->deallocate(first);
+
+		EXPECT_EQ(emptySize, allocator->getUsedSize());
 
 		auto third  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto fourth = allocator->allocate(allocSize, alignSize, offsetSize);

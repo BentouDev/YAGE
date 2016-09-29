@@ -24,7 +24,7 @@ install(DIRECTORY include/ DESTINATION include)
 export(TARGETS Utils FILE UtilsConfig.cmake)
 
 # Every library has unit tests, of course
-add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp test/HandleTests.cpp test/UsingTests.cpp test/TypeInfoTests.cpp test/LinearAllocatorTest.cpp test/StackAllocatorTest.cpp test/PoolAllocatorTest.cpp)
+add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp test/HandleTests.cpp test/UsingTests.cpp test/TypeInfoTests.cpp test/LinearAllocatorTest.cpp test/StackAllocatorTest.cpp test/PoolAllocatorTest.cpp test/FreeListAllocatorTest.cpp)
 
 target_link_libraries(UtilsTests
         Utils gtest gtest_main gmock)

@@ -1,15 +1,15 @@
 //
-// Created by bentoo on 9/28/16.
+// Created by bentoo on 9/29/16.
 //
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/StackAllocator.h"
+#include "../include/FreeListAllocator.h"
 
-namespace StackAllocatorTests
+namespace FreeListAllocatorTests
 {
-	class StackAllocatorTest : public ::testing::Test
+	class FreeListAllocatorTest : public ::testing::Test
 	{
 	public:
 		void SetUp()
@@ -23,26 +23,26 @@ namespace StackAllocatorTests
 		}
 	};
 
-	TEST_F(StackAllocatorTest, CanCreateAllocator)
+	TEST_F(FreeListAllocatorTest, CanCreateAllocator)
 	{
 		const uint32_t memorySize = 1024;
 
 		void* memory = malloc(memorySize);
-		auto allocator = new Memory::StackAllocator(memory, memorySize);
+		auto allocator = new Memory::FreeListAllocator(memory, memorySize);
 
 		EXPECT_NE(nullptr, allocator);
 
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanAllocateEnoughMemory)
+	TEST_F(FreeListAllocatorTest, CanAllocateEnoughMemory)
 	{
-		const uint32_t memorySize = 32;
+		const uint32_t memorySize = 128;
 		const uint32_t allocSize = 10;
 		const uint32_t alignSize = 2;
 
 		void* memory	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);
 
 		auto first  = allocator->allocate(allocSize, alignSize, 0);
 		auto second = allocator->allocate(allocSize, alignSize, 0);
@@ -56,15 +56,15 @@ namespace StackAllocatorTests
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanAllocateMemoryWithOffset)
+	TEST_F(FreeListAllocatorTest, CanAllocateMemoryWithOffset)
 	{
-		const uint32_t memorySize = 64;
+		const uint32_t memorySize = 128;
 		const uint32_t allocSize = 10;
 		const uint32_t alignSize = 2;
 		const uint32_t offsetSize = 4;
 
 		void* memory	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);
 
 		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
@@ -76,14 +76,14 @@ namespace StackAllocatorTests
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanReallocateMemory)
+	TEST_F(FreeListAllocatorTest, CanReallocateMemory)
 	{
-		const uint32_t memorySize = 32;
+		const uint32_t memorySize = 128;
 		const uint32_t allocSize = 10;
 		const uint32_t alignSize = 2;
 
 		void* memory 	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);
 
 		const uint32_t emptySize = allocator->getUsedSize();
 
@@ -104,15 +104,15 @@ namespace StackAllocatorTests
 		free(memory);
 	}
 
-	TEST_F(StackAllocatorTest, CanReallocateMemoryWithOffset)
+	TEST_F(FreeListAllocatorTest, CanReallocateMemoryWithOffset)
 	{
-		const uint32_t memorySize = 64;
+		const uint32_t memorySize = 128;
 		const uint32_t allocSize = 10;
 		const uint32_t alignSize = 2;
 		const uint32_t offsetSize = 4;
 
 		void* memory 	= malloc(memorySize);
-		auto allocator 	= new Memory::StackAllocator(memory, memorySize);
+		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);
 
 		const uint32_t emptySize = allocator->getUsedSize();
 
@@ -129,6 +129,43 @@ namespace StackAllocatorTests
 
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);
+
+		free(memory);
+	}
+
+	TEST_F(FreeListAllocatorTest, CanReallocateInOtherOrder)
+	{
+		const uint32_t memorySize = 1024;
+		const uint32_t allocSize = 10;
+		const uint32_t alignSize = 2;
+		const uint32_t offsetSize = 4;
+
+		void* memory 	= malloc(memorySize);
+		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);
+
+		const uint32_t emptySize = allocator->getUsedSize();
+
+		auto first	 = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto second	 = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto third	 = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto fourth	 = allocator->allocate(allocSize, alignSize, offsetSize);
+
+		allocator->deallocate(second);
+		allocator->deallocate(fourth);
+		allocator->deallocate(third);
+		allocator->deallocate(first);
+
+		EXPECT_EQ(emptySize, allocator->getUsedSize());
+
+		auto fifth	 = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto sixth	 = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto seventh = allocator->allocate(allocSize, alignSize, offsetSize);
+		auto eighth	 = allocator->allocate(allocSize, alignSize, offsetSize);
+
+		EXPECT_EQ(first, fifth);
+		EXPECT_EQ(second, sixth);
+		EXPECT_EQ(third, seventh);
+		EXPECT_EQ(fourth, eighth);
 
 		free(memory);
 	}
