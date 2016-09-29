@@ -102,27 +102,29 @@ namespace Memory
 		std::uintptr_t 	ptrAddress 	= reinterpret_cast<std::uintptr_t>(ptr);
 		void* 			rawBegin	= reinterpret_cast<void*>(ptrAddress - sizeof(AllocatedListHeader));
 
-		AllocatedListHeader* current = reinterpret_cast<AllocatedListHeader*>(findInAllocatedList(rawBegin));
+		AllocatedListHeader* asAllocated = reinterpret_cast<AllocatedListHeader*>(findInAllocatedList(rawBegin));
 
-		assert(current == rawBegin && "Cannot deallocate address thats not in allocaton list!");
+		assert(asAllocated == rawBegin && "Cannot deallocate address thats not in allocaton list!");
 
-		std::size_t allocSize 			= current->size;
+		std::size_t allocSize 			= asAllocated->size;
 		std::size_t originalAllocSize 	= allocSize - sizeof(AllocatedListHeader);
 		void* 		rawEnd 				= reinterpret_cast<void*>(ptrAddress + originalAllocSize);
 
-		FreeListHeader* asFree = reinterpret_cast<FreeListHeader*>(current);
+		FreeListHeader* asFree = reinterpret_cast<FreeListHeader*>(asAllocated);
 
-		if(_allocatedBlocks == current)
+		if(_allocatedBlocks == asAllocated)
 		{
 			_allocatedBlocks = reinterpret_cast<AllocatedListHeader*>(_allocatedBlocks->previous);
 		}
-
-		// find pointer in allocs which previous equals ours
-		// Remove from alloc list
-		AllocatedListHeader* next = reinterpret_cast<AllocatedListHeader*>(findNextInAllocatedList(current));
-		if(next != nullptr)
+		else
 		{
-			next->previous = current->previous;
+			// find pointer in allocs which previous equals ours
+			// Remove from alloc list
+			AllocatedListHeader* next = reinterpret_cast<AllocatedListHeader*>(findNextInAllocatedList(asAllocated));
+			if(next != nullptr)
+			{
+				next->previous = asAllocated->previous;
+			}
 		}
 
 		// Check for adresses that ends on ours begin
@@ -144,8 +146,8 @@ namespace Memory
 				FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(previousPtr);
 				previous->next = asFree;
 
-				assert(reinterpret_cast<std::uintptr_t>(previous) + previous->size
-					   != reinterpret_cast<std::uintptr_t>(previous->next));
+			//	assert(reinterpret_cast<std::uintptr_t>(previous) + previous->size
+			//		   != reinterpret_cast<std::uintptr_t>(previous->next) && "Invalid pointer");
 			}
 
 			asFree->next = oldHeader->next;
@@ -163,12 +165,22 @@ namespace Memory
 			// add our size to previous
 			// and set his next to our next
 			// but we don't have next
+			std::uintptr_t beginAddress = reinterpret_cast<std::uintptr_t>(rawBegin);
 			FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(freeBeforeStart);
+
 			previous->size += asFree->size;
+
+			if(reinterpret_cast<std::uintptr_t>(previous->next) < beginAddress + asFree->size)
+			{
+				assert(freeAfterEnd != nullptr && "Just checking!");
+				previous->next = asFree->next;
+			}
+
+			asFree->size = 0;
+			asFree->next = nullptr;
 
 			assert(reinterpret_cast<std::uintptr_t>(previous) + previous->size
 				   != reinterpret_cast<std::uintptr_t>(previous->next));
-
 		}
 
 		if(freeAfterEnd == nullptr && freeBeforeStart == nullptr)

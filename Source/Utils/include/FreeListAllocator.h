@@ -17,14 +17,14 @@ namespace Memory
 
 		struct FreeListHeader
 		{
-			uint32_t	size;
 			void* 	 	next;
+			uint32_t	size;
 		};
 
 		struct AllocatedListHeader
 		{
-			uint32_t 	size;
 			void* 	 	previous;
+			uint32_t 	size;
 		};
 
 		static_assert(sizeof(FreeListHeader) == sizeof(AllocatedListHeader));
