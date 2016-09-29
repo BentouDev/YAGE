@@ -27,7 +27,7 @@ namespace Memory
 			uint32_t 	size;
 		};
 
-		static_assert(sizeof(FreeListHeader) == sizeof(AllocatedListHeader));
+		static_assert(sizeof(FreeListHeader) == sizeof(AllocatedListHeader), "Both headers must have the same size");
 
 		FreeListHeader* 	 _freeBlocks;
 		AllocatedListHeader* _allocatedBlocks;
