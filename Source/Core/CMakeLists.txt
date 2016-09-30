@@ -1,13 +1,13 @@
 ## Provides basic classes, like meshes, shaders, materials
 project(Core VERSION 0.1 LANGUAGES CXX)
 
-set(OPENGL_API Source/Gfx/OpenGl/Generated/gl_core_3_3.hpp Source/Gfx/OpenGl/Generated/gl_core_3_3.cpp)
+set(OPENGL_API Source/Gfx/OpenGl/Generated/gl_core_3_3.hpp Source/Gfx/OpenGl/Generated/gl_core_3_3.cpp Source/Gfx/OpenGl/OpenGLBase.h Source/Gfx/OpenGl/OpenGLBase.cpp Source/Gfx/OpenGl/OpenGLMesh.cpp Source/Gfx/OpenGl/OpenGLMesh.h)
 
 if(OPENGL_FOUND)
     set(GRAPHICS_API ${GRAPHICS_API} ${OPENGL_API} )
 endif()
 
-add_library(Core ${GRAPHICS_API} Source/Resources/Mesh/Mesh.cpp Source/Resources/Mesh/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.h Source/Logger.h Source/Resources/Mesh/MeshFactory.cpp Source/Resources/Mesh/MeshFactory.h Source/Logic/Scene.cpp Source/Logic/Scene.h Source/Context.h Source/Context.cpp Source/Resources/Material/Material.cpp Source/Resources/Material/Material.h Source/Gfx/Buffer.cpp Source/Gfx/Buffer.h Source/Gfx/Shapes.h Source/Resources/Shader/Shader.cpp Source/Resources/Shader/Shader.h Source/Resources/Shader/ShaderFactory.h Source/Resources/Shader/ShaderFactory.cpp Source/Resources/ResourceFile.h Source/Resources/Shader/ShaderManager.h Source/Resources/Mesh/MeshManager.cpp Source/Resources/Mesh/MeshManager.h)
+add_library(Core ${GRAPHICS_API} Source/Resources/Mesh/Mesh.cpp Source/Resources/Mesh/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/Resources/Resource.h Source/Resources/ResourceManager.h ../Utils/include/Handle.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.h Source/Logger.h Source/Resources/Mesh/MeshFactory.cpp Source/Resources/Mesh/MeshFactory.h Source/Logic/Scene.cpp Source/Logic/Scene.h Source/Context.h Source/Context.cpp Source/Resources/Material/Material.cpp Source/Resources/Material/Material.h Source/Gfx/Buffer.cpp Source/Gfx/Buffer.h Source/Gfx/Shapes.h Source/Resources/Shader/Shader.cpp Source/Resources/Shader/Shader.h Source/Resources/Shader/ShaderFactory.h Source/Resources/Shader/ShaderFactory.cpp Source/Resources/ResourceFile.h Source/Resources/Shader/ShaderManager.h Source/Resources/Mesh/MeshManager.cpp Source/Resources/Mesh/MeshManager.h Source/EngineApis.h Source/EngineApis.cpp)
 add_library(Volkhvy::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC

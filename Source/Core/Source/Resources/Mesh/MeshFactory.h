@@ -19,10 +19,11 @@ namespace Resources
 
 	namespace MeshFactory
 	{
+		auto LoadMeshFromAssimp(std::string path, Core::MeshResource& mesh) -> bool;
 		auto LoadMeshFromObj(std::string path, Core::MeshResource& mesh) -> void;
 	}
 
-	template <typename T>
+	/*template <typename T>
 	class ObjParser
 	{
 		// some temporary data ?
@@ -65,7 +66,7 @@ namespace Resources
 		static auto parseMaterialUse(std::string line, Core::MeshResource& mesh) -> bool;
 
 		static auto parseSmooth(std::string line, Core::MeshResource& mesh) -> bool;
-	};
+	};*/
 }
 
 

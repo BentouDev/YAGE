@@ -4,7 +4,7 @@
 
 #ifndef GAME_DUMMYAPI_H
 #define GAME_DUMMYAPI_H
-
+/*
 #include <gmock/gmock.h>
 #include "../Source/Gfx/Api/BaseApi.h"
 #include "../Source/Gfx/Api/ShaderApi.h"
@@ -37,6 +37,6 @@ public:
 	}
 
 };
-
+*/
 
 #endif //GAME_DUMMYAPI_H

@@ -4,13 +4,39 @@
 
 #include "MeshFactory.h"
 
+/* assimp include files. These three are usually needed. */
+#include <assimp/cimport.h>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 namespace Resources
 {
 	namespace MeshFactory
 	{
+		auto LoadMeshFromAssimp(std::string path, Core::MeshResource &mesh) -> bool
+		{
+			const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
+			if(scene->HasMeshes())
+			{
+				for(int i = 0; i < scene->mNumMeshes; i++)
+				{
+					auto raw_mesh = scene->mMeshes[i];
+					Core::Submesh submesh;
+
+					// foreach property in aiMesh
+					// add property to submesh if it doesnt exist
+					// add all data there
+				}
+			}
+
+			return false;
+		}
+	}
+}
+
 //		auto CreateMeshFromObj(std::string path, Core::Engine& engine) -> Core::MeshResource::Handle
 //		{
-			// todo: resolve error with handle wanting trait instead of actual type
+			// td: resolve error with handle wanting trait instead of actual type
 //			Core::MeshResource::Handle handle;
 
 //			handle = engine.MeshManager->Create();
@@ -19,7 +45,7 @@ namespace Resources
 //			return handle;
 //		}
 
-		auto LoadMeshFromObj(Core::MeshResource& mesh) -> void
+		/*auto LoadMeshFromObj(Core::MeshResource& mesh) -> void
 		{
 			MeshObjParser parser;
 
@@ -84,4 +110,5 @@ namespace Resources
 	{
 		return true;
 	}
-}
+ }*/
+

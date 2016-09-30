@@ -5,48 +5,28 @@
 #include <algorithm>
 #include <TypeInfo.h>
 
+#include "EngineApis.h"
+
 #include "Resources/Mesh/MeshManager.h"
 #include "Resources/ResourceManager.h"
-//#include "Gfx/Api/BaseApi.h"
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
-#include "Platform.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
 #include "Config.h"
 
-#define CreateWindow
+#ifdef CreateWindow
 #undef CreateWindow
-
-#ifdef VOLKHVY_VULKAN
-// #include "Gfx/Vulkan/VulkanDevice.h"
-#endif
-
-#ifdef VOLKHVY_OPENGL
-// #include "Gfx/OpenGl/OpenGlContext.h"
 #endif
 
 namespace Core
 {
-	void Engine::initializeReferences(Engine* engine)
-	{
-		engine->Logger->Default->info("Initializing Volkhvy for '{}'...", engine->Name);
-
-#ifdef VOLKHVY_VULKAN
-//		engine->RegisterApi<Gfx::VulkanDevice>();
-#endif
-
-#ifdef VOLKHVY_OPENGL
-//		engine->RegisterApi<Gfx::OpenGlContext>();
-#endif
-	}
-
 	Engine::Engine(std::string name)
 		: Name(name),
 		  Logger(new Core::Logger()),
-		  Config(new Core::Config()),
-		  MeshManager(new Resources::MeshManager(*this))
+		  Config(new Core::Config())
+	//	  MeshManager(new Resources::MeshManager(*this))
 	{
 		Logger->setConfig(Config);
 		Config->setLogger(Logger);
@@ -83,6 +63,11 @@ namespace Core
 
 	//	_api->registerWindow(*window);
 
+        if(!OpenGL::registerWindow(*window))
+		{
+			Logger->Default->error("Unable to register window in Gfx Api!");
+		}
+
 		return *window;
 	}
 
@@ -111,6 +96,7 @@ namespace Core
 
 		if(!_api)
 		{
+			OpenGL::initialize();
 			return false;
 		}
 		else
@@ -132,12 +118,14 @@ namespace Core
 	auto Engine::InitializeApi() -> bool
 	{
 	//	return _api->initialize();
+		return true;
 	}
 
 	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
 		// todo: this should be connected to rendertarget
+		OpenGL::beginDraw(window);
 	//	_api->beginDraw(window);
 
 		// activeScene->Draw(GameTime(), (*Renderer));
@@ -148,6 +136,7 @@ namespace Core
 
 
 	//	_api->endDraw(window);
+		OpenGL::endDraw(window);
 	}
 
 	auto Engine::ProcessEvents() -> void
@@ -157,7 +146,8 @@ namespace Core
 
 	auto Engine::Resize(const Window& window) -> void
 	{
-	//	_api->resizeWindow(window);
+		OpenGL::resizeWindow(window);
+		// _api->resizeWindow(window);
 	}
 
 	auto Engine::CleanUp() -> void
@@ -180,7 +170,7 @@ namespace Core
 	//		Memory::SafeDelete(api.second);
 		}
 
-		Memory::SafeDelete(MeshManager);
+	//	Memory::SafeDelete(MeshManager);
 		Memory::SafeDelete(Renderer);
 		Memory::SafeDelete(Config);
 		Memory::SafeDelete(Logger);
