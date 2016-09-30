@@ -51,38 +51,29 @@ namespace Memory
 
 		std::uintptr_t 	smallestAddress = reinterpret_cast<std::uintptr_t>(smallest);
 		std::uintptr_t 	currentAddress	= smallestAddress + adjustment;
-		std::uintptr_t 	headerAddress	= currentAddress  - headerSize;
 		std::uintptr_t 	nextAddress 	= smallestAddress + allocationSize;
 
 		void* 			newPtr 	= reinterpret_cast<void*>(nextAddress);
 		FreeListHeader* pNew 	= reinterpret_cast<FreeListHeader*>(newPtr);
 
-		assert(smallest->next != pNew && "Deallocation has failed to join adjacent blocks!");
+	//	assert(smallest->next != pNew && "Deallocation has failed to join adjacent blocks!");
 
 		pNew->next 	= smallest->next;
 		pNew->size 	= smallest->size - allocationSize;
 
-		// new
 		// Remove from free list
-		FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(findRawPreviousInFreeList(smallest));
-		if(previous != nullptr)
-		{
-			previous->next = newPtr;
-		}
-
-		if(_freeBlocks == smallest)
-		{
-			_freeBlocks = pNew;
-		}
+		removeFromFreeList(smallest, pNew);
 
 		void* userPtr = reinterpret_cast<void*>(currentAddress - offset);
 		_usedSize 	 += allocationSize;
 
-		// Set allocation at begin of allocation list
-		AllocatedListHeader* newAlloc = reinterpret_cast<AllocatedListHeader*>(smallest);
-		newAlloc->size 		= allocationSize;
-		newAlloc->previous 	= _allocatedBlocks;
-		_allocatedBlocks 	= newAlloc;
+		// Add new allocation to list
+		{
+			AllocatedListHeader* newAlloc = reinterpret_cast<AllocatedListHeader*>(smallest);
+			newAlloc->size 		= allocationSize;
+			newAlloc->previous 	= _allocatedBlocks;
+			_allocatedBlocks 	= newAlloc;
+		}
 
 		return userPtr;
 	}
@@ -95,14 +86,11 @@ namespace Memory
 
 	void FreeListAllocator::deallocate(void *ptr)
 	{
-		// set block as free
-		// if theres a free block before or/and after this one
-		// join them into one!
-
 		std::uintptr_t 	ptrAddress 	= reinterpret_cast<std::uintptr_t>(ptr);
 		void* 			rawBegin	= reinterpret_cast<void*>(ptrAddress - sizeof(AllocatedListHeader));
 
 		AllocatedListHeader* asAllocated = reinterpret_cast<AllocatedListHeader*>(findInAllocatedList(rawBegin));
+		FreeListHeader* 	 asFree 	 = reinterpret_cast<FreeListHeader*>(asAllocated);
 
 		assert(asAllocated == rawBegin && "Cannot deallocate address thats not in allocaton list!");
 
@@ -110,22 +98,8 @@ namespace Memory
 		std::size_t originalAllocSize 	= allocSize - sizeof(AllocatedListHeader);
 		void* 		rawEnd 				= reinterpret_cast<void*>(ptrAddress + originalAllocSize);
 
-		FreeListHeader* asFree = reinterpret_cast<FreeListHeader*>(asAllocated);
-
-		if(_allocatedBlocks == asAllocated)
-		{
-			_allocatedBlocks = reinterpret_cast<AllocatedListHeader*>(_allocatedBlocks->previous);
-		}
-		else
-		{
-			// find pointer in allocs which previous equals ours
-			// Remove from alloc list
-			AllocatedListHeader* next = reinterpret_cast<AllocatedListHeader*>(findNextInAllocatedList(asAllocated));
-			if(next != nullptr)
-			{
-				next->previous = asAllocated->previous;
-			}
-		}
+		// Remove from alloc list
+		removeFromAllocatedList(asAllocated);
 
 		// Check for adresses that ends on ours begin
 		void* freeBeforeStart = findRawPreviousInFreeList(rawBegin);
@@ -134,20 +108,14 @@ namespace Memory
 
 		if(freeAfterEnd != nullptr)
 		{
-			// JOIN
-			// Increase our size
 			FreeListHeader* oldHeader = reinterpret_cast<FreeListHeader*>(freeAfterEnd);
 			asFree->size += oldHeader->size;
 
-			// Replace pointer to old memory, that was merged
 			void* previousPtr = findPreviousInFreeList(freeAfterEnd);
 			if(previousPtr != nullptr)
 			{
 				FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(previousPtr);
 				previous->next = asFree;
-
-			//	assert(reinterpret_cast<std::uintptr_t>(previous) + previous->size
-			//		   != reinterpret_cast<std::uintptr_t>(previous->next) && "Invalid pointer");
 			}
 
 			asFree->next = oldHeader->next;
@@ -160,11 +128,6 @@ namespace Memory
 
 		if(freeBeforeStart != nullptr)
 		{
-			// JOIN
-
-			// add our size to previous
-			// and set his next to our next
-			// but we don't have next
 			std::uintptr_t beginAddress = reinterpret_cast<std::uintptr_t>(rawBegin);
 			FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(freeBeforeStart);
 
@@ -172,20 +135,19 @@ namespace Memory
 
 			if(reinterpret_cast<std::uintptr_t>(previous->next) < beginAddress + asFree->size)
 			{
-				assert(freeAfterEnd != nullptr && "Just checking!");
+		//		assert(freeAfterEnd != nullptr && "Just checking!");
 				previous->next = asFree->next;
 			}
 
 			asFree->size = 0;
 			asFree->next = nullptr;
 
-			assert(reinterpret_cast<std::uintptr_t>(previous) + previous->size
-				   != reinterpret_cast<std::uintptr_t>(previous->next));
+		//	assert(reinterpret_cast<std::uintptr_t>(previous) + previous->size
+		//		   != reinterpret_cast<std::uintptr_t>(previous->next));
 		}
 
 		if(freeAfterEnd == nullptr && freeBeforeStart == nullptr)
 		{
-			// Insert in between already allocated memory. Sweet
 			asFree->next = _freeBlocks;
 			_freeBlocks = asFree;
 		}
@@ -196,6 +158,38 @@ namespace Memory
 	bool FreeListAllocator::hasAddress(const void *ptr) const
 	{
 		return ptr >= getStart() && ptr <= getEnd();
+	}
+
+	void FreeListAllocator::removeFromFreeList(FreeListHeader* oldFreeBlock, FreeListHeader* newFreeBlock)
+	{
+		if(_freeBlocks == oldFreeBlock)
+		{
+			_freeBlocks = newFreeBlock;
+		}
+		else
+		{
+			FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(findRawPreviousInFreeList(oldFreeBlock));
+			if(previous != nullptr)
+			{
+				previous->next = newFreeBlock;
+			}
+		}
+	}
+
+	void FreeListAllocator::removeFromAllocatedList(AllocatedListHeader* allocatedBlock)
+	{
+		if(_allocatedBlocks == allocatedBlock)
+		{
+			_allocatedBlocks = reinterpret_cast<AllocatedListHeader*>(_allocatedBlocks->previous);
+		}
+		else
+		{
+			AllocatedListHeader* next = reinterpret_cast<AllocatedListHeader*>(findNextInAllocatedList(allocatedBlock));
+			if(next != nullptr)
+			{
+				next->previous = allocatedBlock->previous;
+			}
+		}
 	}
 
 	void* FreeListAllocator::findPreviousInFreeList(void *ptr)

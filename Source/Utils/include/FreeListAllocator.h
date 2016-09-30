@@ -32,6 +32,9 @@ namespace Memory
 		FreeListHeader* 	 _freeBlocks;
 		AllocatedListHeader* _allocatedBlocks;
 
+		void removeFromFreeList(FreeListHeader* oldFreeBlock, FreeListHeader* newFreeBlock);
+		void removeFromAllocatedList(AllocatedListHeader* allocatedBlock);
+
 		void* findPreviousInFreeList(void *ptr);
 		void* findRawPreviousInFreeList(void *ptr);
 		void* findNextInAllocatedList(void *ptr);
