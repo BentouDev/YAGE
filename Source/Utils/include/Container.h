@@ -60,15 +60,7 @@ namespace Utils
 		}
 
 	public:
-		virtual ~Container()
-		{
-			clear();
-			//elements.clear();
-			Memory::SafeFreeArray(elements, maxSize);
-			indices.clear();
-		}
-
-		Container(uint16_t size = 16) : maxSize(size)
+		inline explicit Container(uint16_t size = 16) : maxSize(size)
 		{
 			//elements.reserve(maxSize);
 			elements = (object_t*)malloc(sizeof(object_t) * maxSize);
@@ -78,8 +70,16 @@ namespace Utils
 			initialize(this);
 		}
 
+		inline virtual ~Container()
+		{
+			clear();
+			//elements.clear();
+			Memory::SafeFreeArray(elements, maxSize);
+			indices.clear();
+		}
+
 		template <typename... Args>
-		auto create(Args... args) -> handle_t
+		inline auto create(Args... args) -> handle_t
 		{
 			Index<handle_t> &in = indices[freelistStart];
 			freelistStart = in.next;
@@ -114,7 +114,7 @@ namespace Utils
 			freelistEnd = oldIndex;
 		}
 
-		inline auto activate(handle_t handle) noexcept -> void
+		/*inline auto activate(handle_t handle) noexcept -> void
 		{
 			Index<handle_t> &in = indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
@@ -126,7 +126,7 @@ namespace Utils
 			Index<handle_t> &in = indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
 			in.active &= 0;
-		}
+		}*/
 
 		inline auto contains(handle_t handle) const noexcept -> bool
 		{
@@ -134,7 +134,7 @@ namespace Utils
 			return in.handle.key == handle.key && (in.valid & 1) && in.index != maxSize;
 		}
 
-		inline auto get(handle_t handle) -> object_t&
+		inline auto get(handle_t handle) const -> object_t&
 		{
 			const Index<handle_t> &in = indices[Trait::getIndex(handle)];
 			return elements[in.index];
@@ -145,7 +145,17 @@ namespace Utils
 			return get(handle);
 		}
 
-		inline auto operator[](uint32_t index) const -> object_t&
+		inline auto operator[](handle_t handle) const -> const object_t&
+		{
+			return get(handle);
+		}
+
+		inline auto operator[](uint32_t index) -> object_t&
+		{
+			return elements[index];
+		}
+
+		inline auto operator[](uint32_t index) const -> const object_t&
 		{
 			return elements[index];
 		}

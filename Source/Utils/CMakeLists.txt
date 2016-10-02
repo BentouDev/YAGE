@@ -1,7 +1,7 @@
 ## Provides various utilities, such as memory management, logger etc.
 project(Utils VERSION 0.1 LANGUAGES CXX)
 
-add_library(Utils include/SafeDelete.h src/Debug.cpp include/Container.h include/Color.hpp include/Using.h include/Index.h include/TypeInfo.h include/BorrowedPtr.h src/TypeInfo.cpp include/DefaultTrait.h include/File.h include/Allocator.h include/LinearAllocator.cpp include/LinearAllocator.h include/DebugSourceInfo.h include/MemoryBlock.h include/StackAllocator.cpp include/StackAllocator.h include/FreeListAllocator.cpp include/FreeListAllocator.h include/PoolAllocator.cpp include/PoolAllocator.h)
+add_library(Utils include/SafeDelete.h src/Debug.cpp include/Container.h include/Color.hpp include/Using.h include/Index.h include/TypeInfo.h include/BorrowedPtr.h src/TypeInfo.cpp include/DefaultTrait.h include/File.h include/Allocator.h src/LinearAllocator.cpp include/LinearAllocator.h include/DebugSourceInfo.h include/MemoryBlock.h src/StackAllocator.cpp include/StackAllocator.h src/FreeListAllocator.cpp include/FreeListAllocator.h src/PoolAllocator.cpp include/PoolAllocator.h include/List.h include/String.h include/StringTests.cpp)
 add_library(Volkhvy::Utils ALIAS Utils)
 
 target_include_directories(Utils PUBLIC
@@ -24,7 +24,7 @@ install(DIRECTORY include/ DESTINATION include)
 export(TARGETS Utils FILE UtilsConfig.cmake)
 
 # Every library has unit tests, of course
-add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp test/HandleTests.cpp test/UsingTests.cpp test/TypeInfoTests.cpp test/LinearAllocatorTest.cpp test/StackAllocatorTest.cpp test/PoolAllocatorTest.cpp test/FreeListAllocatorTest.cpp)
+add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp test/HandleTests.cpp test/UsingTests.cpp test/TypeInfoTests.cpp test/LinearAllocatorTest.cpp test/StackAllocatorTest.cpp test/PoolAllocatorTest.cpp test/FreeListAllocatorTest.cpp test/ListTests.cpp)
 
 target_link_libraries(UtilsTests
         Utils gtest gtest_main gmock)

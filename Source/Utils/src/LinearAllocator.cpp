@@ -13,6 +13,11 @@ namespace Memory
 
 	}
 
+	LinearAllocator::~LinearAllocator()
+	{
+
+	}
+
 	void LinearAllocator::clear()
 	{
 		_usedSize = 0;
@@ -38,6 +43,12 @@ namespace Memory
 	std::size_t LinearAllocator::getAllocationSize(const void* ptr) const
 	{
 		return 0;
+	}
+
+	void* LinearAllocator::resize(void* ptr, std::size_t newSize)
+	{
+		assert(false && "Cannot resize in linear allocator!");
+		return nullptr;
 	}
 
 	void LinearAllocator::deallocate(void* ptr)

@@ -19,7 +19,7 @@ namespace Utils
 	};
 }
 
-#define DEBUG_SOURCE_INFO_EXPLICIT(file, line) DebugSourceInfo(file, line)
+#define DEBUG_SOURCE_INFO_EXPLICIT(file, line) Utils::DebugSourceInfo(file, line)
 #define DEBUG_SOURCE_INFO DEBUG_SOURCE_INFO_EXPLICIT(__FILE__, __LINE__)
 
 #endif //GAME_DEBUGSOURCEINFO_H
