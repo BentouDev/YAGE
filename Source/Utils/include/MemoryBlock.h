@@ -86,11 +86,11 @@ namespace Memory
 		}
 	};
 
-	template <typename MemoryBlock, typename T>
+	/*template <typename MemoryBlock, typename T>
 	T* CreateNew(MemoryBlock& block, const Utils::DebugSourceInfo& source)
 	{
 		return new(block.allocate(sizeof(T), alignof(T), source)) T();
-	}
+	}*/
 
 	template <typename MemoryBlock, typename T, typename ... Args>
 	T* CreateNew(MemoryBlock& block, Args ... args, const Utils::DebugSourceInfo& source)

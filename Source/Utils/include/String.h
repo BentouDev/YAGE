@@ -6,6 +6,8 @@
 #define GAME_STRING_H
 
 #include <type_traits>
+#include <cstring>
+#include <cctype>
 #include "List.h"
 
 namespace Utils
