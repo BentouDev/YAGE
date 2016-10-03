@@ -148,7 +148,7 @@ namespace ListTests
 			list->add(i);
 
 		EXPECT_EQ(list->size(), listCapacity);
-		EXPECT_LE(list->capacity(), list->size());
+		EXPECT_LE(list->size(), list->capacity());
 
 		free(memoryPtr);
 	}

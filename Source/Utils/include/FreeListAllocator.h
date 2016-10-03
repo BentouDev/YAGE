@@ -11,8 +11,7 @@ namespace Memory
 {
 	class FreeListAllocator : public Allocator
 	{
-	public:
-
+	private:
 		struct FreeListHeader
 		{
 			void* 	 next;
@@ -20,30 +19,17 @@ namespace Memory
 			uint8_t  adjustment;
 		};
 
-		struct AllocatedListHeader
-		{
-			void* 	 previous;
-			uint32_t size;
-			uint8_t	 adjustment;
-		};
-
-	//	static_assert(sizeof(FreeListHeader) == sizeof(AllocatedListHeader), "Both headers must have the same size");
-
-	private:
 		FreeListAllocator(const FreeListAllocator&) = delete;
 		FreeListAllocator(FreeListAllocator&&) = delete;
 
-		FreeListHeader* 	 _freeBlocks;
-		AllocatedListHeader* _allocatedBlocks;
+		FreeListHeader* _freeBlocks;
 
-		void removeFromFreeList(FreeListHeader* oldFreeBlock, FreeListHeader* newFreeBlock);
-		void removeFromAllocatedList(AllocatedListHeader* allocatedBlock);
+		void 			doRemoveFromList(FreeListHeader* list, FreeListHeader* ptr);
+		FreeListHeader* getListEnd(FreeListHeader* list);
 
 		void* findPreviousInFreeList(void *ptr);
 		void* findRawPreviousInFreeList(void *ptr);
-		void* findNextInAllocatedList(void *ptr);
 		void* findInFreeList(void* ptr);
-		void* findInAllocatedList(void* ptr);
 
 	public:
 		FreeListAllocator(void* memory, std::size_t size);
