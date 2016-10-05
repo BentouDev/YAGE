@@ -3,12 +3,17 @@
 //
 
 #include <cassert>
-#include "LinearAllocator.h"
+#include "Utils/LinearAllocator.h"
 
 namespace Memory
 {
 	LinearAllocator::LinearAllocator(void* memory, std::size_t size)
 		: _currentPtr(memory), Allocator(memory, size)
+	{
+
+	}
+
+	LinearAllocator::~LinearAllocator()
 	{
 
 	}
@@ -38,6 +43,12 @@ namespace Memory
 	std::size_t LinearAllocator::getAllocationSize(const void* ptr) const
 	{
 		return 0;
+	}
+
+	void* LinearAllocator::resize(void* ptr, std::size_t newSize)
+	{
+		assert(false && "Cannot resize in linear allocator!");
+		return nullptr;
 	}
 
 	void LinearAllocator::deallocate(void* ptr)

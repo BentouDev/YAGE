@@ -75,7 +75,7 @@ namespace Core
 		}
 		catch(...)
 		{
-			logger->Default->alert("Uncaught exception while parsing config!");
+			logger->Default->critical("Uncaught exception while parsing config!");
 		}
 
 		f.close();

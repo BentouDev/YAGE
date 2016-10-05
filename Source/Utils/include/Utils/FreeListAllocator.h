@@ -12,39 +12,30 @@ namespace Memory
 	class FreeListAllocator : public Allocator
 	{
 	private:
+		struct FreeListHeader
+		{
+			void* 	 next;
+			uint32_t size;
+			uint8_t  adjustment;
+		};
+
 		FreeListAllocator(const FreeListAllocator&) = delete;
 		FreeListAllocator(FreeListAllocator&&) = delete;
 
-		struct FreeListHeader
-		{
-			void* 	 	next;
-			uint32_t	size;
-		};
+		FreeListHeader* _freeBlocks;
 
-		struct AllocatedListHeader
-		{
-			void* 	 	previous;
-			uint32_t 	size;
-		};
-
-		static_assert(sizeof(FreeListHeader) == sizeof(AllocatedListHeader), "Both headers must have the same size");
-
-		FreeListHeader* 	 _freeBlocks;
-		AllocatedListHeader* _allocatedBlocks;
-
-		void removeFromFreeList(FreeListHeader* oldFreeBlock, FreeListHeader* newFreeBlock);
-		void removeFromAllocatedList(AllocatedListHeader* allocatedBlock);
+		void 			doRemoveFromList(FreeListHeader* list, FreeListHeader* ptr);
+		FreeListHeader* getListEnd(FreeListHeader* list);
 
 		void* findPreviousInFreeList(void *ptr);
 		void* findRawPreviousInFreeList(void *ptr);
-		void* findNextInAllocatedList(void *ptr);
 		void* findInFreeList(void* ptr);
-		void* findInAllocatedList(void* ptr);
 
 	public:
 		FreeListAllocator(void* memory, std::size_t size);
 
 		void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) override;
+		void*		resize(void* ptr, std::size_t newSize) override;
 		void 		deallocate(void* ptr) override;
 		std::size_t getAllocationSize(const void* ptr) const override;
 		bool 		hasAddress(const void* ptr) const override;

@@ -5,7 +5,7 @@
 #ifndef VOLKHVY_VIEWPORT_H
 #define VOLKHVY_VIEWPORT_H
 
-#include <DefaultTrait.h>
+#include <Utils/DefaultTrait.h>
 #include "RenderTarget.h"
 #include "Rectangle.h"
 

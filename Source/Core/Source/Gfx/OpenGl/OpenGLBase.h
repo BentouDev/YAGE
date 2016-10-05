@@ -7,6 +7,10 @@
 
 #include "Generated/gl_core_3_3.hpp"
 
+#ifdef CREATE_NEW
+#undef CREATE_NEW
+#endif
+
 #ifdef CreateWindow
 #undef CreateWindow
 #endif

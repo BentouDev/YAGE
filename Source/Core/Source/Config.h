@@ -7,8 +7,8 @@
 
 #include <string>
 #include <json.hpp>
-#include <Handle.h>
-#include <BorrowedPtr.h>
+#include <Utils/Handle.h>
+#include <Utils/BorrowedPtr.h>
 
 namespace Core
 {

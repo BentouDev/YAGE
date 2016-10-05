@@ -4,12 +4,14 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Handle.h>
-#include "../include/Container.h"
+
+#include "Utils/FreeListAllocator.h"
+#include "Utils/Handle.h"
+#include "Utils/Container.h"
 
 namespace MemoryTests
 {
-	class MyFooMock;
+	typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
 
 	class MyFooMock
 	{
@@ -94,8 +96,12 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanCreateContainer)
 	{
+		unsigned memorySize = 4096;
 		unsigned count = 32;
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(count);
+		void* memory = malloc(memorySize);
+		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
+
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(memoryBlock, count);
 
 		ASSERT_NE(container, nullptr);
 
@@ -104,7 +110,12 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanCreateObject)
 	{
-		Utils::Container<FooTrait> container(32);
+		unsigned memorySize = 4096;
+		unsigned count = 32;
+		void* memory = malloc(memorySize);
+		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
+
+		Utils::Container<FooTrait> container(memoryBlock, count);
 		auto handle = container.create(13);
 
 		ASSERT_NE(handle.key, 0);
@@ -116,7 +127,12 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanRemoveObject)
 	{
-		Utils::Container<FooTrait> container(32);
+		unsigned memorySize = 4096;
+		unsigned count = 32;
+		void* memory = malloc(memorySize);
+		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
+
+		Utils::Container<FooTrait> container(memoryBlock, count);
 		auto handle = container.create();
 		container.remove(handle);
 
@@ -125,7 +141,12 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanReuseObject)
 	{
-		Utils::Container<FooTrait> container(32);
+		unsigned memorySize = 4096;
+		unsigned count = 32;
+		void* memory = malloc(memorySize);
+		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
+
+		Utils::Container<FooTrait> container(memoryBlock, count);
 
 		auto oldHandle = container.create();
 		container.remove(oldHandle);
@@ -138,7 +159,12 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanFreeContainer)
 	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(32);
+		unsigned memorySize = 4096;
+		unsigned count = 32;
+		void* memory = malloc(memorySize);
+		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
+
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(memoryBlock, count);
 		auto handle = container->create();
 		auto& obj = container->get(handle);
 

@@ -7,7 +7,7 @@
 
 #include <string>
 #include <vector>
-#include <Container.h>
+#include <Utils/Container.h>
 #include "Gfx/Viewport.h"
 #include "Gfx/RenderTarget.h"
 #include "Context.h"
@@ -36,7 +36,7 @@ namespace Core
 
 		// Replace with handle/pointer, store viewport elswhere (renderer? context?)
 		std::vector<Gfx::Viewport*> Viewports;
-		Utils::Container<typename Gfx::Viewport::Trait> _viewports;
+	//	Utils::Container<typename Gfx::Viewport::Trait> _viewports;
 
 		//Todo: wrap handle into smart pointer
 		GLFWwindow* hWindow;

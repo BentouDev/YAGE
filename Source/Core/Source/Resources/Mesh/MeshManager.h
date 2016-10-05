@@ -6,7 +6,7 @@
 #define GAME_MESHMANAGER_H
 
 // #include <Gfx/Api/BufferApi.h>
-#include <Container.h>
+#include <Utils/Container.h>
 #include "Mesh.h"
 
 namespace Core
@@ -14,7 +14,7 @@ namespace Core
     class Engine;
 }
 
-namespace Resources
+/*namespace Resources
 {
     class MeshManager
     {
@@ -28,6 +28,6 @@ namespace Resources
         auto getMesh(Core::MeshResource::handle_t handle) -> Core::MeshResource&;
     //    auto uploadMesh(Core::MeshResource::handle_t handle, Gfx::BufferUsage usage) -> void;
     };
-}
+}*/
 
 #endif //GAME_MESHMANAGER_H

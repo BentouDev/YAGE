@@ -3,7 +3,7 @@
 //
 
 #include <assert.h>
-#include "PoolAllocator.h"
+#include "Utils/PoolAllocator.h"
 
 namespace Memory
 {
@@ -57,6 +57,12 @@ namespace Memory
 	std::size_t PoolAllocator::getAllocationSize(const void *ptr) const
 	{
 		return _typeSize + _alignOffset;
+	}
+
+	void* PoolAllocator::resize(void* ptr, std::size_t newSize)
+	{
+		assert(false && "Unable to resize in pool allocator!");
+		return nullptr;
 	}
 
 	void PoolAllocator::deallocate(void *ptr)

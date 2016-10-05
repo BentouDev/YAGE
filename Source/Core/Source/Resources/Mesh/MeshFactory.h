@@ -17,11 +17,11 @@ namespace Resources
 {
 	class MeshParser;
 
-	namespace MeshFactory
+	/*namespace MeshFactory
 	{
 		auto LoadMeshFromAssimp(std::string path, Core::MeshResource& mesh) -> bool;
 		auto LoadMeshFromObj(std::string path, Core::MeshResource& mesh) -> void;
-	}
+	}*/
 
 	/*template <typename T>
 	class ObjParser

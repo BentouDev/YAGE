@@ -7,7 +7,7 @@
 
 #include <map>
 #include <string>
-#include <DefaultTrait.h>
+#include <Utils/DefaultTrait.h>
 #include "Resources/Resource.h"
 
 #include <vector>

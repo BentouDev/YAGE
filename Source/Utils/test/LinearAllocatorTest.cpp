@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/LinearAllocator.h"
+#include "Utils/LinearAllocator.h"
 
 namespace LinearAllocatorTests
 {

@@ -9,8 +9,10 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
+
 #include "Index.h"
 #include "SafeDelete.h"
+#include "MemoryBlock.h"
 
 namespace Utils
 {
@@ -25,6 +27,8 @@ namespace Utils
 	private:
 		//std::vector<object_t> 		 elements;
 		//std::vector<Index<handle_t>> indices;
+		Memory::MemoryBlockBase& _memory;
+	//	Utils::List<Index<handle_t>> indices;
 		std::vector<Index<handle_t>> indices;
 		object_t* elements;
 
@@ -60,26 +64,49 @@ namespace Utils
 		}
 
 	public:
-		virtual ~Container()
-		{
-			clear();
-			//elements.clear();
-			Memory::SafeFreeArray(elements, maxSize);
-			indices.clear();
-		}
-
-		Container(uint16_t size = 16) : maxSize(size)
+		inline explicit Container(Memory::MemoryBlockBase& memory, uint16_t size = 16) : _memory(memory), maxSize(size)
 		{
 			//elements.reserve(maxSize);
-			elements = (object_t*)malloc(sizeof(object_t) * maxSize);
+			elements = (object_t*)memory.allocate(sizeof(object_t) * maxSize, alignof(object_t), DEBUG_SOURCE_INFO);
+			//elements = (object_t*)malloc(sizeof(object_t) * maxSize);
 			memset(elements, 0, sizeof(object_t) * maxSize);
 			indices.reserve(maxSize);
 
 			initialize(this);
 		}
 
+		inline virtual ~Container()
+		{
+			clear();
+			//elements.clear();
+			//Memory::SafeFreeArray(elements, maxSize);
+			for(uint32_t i = 0; i < maxSize; i++)
+			{
+				unsigned char* current, result = 0;
+				object_t* start = &elements[i];
+				object_t* end 	= start + 1;
+
+				for(current  = reinterpret_cast<unsigned char*>(start);
+					current != reinterpret_cast<unsigned char*>(end);
+					current++)
+				{
+					result |= *current;
+				}
+
+				bool isZeroed = !result;
+				if(!isZeroed)
+				{
+					elements[i].~object_t();
+					memset(&elements[i], 0, sizeof(object_t));
+				}
+			}
+
+			_memory.deallocate(elements);
+			indices.clear();
+		}
+
 		template <typename... Args>
-		auto create(Args... args) -> handle_t
+		inline auto create(Args... args) -> handle_t
 		{
 			Index<handle_t> &in = indices[freelistStart];
 			freelistStart = in.next;
@@ -114,7 +141,7 @@ namespace Utils
 			freelistEnd = oldIndex;
 		}
 
-		inline auto activate(handle_t handle) noexcept -> void
+		/*inline auto activate(handle_t handle) noexcept -> void
 		{
 			Index<handle_t> &in = indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
@@ -126,7 +153,7 @@ namespace Utils
 			Index<handle_t> &in = indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
 			in.active &= 0;
-		}
+		}*/
 
 		inline auto contains(handle_t handle) const noexcept -> bool
 		{
@@ -134,7 +161,7 @@ namespace Utils
 			return in.handle.key == handle.key && (in.valid & 1) && in.index != maxSize;
 		}
 
-		inline auto get(handle_t handle) -> object_t&
+		inline auto get(handle_t handle) const -> object_t&
 		{
 			const Index<handle_t> &in = indices[Trait::getIndex(handle)];
 			return elements[in.index];
@@ -145,7 +172,17 @@ namespace Utils
 			return get(handle);
 		}
 
-		inline auto operator[](uint32_t index) const -> object_t&
+		inline auto operator[](handle_t handle) const -> const object_t&
+		{
+			return get(handle);
+		}
+
+		inline auto operator[](uint32_t index) -> object_t&
+		{
+			return elements[index];
+		}
+
+		inline auto operator[](uint32_t index) const -> const object_t&
 		{
 			return elements[index];
 		}

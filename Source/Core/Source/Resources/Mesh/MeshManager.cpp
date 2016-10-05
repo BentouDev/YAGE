@@ -8,7 +8,7 @@
 
 namespace Resources
 {
-    MeshManager::MeshManager(Core::Engine &engine) : engine(engine)
+/*    MeshManager::MeshManager(Core::Engine &engine) : engine(engine)
     {
 
     }
@@ -21,7 +21,7 @@ namespace Resources
     auto MeshManager::getMesh(Core::MeshResource::handle_t handle) -> Core::MeshResource&
     {
         return meshes.get(handle);
-    }
+    }*/
 
     /*auto MeshManager::uploadMesh(Core::MeshResource::handle_t handle, Gfx::BufferUsage usage) -> void
     {

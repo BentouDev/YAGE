@@ -5,8 +5,8 @@
 #include <exception>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Handle.h>
-#include "Using.h"
+#include "Utils/Handle.h"
+#include "Utils/Using.h"
 
 namespace orgMem = Memory;
 

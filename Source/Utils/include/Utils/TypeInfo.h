@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <atomic>
 #include <string>
+#include <assert.h>
 
 #define AS_STRING(arg) #arg
 
@@ -30,6 +31,7 @@ public:
 	static auto id() noexcept -> type_t
 	{
 		static type_t id = TypeCounter::_lastTypeId++;
+		assert(id != 255 && "Danger, typeId exceded uint8_t maximum!");
 		return id;
 	};
 

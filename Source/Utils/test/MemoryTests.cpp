@@ -5,14 +5,18 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/SafeDelete.h"
+#include "Utils/StackAllocator.h"
+#include "Utils/SafeDelete.h"
+#include "Utils/MemoryBlock.h"
 
 namespace MemoryTests
 {
+	typedef Memory::MemoryBlock<Memory::StackAllocator> MockMemory;
+
 	class FooMock
 	{
 	public:
-		MOCK_METHOD0(Die, void());
+		MOCK_METHOD0(Die,  void());
 
 		~FooMock()
 		{
@@ -44,7 +48,7 @@ namespace MemoryTests
 
 		Memory::SafeDelete(foo);
 
-		EXPECT_EQ(foo, nullptr);
+		EXPECT_EQ(nullptr, foo);
 	}
 
 	TEST_F(MemoryTest, CanSafeDeleteTwice)
@@ -56,7 +60,7 @@ namespace MemoryTests
 		Memory::SafeDelete(foo);
 		Memory::SafeDelete(foo);
 
-		EXPECT_EQ(foo, nullptr);
+		EXPECT_EQ(nullptr, foo);
 	}
 
 	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjects)
@@ -72,7 +76,7 @@ namespace MemoryTests
 
 		Memory::SafeDeleteArray(foos);
 
-		EXPECT_EQ(foos, nullptr);
+		EXPECT_EQ(nullptr, foos);
 	}
 
 	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjectsTwice)
@@ -89,7 +93,7 @@ namespace MemoryTests
 		Memory::SafeDeleteArray(foos);
 		Memory::SafeDeleteArray(foos);
 
-		EXPECT_EQ(foos, nullptr);
+		EXPECT_EQ(nullptr, foos);
 	}
 
 	TEST_F(MemoryTest, CanSafeFree)
@@ -101,7 +105,7 @@ namespace MemoryTests
 
 		Memory::SafeFree(foo);
 
-		EXPECT_EQ(foo, nullptr);
+		EXPECT_EQ(nullptr, foo);
 	}
 
 	TEST_F(MemoryTest, CanSafeFreeTwice)
@@ -114,7 +118,7 @@ namespace MemoryTests
 		Memory::SafeFree(foo);
 		Memory::SafeFree(foo);
 
-		EXPECT_EQ(foo, nullptr);
+		EXPECT_EQ(nullptr, foo);
 	}
 
 	TEST_F(MemoryTest, CanSafeFreeArray)
@@ -130,7 +134,7 @@ namespace MemoryTests
 
 		Memory::SafeFreeArray(memory, count);
 
-		EXPECT_EQ(memory, nullptr);
+		EXPECT_EQ(nullptr, memory);
 	}
 
 	TEST_F(MemoryTest, CanSafeFreeArrayTwice)
@@ -147,6 +151,37 @@ namespace MemoryTests
 		Memory::SafeFreeArray(memory, count);
 		Memory::SafeFreeArray(memory, count);
 
-		EXPECT_EQ(memory, nullptr);
+		EXPECT_EQ(nullptr, memory);
+	}
+
+	TEST_F(MemoryTest, CanAllocateMemoryFromBlock)
+	{
+		const std::size_t memorySize = 1024;
+		void*			  memoryPtr  = malloc(memorySize);
+
+		MockMemory block(*new Memory::StackAllocator(memoryPtr, memorySize));
+		FooMock* foo = CREATE_NEW(block, FooMock);
+
+		EXPECT_NE(nullptr, foo);
+
+		free(memoryPtr);
+	}
+
+	TEST_F(MemoryTest, CanAllocateAndFreeMemoryFromBlock)
+	{
+		const std::size_t memorySize = 1024;
+		void*			  memoryPtr  = malloc(memorySize);
+		FooMock* 		  foo 		 = nullptr;
+
+		MockMemory block(*new Memory::StackAllocator(memoryPtr, memorySize));
+		foo = CREATE_NEW(block, FooMock);
+
+		EXPECT_CALL(*foo, Die());
+
+		Memory::Delete(block, foo);
+
+		EXPECT_EQ(nullptr, foo);
+
+		free(memoryPtr);
 	}
 }

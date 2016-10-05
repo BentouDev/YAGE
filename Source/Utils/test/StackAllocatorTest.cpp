@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/StackAllocator.h"
+#include "Utils/StackAllocator.h"
 
 namespace StackAllocatorTests
 {
@@ -50,6 +50,8 @@ namespace StackAllocatorTests
 		std::uintptr_t firstAddress  = reinterpret_cast<std::uintptr_t >(first);
 		std::uintptr_t secondAddress = reinterpret_cast<std::uintptr_t >(second);
 
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(first));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(second));
 		EXPECT_TRUE(secondAddress > firstAddress);
 		EXPECT_FALSE(firstAddress + allocSize > secondAddress);
 
@@ -69,6 +71,8 @@ namespace StackAllocatorTests
 		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
 
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(first));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(second));
 		EXPECT_TRUE(second > first);
 		EXPECT_FALSE(reinterpret_cast<std::uintptr_t>(first) + allocSize + offsetSize
 					 > reinterpret_cast<std::uintptr_t >(second));
@@ -90,6 +94,9 @@ namespace StackAllocatorTests
 		auto first  = allocator->allocate(allocSize, alignSize, 0);
 		auto second = allocator->allocate(allocSize, alignSize, 0);
 
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(first));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(second));
+
 		allocator->deallocate(second);
 		allocator->deallocate(first);
 
@@ -98,6 +105,8 @@ namespace StackAllocatorTests
 		auto third  = allocator->allocate(allocSize, alignSize, 0);
 		auto fourth = allocator->allocate(allocSize, alignSize, 0);
 
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(third));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(fourth));
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);
 
@@ -119,6 +128,9 @@ namespace StackAllocatorTests
 		auto first  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto second = allocator->allocate(allocSize, alignSize, offsetSize);
 
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(first));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(second));
+
 		allocator->deallocate(second);
 		allocator->deallocate(first);
 
@@ -127,6 +139,8 @@ namespace StackAllocatorTests
 		auto third  = allocator->allocate(allocSize, alignSize, offsetSize);
 		auto fourth = allocator->allocate(allocSize, alignSize, offsetSize);
 
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(third));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(fourth));
 		EXPECT_EQ(first, third);
 		EXPECT_EQ(second, fourth);
 

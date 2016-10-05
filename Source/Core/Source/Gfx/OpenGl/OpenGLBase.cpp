@@ -19,6 +19,8 @@ namespace OpenGL
 		// todo: pick from config
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, gl::TRUE_);
 
 		return true;
 	}
@@ -37,8 +39,11 @@ namespace OpenGL
 
     bool registerWindow(const Core::Window& window)
     {
+		glfwMakeContextCurrent(window.hWindow);
 		if(!didLoadFunctions)
-        	didLoadFunctions = gl::sys::LoadFunctions();
+		{
+			didLoadFunctions = gl::sys::LoadFunctions();
+		}
 
         return didLoadFunctions;
     }

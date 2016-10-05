@@ -10,23 +10,65 @@
 #include <map>
 
 #include <glm/vec3.hpp>
-#include <Index.h>
-#include <BorrowedPtr.h>
-#include <DefaultTrait.h>
-#include <SafeDelete.h>
-
-// #include "Gfx/Buffer.h"
+#include <Utils/Index.h>
+#include <Utils/List.h>
+#include <Utils/String.h>
+#include <Utils/BorrowedPtr.h>
+#include <Utils/DefaultTrait.h>
+#include <Utils/SafeDelete.h>
 
 #include "../Resource.h"
 
 namespace Core
 {
+	class MeshApi
+	{
+		// Handles to api objects
+	};
+
+	class MeshData
+	{
+		// Raw arrays of data
+	};
+
+	class MeshFile
+	{
+	public:
+	//	inline explicit MeshFile(const Utils::String& path)
+	//		: filePath(path) { }
+
+	//	Utils::String filePath;
+	};
+
+	class Submesh
+	{
+		MeshApi* 	Api;
+		MeshData* 	Data;
+		// MaterialHandle
+
+	public:
+		Submesh() : Api(nullptr), Data(nullptr) { }
+	};
+
+	DECL_RESOURCE(Mesh)
+	{
+		MeshFile*	File;
+
+		Memory::MemoryBlockBase& memory;
+
+	public:
+		inline explicit Mesh(Memory::MemoryBlockBase& memory);
+		inline ~Mesh() { }
+
+		Utils::List<Submesh> Submeshes;
+	};
+
 	// data may be interleaved or separated
 	// how do I provide one api to maintain this?
 	// thus, there can be one or more buffers
 	// when only one, VAO will be present
 	// anyway, indexing may be used
-	class Submesh
+	/*class Submesh
 	{
 	//	Gfx::BufferScheme scheme;
 
@@ -67,7 +109,7 @@ namespace Core
 		}
 	};
 
-	class MeshTrait : public Utils::DefaultTrait<MeshResource> {};
+	class MeshTrait : public Utils::DefaultTrait<MeshResource> {};*/
 }
 
 #endif
