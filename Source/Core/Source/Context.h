@@ -5,7 +5,7 @@
 #ifndef GAME_CONTEXT_H
 #define GAME_CONTEXT_H
 
-#include <BorrowedPtr.h>
+#include <Utils/BorrowedPtr.h>
 
 namespace Core
 {

@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include <DefaultTrait.h>
+#include <Utils/DefaultTrait.h>
 
 #include "../Resource.h"
 // #include "../../Gfx/Api/ShaderApi.h"

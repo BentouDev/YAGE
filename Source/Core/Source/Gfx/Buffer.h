@@ -6,10 +6,11 @@
 #define GAME_BUFFER_H
 
 #include <cstdint>
-#include <TypeInfo.h>
 #include <map>
 #include <vector>
-#include <BorrowedPtr.h>
+
+#include <Utils/TypeInfo.h>
+#include <Utils/BorrowedPtr.h>
 
 namespace Gfx
 {

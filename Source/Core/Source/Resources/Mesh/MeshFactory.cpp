@@ -8,12 +8,13 @@
 #include <assimp/cimport.h>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+#include <assimp/Importer.hpp>
 
 namespace Resources
 {
 	namespace MeshFactory
 	{
-		auto LoadMeshFromAssimp(std::string path, Core::MeshResource &mesh) -> bool
+/*		auto LoadMeshFromAssimp(std::string path, Core::MeshResource &mesh) -> bool
 		{
 			const aiScene* scene = aiImportFile(path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 			if(scene->HasMeshes())
@@ -30,7 +31,7 @@ namespace Resources
 			}
 
 			return false;
-		}
+		}*/
 	}
 }
 

@@ -5,7 +5,7 @@
 #ifndef VOLKHVY_RENDERTARGET_H
 #define VOLKHVY_RENDERTARGET_H
 
-#include <Color.hpp>
+#include <Utils/Color.hpp>
 
 namespace Gfx
 {

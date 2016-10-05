@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <Handle.h>
-#include "../include/Container.h"
+#include "Utils/Handle.h"
+#include "Utils/Container.h"
 
 namespace MemoryTests
 {

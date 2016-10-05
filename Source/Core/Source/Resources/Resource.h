@@ -6,9 +6,9 @@
 #define VOLKHVY_RESOURCE_H
 
 #include <string>
-#include <Index.h>
-#include <TypeInfo.h>
-#include <Handle.h>
+#include <Utils/Index.h>
+#include <Utils/TypeInfo.h>
+#include <Utils/Handle.h>
 
 #define DECL_RESOURCE(name) class name : public Core::Resource<name>
 
@@ -17,8 +17,6 @@ namespace Core
 	template<typename Res>
 	class Resource
 	{
-		const void* _id;
-
 	public:
 		using handle_t = Utils::Handle<Res>;
 

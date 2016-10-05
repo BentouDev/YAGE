@@ -5,8 +5,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include <FreeListAllocator.h>
-#include "../include/List.h"
+#include "Utils/FreeListAllocator.h"
+#include "Utils/List.h"
 
 namespace ListTests
 {

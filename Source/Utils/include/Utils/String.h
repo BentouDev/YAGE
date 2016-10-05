@@ -7,6 +7,7 @@
 
 #include <type_traits>
 #include <cstring>
+#include <cstdio>
 #include <cctype>
 #include "List.h"
 
@@ -37,7 +38,7 @@ namespace Utils
 
 		inline String& append(const char* c_str)
 		{
-			return append(c_str, strlen(c_str));
+			return append(c_str, std::strlen(c_str));
 		}
 
 		const char* c_str()
@@ -55,7 +56,7 @@ namespace Utils
 		String& stackSprintf(const char* format, const T& value)
 		{
 			char buffer[size];
-			snprintf(buffer, size, format, value);
+			std::snprintf(buffer, size, format, value);
 			return append(buffer);
 		}
 

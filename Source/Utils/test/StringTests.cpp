@@ -5,9 +5,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "MemoryBlock.h"
-#include "FreeListAllocator.h"
-#include "String.h"
+#include "Utils/MemoryBlock.h"
+#include "Utils/FreeListAllocator.h"
+#include "Utils/String.h"
 
 namespace StringTests
 {

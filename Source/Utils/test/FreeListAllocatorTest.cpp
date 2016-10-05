@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/FreeListAllocator.h"
+#include "Utils/FreeListAllocator.h"
 
 namespace FreeListAllocatorTests
 {

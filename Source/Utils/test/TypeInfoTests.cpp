@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <TypeInfo.h>
+#include "Utils/TypeInfo.h"
 
 namespace TypeInfoTests
 {

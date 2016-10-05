@@ -6,7 +6,7 @@
 #define GAME_RENDERER_H
 
 #include "../Context.h"
-#include <BorrowedPtr.h>
+#include <Utils/BorrowedPtr.h>
 
 namespace Logic
 {

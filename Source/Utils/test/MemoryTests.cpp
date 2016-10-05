@@ -5,9 +5,9 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include <StackAllocator.h>
-#include "../include/SafeDelete.h"
-#include "../include/MemoryBlock.h"
+#include "Utils/StackAllocator.h"
+#include "Utils/SafeDelete.h"
+#include "Utils/MemoryBlock.h"
 
 namespace MemoryTests
 {

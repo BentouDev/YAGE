@@ -6,8 +6,8 @@
 #define GAME_DEFAULTTRAIT_H
 
 #include <cstdint>
-#include <Index.h>
-#include <Handle.h>
+#include "Index.h"
+#include "Handle.h"
 
 namespace Utils
 {

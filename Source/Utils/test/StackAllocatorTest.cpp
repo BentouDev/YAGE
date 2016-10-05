@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/StackAllocator.h"
+#include "Utils/StackAllocator.h"
 
 namespace StackAllocatorTests
 {

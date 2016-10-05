@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include "../include/PoolAllocator.h"
+#include "Utils/PoolAllocator.h"
 
 namespace PoolAllocatorTest
 {
