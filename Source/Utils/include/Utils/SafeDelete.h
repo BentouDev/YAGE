@@ -65,11 +65,12 @@ namespace Memory
 		{
 			for(uint32_t i = 0; i < count; i++)
 			{
-				unsigned long long *current, result = 0;
-				T* mm = &pVal[i];
+				unsigned char* current, result = 0;
+				T* start = &pVal[i];
+				T* end	 = start + 1;
 
-				for(current = reinterpret_cast<unsigned long long *>(mm);
-					current != reinterpret_cast<unsigned long long *>(mm+1);
+				for(current  = reinterpret_cast<unsigned char*>(start);
+					current != reinterpret_cast<unsigned char*>(end);
 					current++)
 				{
 					result |= *current;

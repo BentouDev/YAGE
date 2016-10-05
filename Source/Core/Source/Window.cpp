@@ -13,8 +13,8 @@ namespace Core
 		hWindow {nullptr},
 		Height {ctx.Config->WindowHeight},
 		Width {ctx.Config->WindowWidth},
-		Title {ctx.Config->WindowTitle},
-		_viewports(8)
+		Title {ctx.Config->WindowTitle}
+	//	_viewports(8)
 	{
 		Create();
 	}

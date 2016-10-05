@@ -9,8 +9,10 @@
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
+
 #include "Index.h"
 #include "SafeDelete.h"
+#include "MemoryBlock.h"
 
 namespace Utils
 {
@@ -25,6 +27,8 @@ namespace Utils
 	private:
 		//std::vector<object_t> 		 elements;
 		//std::vector<Index<handle_t>> indices;
+		Memory::MemoryBlockBase& _memory;
+	//	Utils::List<Index<handle_t>> indices;
 		std::vector<Index<handle_t>> indices;
 		object_t* elements;
 
@@ -60,10 +64,11 @@ namespace Utils
 		}
 
 	public:
-		inline explicit Container(uint16_t size = 16) : maxSize(size)
+		inline explicit Container(Memory::MemoryBlockBase& memory, uint16_t size = 16) : _memory(memory), maxSize(size)
 		{
 			//elements.reserve(maxSize);
-			elements = (object_t*)malloc(sizeof(object_t) * maxSize);
+			elements = (object_t*)memory.allocate(sizeof(object_t) * maxSize, alignof(object_t), DEBUG_SOURCE_INFO);
+			//elements = (object_t*)malloc(sizeof(object_t) * maxSize);
 			memset(elements, 0, sizeof(object_t) * maxSize);
 			indices.reserve(maxSize);
 
@@ -74,7 +79,29 @@ namespace Utils
 		{
 			clear();
 			//elements.clear();
-			Memory::SafeFreeArray(elements, maxSize);
+			//Memory::SafeFreeArray(elements, maxSize);
+			for(uint32_t i = 0; i < maxSize; i++)
+			{
+				unsigned char* current, result = 0;
+				object_t* start = &elements[i];
+				object_t* end 	= start + 1;
+
+				for(current  = reinterpret_cast<unsigned char*>(start);
+					current != reinterpret_cast<unsigned char*>(end);
+					current++)
+				{
+					result |= *current;
+				}
+
+				bool isZeroed = !result;
+				if(!isZeroed)
+				{
+					elements[i].~object_t();
+					memset(&elements[i], 0, sizeof(object_t));
+				}
+			}
+
+			_memory.deallocate(elements);
 			indices.clear();
 		}
 
