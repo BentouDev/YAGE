@@ -81,27 +81,31 @@ namespace MemoryTests
 	class ContainerTest : public ::testing::Test
 	{
 	public:
+		MockMemory* memoryBlock;
+		unsigned memorySize = 4096;
+		unsigned count = 32;
+		void* memory;
+
+		MockMemory& getMemory() const
+		{
+			return *memoryBlock;
+		}
 
 		void SetUp()
 		{
-			// code here will execute just before the test ensues
+			memory = malloc(memorySize);
+			memoryBlock = new MockMemory(* new Memory::FreeListAllocator(memory, memorySize));
 		}
 
 		void TearDown()
 		{
-			// code here will be called just after the test completes
-			// ok to through exceptions from here if need be
+			free(memory);
 		}
 	};
 
 	TEST_F(ContainerTest, CanCreateContainer)
 	{
-		unsigned memorySize = 4096;
-		unsigned count = 32;
-		void* memory = malloc(memorySize);
-		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
-
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(memoryBlock, count);
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
 
 		ASSERT_NE(container, nullptr);
 
@@ -110,12 +114,7 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanCreateObject)
 	{
-		unsigned memorySize = 4096;
-		unsigned count = 32;
-		void* memory = malloc(memorySize);
-		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
-
-		Utils::Container<FooTrait> container(memoryBlock, count);
+		Utils::Container<FooTrait> container(getMemory(), count);
 		auto handle = container.create(13);
 
 		ASSERT_NE(handle.key, 0);
@@ -127,12 +126,7 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanRemoveObject)
 	{
-		unsigned memorySize = 4096;
-		unsigned count = 32;
-		void* memory = malloc(memorySize);
-		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
-
-		Utils::Container<FooTrait> container(memoryBlock, count);
+		Utils::Container<FooTrait> container(getMemory(), count);
 		auto handle = container.create();
 		container.remove(handle);
 
@@ -141,12 +135,7 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanReuseObject)
 	{
-		unsigned memorySize = 4096;
-		unsigned count = 32;
-		void* memory = malloc(memorySize);
-		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
-
-		Utils::Container<FooTrait> container(memoryBlock, count);
+		Utils::Container<FooTrait> container(getMemory(), count);
 
 		auto oldHandle = container.create();
 		container.remove(oldHandle);
@@ -159,12 +148,7 @@ namespace MemoryTests
 
 	TEST_F(ContainerTest, CanFreeContainer)
 	{
-		unsigned memorySize = 4096;
-		unsigned count = 32;
-		void* memory = malloc(memorySize);
-		MockMemory memoryBlock(* new Memory::FreeListAllocator(memory, memorySize));
-
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(memoryBlock, count);
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
 		auto handle = container->create();
 		auto& obj = container->get(handle);
 

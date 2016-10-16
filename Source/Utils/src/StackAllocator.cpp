@@ -50,22 +50,6 @@ namespace Memory
 		return allocationSize - adjustmentSize;
 	}
 
-	void* StackAllocator::resize(void* ptr, std::size_t newSize)
-	{
-		assert(ptr == _lastAllocation && "Can only resize from the top of a stack");
-
-		std::size_t lastAddress = reinterpret_cast<uintptr_t>(_lastAllocation);
-		std::size_t allocSize 	= getAllocationSize(_lastAllocation);
-		std::size_t sizeDiff 	= newSize - allocSize;
-
-		assert(sizeDiff > 0);
-
-		_usedSize 	-= sizeDiff;
-		_currentPtr  = reinterpret_cast<void*>(lastAddress + sizeDiff);
-
-		return _lastAllocation;
-	}
-
 	void StackAllocator::deallocate(void *ptr)
 	{
 		assert(ptr == _lastAllocation && "Can only deallocate from the top of a stack");

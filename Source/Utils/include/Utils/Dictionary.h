@@ -10,24 +10,29 @@
 
 namespace Utils
 {
-	template <typename T>
+	template <typename key_t, typename value_t>
 	class Dictionary
 	{
+	public:
+		using hashFunction = uint32_t(*)(key_t);
+
+	private:
 		Memory::MemoryBlockBase& _memory;
 
 		struct Node
 		{
 			uint32_t next;
 			uint32_t previous;
-			T Value;
+			value_t Value;
 		};
 
-		List<Node> Values;
-		List<uint32_t> KeyHashes;
+		List<Node> 		_values;
+		List<uint32_t> 	_keyHashes;
+		hashFunction	_hash;
 
 	public:
-		inline explicit Dictionary(Memory::MemoryBlockBase& memory)
-			: _memory(memory), Values(_memory), KeyHashes(memory)
+		inline explicit Dictionary(Memory::MemoryBlockBase& memory, hashFunction hash)
+			: _memory(memory), _values(_memory), _keyHashes(memory), _hash(hash)
 		{
 
 		}

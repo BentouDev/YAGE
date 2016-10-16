@@ -5,12 +5,18 @@
 #ifndef GAME_MEMORYBLOCK_H
 #define GAME_MEMORYBLOCK_H
 
+#include <new>
 #include <cstdint>
 #include <cstring>
+#include <type_traits>
 #include "DebugSourceInfo.h"
 
+#ifdef CREATE_NEW
+#undef CREATE_NEW
+#endif
+
 #define CREATE_NEW(MemBlock, T)\
-	Memory::CreateNew<decltype(MemBlock), T>(MemBlock, Utils::DebugSourceInfo(__FILE__, __LINE__))
+	new(MemBlock.allocate(sizeof(T), alignof(T), Utils::DebugSourceInfo(__FILE__, __LINE__))) T
 
 #define CREATE_NEW_ARRAY(MemBlock, T, length)\
 	Memory::CreateNewArray<decltype(MemBlock), T>(MemBlock, length, Utils::DebugSourceInfo(__FILE__, __LINE__))
@@ -58,22 +64,6 @@ namespace Memory
 			return 		allocationAddress;
 		}
 
-		/*void copy(void*& ptr, void*& newPtr)
-		{
-			std::size_t 	offset 			= 0;
-			std::uintptr_t 	originalAddress = reinterpret_cast<std::uintptr_t >(ptr) - offset;
-			void* 			originalPtr 	= reinterpret_cast<void*>(originalAddress);
-			std::size_t 	allocationSize 	= _allocator.getAllocationSize(originalPtr);
-
-			memcpy(newPtr, ptr, allocationSize - offset);
-		}
-
-		void* reallocate(void* ptr, std::size_t newSize)
-		{
-			void* 	newPtr = _allocator.resize(ptr, newSize);
-			return 	newPtr;
-		}*/
-
 		void deallocate(void* ptr) override
 		{
 			std::size_t 	offset 			= 0;
@@ -85,24 +75,6 @@ namespace Memory
 			_allocator.deallocate(ptr);
 		}
 	};
-
-	/*template <typename MemoryBlock, typename T>
-	T* CreateNew(MemoryBlock& block, const Utils::DebugSourceInfo& source)
-	{
-		return new(block.allocate(sizeof(T), alignof(T), source)) T();
-	}*/
-
-	template <typename MemoryBlock, typename T, typename ... Args>
-	T* CreateNew(MemoryBlock& block, Args ... args, const Utils::DebugSourceInfo& source)
-	{
-		return new (block.allocate(sizeof(T), alignof(T), source)) T(args ...);
-	}
-
-	template <typename MemoryBlock, typename T>
-	T* CreateNew(MemoryBlock& block, const T& obj, const Utils::DebugSourceInfo& source)
-	{
-		return new (block.allocate(sizeof(T), alignof(T), source)) T(obj);
-	}
 
 	template <typename MemoryBlock, typename T>
 	T* CreateNewArray(MemoryBlock& block, std::size_t length, const T& defaultValue, const Utils::DebugSourceInfo& source)
@@ -141,14 +113,6 @@ namespace Memory
 
 		return memory.as_T - length;
 	}
-
-	template <typename MemoryBlock, typename T>
-	T* ResizeArray(MemoryBlock& block, const T*& ptr, std::size_t newSize, const Utils::DebugSourceInfo& source)
-	{
-		T* newPtr = CreateNewArray<T>(block, newSize, source);
-	//	block.copy(ptr, newPtr);
-		return newPtr;
-	};
 
 	template <typename MemoryBlock, typename T>
 	void Delete(MemoryBlock& block, T*& ptr)

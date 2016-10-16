@@ -44,82 +44,63 @@ namespace ListTests
 	class ListTest : public ::testing::Test
 	{
 	public:
+		const std::size_t listCapacity = 4;
+		const std::size_t memorySize = 2048;
+		void*			  memoryPtr;
+
+		Memory::FreeListAllocator* allocator;
+
+		MockMemory* block;
+
+		MockMemory& getMemory() const
+		{
+			return *block;
+		}
+
 		void SetUp()
 		{
-
+			memoryPtr = malloc(memorySize);
+			allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
+			block = new MockMemory(*allocator);
 		}
 
 		void TearDown()
 		{
-
+			free(memoryPtr);
 		}
 	};
 
 	TEST_F(ListTest, CanCreateList)
 	{
-		const std::size_t memorySize = 1024;
-		void*			  memoryPtr  = malloc(memorySize);
-		MockMemory 		  block(*new Memory::FreeListAllocator(memoryPtr, memorySize));
-
-		auto list = new Utils::List<FooMock>(block);
+		auto list = new Utils::List<FooMock>(getMemory());
 
 		EXPECT_NE(nullptr, list);
-
-		free(memoryPtr);
 	}
 
 	TEST_F(ListTest, CanCreateListWithCapacity)
 	{
-		const std::size_t listCapacity = 4;
-		const std::size_t memorySize = 1024;
-		void*			  memoryPtr  = malloc(memorySize);
-
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-
-		MockMemory block(*allocator);
-
-		auto list = new Utils::List<FooMock>(block, listCapacity);
+		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
 
 		EXPECT_NE(nullptr, list);
 		EXPECT_EQ(list->capacity(), listCapacity);
 		EXPECT_EQ(sizeof(FooMock) * listCapacity, allocator->getAllocationSize(list->begin()));
-
-		free(memoryPtr);
 	}
 
 	TEST_F(ListTest, CanAddItemToList)
 	{
-		const std::size_t listCapacity = 4;
-		const std::size_t memorySize = 1024;
-		void*			  memoryPtr  = malloc(memorySize);
+		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
 
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-
-		MockMemory block(*allocator);
-
-		auto list = new Utils::List<FooMock>(block, listCapacity);
-
-		list->add();
+		list->emplace();
 
 		EXPECT_EQ(1, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
-
-		free(memoryPtr);
 	}
 
 	TEST_F(ListTest, CanRemoveItemFromList)
 	{
-		const std::size_t listCapacity = 4;
-		const std::size_t memorySize = 1024;
-		void*			  memoryPtr  = malloc(memorySize);
+		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
 
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-
-		MockMemory block(*allocator);
-
-		auto list = new Utils::List<FooMock>(block, listCapacity);
-
-		list->add();
+		list->emplace();
 
 		EXPECT_EQ(1, list->size());
 		EXPECT_CALL((*list)[0], Die());
@@ -128,51 +109,31 @@ namespace ListTests
 
 		EXPECT_EQ(0, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
-
-		free(memoryPtr);
 	}
 
 	TEST_F(ListTest, CanAddManyItemsToList)
 	{
-		const std::size_t listCapacity 	= 512;
-		const std::size_t memorySize 	= 65535;
-		void*			  memoryPtr  	= malloc(memorySize);
-
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-
-		MockMemory block(*allocator);
-
-		auto list = new Utils::List<int>(block);
+		auto list = new Utils::List<int>(getMemory());
 
 		for(int i = 0; i < listCapacity; i++)
 			list->add(i);
 
 		EXPECT_EQ(list->size(), listCapacity);
 		EXPECT_LE(list->size(), list->capacity());
-
-		free(memoryPtr);
 	}
 
 	TEST_F(ListTest, CanRemoveItemFromMiddleOfList)
 	{
-		const std::size_t listCapacity = 4;
-		const std::size_t memorySize = 4096;
-		void*			  memoryPtr  = malloc(memorySize);
+		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
 
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-
-		MockMemory block(*allocator);
-
-		auto list = new Utils::List<FooMock>(block, listCapacity);
-
-		list->add();
-		list->add();
-		list->add();
-		list->add();
-		list->add();
+		list->emplace();
+		list->emplace();
+		FooMock& deletedItem = list->emplace();
+		list->emplace();
+		list->emplace();
 
 		EXPECT_EQ(5, list->size());
-		EXPECT_CALL((*list)[2], Die());
+		EXPECT_CALL(deletedItem, Die());
 
 		list->erase(2);
 
@@ -184,7 +145,5 @@ namespace ListTests
 
 		EXPECT_EQ(4, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
-
-		free(memoryPtr);
 	}
 }

@@ -108,11 +108,6 @@ namespace Memory
 		}
 	}
 
-	void* FreeListAllocator::resize(void* ptr, std::size_t newSize)
-	{
-		return nullptr;
-	}
-
 	void FreeListAllocator::deallocate(void *ptr)
 	{
 		std::size_t 	headerSize	= sizeof(FreeListHeader);

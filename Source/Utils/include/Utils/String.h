@@ -22,9 +22,21 @@ namespace Utils
 
 		}
 
+		inline String(const String& other)
+			: List(other)
+		{
+
+		}
+
+		inline String(Memory::MemoryBlockBase& memory, const char* string)
+			: List(memory)
+		{
+			append(string);
+		}
+
 		inline String& append(const String& str)
 		{
-			addRange(str);
+			addMany(str);
 			return *this;
 		}
 

@@ -25,7 +25,6 @@ namespace Memory
 
 	public:
 		virtual void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) = 0;
-		virtual void*		resize(void* ptr, std::size_t newSize) = 0;
 		virtual void 		deallocate(void* ptr) = 0;
 		virtual std::size_t getAllocationSize(const void* ptr) const = 0;
 		virtual bool		hasAddress(const void* ptr) const = 0;

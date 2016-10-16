@@ -59,12 +59,6 @@ namespace Memory
 		return _typeSize + _alignOffset;
 	}
 
-	void* PoolAllocator::resize(void* ptr, std::size_t newSize)
-	{
-		assert(false && "Unable to resize in pool allocator!");
-		return nullptr;
-	}
-
 	void PoolAllocator::deallocate(void *ptr)
 	{
 		void** oldPtr = (void**) ptr;

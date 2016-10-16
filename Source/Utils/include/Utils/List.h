@@ -21,13 +21,16 @@ namespace Utils
 		std::size_t _size;
 		std::size_t _capacity;
 
-		void cleanUp()
+		void destructElements()
 		{
 			for(unsigned i = 0; i < _size; i++)
 			{
 				_elements[i].~T();
 			}
+		}
 
+		void cleanUp()
+		{
 			if(_elements != nullptr)
 			{
 				_memory.deallocate(_elements);
@@ -86,12 +89,34 @@ namespace Utils
 			reserve(capacity);
 		}
 
+		inline List(const List& other)
+			: _memory(other._memory), _size(0), _capacity(0), _elements(nullptr)
+		{
+			uint32_t otherSize = other._size;
+			realloc(otherSize);
+			memcpy(_elements, other._elements, sizeof(T) * otherSize);
+			_size = otherSize;
+		}
+
+		inline List<T>& operator=(const List<T>& other)
+		{
+			uint32_t otherSize = other._size;
+
+			// we may have some data already
+			destructElements();
+			resize(otherSize);
+			memcpy(_elements, other._elements, sizeof(T) * otherSize);
+
+			return *this;
+		}
+
 		inline virtual ~List()
 		{
+			destructElements();
 			cleanUp();
 		}
 
-		void addRange(const List<T>& other)
+		void addMany(const List<T>& other)
 		{
 			std::size_t size = _size;
 			resize(size + other.size());
@@ -99,7 +124,7 @@ namespace Utils
 		}
 
 		template<typename ... Args>
-		T& add(Args ... args)
+		T& emplace(Args && ... args)
 		{
 			resize(_size + 1);
 

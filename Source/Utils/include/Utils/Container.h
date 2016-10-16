@@ -187,6 +187,11 @@ namespace Utils
 			return elements[index];
 		}
 
+		inline auto size() -> uint16_t
+		{
+			return elementCount;
+		}
+
 		inline auto clear() -> void
 		{
 			// todo: check what vector::clear exactly does (in regards to reserved memory) and do accordingly
