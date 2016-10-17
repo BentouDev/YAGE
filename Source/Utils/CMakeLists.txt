@@ -2,7 +2,7 @@
 project(Utils VERSION 0.1 LANGUAGES CXX)
 
 add_library(Utils include/Utils/SafeDelete.h src/Debug.cpp include/Utils/Handle.h include/Utils/Container.h include/Utils/Color.hpp include/Utils/Using.h include/Utils/Index.h include/Utils/TypeInfo.h include/Utils/BorrowedPtr.h src/TypeInfo.cpp include/Utils/DefaultTrait.h include/Utils/File.h include/Utils/Allocator.h src/LinearAllocator.cpp include/Utils/LinearAllocator.h include/Utils/DebugSourceInfo.h include/Utils/MemoryBlock.h src/StackAllocator.cpp include/Utils/StackAllocator.h src/FreeListAllocator.cpp include/Utils/FreeListAllocator.h src/PoolAllocator.cpp include/Utils/PoolAllocator.h include/Utils/List.h include/Utils/String.h src/String.cpp include/Utils/Dictionary.h)
-add_library(Volkhvy::Utils ALIAS Utils)
+add_library(YAGE::Utils ALIAS Utils)
 
 target_include_directories(Utils PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

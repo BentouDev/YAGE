@@ -1,6 +1,6 @@
-## Simple game engine
+## Yet Another Game Engine
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
-project(Volkhvy VERSION 0.1 LANGUAGES CXX)
+project(YAGE VERSION 0.1 LANGUAGES CXX)
 
 # Supress warning for dependencies with old Cmake files
 cmake_policy(PUSH)
@@ -59,8 +59,8 @@ add_subdirectory(Source/Utils)
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Script)
 
-add_library(Volkhvy INTERFACE)
-target_link_libraries(Volkhvy INTERFACE Volkhvy::Utils Volkhvy::Core Volkhvy::Script)
+add_library(YAGE INTERFACE)
+target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 
