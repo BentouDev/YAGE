@@ -9,7 +9,7 @@
 
 namespace Memory
 {
-	class FreeListAllocator : public Allocator
+	class FreeListAllocator : public IAllocator
 	{
 	private:
 		struct FreeListHeader

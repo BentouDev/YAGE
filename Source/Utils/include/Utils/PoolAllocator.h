@@ -9,7 +9,7 @@
 
 namespace Memory
 {
-	class PoolAllocator : public Allocator
+	class PoolAllocator : public IAllocator
 	{
 	private:
 		PoolAllocator(const PoolAllocator&) = delete;

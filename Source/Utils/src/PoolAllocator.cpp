@@ -9,7 +9,7 @@ namespace Memory
 {
 	PoolAllocator::PoolAllocator(void *memory, std::size_t size,
 		 std::size_t typeSize, std::size_t typeAlign, std::size_t alignOffset)
-		: _typeSize(typeSize), _typeAlignment(typeAlign), _alignOffset(alignOffset), Allocator(memory, size)
+		: _typeSize(typeSize), _typeAlignment(typeAlign), _alignOffset(alignOffset), IAllocator(memory, size)
 	{
 		assert(typeSize > sizeof(void*) && "Allocation size must be larger than sizeof(void*)!");
 

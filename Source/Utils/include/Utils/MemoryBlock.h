@@ -5,74 +5,114 @@
 #ifndef GAME_MEMORYBLOCK_H
 #define GAME_MEMORYBLOCK_H
 
-#include <new>
 #include <cstdint>
 #include <cstring>
+
+#include <new>
 #include <type_traits>
+
 #include "DebugSourceInfo.h"
+#include "MemoryBoundChecker.h"
+#include "MemoryTracker.h"
 
-#ifdef CREATE_NEW
-#undef CREATE_NEW
-#endif
+#define YAGE_CREATE_NEW(MemBlock, T) \
+	new ( MemBlock.allocate ( sizeof ( T ) , alignof ( T ) , Utils::DebugSourceInfo ( __FILE__ , __LINE__ ) ) ) T
 
-#define CREATE_NEW(MemBlock, T)\
-	new(MemBlock.allocate(sizeof(T), alignof(T), Utils::DebugSourceInfo(__FILE__, __LINE__))) T
-
-#define CREATE_NEW_ARRAY(MemBlock, T, length)\
+#define YAGE_CREATE_NEW_ARRAY(MemBlock, T, length) \
 	Memory::CreateNewArray<decltype(MemBlock), T>(MemBlock, length, Utils::DebugSourceInfo(__FILE__, __LINE__))
 
-#define CREATE_NEW_ARRAY_DEF(MemBlock, T, length, defaultValue)\
+#define YAGE_CREATE_NEW_ARRAY_DEF(MemBlock, T, length, defaultValue) \
 	Memory::CreateNewArray<decltype(MemBlock), T>(MemBlock, length, defaultValue, Utils::DebugSourceInfo(__FILE__, __LINE__))
 
 namespace Memory
 {
-	class Allocator;
+	class IAllocator;
 
-	class MemoryBlockBase
+	class IMemoryBlock
 	{
 	protected:
-		MemoryBlockBase(){}
+		IMemoryBlock(){}
 	private:
-		MemoryBlockBase(const MemoryBlockBase&) = delete;
-		MemoryBlockBase(MemoryBlockBase&&) = delete;
+		IMemoryBlock(const IMemoryBlock&) = delete;
+		IMemoryBlock(IMemoryBlock&&) = delete;
 	public:
 		virtual void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) = 0;
 		virtual void  deallocate(void* ptr) = 0;
 	};
 
 	// todo: mem checking, tracing
-	template <typename AllocatorType>
-	class MemoryBlock final : public MemoryBlockBase
+	template
+	<	typename AllocatorType,
+		typename MemoryBoundCheckerType = NoMemoryBoundChecker,
+		typename MemoryTrackerType = NoMemoryTracker >
+	class MemoryBlock final : public IMemoryBlock
 	{
-		static_assert(std::is_base_of<Allocator, AllocatorType>::value, "Allocator must derive from Allocator");
+		static_assert
+		(
+			std::is_base_of<IAllocator, AllocatorType>::value,
+			"AllocatorType must derive from IAllocator"
+		);
+		static_assert
+		(
+			std::is_base_of<IMemoryBoundChecker, MemoryBoundCheckerType>::value,
+			"MemoryBoundCheckerType must derive from IMemoryBoundChecker"
+		);
+		static_assert
+		(
+			std::is_base_of<IMemoryTracker, MemoryTrackerType>::value,
+			"MemoryTrackerType must derive from IMemoryTrackerType"
+		);
 
-		AllocatorType& _allocator;
+		AllocatorType& 			_allocator;
+		MemoryBoundCheckerType	_boundChecker;
+		MemoryTrackerType		_memoryTracker;
 
 	public:
+		MemoryBlock(const MemoryBlock&) = delete;
+		MemoryBlock(MemoryBlock&&) = delete;
+
 		explicit MemoryBlock(AllocatorType& allocator)
-			: _allocator(allocator), MemoryBlockBase()
+			: _allocator(allocator), _memoryTracker(*this), IMemoryBlock()
 		{
 
+		}
+
+		std::size_t getFreeSize()
+		{
+			return _allocator.getFreeSize();
 		}
 
 		void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) override
 		{
-			std::size_t offset = 0;
-			void*		allocationAddress = _allocator.allocate(size, alignment, 0);
-			// + offset
-			// because returned addres is not aligned to it
-			return 		allocationAddress;
+			const std::size_t 	fronOffset		= _boundChecker.getSizeFront();
+			const std::size_t 	backOffset 		= _boundChecker.getSizeFront();
+			const std::size_t	originalSize	= size;
+			const std::size_t	newSize 		= size + fronOffset + backOffset;
+			void*				allocationPtr	= _allocator.allocate(newSize, alignment, fronOffset);
+
+			std::uintptr_t allocationAddress = reinterpret_cast<std::uintptr_t>(allocationPtr);
+
+			_boundChecker.GuardFront(allocationPtr);
+			_boundChecker.GuardBack(reinterpret_cast<void*>(allocationAddress + fronOffset + originalSize));
+			_memoryTracker.OnAllocation(allocationPtr, newSize, alignment, fronOffset, sourceInfo);
+
+			return reinterpret_cast<void*>(allocationAddress + fronOffset);
 		}
 
 		void deallocate(void* ptr) override
 		{
-			std::size_t 	offset 			= 0;
-			std::uintptr_t 	originalAddress = reinterpret_cast<std::uintptr_t >(ptr) - offset;
-			void* 			originalPtr 	= reinterpret_cast<void*>(originalAddress);
+			const std::size_t 		frontOffset 	= _boundChecker.getSizeFront();
+			const std::size_t 		backOffset 		= _boundChecker.getSizeFront();
+			const std::uintptr_t 	originalAddress = reinterpret_cast<std::uintptr_t >(ptr) - frontOffset;
+			void* 					originalPtr 	= reinterpret_cast<void*>(originalAddress);
 
-			std::size_t allocationSize = _allocator.getAllocationSize(originalPtr);
+			const std::size_t allocationSize = _allocator.getAllocationSize(originalPtr);
 
-			_allocator.deallocate(ptr);
+			_boundChecker.CheckFront(originalPtr);
+			_boundChecker.CheckBack(reinterpret_cast<void*>(originalAddress + allocationSize - backOffset));
+			_memoryTracker.OnDeallocation(originalPtr, frontOffset);
+
+			_allocator.deallocate(originalPtr);
 		}
 	};
 

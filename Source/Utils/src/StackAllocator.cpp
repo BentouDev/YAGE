@@ -8,7 +8,7 @@
 namespace Memory
 {
 	StackAllocator::StackAllocator(void* memory, std::size_t size)
-		: _currentPtr(memory), _lastAllocation(nullptr), Allocator(memory, size)
+		: _currentPtr(memory), _lastAllocation(nullptr), IAllocator(memory, size)
 	{
 
 	}

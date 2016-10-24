@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 12.03.16.
 //
 
-#ifndef VOLKHVY_USING_H_H
-#define VOLKHVY_USING_H_H
+#ifndef YAGE_USING_H_H
+#define YAGE_USING_H_H
 
 #include <functional>
 #include "SafeDelete.h"
@@ -17,4 +17,4 @@ try {\
 	Memory::SafeDelete(name); \
 }
 
-#endif //VOLKHVY_USING_H_H
+#endif //YAGE_USING_H_H

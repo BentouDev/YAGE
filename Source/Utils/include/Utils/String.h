@@ -16,19 +16,19 @@ namespace Utils
 	class String : public List<char>
 	{
 	public:
-		inline explicit String(Memory::MemoryBlockBase &memory)
+		inline explicit String(Memory::IMemoryBlock &memory)
 			: List(memory)
-		{
-
-		}
+		{ }
 
 		inline String(const String& other)
 			: List(other)
-		{
+		{ }
 
-		}
+		inline String(String&& other)
+			: List(other)
+		{ }
 
-		inline String(Memory::MemoryBlockBase& memory, const char* string)
+		inline String(Memory::IMemoryBlock& memory, const char* string)
 			: List(memory)
 		{
 			append(string);

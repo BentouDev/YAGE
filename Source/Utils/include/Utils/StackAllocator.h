@@ -9,7 +9,7 @@
 
 namespace Memory
 {
-	class StackAllocator : public Allocator
+	class StackAllocator : public IAllocator
 	{
 	private:
 		StackAllocator(const StackAllocator&) = delete;

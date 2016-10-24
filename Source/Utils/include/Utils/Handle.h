@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 06.03.16.
 //
 
-#ifndef VOLKHVY_HANDLE_H
-#define VOLKHVY_HANDLE_H
+#ifndef YAGE_HANDLE_H
+#define YAGE_HANDLE_H
 
 #include <cstdint>
 #include <utility>
@@ -185,4 +185,4 @@ namespace Utils
 	}*/
 }
 
-#endif //VOLKHVY_HANDLE_H
+#endif //YAGE_HANDLE_H

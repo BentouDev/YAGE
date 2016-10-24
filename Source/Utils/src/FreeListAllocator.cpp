@@ -8,7 +8,7 @@
 namespace Memory
 {
 	FreeListAllocator::FreeListAllocator(void *memory, std::size_t size)
-		: _freeBlocks((FreeListHeader*) memory), Allocator(memory, size)
+		: _freeBlocks((FreeListHeader*) memory), IAllocator(memory, size)
 	{
 		_freeBlocks->next 		= nullptr;
 		_freeBlocks->size 		= (uint32_t )size;
@@ -40,7 +40,7 @@ namespace Memory
 				smallest = ptr;
 			}
 
-			ptr = (FreeListHeader*)ptr->next;
+			ptr = reinterpret_cast<FreeListHeader*>(ptr->next);
 		}
 
 		if(smallest == nullptr)

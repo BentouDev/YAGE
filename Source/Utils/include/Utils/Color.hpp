@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#ifndef VOLKHVY_COLOR_H
-#define VOLKHVY_COLOR_H
+#ifndef YAGE_COLOR_H
+#define YAGE_COLOR_H
 
 #include <stdint.h>
 
@@ -23,4 +23,4 @@ namespace Utils
 	};
 }
 
-#endif //VOLKHVY_COLOR_H
+#endif //YAGE_COLOR_H

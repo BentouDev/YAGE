@@ -17,7 +17,7 @@ namespace Utils
 		using hashFunction = uint32_t(*)(key_t);
 
 	private:
-		Memory::MemoryBlockBase& _memory;
+		Memory::IMemoryBlock& _memory;
 
 		struct Node
 		{
@@ -31,7 +31,7 @@ namespace Utils
 		hashFunction	_hash;
 
 	public:
-		inline explicit Dictionary(Memory::MemoryBlockBase& memory, hashFunction hash)
+		inline explicit Dictionary(Memory::IMemoryBlock& memory, hashFunction hash)
 			: _memory(memory), _values(_memory), _keyHashes(memory), _hash(hash)
 		{
 

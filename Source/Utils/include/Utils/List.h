@@ -5,6 +5,7 @@
 #ifndef GAME_LIST_H
 #define GAME_LIST_H
 
+#include <new>
 #include <cstring>
 #include "DebugSourceInfo.h"
 #include "MemoryBlock.h"
@@ -14,7 +15,7 @@ namespace Utils
 	template <typename T>
 	class List
 	{
-		Memory::MemoryBlockBase &_memory;
+		Memory::IMemoryBlock &_memory;
 
 		T* _elements;
 
@@ -77,13 +78,13 @@ namespace Utils
 		}
 
 	public:
-		inline explicit List(Memory::MemoryBlockBase &memory)
+		inline explicit List(Memory::IMemoryBlock &memory)
 			: _memory(memory), _size(0), _capacity(0), _elements(nullptr)
 		{
 
 		}
 
-		inline List(Memory::MemoryBlockBase &memory, std::size_t capacity)
+		inline List(Memory::IMemoryBlock &memory, std::size_t capacity)
 			: _memory(memory), _size(0), _capacity(0), _elements(nullptr)
 		{
 			reserve(capacity);
@@ -98,19 +99,50 @@ namespace Utils
 			_size = otherSize;
 		}
 
+		inline List(List&& other)
+			: _memory(other._memory), _size(other._size), _capacity(other._capacity), _elements(other._elements)
+		{
+			other._elements	= nullptr;
+			other._size		= 0;
+			other._capacity	= 0;
+		}
+
 		inline List<T>& operator=(const List<T>& other)
 		{
-			uint32_t otherSize = other._size;
+			if(this != &other)
+			{
+				uint32_t otherSize = other._size;
 
-			// we may have some data already
-			destructElements();
-			resize(otherSize);
-			memcpy(_elements, other._elements, sizeof(T) * otherSize);
+				// we may have some data already
+				destructElements();
+				resize(otherSize);
+				memcpy(_elements, other._elements, sizeof(T) * otherSize);
+			}
 
 			return *this;
 		}
 
-		inline virtual ~List()
+		inline List<T>& operator=(List<T>&& other) noexcept
+		{
+			if(this != &other)
+			{
+				// we may have some data already
+				destructElements();
+				cleanUp();
+
+				_elements	= other._elements;
+				_size 		= other._size;
+				_capacity	= other._capacity;
+
+				other._elements	= nullptr;
+				other._size		= 0;
+				other._capacity	= 0;
+			}
+
+			return *this;
+		}
+
+		inline virtual ~List() noexcept
 		{
 			destructElements();
 			cleanUp();
@@ -142,7 +174,22 @@ namespace Utils
 			}
 
 			auto result = &_elements[_size - 1];
-			new (result) T(other);
+		//	new (result) T(other);
+			(*result) = other;
+			return *result;
+		}
+
+		T& add(T&& other)
+		{
+			_size++;
+			if((int)_capacity - (int)_size < 0)
+			{
+				resize(_size);
+			}
+
+			auto result = &_elements[_size - 1];
+		//	new (result) T(other);
+			(*result) = std::move(other);
 			return *result;
 		}
 

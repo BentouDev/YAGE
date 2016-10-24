@@ -160,7 +160,7 @@ namespace MemoryTests
 		void*			  memoryPtr  = malloc(memorySize);
 
 		MockMemory block(*new Memory::StackAllocator(memoryPtr, memorySize));
-		FooMock* foo = CREATE_NEW(block, FooMock)();
+		FooMock* foo = YAGE_CREATE_NEW(block, FooMock)();
 
 		EXPECT_NE(nullptr, foo);
 
@@ -174,7 +174,7 @@ namespace MemoryTests
 		FooMock* 		  foo 		 = nullptr;
 
 		MockMemory block(*new Memory::StackAllocator(memoryPtr, memorySize));
-		foo = CREATE_NEW(block, FooMock)();
+		foo = YAGE_CREATE_NEW(block, FooMock)();
 
 		EXPECT_CALL(*foo, Die());
 

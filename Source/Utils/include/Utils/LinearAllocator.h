@@ -9,7 +9,7 @@
 
 namespace Memory
 {
-	class LinearAllocator : public Allocator
+	class LinearAllocator : public IAllocator
 	{
 	private:
 		LinearAllocator(const LinearAllocator&) = delete;

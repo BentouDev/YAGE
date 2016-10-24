@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 05.03.16.
 //
 
-#ifndef VOLKHVY_DEBUG_H
-#define VOLKHVY_DEBUG_H
+#ifndef YAGE_DEBUG_H
+#define YAGE_DEBUG_H
 
 #include "BorrowedPtr.h"
 
@@ -89,4 +89,4 @@ namespace Memory
 	}
 }
 
-#endif //VOLKHVY_DEBUG_H
+#endif //YAGE_DEBUG_H

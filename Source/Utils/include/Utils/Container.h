@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 06.03.16.
 //
 
-#ifndef VOLKHVY_CONTAINER_H
-#define VOLKHVY_CONTAINER_H
+#ifndef YAGE_CONTAINER_H
+#define YAGE_CONTAINER_H
 
 #include <vector>
 #include <stdlib.h>
@@ -27,10 +27,10 @@ namespace Utils
 	private:
 		//std::vector<object_t> 		 elements;
 		//std::vector<Index<handle_t>> indices;
-		Memory::MemoryBlockBase& _memory;
+		Memory::IMemoryBlock& _memory;
 	//	Utils::List<Index<handle_t>> indices;
 		std::vector<Index<handle_t>> indices;
-		object_t* elements;
+		object_t* 	elements;
 
 		uint16_t	freelistEnd;
 		uint16_t	freelistStart;
@@ -64,7 +64,7 @@ namespace Utils
 		}
 
 	public:
-		inline explicit Container(Memory::MemoryBlockBase& memory, uint16_t size = 16) : _memory(memory), maxSize(size)
+		inline explicit Container(Memory::IMemoryBlock& memory, uint16_t size = 16) : _memory(memory), maxSize(size)
 		{
 			//elements.reserve(maxSize);
 			elements = (object_t*)memory.allocate(sizeof(object_t) * maxSize, alignof(object_t), DEBUG_SOURCE_INFO);
@@ -106,7 +106,7 @@ namespace Utils
 		}
 
 		template <typename... Args>
-		inline auto create(Args... args) -> handle_t
+		inline auto create(Args && ... args) -> handle_t
 		{
 			Index<handle_t> &in = indices[freelistStart];
 			freelistStart = in.next;
@@ -130,6 +130,8 @@ namespace Utils
 			object_t &o = elements[in.index];
 
 			Trait::cleanUp(o);
+
+			// TODO: check what happens with id
 			Trait::swap(o, elements[--elementCount]);
 
 			indices[Trait::getIndex(Trait::getHandle(o))].index = in.index;
@@ -187,6 +189,26 @@ namespace Utils
 			return elements[index];
 		}
 
+		auto front() -> object_t&
+		{
+			return elements[0];
+		}
+
+		auto back() -> object_t&
+		{
+			return elements[elementCount - 1];
+		}
+
+		auto begin() -> object_t*
+		{
+			return elements;
+		}
+
+		auto end() -> object_t*
+		{
+			return elements + elementCount;
+		}
+
 		inline auto size() -> uint16_t
 		{
 			return elementCount;
@@ -204,4 +226,4 @@ namespace Utils
 	};
 }
 
-#endif //VOLKHVY_CONTAINER_H
+#endif //YAGE_CONTAINER_H
