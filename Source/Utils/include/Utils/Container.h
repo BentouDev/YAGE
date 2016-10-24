@@ -13,6 +13,7 @@
 #include "Index.h"
 #include "SafeDelete.h"
 #include "MemoryBlock.h"
+#include "List.h"
 
 namespace Utils
 {
@@ -25,11 +26,9 @@ namespace Utils
 		using activeCondition = bool(*)(object_t&);
 
 	private:
-		//std::vector<object_t> 		 elements;
-		//std::vector<Index<handle_t>> indices;
 		Memory::IMemoryBlock& _memory;
-	//	Utils::List<Index<handle_t>> indices;
-		std::vector<Index<handle_t>> indices;
+		Utils::List<Index<handle_t>> _indices;
+
 		object_t* 	elements;
 
 		uint16_t	freelistEnd;
@@ -45,41 +44,17 @@ namespace Utils
 
 		activeCondition _condition;
 
-		static auto initialize(Container* container) -> void
+		void removeAllElements()
 		{
-			container->elementCount = 0;
-			container->activeCount = 0;
-
-			for (unsigned i = 0; i < container->maxSize; ++i)
+			for(int i = 0; i < elementCount; i++)
 			{
-				container->indices.emplace(container->indices.begin() + i);
-				Trait::setIndex(container->indices[i], i);
-				container->indices[i].next = i + 1;
+				object_t& o = elements[i];
+				remove(Trait::getHandle(o));
 			}
-
-			container->unactivelistStart = 0;
-			container->unactivelistEnd = 0;
-			container->freelistStart = 0;
-			container->freelistEnd = container->maxSize - 1;
 		}
 
-	public:
-		inline explicit Container(Memory::IMemoryBlock& memory, uint16_t size = 16) : _memory(memory), maxSize(size)
+		void destructElements()
 		{
-			//elements.reserve(maxSize);
-			elements = (object_t*)memory.allocate(sizeof(object_t) * maxSize, alignof(object_t), DEBUG_SOURCE_INFO);
-			//elements = (object_t*)malloc(sizeof(object_t) * maxSize);
-			memset(elements, 0, sizeof(object_t) * maxSize);
-			indices.reserve(maxSize);
-
-			initialize(this);
-		}
-
-		inline virtual ~Container()
-		{
-			clear();
-			//elements.clear();
-			//Memory::SafeFreeArray(elements, maxSize);
 			for(uint32_t i = 0; i < maxSize; i++)
 			{
 				unsigned char* current, result = 0;
@@ -100,15 +75,51 @@ namespace Utils
 					memset(&elements[i], 0, sizeof(object_t));
 				}
 			}
+		}
+
+		static auto initialize(Container* container) -> void
+		{
+			container->elementCount = 0;
+			container->activeCount = 0;
+
+			for (unsigned i = 0; i < container->maxSize; ++i)
+			{
+				container->_indices.emplace();
+				Trait::setIndex(container->_indices[i], i);
+				container->_indices[i].next = i + 1;
+			}
+
+			container->unactivelistStart = 0;
+			container->unactivelistEnd = 0;
+			container->freelistStart = 0;
+			container->freelistEnd = container->maxSize - 1;
+		}
+
+	public:
+		inline explicit Container(Memory::IMemoryBlock& memory, uint16_t size = 16)
+			: _memory(memory), _indices(_memory), maxSize(size)
+		{
+			_indices.reserve(maxSize);
+
+			elements = (object_t*)memory.allocate(sizeof(object_t) * maxSize, alignof(object_t), DEBUG_SOURCE_INFO);
+			memset(elements, 0, sizeof(object_t) * maxSize);
+
+			initialize(this);
+		}
+
+		inline virtual ~Container()
+		{
+			removeAllElements();
+			destructElements();
 
 			_memory.deallocate(elements);
-			indices.clear();
+			_indices.clear();
 		}
 
 		template <typename... Args>
 		inline auto create(Args && ... args) -> handle_t
 		{
-			Index<handle_t> &in = indices[freelistStart];
+			Index<handle_t> &in = _indices[freelistStart];
 			freelistStart = in.next;
 
 			Trait::incrementLiveId(in);
@@ -116,7 +127,6 @@ namespace Utils
 			in.index = elementCount++;
 			in.valid |= 1;
 
-			//typename std::vector<object_t>::iterator itr = elements.emplace(elements.begin() + in.index, args...);
 			new (&elements[in.index]) object_t(args...);
 			object_t& o = elements[in.index];
 			Trait::setHandle(o, in.handle);
@@ -126,20 +136,21 @@ namespace Utils
 
 		inline void remove(handle_t handle)
 		{
-			Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
 
 			Trait::cleanUp(o);
 
 			// TODO: check what happens with id
+			// Probably should be swapped to
 			Trait::swap(o, elements[--elementCount]);
 
-			indices[Trait::getIndex(Trait::getHandle(o))].index = in.index;
+			_indices[Trait::getIndex(Trait::getHandle(o))].index = in.index;
 			in.index = elementCount;
 			in.valid &= 0;
 
 			auto oldIndex = Trait::getIndex(handle);
-			indices[freelistEnd].next = oldIndex;
+			_indices[freelistEnd].next = oldIndex;
 			freelistEnd = oldIndex;
 		}
 
@@ -159,13 +170,13 @@ namespace Utils
 
 		inline auto contains(handle_t handle) const noexcept -> bool
 		{
-			const Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			return in.handle.key == handle.key && (in.valid & 1) && in.index != maxSize;
 		}
 
 		inline auto get(handle_t handle) const -> object_t&
 		{
-			const Index<handle_t> &in = indices[Trait::getIndex(handle)];
+			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			return elements[in.index];
 		}
 
@@ -216,12 +227,7 @@ namespace Utils
 
 		inline auto clear() -> void
 		{
-			// todo: check what vector::clear exactly does (in regards to reserved memory) and do accordingly
-			for(int i = 0; i < elementCount; i++)
-			{
-				object_t& o = elements[i];
-				remove(Trait::getHandle(o));
-			}
+			removeAllElements();
 		}
 	};
 }

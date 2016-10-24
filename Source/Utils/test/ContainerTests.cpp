@@ -82,7 +82,7 @@ namespace MemoryTests
 	{
 	public:
 		MockMemory* memoryBlock;
-		unsigned memorySize = 4096;
+		unsigned memorySize = 4096 * 2;
 		unsigned count = 32;
 		void* memory;
 
