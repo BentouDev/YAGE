@@ -7,12 +7,21 @@ cmake_policy(PUSH)
 cmake_policy(SET CMP0011 OLD)
 cmake_policy(SET CMP0048 OLD)
 
+option(YAGE_BUILD_TESTS "Build tests" ON)
+option(YAGE_VALGRIND "Build with valgrind headers" ON)
+
 # emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
 # Add codecov scripts module to cmake
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
 find_package(codecov REQUIRED)
+
+# Add Valgrind support for memory debugging
+if(YAGE_VALGRIND)
+    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Valgrind" ${CMAKE_MODULE_PATH})
+    find_package(VALGRIND)
+endif(YAGE_VALGRIND)
 
 # Add Vulkan
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_MODULE_PATH})

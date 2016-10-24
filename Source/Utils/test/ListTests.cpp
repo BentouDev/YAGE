@@ -8,9 +8,21 @@
 #include "Utils/FreeListAllocator.h"
 #include "Utils/List.h"
 
+#ifdef YAGE_VALGRIND
+#include <Utils/ValgrindMemoryBoundChecker.h>
+#include <Utils/ValgrindMemoryTracker.h>
+#endif
+
 namespace ListTests
 {
-	typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
+#ifdef YAGE_VALGRIND
+	typedef Memory::MemoryBlock
+			<Memory::FreeListAllocator,
+			 Memory::ValgrindMemoryBoundChecker,
+			 Memory::ValgrindMemoryTracker> MockMemory;
+#else
+	typedef Memory::MemoryBlock <Memory::FreeListAllocator> MockMemory;
+#endif
 
 	class FooMock
 	{
@@ -45,7 +57,7 @@ namespace ListTests
 	{
 	public:
 		const std::size_t listCapacity = 4;
-		const std::size_t memorySize = 2048;
+		const std::size_t memorySize = 4096;
 		void*			  memoryPtr;
 
 		Memory::FreeListAllocator* allocator;
