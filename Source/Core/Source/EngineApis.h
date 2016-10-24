@@ -7,11 +7,11 @@
 
 //#include "Gfx/Api/BaseApi.h"
 
-#ifdef VOLKHVY_VULKAN
+#ifdef YAGE_VULKAN
 // #include "Gfx/Vulkan/VulkanDevice.h"
 #endif
 
-#ifdef VOLKHVY_OPENGL
+#ifdef YAGE_OPENGL
 // #include "Gfx/OpenGl/OpenGlContext.h"
 #include "Gfx/OpenGl/OpenGLBase.h"
 #endif

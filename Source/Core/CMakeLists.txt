@@ -4,10 +4,10 @@ project(Core VERSION 0.1 LANGUAGES CXX)
 set(OPENGL_API Source/Gfx/OpenGl/Generated/gl_core_3_3.hpp Source/Gfx/OpenGl/Generated/gl_core_3_3.cpp Source/Gfx/OpenGl/OpenGLBase.h Source/Gfx/OpenGl/OpenGLBase.cpp Source/Gfx/OpenGl/OpenGLBuffers.h Source/Gfx/OpenGl/MeshApi.cpp Source/Gfx/OpenGl/MeshApi.h Source/Gfx/OpenGl/OpenGLBatch.cpp Source/Gfx/OpenGl/OpenGLBatch.h Source/Gfx/OpenGl/OpenGLBuffers.cpp)
 
 if(OPENGL_FOUND)
-    set(GRAPHICS_API ${GRAPHICS_API} ${OPENGL_API} Source/Logic/Component.h)
+    set(GRAPHICS_API ${GRAPHICS_API} ${OPENGL_API})
 endif()
 
-add_library(Core ${GRAPHICS_API} Source/Resources/Mesh/Mesh.cpp Source/Resources/Mesh/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/Resources/Resource.h Source/Resources/ResourceManager.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.h Source/Logger.h Source/Resources/Mesh/MeshFactory.cpp Source/Resources/Mesh/MeshFactory.h Source/Logic/Scene.cpp Source/Logic/Scene.h Source/Context.h Source/Context.cpp Source/Resources/Material/Material.cpp Source/Resources/Material/Material.h Source/Gfx/Buffer.cpp Source/Gfx/Buffer.h Source/Gfx/Shapes.h Source/Resources/Shader/Shader.cpp Source/Resources/Shader/Shader.h Source/Resources/Shader/ShaderFactory.h Source/Resources/Shader/ShaderFactory.cpp Source/Resources/ResourceFile.h Source/Resources/Shader/ShaderManager.h Source/Resources/Mesh/MeshManager.cpp Source/Resources/Mesh/MeshManager.h Source/EngineApis.h Source/EngineApis.cpp Source/Gfx/RenderBucket.h Source/Logic/RenderingSystem.h Source/Logic/RenderingSystem.cpp Source/Gfx/Shapes.cpp Source/Gfx/RenderBucket.cpp)
+add_library(Core ${GRAPHICS_API} Source/Resources/Mesh/Mesh.cpp Source/Resources/Mesh/Mesh.h Source/Window.cpp Source/Window.h Source/Platform.h Source/Gfx/Viewport.cpp Source/Gfx/Viewport.h Source/Resources/Resource.h Source/Gfx/RenderTarget.cpp Source/Gfx/RenderTarget.h Source/Engine.cpp Source/Engine.h Source/Gfx/Rectangle.h Source/Config.cpp Source/Config.h Source/Gfx/Renderer.h Source/Logger.h Source/Logic/Scene.cpp Source/Logic/Scene.h Source/Context.h Source/Context.cpp Source/Resources/Material/Material.cpp Source/Resources/Material/Material.h Source/Gfx/Buffer.cpp Source/Gfx/Buffer.h Source/Gfx/Shapes.h Source/Resources/Shader/Shader.cpp Source/Resources/Shader/Shader.h Source/Resources/Shader/ShaderFactory.h Source/Resources/Shader/ShaderFactory.cpp Source/Resources/ResourceFile.h Source/EngineApis.h Source/EngineApis.cpp Source/Gfx/RenderPass.h Source/Logic/RenderingSystem.h Source/Logic/RenderingSystem.cpp Source/Gfx/Shapes.cpp Source/Gfx/RenderPass.cpp Source/Logic/Component.h Source/Gfx/Builders/ShaderBuilder.cpp Source/Gfx/Builders/ShaderBuilder.h Source/Resources/ResourceManager.cpp Source/Resources/ResourceManager.h Source/Gfx/Renderer.cpp Source/Gfx/RenderBatch.cpp Source/Gfx/RenderBatch.h Source/Resources/Shader/ShaderBuilder.cpp Source/Resources/Shader/ShaderBuilder.h Source/Gfx/BatchManager.cpp Source/Gfx/BatchManager.h)
 add_library(YAGE::Core ALIAS Core)
 
 target_include_directories(Core PUBLIC
@@ -24,7 +24,7 @@ target_compile_features(Core
 target_link_libraries(Core YAGE::Utils glm glfw)
 
 if(OPENGL_FOUND)
-    target_compile_definitions(Core PRIVATE VOLKHVY_OPENGL=1)
+    target_compile_definitions(Core PRIVATE YAGE_OPENGL=1)
     target_include_directories(Core PRIVATE ${OPENGL_INCLUDE_DIR})
     target_link_libraries(Core ${OPENGL_LIBRARIES})
 endif()

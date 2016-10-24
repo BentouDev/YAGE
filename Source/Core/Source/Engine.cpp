@@ -7,7 +7,6 @@
 
 #include "EngineApis.h"
 
-#include "Resources/Mesh/MeshManager.h"
 #include "Resources/ResourceManager.h"
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
@@ -26,6 +25,7 @@ namespace Core
 		: Name(name),
 		  Logger(new Core::Logger()),
 		  Config(new Core::Config())
+	//	  Renderer(new Gfx::Renderer())
 	//	  MeshManager(new Resources::MeshManager(*this))
 	{
 		Logger->setConfig(Config);
@@ -126,6 +126,7 @@ namespace Core
 	{
 		// todo: this should be connected to rendertarget
 		OpenGL::beginDraw(window);
+
 	//	_api->beginDraw(window);
 
 		// activeScene->Draw(GameTime(), (*Renderer));
@@ -133,6 +134,8 @@ namespace Core
 		{
 			Renderer.Draw(pass);
 		}*/
+
+		Renderer->draw();
 
 
 	//	_api->endDraw(window);

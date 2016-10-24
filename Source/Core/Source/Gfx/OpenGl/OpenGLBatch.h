@@ -5,11 +5,29 @@
 #ifndef GAME_OPENGLBATCH_H
 #define GAME_OPENGLBATCH_H
 
+#include <cstdio>
+#include <Resources/Mesh/Mesh.h>
+#include "OpenGLBuffers.h"
 
-class OpenGLBatch
+namespace OpenGL
 {
+	class Batch
+	{
+		Core::MeshData scheme;
 
-};
+		VAO vao;
+		VBO vbo;
+	//	IBO ibo;
+		std::size_t vboMaxSize;
 
+		struct MeshInfo
+		{
+			Core::Mesh::handle_t meshHandle;
+			uint32_t baseVertex;
+		};
+
+		Utils::List<MeshInfo> meshesToDraw;
+	};
+}
 
 #endif //GAME_OPENGLBATCH_H

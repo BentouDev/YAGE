@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#ifndef VOLKHVY_RECTANGLE_H
-#define VOLKHVY_RECTANGLE_H
+#ifndef YAGE_RECTANGLE_H
+#define YAGE_RECTANGLE_H
 
 #include "glm/vec2.hpp"
 
@@ -36,4 +36,4 @@ namespace Gfx
 	};
 }
 
-#endif //VOLKHVY_RECTANGLE_H
+#endif //YAGE_RECTANGLE_H

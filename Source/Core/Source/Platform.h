@@ -2,9 +2,13 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
-#ifndef VOLKHVY_PLATFORM_H
-#define VOLKHVY_PLATFORM_H
+#ifndef YAGE_PLATFORM_H
+#define YAGE_PLATFORM_H
 
 #include "GLFW/glfw3.h"
 
-#endif //VOLKHVY_PLATFORM_H
+#ifdef CREATE_NEW
+#undef CREATE_NEW
+#endif
+
+#endif //YAGE_PLATFORM_H

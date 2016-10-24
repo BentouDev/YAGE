@@ -2,19 +2,26 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#ifndef VOLKHVY_ENGINE_H
-#define VOLKHVY_ENGINE_H
+#ifndef YAGE_ENGINE_H
+#define YAGE_ENGINE_H
 
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <Utils/Handle.h>
+#include <Utils/List.h>
+
 #include "Gfx/Renderer.h"
 #include "Context.h"
+
+#ifdef CREATE_NEW
+#undef CREATE_NEW
+#endif
 
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
+
 namespace Logic
 {
 	class Scene;
@@ -48,8 +55,6 @@ namespace Core
 
 	class Window;
 
-//	class ResourceManager;
-
 	struct Context;
 
 	struct GameTime;
@@ -77,8 +82,6 @@ namespace Core
 
 		borrowed_ptr<Core::Logger> Logger;
 
-	//	borrowed_ptr<Resources::MeshManager> MeshManager;
-
 		explicit Engine(std::string name);
 
 		virtual ~Engine() { CleanUp(); }
@@ -92,10 +95,6 @@ namespace Core
 
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Window&;
-
-		// Create renderer of requested type and initalize it internally
-		template <typename T, typename... Args>
-		auto CreateRenderer(Args... args) -> borrowed_ptr<T>;
 
 		// Load configuration
 		auto LoadConfig(std::string path = "Config.json") -> bool;
@@ -118,24 +117,11 @@ namespace Core
 		// Free all resources
 		auto CleanUp() -> void;
 
-		// todo: Decide what to do next basing on config
+		// todo: Decide what to do next based on config
 		// todo: Render all
 		// todo: Gather all input
 		// todo: Threads, etc.
 	};
-
-	template <typename T, typename... Args>
-	auto Engine::CreateRenderer(Args... args) -> borrowed_ptr<T>
-	{
-		borrowed_ptr<T> result;
-		if(!Renderer)
-		{
-			result.reset(new T(args...));
-			Renderer.reset(result.getRaw());
-			Renderer->initialize(GetContext(), _api);
-		}
-		return result;
-	}
 }
 
-#endif //VOLKHVY_ENGINE_H
+#endif //YAGE_ENGINE_H

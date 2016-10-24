@@ -2,8 +2,8 @@
 // Created by MrJaqbq on 2016-03-26.
 //
 
-#ifndef VOLKHVY_CONFIG_H
-#define VOLKHVY_CONFIG_H
+#ifndef YAGE_CONFIG_H
+#define YAGE_CONFIG_H
 
 #include <string>
 #include <json.hpp>
@@ -130,4 +130,4 @@ namespace Core
 }
 
 
-#endif //VOLKHVY_CONFIG_H
+#endif //YAGE_CONFIG_H

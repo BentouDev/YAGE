@@ -2,114 +2,246 @@
 // Created by MrJaqbq on 2016-02-10.
 //
 
-#ifndef VOLKHVY_MESH_H
-#define VOLKHVY_MESH_H
-
-#include <vector>
-#include <string>
-#include <map>
-
-#include <glm/vec3.hpp>
-#include <Utils/Index.h>
-#include <Utils/List.h>
-#include <Utils/String.h>
-#include <Utils/BorrowedPtr.h>
-#include <Utils/DefaultTrait.h>
-#include <Utils/SafeDelete.h>
+#ifndef YAGE_MESH_H
+#define YAGE_MESH_H
 
 #include "../Resource.h"
 
+#include <Utils/List.h>
+#include <Utils/String.h>
+#include <Utils/DefaultTrait.h>
+#include <Utils/SafeDelete.h>
+#include <Utils/MemoryBlock.h>
+
 namespace Core
 {
-	class MeshApi
+	class MeshScheme
 	{
-		// Handles to api objects
+		struct PropertyInfo
+		{
+			explicit PropertyInfo(const Utils::String &Name, type_t Type, uint32_t PropertyCount, uint32_t ArrayLength)
+					: Name(Name), Type(Type), PropertyCount(PropertyCount), ArrayLength(ArrayLength)
+			{}
+
+			Utils::String Name;
+			type_t Type;
+			uint32_t PropertyCount;
+			uint32_t ArrayLength;
+		};
+
+		Utils::List<PropertyInfo> PropertiesInfo;
+
+	public:
+		explicit MeshScheme(Memory::IMemoryBlock &memory)
+			: PropertiesInfo(memory)
+		{
+
+		}
+
+		MeshScheme(const MeshScheme &other)
+			: PropertiesInfo(other.PropertiesInfo)
+		{
+
+		}
+
+		MeshScheme(MeshScheme &&other)
+			: PropertiesInfo(other.PropertiesInfo)
+		{
+			other.PropertiesInfo.clear();
+		}
+
+		inline virtual ~MeshScheme() noexcept
+		{
+			PropertiesInfo.clear();
+		}
+
+		MeshScheme& operator=(const MeshScheme& other)
+		{
+			if(this != &other)
+			{
+				PropertiesInfo.clear();
+				PropertiesInfo = other.PropertiesInfo;
+			}
+			return *this;
+		}
+
+		MeshScheme& operator=(MeshScheme&& other)
+		{
+			if(this != &other)
+			{
+				PropertiesInfo = std::move(other.PropertiesInfo);
+			}
+			return *this;
+		}
+
+		inline void addPropertyInfo(Utils::String name, type_t type, uint32_t propCount, uint32_t arrayLength)
+		{
+			PropertiesInfo.emplace(name, type, propCount, arrayLength);
+		}
+
+		inline const Utils::List<PropertyInfo>& getPropertiesInfo() const
+		{ return PropertiesInfo; }
 	};
 
 	class MeshData
 	{
-		// Raw arrays of data
-	};
+		class PropertyData
+		{
+			void *_dataPtr;
+			size_t _rawSize;
 
-	class MeshFile
-	{
+		public:
+			explicit PropertyData(void *data, size_t size)
+					: _dataPtr(data), _rawSize(size)
+			{
+
+			}
+
+			inline void *getDataPtr() const
+			{ return _dataPtr; }
+
+			inline size_t size() const
+			{ return _rawSize; }
+		};
+
+		Utils::List<PropertyData> PropertiesData;
+
 	public:
-	//	inline explicit MeshFile(const Utils::String& path)
-	//		: filePath(path) { }
+		explicit MeshData(Memory::IMemoryBlock &memory)
+			: PropertiesData(memory)
+		{
 
-	//	Utils::String filePath;
+		}
+
+		MeshData(const MeshData &other)
+			: PropertiesData(other.PropertiesData)
+		{
+
+		}
+
+		MeshData(MeshData &&other)
+			: PropertiesData(other.PropertiesData)
+		{
+			other.PropertiesData.clear();
+		}
+
+		inline virtual ~MeshData()
+		{
+			PropertiesData.clear();
+		}
+
+		MeshData& operator=(const MeshData& other)
+		{
+			if(this != &other)
+			{
+				PropertiesData.clear();
+				PropertiesData = other.PropertiesData;
+			}
+			return *this;
+		}
+
+		MeshData& operator=(MeshData&& other)
+		{
+			if(this != &other)
+			{
+				PropertiesData = std::move(other.PropertiesData);
+			}
+			return *this;
+		}
+
+		inline void addPropertyData(void* ptr, std::size_t size)
+		{
+			PropertiesData.emplace(ptr, size);
+		}
+
+		inline const Utils::List<PropertyData>& getPropertiesData() const
+		{ return PropertiesData; }
 	};
 
 	class Submesh
 	{
-		MeshApi* 	Api;
-		MeshData* 	Data;
-		// MaterialHandle
+		const void*			_indicesPtr;
+		const std::size_t	_indiceTypeSize;
+		const uint32_t		_indiceCount;
+		const type_t		_indiceType;
 
 	public:
-		Submesh() : Api(nullptr), Data(nullptr) { }
+		inline explicit Submesh(void* ptr, std::size_t size, uint32_t count, type_t type)
+			: _indicesPtr(ptr), _indiceTypeSize(size), _indiceCount(count), _indiceType(type)
+		{
+
+		}
 	};
 
 	DECL_RESOURCE(Mesh)
 	{
-		MeshFile*	File;
-
-		Memory::MemoryBlockBase& memory;
-
-	public:
-		inline explicit Mesh(Memory::MemoryBlockBase& memory);
-		inline ~Mesh() { }
-
-		Utils::List<Submesh> Submeshes;
-	};
-
-	// data may be interleaved or separated
-	// how do I provide one api to maintain this?
-	// thus, there can be one or more buffers
-	// when only one, VAO will be present
-	// anyway, indexing may be used
-	/*class Submesh
-	{
-	//	Gfx::BufferScheme scheme;
+		Memory::IMemoryBlock&	_memory;
+		Utils::List<Submesh>	_submeshes;
+		MeshData*				_data;
+		MeshScheme*				_scheme;
 
 	public:
-//		void uploadApiData(Gfx::MeshApi *pApi);
-//		auto getApiHandle() -> Gfx::MeshApi::ApiMeshHandle;
-//		auto setApiHandle(Gfx::MeshApi::ApiMeshHandle handle) -> void;
-
-		template <typename T>
-		auto addProperty(std::string name, uint32_t count) noexcept -> void
+		inline explicit Mesh(Memory::IMemoryBlock &memory)
+			: _memory(memory), _submeshes(_memory), _data(nullptr), _scheme(nullptr)
 		{
-			// api will iterate through them, calc stride, offset
-			// and pick internal type of data
-	//		scheme.createComponent<T>(count, name);
+			_data	= YAGE_CREATE_NEW(_memory, MeshData)(_memory);
+			_scheme	= YAGE_CREATE_NEW(_memory, MeshScheme)(_memory);
+		}
+
+		inline virtual ~Mesh() noexcept
+		{
+			cleanUp();
+		}
+
+		inline const Utils::List<Submesh> &getSubmeshes() const noexcept
+		{ return _submeshes; }
+
+		inline MeshData& getMeshData() const noexcept
+		{ return *_data; }
+
+		inline MeshScheme& getMeshScheme() const noexcept
+		{ return *_scheme; }
+
+		template<typename T>
+		inline Core::Mesh& addProperty(Utils::String name, T *ptr, uint32_t propCount, uint32_t arrayLength)
+		{
+			_scheme->addPropertyInfo(name, TypeInfo<T>::id(), propCount, arrayLength);
+			_data->addPropertyData(ptr, sizeof(T) * propCount * arrayLength);
+			return *this;
+		}
+
+		template<typename T>
+		inline Core::Mesh& addSubmeshIndices(T *ptr, uint32_t indiceCount)
+		{
+			_submeshes.emplace(Submesh(ptr, sizeof(T), indiceCount, TypeInfo<T>::id()));
+			return *this;
+		}
+
+		template<typename T>
+		inline Core::Mesh& setSubmeshIndices(T *ptr, uint32_t indiceCount, uint32_t subMesh)
+		{
+			if (_submeshes.size() <= subMesh) {
+				_submeshes.resize(subMesh);
+			}
+
+			_submeshes[subMesh] = std::move(Submesh(ptr, sizeof(T), indiceCount, TypeInfo<T>::id()));
+			return *this;
+		}
+
+		void swap(Mesh &other) noexcept override
+		{
+			assert(false && "SWAP IN MESH NOT IMPLEMENTED");
+		}
+
+		void cleanUp() noexcept override
+		{
+			_submeshes.clear();
+			Memory::Delete(_memory, _data);
+			Memory::Delete(_memory, _scheme);
 		}
 	};
 
-	DECL_RESOURCE(MeshResource)
-	{
-	public:
-		 MeshResource() : Resource() { }
-		 //MeshResource(const MeshResource& other);
-		~MeshResource() { }
-
-		//auto operator=(const MeshResource& other) -> MeshResource&;
-
-		// we do not care about memory over here. yet.
-		// todo: this has to be done as handles as well, real submeshes in their container (renderer?)
-		std::vector<Submesh> Submeshes;
-
-		void swap(MeshResource& other) noexcept override { }
-		void cleanUp() noexcept override { }
-
-		Submesh& createSubmesh()
-		{
-			Submeshes.emplace_back();
-			return Submeshes.back();
-		}
-	};
-
-	class MeshTrait : public Utils::DefaultTrait<MeshResource> {};*/
+	class MeshTrait : public Utils::DefaultTrait<Mesh> { };
 }
 
 #endif

@@ -5,8 +5,8 @@
 #ifndef GAME_RESOURCEFILE_H
 #define GAME_RESOURCEFILE_H
 
-#include <Utils/include/utils/File.h>
-#include <Utils/include/utils/Handle.h>
+#include <Utils/File.h>
+#include <Utils/Handle.h>
 
 namespace Core
 {

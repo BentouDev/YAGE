@@ -10,7 +10,7 @@ namespace Core
 {
 	Config::Config() :
 		RenderingApi(this, "Window.Api", "opengl"),
-		WindowTitle(this, "Window.Title", "Volkhvy"),
+		WindowTitle(this, "Window.Title", "YAGE"),
 		WindowHeight(this, "Window.Height", 600),
 		WindowWidth(this, "Window.Width", 800),
 		DrawDebug(this, "Debug.DrawDebug", false),

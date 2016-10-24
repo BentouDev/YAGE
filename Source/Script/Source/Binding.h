@@ -2,8 +2,8 @@
 // Created by MrJaqbq on 2016-02-10.
 //
 
-#ifndef VOLKHVY_BINDING_H
-#define VOLKHVY_BINDING_H
+#ifndef YAGE_BINDING_H
+#define YAGE_BINDING_H
 
 namespace Script
 {
@@ -15,4 +15,4 @@ namespace Script
     };
 }
 
-#endif //VOLKHVY_BINDING_H
+#endif //YAGE_BINDING_H

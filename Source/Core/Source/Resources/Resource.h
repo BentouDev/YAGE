@@ -2,8 +2,8 @@
 // Created by mrjaqbq on 06.03.16.
 //
 
-#ifndef VOLKHVY_RESOURCE_H
-#define VOLKHVY_RESOURCE_H
+#ifndef YAGE_RESOURCE_H
+#define YAGE_RESOURCE_H
 
 #include <string>
 #include <Utils/Index.h>
@@ -22,7 +22,7 @@ namespace Core
 
 	protected:
 		explicit Resource() { }
-		explicit Resource(Resource&& other)
+		explicit Resource(Resource& other)
 		{
 			std::swap(Path, other.Path);
 			std::swap(Name, other.Name);
@@ -42,4 +42,4 @@ namespace Core
 	};
 }
 
-#endif //VOLKHVY_RESOURCE_H
+#endif //YAGE_RESOURCE_H

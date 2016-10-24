@@ -5,59 +5,102 @@
 #ifndef GAME_SHADER_H
 #define GAME_SHADER_H
 
-#include <map>
-#include <vector>
-
 #include <Utils/DefaultTrait.h>
+#include <Utils/List.h>
+#include "../../Gfx/OpenGl/OpenGLBase.h"
 
 #include "../Resource.h"
-// #include "../../Gfx/Api/ShaderApi.h"
+
+namespace Resources
+{
+	class ShaderBuilder;
+}
 
 namespace Gfx
 {
-	class Shader;
-	class ShaderProgram;
-	class ShaderResource;
-
-	class ShaderTrait : public Utils::DefaultTrait<Shader> {};
-	class ShaderProgTrait : public Utils::DefaultTrait<ShaderProgram> {};
-	class ShaderResTrait : public Utils::DefaultTrait<ShaderResource> {};
+	enum ShaderType : GLenum
+	{
+		VERTEX 	 = gl::VERTEX_SHADER,
+		GEOMETRY = gl::GEOMETRY_SHADER,
+		FRAGMENT = gl::FRAGMENT_SHADER
+	};
 
 	class Shader
 	{
+		ShaderType	_type;
+		GLuint 		_handle;
+		bool 		_isCompiled;
+
+		friend class Resources::ShaderBuilder;
+
 	public:
-		using api_handle = uint32_t;
+		explicit inline Shader(ShaderType type) : _type(type), _isCompiled(false)
+		{
+			_handle = gl::CreateShader(type);
+		}
 
-		Utils::Handle<Shader> Handle;
+		~Shader() noexcept
+		{
+			gl::DeleteShader(_handle);
+		}
 
-		void cleanUp() {}
-		void swap(Shader& other) {}
+		Shader(const Shader& shader)
+			: _type(shader._type), _handle(shader._handle)
+		{ }
 
-		api_handle apiHandle;
-	//	ShaderApi::ShaderType type;
+		Shader(Shader&& shader)
+			: _type(shader._type), _handle(shader._handle)
+		{ }
+
+		Shader& operator= (const Shader& shader)
+		{
+			Shader tmp(shader);
+			*this = std::move(tmp);
+			return *this;
+		}
+
+		Shader& operator= (Shader&& other) noexcept
+		{
+			gl::DeleteShader(_handle);
+			_handle = other._handle;
+			_type = other._type;
+			other._handle = -1;
+			return *this;
+		}
+
+		inline operator GLint() const noexcept
+		{ return _handle; }
+
+		inline bool isCompiled() const noexcept
+		{ return _isCompiled; }
 	};
 
-	class ShaderProgram
+	DECL_RESOURCE(ShaderProgram)
 	{
-		// various shaders linked togehter
+		GLuint _handle;
 
 	public:
-		using api_handle = unsigned long long;
+		ShaderProgram(const ShaderProgram&) = delete;
+		ShaderProgram() : _handle(-1)
+		{ }
 
-		api_handle apiHandle;
+		void init(GLint handle);
 
-		Utils::Handle<ShaderProgram> Handle;
+		void cleanUp() noexcept;
 
-		void swap(ShaderProgram& other) {}
-		void cleanUp() {}
+		inline void swap(ShaderProgram& other) noexcept
+		{
+			_handle = other._handle;
+			assert(false && "SWAP IN SHADER NOT IMPLEMENTED");
+		}
+
+		inline operator GLuint() const noexcept
+		{ return _handle; }
+
+		inline void bind() const noexcept;
 	};
 
-	DECL_RESOURCE(ShaderResource)
-	{
-	public:
-		ShaderProgTrait::handle program;
-	//	std::map<ShaderApi::ShaderType, std::vector<ShaderTrait::handle>> shaderMap;
-	};
+	class ShaderProgTrait : public Utils::DefaultTrait<ShaderProgram> {};
 }
 
 #endif //GAME_SHADER_H

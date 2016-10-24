@@ -2,8 +2,8 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
-#ifndef VOLKHVY_WINDOW_H
-#define VOLKHVY_WINDOW_H
+#ifndef YAGE_WINDOW_H
+#define YAGE_WINDOW_H
 
 #include <string>
 #include <vector>
@@ -53,4 +53,4 @@ namespace Core
 	}*/
 }
 
-#endif //VOLKHVY_WINDOW_H
+#endif //YAGE_WINDOW_H

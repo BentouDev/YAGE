@@ -27,11 +27,11 @@ namespace Core
 			Logger(log.release())
 		{ }
 
-		Context(Context&& ctx) : Config(ctx.Config.release()), Logger(ctx.Logger.release())
-		{ }
-
-		//Context(const Context& ctx) : Config(ctx.Config.getRaw()), Logger(ctx.Logger.getRaw())
+		//Context(Context&& ctx) : Config(ctx.Config.release()), Logger(ctx.Logger.release())
 		//{ }
+
+		Context(const Context& ctx) : Config(ctx.Config.getRaw()), Logger(ctx.Logger.getRaw())
+		{ }
 
 		auto operator=(Context&& ctx) -> Context&;
 

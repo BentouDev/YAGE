@@ -5,7 +5,7 @@
 #ifndef GAME_SCENE_H
 #define GAME_SCENE_H
 
-#include <string>
+#include <Utils/String.h>
 
 namespace Core
 {
@@ -20,6 +20,8 @@ namespace Gfx
 
 namespace Logic
 {
+	class RenderingSystem;
+
 	class Scene
 	{
 	protected:
@@ -27,19 +29,22 @@ namespace Logic
 		// Containers for entites
 		// Containers for entity components
 
-		std::string Path;
+		Memory::IMemoryBlock& _memory;
 
-		std::string Name;
+		Utils::String Name;
 
 		Core::Engine& engine;
 
+		RenderingSystem* Rendering;
+
 	public:
-		Scene(Core::Engine& engine);
+		Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);
 
 		virtual ~Scene();
 
 		virtual void Update(const Core::GameTime& time);
 
+		// Is this necessary?
 		virtual void Draw(const Core::GameTime& time, Gfx::Renderer& renderer);
 
 		virtual void Start();

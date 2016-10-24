@@ -10,4 +10,9 @@ namespace Gfx
 	{
 
 	}
+
+	void RenderTarget::Reset()
+	{
+		
+	}
 }

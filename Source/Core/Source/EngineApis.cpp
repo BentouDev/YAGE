@@ -8,13 +8,13 @@ namespace Core
 {
 	void Engine::initializeReferences(Engine* engine)
 	{
-	//	engine->Logger->Default->info("Initializing Volkhvy for '{}'...", engine->Name);
+	//	engine->Logger->Default->info("Initializing YAGE for '{}'...", engine->Name);
 
-	#ifdef VOLKHVY_VULKAN
+	#ifdef YAGE_VULKAN
 			//		engine->RegisterApi<Gfx::VulkanDevice>();
 	#endif
 
-	#ifdef VOLKHVY_OPENGL
+	#ifdef YAGE_OPENGL
 			//		engine->RegisterApi<Gfx::OpenGlContext>();
 	#endif
 	}

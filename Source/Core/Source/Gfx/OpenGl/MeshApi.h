@@ -5,11 +5,16 @@
 #ifndef GAME_MESHAPI_H
 #define GAME_MESHAPI_H
 
+#include <Utils/List.h>
+#include "OpenGLBuffers.h"
 
-class MeshApi
+namespace Gfx
 {
-
-};
-
+	class MeshApi
+	{
+		Utils::List<OpenGL::VBO> _vbos;
+		OpenGL::VAO* _vao;
+	};
+}
 
 #endif //GAME_MESHAPI_H
