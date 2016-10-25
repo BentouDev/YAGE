@@ -7,7 +7,8 @@ cmake_policy(PUSH)
 cmake_policy(SET CMP0011 OLD)
 cmake_policy(SET CMP0048 OLD)
 
-option(YAGE_BUILD_TESTS "Build tests" ON)
+option(YAGE_BUILD_TESTS "Build Tests" ON)
+option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
 
 # emit additional metadata for debug builds
@@ -59,6 +60,13 @@ include_directories(Dependencies/Json/src)
 # Add CppLinq
 include_directories(Dependencies/CppLinq)
 
+# Add QT5 when building Editor
+if(YAGE_BUILD_EDITOR)
+    # Instruct CMake to run moc automatically when needed.
+    find_package(Qt5Widgets REQUIRED)
+    find_package(Qt5WinExtras)
+endif(YAGE_BUILD_EDITOR)
+
 # Revert to standard policy
 cmake_policy(POP)
 
@@ -67,6 +75,11 @@ enable_testing()
 add_subdirectory(Source/Utils)
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Script)
+
+# Include Editor
+if(YAGE_BUILD_EDITOR)
+    add_subdirectory(Source/Editor)
+endif(YAGE_BUILD_EDITOR)
 
 add_library(YAGE INTERFACE)
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)

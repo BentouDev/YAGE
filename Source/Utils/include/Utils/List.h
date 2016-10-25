@@ -7,6 +7,7 @@
 
 #include <new>
 #include <cstring>
+#include <utility>
 #include "DebugSourceInfo.h"
 #include "MemoryBlock.h"
 

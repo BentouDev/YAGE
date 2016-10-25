@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>EditorWindow</class>
+ <widget class="QMainWindow" name="EditorWindow">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>634</width>
+    <height>514</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>YAGE Editor</string>
+  </property>
+  <property name="tabShape">
+   <enum>QTabWidget::Rounded</enum>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="styleSheet">
+    <string notr="true">QTabWidget::pane { 
+	border: none;
+	background: palette(base);
+    border-style: solid;
+    border-width: 1px;
+    border-color: palette(shadow);
+	border-top: none;
+	padding-left: 1px;
+}
+
+/* Style the tab using the tab sub-control. Note that
+    it reads QTabBar _not_ QTabWidget */
+QTabBar::tab {
+/*    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;*/
+
+    min-width: 10ex;
+	padding-top: 4px;
+	padding-bottom: 0px;
+	padding-left: 14px;
+	padding-right: 12px;
+}
+
+QTabBar::close-button {
+
+ }
+
+QTabBar::tab:selected, QTabBar::tab:hover {
+	background: palette(base);
+    border-style: solid;
+    border-width: 1px;
+    border-color: palette(shadow);
+	border-bottom: none;
+}
+
+QTabBar::tab:!selected {
+	background: transparent;
+	border: none;
+}
+
+/*QTabBar::tab:selected, QTabBar::tab:hover {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
+                                stop: 0 #fafafa, stop: 0.4 #f4f4f4,
+                                stop: 0.5 #e7e7e7, stop: 1.0 #fafafa);
+}
+
+QTabBar::tab:selected {
+    border-color: #9B9B9B;
+    border-bottom-color: #C2C7CB; same as pane color 
+}
+
+QTabBar::tab:!selected {
+    margin-top: 2px; make non-selected tabs look smaller 
+}*/
+</string>
+   </property>
+   <layout class="QVBoxLayout" name="verticalLayout"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionExit">
+   <property name="text">
+    <string>E&amp;xit</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

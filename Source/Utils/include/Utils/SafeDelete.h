@@ -5,6 +5,7 @@
 #ifndef YAGE_DEBUG_H
 #define YAGE_DEBUG_H
 
+#include <cstdint>
 #include "BorrowedPtr.h"
 
 namespace Memory
@@ -35,7 +36,7 @@ namespace Memory
 		}
 	}
 
-	template< class T > void SafeDeleteArray( T*& pVal, uint32_t count)
+	template< class T > void SafeDeleteArray( T*& pVal, std::uint32_t count)
 	{
 		if(pVal != nullptr)
 		{
@@ -59,7 +60,7 @@ namespace Memory
 		}
 	}
 
-	template< class T > void SafeFreeArray( T*& pVal, uint32_t count )
+	template< class T > void SafeFreeArray( T*& pVal, std::uint32_t count )
 	{
 		if(pVal != nullptr)
 		{
