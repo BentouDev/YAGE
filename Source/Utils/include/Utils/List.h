@@ -16,12 +16,18 @@ namespace Utils
 	template <typename T>
 	class List
 	{
+	protected:
 		Memory::IMemoryBlock &_memory;
 
 		T* _elements;
 
 		std::size_t _size;
 		std::size_t _capacity;
+
+		virtual void onAddElement()
+		{
+
+		}
 
 		void destructElements()
 		{
@@ -154,6 +160,8 @@ namespace Utils
 			std::size_t size = _size;
 			resize(size + other.size());
 			memcpy(_elements + size, other._elements, other.size() * sizeof(T));
+
+			onAddElement();
 		}
 
 		template<typename ... Args>
@@ -163,6 +171,9 @@ namespace Utils
 
 			T* result = &_elements[_size - 1];
 			new (result) T(args ...);
+
+			onAddElement();
+
 			return	*result;
 		};
 
@@ -175,8 +186,10 @@ namespace Utils
 			}
 
 			auto result = &_elements[_size - 1];
-		//	new (result) T(other);
 			(*result) = other;
+
+			onAddElement();
+
 			return *result;
 		}
 
@@ -189,8 +202,10 @@ namespace Utils
 			}
 
 			auto result = &_elements[_size - 1];
-		//	new (result) T(other);
 			(*result) = std::move(other);
+
+			onAddElement();
+
 			return *result;
 		}
 

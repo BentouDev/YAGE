@@ -6,6 +6,7 @@
 #define GAME_EDITORTABBAR_H
 
 #include <QTabBar>
+#include <QToolButton>
 
 namespace Editor
 {
@@ -14,11 +15,28 @@ namespace Editor
 		Q_OBJECT
 
 	protected:
-		void mousePressEvent(QMouseEvent* event);
+		void placePlusButton();
+
+		virtual void tabLayoutChange() override;
+
+		virtual void resizeEvent(QResizeEvent *event) override;
+
+		QToolButton* plusButton;
+
+	protected slots:
+		void emitPlusButtonClicked();
+
+	signals:
+		void plusButtonClicked();
 
 	public:
 		explicit EditorTabBar(QWidget* parent = nullptr);
-		void moveTab(int from, int to);
+
+		virtual QSize minimumSizeHint() const override;
+
+		virtual QSize sizeHint() const override;
+
+		QToolButton* getPlusButton() const;
 	};
 }
 

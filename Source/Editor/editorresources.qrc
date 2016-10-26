@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resources/PlusButton.png</file>
+        <file>resources/CloseButton.png</file>
+        <file>resources/EditorWindow.css</file>
+    </qresource>
+</RCC>

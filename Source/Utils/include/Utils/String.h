@@ -15,6 +15,21 @@ namespace Utils
 {
 	class String : public List<char>
 	{
+	protected:
+		inline void ensureNullTerminator()
+		{
+			if(back() != '\0')
+			{
+				add('\0');
+				erase(size() - 1);
+			}
+		}
+
+		void onAddElement() override
+		{
+			ensureNullTerminator();
+		}
+
 	public:
 		inline explicit String(Memory::IMemoryBlock &memory)
 			: List(memory)
@@ -45,6 +60,9 @@ namespace Utils
 			std::size_t oldSize = size();
 			resize(oldSize + count);
 			memcpy(begin() + oldSize, c_str, count * sizeof(char));
+
+			ensureNullTerminator();
+
 			return *this;
 		}
 
@@ -53,15 +71,9 @@ namespace Utils
 			return append(c_str, std::strlen(c_str));
 		}
 
-		const char* c_str()
+		const char* c_str() const
 		{
-			if(back() != '\0')
-			{
-				add('\0');
-				erase(size() - 1);
-			}
-
-			return begin();
+			return List::_elements;
 		}
 
 		template <typename T, std::size_t size = 32>

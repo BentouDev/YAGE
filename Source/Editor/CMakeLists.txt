@@ -13,7 +13,9 @@ if(WIN32)
     set(OS_LIBS Qt5::WinExtras)
 endif(WIN32)
 
-add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp)
+#qt_
+
+add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc)
 add_executable(YAGE::Editor ALIAS Editor)
 
 target_include_directories(Editor PUBLIC

@@ -14,15 +14,16 @@ namespace Ui
 
 namespace Editor
 {
+	class EditorTabWidget;
+
 	class EditorWindow : public QMainWindow
 	{
 	Q_OBJECT
 
 	protected:
-		QTabWidget* _tabWidget;
-		QPoint _dragPosition;
+		EditorTabWidget* _tabWidget;
 
-		void addTabPage(const char* name = "New Page");
+		void addTabPage(const char* name = "New Scene.scn*");
 
 	public:
 		explicit EditorWindow(QWidget *parent = nullptr);

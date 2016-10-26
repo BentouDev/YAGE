@@ -6,15 +6,34 @@
 #define GAME_EDITORTABWIDGET_H
 
 #include <QTabWidget>
+#include <QToolButton>
 
 namespace Editor
 {
+	class EditorTabBar;
+
 	class EditorTabWidget : public QTabWidget
 	{
 		Q_OBJECT
 
+	protected:
+		void placeMenuButton();
+		virtual void resizeEvent(QResizeEvent *event) override;
+		virtual bool event(QEvent* event) override;
+
+		EditorTabBar* _editorTabBar;
+		QToolButton* _mainMenuButton;
+
+	protected slots:
+		void emitPlusButtonClicked();
+		void emitMainMenuButtonClicked();
+
+	signals:
+		void plusButtonClicked();
+		void mainMenuButtonClicked();
+
 	public:
-		EditorTabWidget(QWidget* parent = nullptr);
+		explicit EditorTabWidget(QWidget* parent = nullptr);
 	};
 }
 

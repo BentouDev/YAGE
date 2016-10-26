@@ -1,0 +1,94 @@
+#newTabButton {
+    border-radius: 10px;
+    margin-left:4px;
+    margin-right:4px;
+    image: url(:/resources/PlusButton.png);
+}
+
+#newTabButton:hover {
+    background-color: rgba(0,0,0,0.25);
+}
+
+#newTabButton:pressed {
+    background-color: rgba(0,0,0,0.5);
+}
+
+#mainMenuButton {
+    width: 48px;
+}
+
+QTabBar {
+    qproperty-drawBase: 0;
+}
+
+QTabWidget::pane {
+    border: none;
+    background: palette(base);
+    border-style: solid;
+    border-width: 1px;
+    border-color: palette(shadow);
+    padding-left: 1px;
+    border-top: none;
+}
+
+QTabBar::tab {
+/*    width: 48ex;*/
+    min-height: 24px;
+
+    padding: 4px 12px 0px 10px;
+}
+
+/*QTabBar::tab:first, QTabBar::tab:only-one {
+    margin-left: 22ex;
+}*/
+
+QTabBar::close-button {
+    border-radius: 8px;
+    image: url(:/resources/CloseButton.png);
+}
+
+QTabBar::close-button:hover {
+    background-color: rgba(0,0,0,0.25);
+}
+
+QTabBar::close-button:pressed {
+    background-color: rgba(0,0,0,0.5);
+}
+
+QTabBar::tear {
+    image: url(tear_indicator.png);
+}
+
+QTabBar::scroller { /* the width of the scroll buttons */
+    width: 1px;
+}
+
+QTabBar QToolButton { /* the scroll buttons are tool buttons */
+    border-image: url(scrollbutton.png) 2;
+    border-width: 2px;
+}
+
+QTabBar QToolButton::right-arrow { /* the arrow mark in the tool buttons */
+    image: url(rightarrow.png);
+    width: 40px;
+}
+
+QTabBar QToolButton::left-arrow {
+    image: url(leftarrow.png);
+    width: 40px;
+}
+
+QTabBar::tab:selected {
+    background: palette(base);
+    border-style: solid;
+    border-width: 1px;
+    border-color: palette(shadow);
+    border-bottom: 1px solid palette(base);
+}
+
+QTabBar::tab:!selected {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid palette(shadow);
+    border-top: 1px solid transparent;
+}

@@ -9,7 +9,7 @@ int main(int argc, char** args)
 {
 	QApplication a(argc, args);
 
-	QFile stylesheet( ":/resources/style.css" );
+	QFile stylesheet( ":/resources/EditorWindow.css" );
 	if(stylesheet.open(QFile::ReadOnly))
 	{
 		QString styleSheet = stylesheet.readAll();
