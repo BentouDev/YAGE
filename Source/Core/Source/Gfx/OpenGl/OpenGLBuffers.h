@@ -43,20 +43,20 @@ namespace OpenGL
 		}
 	};
 
-	class VBO
+	class GenericBuffer
 	{
 	private:
 		GLuint handle;
 
-		VBO()
+		GenericBuffer()
 		{
 			gl::GenBuffers(1, &handle);
 		}
 
 	public:
-		static VBO* Create(Memory::IMemoryBlock& memory);
+		static GenericBuffer* Create(Memory::IMemoryBlock& memory);
 
-		~VBO()
+		~GenericBuffer()
 		{
 			gl::DeleteBuffers(1, &handle);
 		}
@@ -71,6 +71,9 @@ namespace OpenGL
 			return handle;
 		}
 	};
+
+	typedef GenericBuffer VBO;
+	typedef GenericBuffer IBO;
 }
 
 #endif //GAME_VAO_H

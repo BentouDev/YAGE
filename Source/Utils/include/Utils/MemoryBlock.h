@@ -38,6 +38,10 @@ namespace Memory
 	public:
 		virtual void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) = 0;
 		virtual void  deallocate(void* ptr) = 0;
+
+		virtual std::size_t getFreeSize() = 0;
+		virtual std::size_t getUsedSize() = 0;
+		virtual std::size_t getCapacity() = 0;
 	};
 
 	// todo: mem checking, tracing
@@ -77,9 +81,19 @@ namespace Memory
 
 		}
 
-		std::size_t getFreeSize()
+		std::size_t getFreeSize() override
 		{
 			return _allocator.getFreeSize();
+		}
+
+		std::size_t getUsedSize() override
+		{
+			return _allocator.getUsedSize();
+		}
+
+		std::size_t getCapacity() override
+		{
+			return _allocator.getSize();
 		}
 
 		void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) override

@@ -17,7 +17,7 @@ namespace Utils
 	class List
 	{
 	protected:
-		Memory::IMemoryBlock &_memory;
+		Memory::IMemoryBlock* _memory;
 
 		T* _elements;
 
@@ -41,7 +41,7 @@ namespace Utils
 		{
 			if(_elements != nullptr)
 			{
-				_memory.deallocate(_elements);
+				_memory->deallocate(_elements);
 				_elements = nullptr;
 			}
 		}
@@ -57,7 +57,7 @@ namespace Utils
 			T* newPtr = nullptr;
 			if(newSize > 0)
 			{
-				newPtr = (T*)_memory.allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO);
+				newPtr = (T*)_memory->allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO);
 
 				if(_elements != nullptr)
 				{
@@ -86,13 +86,13 @@ namespace Utils
 
 	public:
 		inline explicit List(Memory::IMemoryBlock &memory)
-			: _memory(memory), _size(0), _capacity(0), _elements(nullptr)
+			: _memory(&memory), _size(0), _capacity(0), _elements(nullptr)
 		{
 
 		}
 
 		inline List(Memory::IMemoryBlock &memory, std::size_t capacity)
-			: _memory(memory), _size(0), _capacity(0), _elements(nullptr)
+			: _memory(&memory), _size(0), _capacity(0), _elements(nullptr)
 		{
 			reserve(capacity);
 		}
@@ -122,6 +122,9 @@ namespace Utils
 
 				// we may have some data already
 				destructElements();
+
+				_memory = other._memory;
+
 				resize(otherSize);
 				memcpy(_elements, other._elements, sizeof(T) * otherSize);
 			}
@@ -137,6 +140,7 @@ namespace Utils
 				destructElements();
 				cleanUp();
 
+				_memory 	= other._memory;
 				_elements	= other._elements;
 				_size 		= other._size;
 				_capacity	= other._capacity;
@@ -258,12 +262,32 @@ namespace Utils
 			return _elements[_size - 1];
 		}
 
+		T& front() const
+		{
+			return _elements[0];
+		}
+
+		T& back() const
+		{
+			return _elements[_size - 1];
+		}
+
 		T* begin()
 		{
 			return _elements;
 		}
 
 		T* end()
+		{
+			return _elements + _size;
+		}
+
+		T* begin() const
+		{
+			return _elements;
+		}
+
+		T* end() const
 		{
 			return _elements + _size;
 		}

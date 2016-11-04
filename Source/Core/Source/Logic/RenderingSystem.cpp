@@ -4,35 +4,51 @@
 
 #include <cstdint>
 #include <Utils/Container.h>
-#include "../Gfx/RenderBatch.h"
+#include <Gfx/CommandQueue.h>
+#include <Engine.h>
+
 #include "RenderingSystem.h"
+
+#include "../Gfx/RenderBatch.h"
+#include "../Gfx/Renderer.h"
 #include "../Resources/Mesh/Mesh.h"
+#include "../Resources/Mesh/MeshManager.h"
+#include "../Resources/Material/Material.h"
+#include "../Resources/Material/MaterialManager.h"
 
 namespace Logic
 {
 	void RenderingComponent::setMaterial(Core::Material& material, std::uint32_t index)
 	{
-		if(index < _debugMesh->getSubmeshes().size())
-		{
-			_debugMaterials.resize(index + 1);
-			_debugMaterials[index] = &material;
-		}
+		// TODO: protect from creating more materials than mesh supports,
+		// or just set size when setting mesh and force list bounds in here!
+	//	_debugMaterials.resize(index + 1);
+	//	_debugMaterials[index] = material.Handle;
+		setDirty();
+	}
+
+	void RenderingComponent::setDirty()
+	{
+		_system.setDirty(*this);
 	}
 
 	RenderingSystem::RenderingSystem(Core::Engine &engine, Memory::IMemoryBlock& memory)
-		: _engine(engine), _memory(memory), _components(memory)//, _dirtyComponents(memory), _dirtyBatches(memory)
+		: _engine(engine), _memory(memory), _components(memory), _dirtyComponents(memory)
 	{
 
+	}
+
+	void RenderingSystem::setDirty(RenderingComponent &comp)
+	{
+		comp._isDirty = true;
+		_dirtyComponents.add(comp.Handle);
 	}
 
 	RenderingComponent::handle_t RenderingSystem::createNew()
 	{
-		RenderingComponent::handle_t result = _components.create(_memory);
-		RenderingComponent& component = _components.get(result);
+		RenderingComponent::handle_t handle = _components.create(*this, _memory);
 
-	//	_dirtyComponents.add(&component);
-
-		return result;
+		return handle;
 	}
 
 	void RenderingSystem::remove(RenderingComponent::handle_t handle)
@@ -52,8 +68,61 @@ namespace Logic
 		return _components.get(handle);
 	}
 
+	void RenderingSystem::refreshDirtyComponents()
+	{
+		for(RenderingComponent::handle_t handle : _dirtyComponents)
+		{
+			RenderingComponent& comp = _components.get(handle);
+			if(comp._batchHandles.size() > 0)
+			{
+				for (auto& h : comp._batchHandles)
+				{
+					_engine.BatchManager.get().invalidateBatch(h.BatchHandle);
+				}
+
+				comp._batchHandles.clear();
+			}
+
+			Core::Mesh& mesh = _engine.MeshManager.get().getMesh(comp.getMesh());
+			for (auto matHandle : comp.getMaterials())
+			{
+				const Core::Material& material = _engine.MaterialManager.get().getMaterial(matHandle);
+				comp._batchHandles.add(_engine.BatchManager.get().allocateMesh(mesh, material));
+			}
+
+			comp._isDirty = false;
+		}
+
+		_dirtyComponents.clear();
+	}
+
 	void RenderingSystem::update(const Core::GameTime& time, Gfx::Renderer& renderer)
 	{
+		refreshDirtyComponents();
+
+		// CULLING WOULD BE DONE HERE?
+		// construct Command data for queue
+		// pass this queue to renderer
+
+		// Created by renderer? User probably
+		// So there should be something like pass or technique class
+		// That will get rendering components (or other ones) by type/tag
+		// From appropriate system (maybe on separate threads even)!
+		// Then it will sort them in renderer
+		// And submit calls to GPU
+		Gfx::Renderer::queue_t& queue = renderer.getQueue();
+		for(RenderingComponent& comp : _components)
+		{
+			// Get new packet
+			// Set key information (this is only used for sorting, co no stress!)
+			queue.createCommands(comp);
+			// Set Data, like shader program, uniforms, vao etc.
+		}
+
+		// submit packet
+
+		// submit to renderer
+
 		// recreate dirty batches
 		// add new meshes to them or change their data
 

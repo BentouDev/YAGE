@@ -22,6 +22,11 @@ namespace Logic
 	void Scene::Draw(const Core::GameTime& time, Gfx::Renderer& renderer)
 	{
 		// TODO: in update or draw?
+		// go through each of components
+		// scheme <- mesh -> component
+		// so using that we can access batch for scheme & material pair
+
+		// this can be divided into threads
 		Rendering->update(time, renderer);
 
 		// what main classes do we have?

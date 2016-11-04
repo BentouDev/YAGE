@@ -44,7 +44,7 @@ namespace Utils
 			return Handle();
 		}
 
-		operator bool()
+		explicit operator bool() const
 		{
 			return key != invalid().key;
 		}

@@ -141,6 +141,9 @@ namespace Utils
 
 			Trait::cleanUp(o);
 
+			// I PROBABLY SHOULDN'T HAVE THIS CLEAN UP METHOD AT ALL
+			o.~object_t();
+
 			// TODO: check what happens with id
 			// Probably should be swapped to
 			Trait::swap(o, elements[--elementCount]);
@@ -210,6 +213,16 @@ namespace Utils
 			return elements[elementCount - 1];
 		}
 
+		auto front() const -> object_t&
+		{
+			return elements[0];
+		}
+
+		auto back() const -> object_t&
+		{
+			return elements[elementCount - 1];
+		}
+
 		auto begin() -> object_t*
 		{
 			return elements;
@@ -220,9 +233,24 @@ namespace Utils
 			return elements + elementCount;
 		}
 
-		inline auto size() -> uint16_t
+		auto begin() const -> object_t*
+		{
+			return elements;
+		}
+
+		auto end() const -> object_t*
+		{
+			return elements + elementCount;
+		}
+
+		inline auto size() const noexcept -> uint16_t
 		{
 			return elementCount;
+		}
+
+		inline auto capacity() const noexcept -> std::uint16_t
+		{
+			return maxSize;
 		}
 
 		inline auto clear() -> void

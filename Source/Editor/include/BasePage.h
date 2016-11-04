@@ -6,6 +6,7 @@
 #define GAME_BASEPAGE_H
 
 #include <QWidget>
+#include <QtWidgets/QHBoxLayout>
 
 namespace Editor
 {
@@ -13,8 +14,11 @@ namespace Editor
 	{
 		Q_OBJECT
 
+		QHBoxLayout* _toolbarLayout;
+
 	public:
 		BasePage(QWidget *parent = nullptr);
+		void addButton(const char*, const char* = "");
 	};
 }
 

@@ -21,8 +21,8 @@ namespace Gfx
 	void RenderBatch::init()
 	{
 		_vao = OpenGL::VAO::Create(_parentBucket.getMemory());
-		_vbo = OpenGL::VBO::Create(_parentBucket.getMemory());
-		_ibo = OpenGL::VBO::Create(_parentBucket.getMemory());
+		_vbo = OpenGL::GenericBuffer::Create(_parentBucket.getMemory());
+		_ibo = OpenGL::GenericBuffer::Create(_parentBucket.getMemory());
 	}
 
 	void RenderBatch::cleanUp()

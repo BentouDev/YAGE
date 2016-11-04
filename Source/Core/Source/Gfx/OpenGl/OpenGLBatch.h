@@ -16,7 +16,7 @@ namespace OpenGL
 		Core::MeshData scheme;
 
 		VAO vao;
-		VBO vbo;
+		GenericBuffer vbo;
 	//	IBO ibo;
 		std::size_t vboMaxSize;
 

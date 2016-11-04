@@ -31,6 +31,8 @@ namespace Logic
 
 namespace Gfx
 {
+	class BufferManager;
+	class BatchManager;
 	class BaseApi
 	{};
 }
@@ -38,6 +40,7 @@ namespace Gfx
 namespace Resources
 {
 	class MeshManager;
+	class MaterialManager;
 }
 
 namespace Scripts
@@ -76,11 +79,17 @@ namespace Core
 
 		const std::string Name;
 
+		borrowed_ptr<Core::Logger> Logger;
+
 		borrowed_ptr<Core::Config> Config;
 
 		borrowed_ptr<Gfx::Renderer> Renderer;
 
-		borrowed_ptr<Core::Logger> Logger;
+		borrowed_ptr<Gfx::BatchManager> BatchManager;
+		borrowed_ptr<Gfx::BufferManager> BufferManager;
+
+		borrowed_ptr<Resources::MeshManager> MeshManager;
+		borrowed_ptr<Resources::MaterialManager> MaterialManager;
 
 		explicit Engine(std::string name);
 
@@ -116,6 +125,12 @@ namespace Core
 
 		// Free all resources
 		auto CleanUp() -> void;
+
+		void debugSetRenderer(Gfx::Renderer* renderer);
+		void debugSetBatchManager(Gfx::BatchManager* batchManager);
+		void debugSetBufferManager(Gfx::BufferManager* bufferManager);
+		void debugSetMeshManager(Resources::MeshManager* manager);
+		void debugSetMaterialManager(Resources::MaterialManager* manager);
 
 		// todo: Decide what to do next based on config
 		// todo: Render all

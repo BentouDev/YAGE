@@ -12,7 +12,7 @@ namespace Gfx
 {
 	class MeshApi
 	{
-		Utils::List<OpenGL::VBO> _vbos;
+		Utils::List<OpenGL::GenericBuffer> _vbos;
 		OpenGL::VAO* _vao;
 	};
 }

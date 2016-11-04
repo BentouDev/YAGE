@@ -18,6 +18,7 @@
 namespace Core
 {
 	class Window;
+	class Context;
 }
 
 namespace OpenGL
@@ -33,6 +34,8 @@ namespace OpenGL
 	void resizeWindow(const Core::Window& window);
 
 	bool registerWindow(const Core::Window& window);
+
+	bool checkError(Core::Context context);
 }
 
 #endif //GAME_OPENGLBASE_H

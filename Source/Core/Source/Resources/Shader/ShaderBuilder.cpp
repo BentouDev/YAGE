@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <Engine.h>
+#include <Utils/String.h>
 #include "../../Gfx/OpenGl/OpenGLBase.h"
 #include "../../Logger.h"
 #include "ShaderBuilder.h"
@@ -12,14 +13,29 @@
 namespace Resources
 {
 	ShaderBuilder::ShaderBuilder(Core::Engine& engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _temporaryShaders(_memory), _shaders(_memory)
+		: _engine(engine), _memory(memory), _temporaryShaders(_memory), _shaders(_memory), _existing(nullptr)
 	{
 
 	}
 
 	Gfx::ShaderProgram* ShaderBuilder::debugBuild(const char *programName)
 	{
-		Gfx::ShaderProgram* program = YAGE_CREATE_NEW(_memory, Gfx::ShaderProgram)();
+		Gfx::ShaderProgram* program = nullptr;
+
+		if(_existing != nullptr)
+		{
+			program = _existing;
+			if((*program) != -1)
+			{
+				gl::DeleteProgram((*program));
+			}
+		}
+		else
+		{
+			program = YAGE_CREATE_NEW(_memory, Gfx::ShaderProgram)();
+		}
+
+		program->Name = programName;
 
 		for(Gfx::Shader* shader : _shaders)
 		{
@@ -51,12 +67,30 @@ namespace Resources
 			gl::AttachShader(*program, shader);
 		}
 
+		int linkStatus;
 		gl::LinkProgram(*program);
 
-		// TODO: Log error
-		// _engine.Logger->Default->error("Unable to compile shader 'Fragment', cause '{}'");
+		gl::GetProgramiv(*program, gl::LINK_STATUS, &linkStatus);
+		if(linkStatus != 0)
+		{
+			int bufferSize;
+			gl::GetProgramiv(*program, gl::INFO_LOG_LENGTH, &bufferSize);
+
+			Utils::String string(_memory);
+			string.reserve(bufferSize);
+
+			gl::GetProgramInfoLog(*program, bufferSize, &bufferSize, string.begin());
+
+			_engine.Logger->Default->error("Unable to link shader program '{}', cause :\n{}", program->Name, string.c_str());
+		}
 
 		return program;
+	}
+
+	ShaderBuilder& ShaderBuilder::onExisting(Gfx::ShaderProgram *existing)
+	{
+		_existing = existing;
+		return *this;
 	}
 
 	ShaderBuilder& ShaderBuilder::with(Gfx::Shader& shader)
@@ -155,11 +189,7 @@ namespace Resources
 
 			gl::GetShaderInfoLog(shader, bufferSize, &bufferSize, string.begin());
 
-			// TODO what to do with such cases? not builded shaders should be properly disposed
-			// if its our shader it will be deleted anyway
-			// if its external, we dont care
-
-			_engine.Logger->Default->error("Unable to compile shader '{}', cause '{}'", shader._type, string.c_str());
+			_engine.Logger->Default->error("Unable to compile shader '{}', cause :\n{}", shader._type, string.c_str());
 
 			shader._isCompiled = false;
 		}

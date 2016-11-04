@@ -10,10 +10,12 @@
 
 #include <Utils/DefaultTrait.h>
 #include <Utils/Container.h>
+#include "../Gfx/BatchManager.h"
 
 namespace Gfx
 {
 	class Renderer;
+	class MaterialBatch;
 }
 
 namespace Memory
@@ -31,20 +33,28 @@ namespace Core
 
 namespace Logic
 {
+	class RenderingSystem;
+
 	DECL_COMP(RenderingComponent)
 	{
-		bool					_isVisible;
-		bool 					_isDirty;
+		friend class Gfx::Renderer;
+		friend class RenderingSystem;
 
-		// TODO: use handles instead of pointers!
-	//	Core::Mesh::handle_t	_mesh;
-		Core::Mesh*				_debugMesh;
-		Utils::List<Core::Material*> _debugMaterials;
+		RenderingSystem& _system;
+
+		bool _isVisible;
+		bool _isDirty;
+
+		Utils::Handle<Core::Mesh>						_mesh;
+		Utils::List<Utils::Handle<Core::Material>>		_materials;
+		Utils::List<Gfx::MaterialBatchMeshReference>	_batchHandles;
 
 	public:
-		inline explicit RenderingComponent(Memory::IMemoryBlock& memory) : _debugMaterials(memory)
+		inline explicit RenderingComponent(RenderingSystem& system, Memory::IMemoryBlock& memory)
+			: _system(system), _materials(memory), _batchHandles(memory),
+			  _isDirty(false), _isVisible(true)
 		{
-
+			setDirty();
 		}
 
 		RenderingComponent(const RenderingComponent&) = delete;
@@ -64,6 +74,8 @@ namespace Logic
 
 		}
 
+		void setDirty();
+
 		inline bool isDirty() const
 		{ return _isDirty; }
 
@@ -81,24 +93,27 @@ namespace Logic
 			if(_isVisible != visible)
 			{
 				_isVisible = visible;
-				_isDirty = true;
+				setDirty();
 			}
 		}
 
 		void setMaterial(Core::Material& material, std::uint32_t index);
 
-		inline Core::Material& getMaterial(std::uint32_t index) const
+		inline Utils::Handle<Core::Material> getMaterial(std::uint32_t index) const
 		{
-			// TODO: PROPER ERROR HANDELING
-			assert(index < _debugMaterials.size() && "Material index out of bounds");
-			return *_debugMaterials[index];
+			// TODO: PROPER ERROR HANDLING
+			assert(index < _materials.size() && "Material index out of bounds");
+			return _materials[index];
 		}
 
-		inline void setMesh(Core::Mesh& mesh)
-		{ _debugMesh = &mesh; }
+		inline const Utils::List<Utils::Handle<Core::Material>>& getMaterials() const
+		{ return _materials; }
 
-		inline Core::Mesh& getMesh() const
-		{ return *_debugMesh; }
+		inline void setMesh(Utils::Handle<Core::Mesh> handle)
+		{ _mesh = handle; }
+
+		inline Utils::Handle<Core::Mesh> getMesh() const
+		{ return _mesh; }
 	};
 
 	class RenderingComponentTrait : public Utils::DefaultTrait<RenderingComponent> { };
@@ -112,12 +127,15 @@ namespace Logic
 		void uploadMeshToBucket(Gfx::Renderer& renderer, Core::Mesh& mesh);
 		void updateMeshInBucket(Gfx::Renderer& renderer, Core::Mesh& mesh);
 
-	//	Utils::List<RenderingComponent*> _dirtyComponents;
+		Utils::List<RenderingComponent::handle_t> _dirtyComponents;
 	//	Utils::List<Gfx::RenderBatchTrait::handle> _dirtyBatches;
+
+		void refreshDirtyComponents();
 
 	public:
 		explicit RenderingSystem(Core::Engine& engine, Memory::IMemoryBlock& memory);
 
+		auto setDirty(RenderingComponent& comp) -> void;
 		auto createNew() -> RenderingComponent::handle_t;
 		auto remove(RenderingComponent::handle_t handle) -> void;
 		auto update(const Core::GameTime& time, Gfx::Renderer& renderer) -> void;

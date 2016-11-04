@@ -5,7 +5,7 @@
 #ifndef GAME_SHADERBUILDER_H
 #define GAME_SHADERBUILDER_H
 
-#include <Utils/String.h>
+#include <Utils/MemoryBlock.h>
 
 namespace Gfx
 {
@@ -26,6 +26,7 @@ namespace Resources
 		Memory::IMemoryBlock& 		_memory;
 		Utils::List<Gfx::Shader*>	_shaders;
 		Utils::List<Gfx::Shader>	_temporaryShaders;
+		Gfx::ShaderProgram*			_existing;
 
 		void compileShader(Gfx::Shader& shader, const char* source, const GLint length);
 		void checkForCompilationErrors(Gfx::Shader& shader);
@@ -33,6 +34,8 @@ namespace Resources
 
 	public:
 		ShaderBuilder(Core::Engine& engine, Memory::IMemoryBlock& memory);
+
+		ShaderBuilder&	onExisting(Gfx::ShaderProgram* existing);
 
 		ShaderBuilder&	with(Gfx::Shader& shader);
 

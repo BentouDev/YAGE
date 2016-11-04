@@ -6,6 +6,7 @@
 
 #include <Window.h>
 #include "../../Platform.h"
+#include "../../Logger.h"
 
 namespace OpenGL
 {
@@ -51,5 +52,48 @@ namespace OpenGL
 	void resizeWindow(const Core::Window& window)
 	{
 
+	}
+
+	bool checkError(Core::Context context)
+	{
+		GLenum errorCode = gl::GetError();
+		if(errorCode != gl::NO_ERROR_)
+		{
+			switch(errorCode)
+			{
+				case gl::INVALID_ENUM:
+					context.Logger->Default->error("An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
+					break;
+
+				case gl::INVALID_VALUE:
+					context.Logger->Default->error("A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.");
+					break;
+
+				case gl::INVALID_OPERATION:
+					context.Logger->Default->error("The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.");
+					break;
+
+				case gl::INVALID_FRAMEBUFFER_OPERATION:
+					context.Logger->Default->error("The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.");
+					break;
+
+				case gl::OUT_OF_MEMORY:
+					context.Logger->Default->error("There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
+					break;
+
+				/*case gl::STACK_UNDERFLOW:
+					context.Logger->Default->error("An attempt has been made to perform an operation that would cause an internal stack to underflow.");
+
+				case gl::STACK_OVERFLOW:
+					context.Logger->Default->error("An attempt has been made to perform an operation that would cause an internal stack to overflow.");*/
+
+				default:
+					context.Logger->Default->critical("Unknown OpenGL, possibly memory corruption!");
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }

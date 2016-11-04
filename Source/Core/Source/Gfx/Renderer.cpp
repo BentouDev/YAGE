@@ -3,38 +3,87 @@
 //
 
 #include "Renderer.h"
+#include "BatchManager.h"
 #include "../Engine.h"
 #include "../Resources/Mesh/Mesh.h"
+#include "../Resources/Mesh/MeshManager.h"
 #include "../Logic/RenderingSystem.h"
+#include <Utils/Handle.h>
 
 namespace Gfx
 {
 	Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
-		: _engine(engine), _memory(memory), _buckets(_memory), _context(_engine.GetContext())
-	{ };
-
-//	void Renderer::recreateBatch(uint32_t key)
-//	{
-
-//	}
-
-	void Renderer::updateComponent(Logic::RenderingComponent &comp)
+		: _engine(engine), _memory(memory), _buckets(_memory), _context(_engine.GetContext()),
+		  lastProgram(0), lastVAO(0), _queue(_memory, *this)
+			/*_queue
+			(
+				_memory,
+				[&](RenderData& data){this->drawCall(data);},
+				[&](Logic::RenderingComponent& component){this->createDrawCallData(component);}
+			),*/
 	{
-		/*RenderBatch& bucket = getBucket(comp.getMesh().getMeshData());
 
-		if(comp.getBatchIndex() < 0)
+	};
+
+	void Renderer::drawCall(RenderData& data)
+	{
+		if(lastProgram != data.ShaderProgram)
 		{
-			comp.setBatchIndex(bucket.addMesh(comp.getMesh()));
+			lastProgram = data.ShaderProgram;
+			gl::UseProgram(data.ShaderProgram);
 		}
-		else
+
+		if(lastVAO != data.VAO)
 		{
-			bucket.updateMesh(comp.getBatchIndex(), comp.getMesh());
-		}*/
+			lastVAO = data.VAO;
+			gl::BindVertexArray(data.VAO);
+		}
+
+		gl::DrawElementsBaseVertex(gl::TRIANGLES, data.elementCount, data.indexType, 0, data.baseVertex);
+	}
+
+	void Renderer::createDrawCallData(Logic::RenderingComponent& component)
+	{
+		for(MaterialBatchMeshReference& reference : component._batchHandles)
+		{
+			RenderKey&		key	 = _queue._keys.emplace();
+			RenderData&		data = _queue._data.emplace();
+
+			// set values
+			data.ShaderProgram	= reference.ShaderProgram;
+			data.baseVertex		= reference.BaseVertex;
+			data.elementCount	= reference.ElementCount;
+			data.indexType		= reference.IndexType;
+			data.VAO			= (*reference.VAO);
+		}
+
+		return;
+
+		// key doesnt matter for now
+		// but we can have submeshes, they should be bundled together
+		// So component really has reference to our batch
+		// And that bath is per material per vertex format
+		// So we get those bathes using component indices
+		// And create commands from them here
+		// Should have multiple outputs here tho
+
+		// Probably this mesh lookup is unnecessary here
+		const Core::Mesh& mesh = _engine.MeshManager.get().getMesh(component.getMesh());
+		const Utils::List<Core::Submesh>& submeshes = mesh.getSubmeshes();
+
+		for(std::size_t i = 0; i < submeshes.size(); i++)
+		{
+			submeshes[i];
+			component.getMaterial(i);
+		}
 	}
 
 	void Renderer::draw()
 	{
-		const std::size_t bucketCount = _buckets.size();
+		_queue.sort();
+		_queue.issueCommands();
+
+		/*const std::size_t bucketCount = _buckets.size();
 		for(std::size_t i = 0; i < bucketCount; i++)
 		{
 			const Gfx::RenderPass& bucket = _buckets[i];
@@ -71,6 +120,6 @@ namespace Gfx
 					}
 				}
 			}
-		}
+		}*/
 	}
 }

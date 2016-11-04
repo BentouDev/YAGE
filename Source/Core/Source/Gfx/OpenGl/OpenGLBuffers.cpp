@@ -13,7 +13,7 @@ namespace OpenGL
 		return YAGE_CREATE_NEW(memory, VAO)();
 	}
 
-	VBO* VBO::Create(Memory::IMemoryBlock& memory)
+	GenericBuffer* GenericBuffer::Create(Memory::IMemoryBlock& memory)
 	{
 		return YAGE_CREATE_NEW(memory, VBO)();
 	}

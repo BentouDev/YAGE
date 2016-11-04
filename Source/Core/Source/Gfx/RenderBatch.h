@@ -50,8 +50,8 @@ namespace Gfx
 		Utils::Handle<RenderBatch> Handle;
 
 		OpenGL::VAO* _vao;
-		OpenGL::VBO* _vbo;
-		OpenGL::VBO* _ibo;
+		OpenGL::GenericBuffer* _vbo;
+		OpenGL::GenericBuffer* _ibo;
 
 		const RenderPass& _parentBucket;
 		Utils::List<MaterialInfo> _materialBatches;
@@ -72,9 +72,9 @@ namespace Gfx
 
 		inline bool hasSize(size_t size) const noexcept { return _size - _usedSize > size; }
 
-		inline const OpenGL::VBO& getVBO() const noexcept { return *_vbo; }
+		inline const OpenGL::GenericBuffer& getVBO() const noexcept { return *_vbo; }
 
-		inline const OpenGL::VBO& getIBO() const noexcept { return *_ibo; }
+		inline const OpenGL::GenericBuffer& getIBO() const noexcept { return *_ibo; }
 
 		inline const OpenGL::VAO& getVAO() const noexcept { return *_vao; }
 

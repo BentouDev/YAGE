@@ -15,6 +15,72 @@
 
 #mainMenuButton {
     width: 48px;
+    background: palette(base);
+    border: 1px solid palette(shadow);
+    border-bottom: none;
+    margin-top: 1px;
+}
+
+#mainMenuButton:hover {
+    background: palette(midlight);/*midlight? for windows*/
+}
+
+#mainMenuButton:pressed {
+    background: palette(mid);
+}
+
+#pageToolbar {
+    background: palette(base); /*window? for windows, but i mean, color of borders*/
+    border: 1px solid palette(shadow);
+    border-left: none;
+    border-right: none;
+    padding-left: 1px;
+    padding-right: 2px;
+}
+
+#pageContent {
+    background: green;
+}
+
+#pageToolbar QLineEdit {
+    background: palette(dark);
+    border: 1px solid palette(shadow);
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+#pageToolbar QLineEdit:hover {
+    background: palette(middark);
+}
+
+#pageToolbar QToolButton {
+    width: 28px;
+
+    background: palette(base);
+    border: 1px solid palette(shadow);
+
+    padding-top: 3px;
+    padding-bottom: 4px;
+}
+
+#pageToolbar QToolButton:hover {
+    background: palette(midlight);/*midlight? for windows*/
+}
+
+#pageToolbar QToolButton:pressed {
+    background: palette(mid);/*midlight? for windows*/
+}
+
+#firstButton {
+    border-bottom-left-radius: 8px;
+    border-top-left-radius: 8px;
+}
+
+#lastButton {
+    border-bottom-right-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
 QTabBar {

@@ -8,8 +8,12 @@
 #include "EngineApis.h"
 
 #include "Resources/ResourceManager.h"
+#include "Resources/Mesh/MeshManager.h"
+#include "Gfx/BufferManager.h"
+#include "Gfx/BatchManager.h"
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
+#include "GameTime.h"
 #include "Engine.h"
 #include "Window.h"
 #include "Logger.h"
@@ -26,7 +30,6 @@ namespace Core
 		  Logger(new Core::Logger()),
 		  Config(new Core::Config())
 	//	  Renderer(new Gfx::Renderer())
-	//	  MeshManager(new Resources::MeshManager(*this))
 	{
 		Logger->setConfig(Config);
 		Config->setLogger(Logger);
@@ -124,21 +127,12 @@ namespace Core
 	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
-		// todo: this should be connected to rendertarget
 		OpenGL::beginDraw(window);
 
-	//	_api->beginDraw(window);
-
-		// activeScene->Draw(GameTime(), (*Renderer));
-		/*for(RenderPass pass : _renderPasses)
-		{
-			Renderer.Draw(pass);
-		}*/
+		activeScene->Draw(*new GameTime, Renderer.get());
 
 		Renderer->draw();
 
-
-	//	_api->endDraw(window);
 		OpenGL::endDraw(window);
 	}
 
@@ -150,7 +144,6 @@ namespace Core
 	auto Engine::Resize(const Window& window) -> void
 	{
 		OpenGL::resizeWindow(window);
-		// _api->resizeWindow(window);
 	}
 
 	auto Engine::CleanUp() -> void
@@ -162,22 +155,51 @@ namespace Core
 
 		Logger->Default->info("Cleaning up...");
 
-		if(_api)
-		{
+	//	if(_api)
+	//	{
 	//		_api->cleanUp();
 	//		_api.release();
-		}
+	//	}
 
 	//	for(auto api : _availableApis)
-		{
+	//	{
 	//		Memory::SafeDelete(api.second);
-		}
+	//	}
 
-	//	Memory::SafeDelete(MeshManager);
+		Memory::SafeDelete(BatchManager);
+		Memory::SafeDelete(MeshManager);
+		Memory::SafeDelete(BufferManager);
 		Memory::SafeDelete(Renderer);
 		Memory::SafeDelete(Config);
-		Memory::SafeDelete(Logger);
 
 		glfwTerminate();
+
+		Logger->Default->info("Cleaned up!");
+		Memory::SafeDelete(Logger);
+	}
+
+	void Engine::debugSetRenderer(Gfx::Renderer* renderer)
+	{
+		Renderer.reset(renderer);
+	}
+
+	void Engine::debugSetBatchManager(Gfx::BatchManager* batchManager)
+	{
+		BatchManager.reset(batchManager);
+	}
+
+	void Engine::debugSetBufferManager(Gfx::BufferManager* bufferManager)
+	{
+		BufferManager.reset(bufferManager);
+	}
+
+	void Engine::debugSetMeshManager(Resources::MeshManager* manager)
+	{
+		MeshManager.reset(manager);
+	}
+
+	void Engine::debugSetMaterialManager(Resources::MaterialManager* manager)
+	{
+		MaterialManager.reset(manager);
 	}
 }
