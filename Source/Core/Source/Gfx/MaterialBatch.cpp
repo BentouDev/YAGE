@@ -34,6 +34,7 @@ namespace Gfx
 
 	MaterialBatchMeshReference MaterialBatch::allocateMesh(const Core::Mesh &mesh)
 	{
+		return MaterialBatchMeshReference();
 	/*	if(batch.hasSize(mesh.vertexCount(), submeshes[i]._indiceCount))
 		{
 			batch.allocate(mesh, i);
