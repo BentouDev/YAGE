@@ -14,12 +14,12 @@ before_build:
   - cmake ..
 
 build:
-  project: C:\projects\volkhvy\Build\ALL_BUILD.vcxproj
+  project: C:\projects\yage\Build\ALL_BUILD.vcxproj
   parallel: true
 
 test_script:
-  - cmd: C:\projects\volkhvy\Build\Source\Core\Release\CoreTests.exe --gtest_output=xml:CoreTests.xml
-  - cmd: C:\projects\volkhvy\Build\Source\Utils\Release\UtilsTests.exe --gtest_output=xml:UtilsTests.xml
+  - cmd: C:\projects\yage\Build\Source\Core\Release\CoreTests.exe --gtest_output=xml:CoreTests.xml
+  - cmd: C:\projects\yage\Build\Source\Utils\Release\UtilsTests.exe --gtest_output=xml:UtilsTests.xml
 on_success:
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\UtilsTests.xml))
