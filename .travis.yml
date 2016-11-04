@@ -16,6 +16,8 @@ addons:
       - libxxf86vm-dev
       - libglu1-mesa-dev
       - clang-3.7
+      - qt5-default
+      - qttools5-dev-tools
 
 matrix:
   include:

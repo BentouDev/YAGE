@@ -4,7 +4,9 @@ configuration:
   - Release
 
 install:
-  - git submodule update --init --recursive
+  - git submodule update --init --recursiveinstall:
+  - set QTDIR=C:\Qt\5.7\msvc2015
+  - set PATH=%PATH%;%QTDIR%\bin
 
 before_build:
   - msbuild /version
