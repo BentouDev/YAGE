@@ -87,11 +87,6 @@ namespace Core
 			other.PropertiesInfo.clear();
 		}
 
-		inline virtual ~MeshScheme() noexcept
-		{
-			PropertiesInfo.clear();
-		}
-
 		MeshScheme& operator=(const MeshScheme& other)
 		{
 			if(this != &other)
@@ -296,26 +291,56 @@ namespace Core
 		friend class Resources::MeshBuilder;
 		friend class Resources::MeshManager;
 
-		Memory::IMemoryBlock&	_memory;
+		Memory::IMemoryBlock*	_memory;
 		Utils::List<Submesh>	_submeshes;
-
-		Resources::MeshSchemeId _schemeId;
 
 		MeshData*				_data;
 		MeshStorageType			_storageType;
 
+		Resources::MeshSchemeId _schemeId;
 		Utils::Handle<Gfx::StaticBuffer> _buffer;
 
 	public:
 		inline explicit Mesh(Memory::IMemoryBlock &memory)
-			: _memory(memory), _submeshes(_memory), _data(nullptr), _storageType(STATIC), _schemeId(-1), _buffer()
+			: _memory(&memory), _submeshes(memory), _data(nullptr), _storageType(STATIC), _schemeId(-1), _buffer()
 		{
-			_data = YAGE_CREATE_NEW(_memory, MeshData)(_memory);
+			_data = YAGE_CREATE_NEW((*_memory), MeshData)(*_memory);
 		}
 
 		inline virtual ~Mesh() noexcept
 		{
 			cleanUp();
+		}
+
+		Mesh(Mesh&& other)
+		: _memory(other._memory),
+		  _submeshes(std::move(other._submeshes)),
+		  _data(other._data),
+		  _storageType(other._storageType),
+		  _schemeId(other._schemeId),
+		  _buffer(std::move(other._buffer))
+		{
+			other._memory = nullptr;
+			other._data = nullptr;
+			other._buffer = Utils::Handle<Gfx::StaticBuffer>::invalid();
+		}
+
+		Mesh& operator=(Mesh&& other)
+		{
+			if(this != &other)
+			{
+				_memory = other._memory;
+				_submeshes = std::move(other._submeshes);
+				_data = other._data;
+				_storageType = other._storageType;
+				_schemeId = other._schemeId;
+				_buffer = std::move(other._buffer);
+
+				other._memory = nullptr;
+				other._data = nullptr;
+				other._buffer = Utils::Handle<Gfx::StaticBuffer>::invalid();
+			}
+			return *this;
 		}
 
 		inline const Utils::List<Submesh> &getSubmeshes() const noexcept
@@ -336,13 +361,14 @@ namespace Core
 
 		void swap(Mesh &other) noexcept override
 		{
+			fputs("SWAP IN MESH NOT IMPLEMENTED", stderr);
 			assert(false && "SWAP IN MESH NOT IMPLEMENTED");
 		}
 
 		void cleanUp() noexcept override
 		{
 			_submeshes.clear();
-			Memory::Delete(_memory, _data);
+			Memory::Delete(*_memory, _data);
 		}
 	};
 

@@ -25,6 +25,9 @@ namespace Utils
 		using handle_t = typename Trait::handle;
 		using activeCondition = bool(*)(object_t&);
 
+		static_assert(std::is_move_constructible<object_t>::value, "Trait type must be move constructible! (due to internal swap)");
+	//	static_assert(std::is_move_assignable<object_t>::value, "Trait type must be move assignable! (due to internal swap)");
+
 	private:
 		Memory::IMemoryBlock& _memory;
 		Utils::List<Index<handle_t>> _indices;
@@ -110,7 +113,7 @@ namespace Utils
 		inline virtual ~Container()
 		{
 			removeAllElements();
-			destructElements();
+		//	destructElements();
 
 			_memory.deallocate(elements);
 			_indices.clear();
@@ -139,14 +142,21 @@ namespace Utils
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
 
-			Trait::cleanUp(o);
+		//	Trait::cleanUp(o);
 
-			// I PROBABLY SHOULDN'T HAVE THIS CLEAN UP METHOD AT ALL
-			o.~object_t();
+			--elementCount;
+			object_t& lastElement = elements[elementCount];
 
 			// TODO: check what happens with id
 			// Probably should be swapped to
-			Trait::swap(o, elements[--elementCount]);
+		//	Trait::swap(o, elements[--elementCount]);
+
+			// TODO: Create move assign operators and constructors for all these types
+			//std::swap(o, lastElement);
+
+			// o is going to be 'deleted' anyway
+			o.~object_t();
+			new (&o) object_t(std::move(lastElement));
 
 			_indices[Trait::getIndex(Trait::getHandle(o))].index = in.index;
 			in.index = elementCount;
@@ -155,6 +165,10 @@ namespace Utils
 			auto oldIndex = Trait::getIndex(handle);
 			_indices[freelistEnd].next = oldIndex;
 			freelistEnd = oldIndex;
+
+			// I PROBABLY SHOULDN'T HAVE THIS CLEAN UP METHOD AT ALL
+			// AFTER THIS CALL O is no longer an valid object!
+			// lastElement.~object_t();
 		}
 
 		/*inline auto activate(handle_t handle) noexcept -> void

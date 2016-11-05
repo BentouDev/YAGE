@@ -127,6 +127,8 @@ namespace Memory
 			_memoryTracker.OnDeallocation(originalPtr, frontOffset);
 
 			_allocator.deallocate(originalPtr);
+
+		//	std::memset(originalPtr, 0xCA, allocationSize);
 		}
 	};
 

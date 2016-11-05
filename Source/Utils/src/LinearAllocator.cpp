@@ -40,12 +40,12 @@ namespace Memory
 		return reinterpret_cast<void*>(alignedAddress);
 	}
 
-	std::size_t LinearAllocator::getAllocationSize(const void* ptr) const
+	std::size_t LinearAllocator::getAllocationSize(const void*) const
 	{
 		return 0;
 	}
 
-	void LinearAllocator::deallocate(void* ptr)
+	void LinearAllocator::deallocate(void*)
 	{
 		assert(false && "Cannot deallocate from linear allocator, use clear() instead!");
 	}

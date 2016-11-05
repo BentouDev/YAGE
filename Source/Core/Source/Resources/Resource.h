@@ -21,15 +21,13 @@ namespace Core
 		using handle_t = Utils::Handle<Res>;
 
 	protected:
-		explicit Resource() { }
-		explicit Resource(Resource& other)
-		{
-			std::swap(Path, other.Path);
-			std::swap(Name, other.Name);
-		}
+		explicit Resource() : Handle(), Name("none") { }
+		Resource(Resource&&) : Handle(), Name("none") { }
 
 	public:
 		explicit Resource(const Resource&) = delete;
+		Resource& operator=(const Resource&) = delete;
+		Resource& operator=(Resource&&) = delete;
 
 		virtual ~Resource(){ }
 
@@ -37,8 +35,9 @@ namespace Core
 		virtual auto cleanUp() noexcept -> void = 0;
 
 		handle_t 	Handle;
-		std::string Path;
-		std::string Name;
+
+		// Todo : package reference
+		const char* Name;
 	};
 }
 

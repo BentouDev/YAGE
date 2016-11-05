@@ -25,6 +25,7 @@ namespace Resources
 
 	public:
 		explicit MeshBuilder(Memory::IMemoryBlock& memory, MeshManager& manager);
+		virtual ~MeshBuilder();
 
 		template<typename T>
 		MeshBuilder& withProperty(const char* name, T *ptr, uint32_t propCount, uint32_t arrayLength)

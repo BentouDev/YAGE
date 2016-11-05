@@ -113,8 +113,22 @@ namespace Core
 
 	public:
 		inline explicit Material(Memory::IMemoryBlock& memory)
-			: _memory(memory), _uniforms(_memory)
+			: _memory(memory), _allocator(nullptr), _uniforms(_memory), _debugShader(nullptr)
 		{ }
+
+		Material(Material&& other)
+			: _memory(other._memory),
+			  _allocator(other._allocator),
+			  _uniforms(std::move(other._uniforms)),
+			  _debugShader(std::move(other._debugShader))
+		{
+			other._allocator = nullptr;
+			other._debugShader = nullptr;
+		}
+
+		Material(const Material&) = delete;
+		Material& operator=(const Material&) = delete;
+		Material& operator=(Material&&) = delete;
 
 		template <typename T>
 		Core::Material& addUniform(const char* name)

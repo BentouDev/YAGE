@@ -24,13 +24,13 @@ namespace Memory
 		inline void OnAllocation(void* ptr, std::size_t size, std::size_t alignment, std::size_t frontOffset, const Utils::DebugSourceInfo&) override
 		{
 			const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(ptr);
-			VALGRIND_MEMPOOL_ALLOC(&_block, reinterpret_cast<void*>(address + frontOffset), size);
+			VALGRIND_MEMPOOL_ALLOC(&_block, reinterpret_cast<void*>(address), size); // + frontOffset
 		};
 
 		inline void OnDeallocation(void* ptr, std::size_t frontOffset) override
 		{
 			const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(ptr);
-			VALGRIND_MEMPOOL_FREE(&_block, reinterpret_cast<void*>(address + frontOffset));
+			VALGRIND_MEMPOOL_FREE(&_block, reinterpret_cast<void*>(address)); // + frontOffset
 		};
 	};
 }

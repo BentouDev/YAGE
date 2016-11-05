@@ -12,8 +12,8 @@ namespace Memory
 	class IMemoryBoundChecker
 	{
 	public:
-		virtual inline const std::size_t getSizeFront() const = 0;
-		virtual inline const std::size_t getSizeBack() const = 0;
+		virtual inline std::size_t getSizeFront() const = 0;
+		virtual inline std::size_t getSizeBack() const = 0;
 
 		virtual inline void GuardFront(void*) = 0;
 		virtual inline void GuardBack(void*) = 0;
@@ -25,10 +25,10 @@ namespace Memory
 	class NoMemoryBoundChecker : public IMemoryBoundChecker
 	{
 	public:
-		inline const std::size_t getSizeFront() const override
+		inline std::size_t getSizeFront() const override
 		{ return 0; };
 
-		inline const std::size_t getSizeBack() const override
+		inline std::size_t getSizeBack() const override
 		{ return 0; };
 
 		inline void GuardFront(void*) override {}
