@@ -179,7 +179,7 @@ namespace Utils
 			onAddElement();
 
 			return	*result;
-		};
+		}
 
 		T& add(const T& other)
 		{

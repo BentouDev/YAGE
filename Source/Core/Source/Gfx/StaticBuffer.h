@@ -29,7 +29,7 @@ namespace Gfx
 		handle_t Handle;
 
 	protected:
-		Memory::IMemoryBlock& _memory;
+		Memory::IMemoryBlock* _memory;
 
 		OpenGL::VBO* 	_vbo;
 		OpenGL::IBO*	_ibo;
@@ -47,15 +47,16 @@ namespace Gfx
 
 	public:
 		inline explicit StaticBuffer(Memory::IMemoryBlock& memory,
-							  std::size_t vertexSize, std::size_t indexSize,
-							  std::size_t vertexCount, std::size_t indexCount, Core::Context* context = nullptr)
-			: _memory(memory), _vbo(nullptr), _ibo(nullptr),
+		  std::size_t vertexSize, std::size_t indexSize,
+		  std::size_t vertexCount, std::size_t indexCount, Core::Context* context = nullptr)
+			: Handle(), _memory(&memory),
 			  _vertexSize(vertexSize), _indexSize(indexSize),
 			  _vertexCount(vertexCount), _indexCount(indexCount),
-			  _usedVertices(0), _usedIndices(0)
+			  _usedVertices(0), _usedIndices(0),
+			  _vbo(nullptr), _ibo(nullptr)
 		{
-			_vbo = OpenGL::VBO::Create(_memory);
-			_ibo = OpenGL::IBO::Create(_memory);
+			_vbo = OpenGL::VBO::Create(*_memory);
+			_ibo = OpenGL::IBO::Create(*_memory);
 
 			gl::BindBuffer(gl::ARRAY_BUFFER, getVBO());
 			gl::BufferData(gl::ARRAY_BUFFER, vertexSize * vertexCount, nullptr, gl::STATIC_DRAW);
@@ -75,9 +76,48 @@ namespace Gfx
 
 		inline virtual ~StaticBuffer() noexcept
 		{
-			Memory::Delete(_memory, _vbo);
-			Memory::Delete(_memory, _ibo);
+			Memory::Delete(*_memory, _vbo);
+			Memory::Delete(*_memory, _ibo);
 		}
+
+		StaticBuffer(StaticBuffer&& other)
+			: Handle(), _memory(other._memory),
+			  _vertexSize(other._vertexSize), _indexSize(other._indexSize),
+			  _vertexCount(other._vertexCount), _indexCount(other._indexCount),
+			  _usedVertices(other._usedVertices), _usedIndices(other._usedIndices)
+		{
+			_vbo = other._vbo;
+			_ibo = other._ibo;
+
+			other._vbo = nullptr;
+			other._ibo = nullptr;
+			other._memory = nullptr;
+		}
+
+		StaticBuffer(const StaticBuffer&) = delete;
+		StaticBuffer& operator=(const StaticBuffer&) = delete;
+		StaticBuffer& operator=(StaticBuffer&&) = delete;
+
+		/*StaticBuffer& operator=(StaticBuffer&& other)
+		{
+			if(this != &other)
+			{
+				_memory = other._memory;
+				_vertexSize = other._vertexSize;
+				_indexSize = other._indexSize;
+				_vertexCount = other._vertexCount;
+				_indexCount = other._indexCount;
+				_usedVertices = other._usedVertices;
+				_usedIndices = other._usedIndices;
+				_vbo = other._vbo;
+				_ibo = other._ibo;
+
+				other._vbo = nullptr;
+				other._ibo = nullptr;
+				other._memory = nullptr;
+			}
+			return *this;
+		}*/
 
 		void clear();
 
@@ -110,12 +150,6 @@ namespace Gfx
 
 		inline std::size_t getUsedIndexCount() const
 		{ return _usedIndices; }
-
-		virtual auto swap(StaticBuffer& other) noexcept -> void
-		{ }
-
-		virtual auto cleanUp() noexcept -> void
-		{ }
 	};
 
 	class StaticBufferTrait : public Utils::DefaultTrait<StaticBuffer> { };

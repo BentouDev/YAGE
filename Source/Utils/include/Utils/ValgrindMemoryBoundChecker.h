@@ -16,10 +16,10 @@ namespace Memory
 	public:
 		const static std::size_t BOUND_OFFSET = 4;
 
-		inline const std::size_t getSizeFront() const override
+		inline std::size_t getSizeFront() const override
 		{ return BOUND_OFFSET; };
 
-		inline const std::size_t getSizeBack() const override
+		inline std::size_t getSizeBack() const override
 		{ return BOUND_OFFSET; };
 
 		inline void GuardFront(void*) override {}

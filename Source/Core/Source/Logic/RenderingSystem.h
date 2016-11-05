@@ -6,10 +6,10 @@
 #define GAME_RENDERINGSYSTEM_H
 
 #include <cstdint>
-#include "Component.h"
-
 #include <Utils/DefaultTrait.h>
 #include <Utils/Container.h>
+
+#include "Component.h"
 #include "../Gfx/BatchManager.h"
 
 namespace Gfx
@@ -38,6 +38,7 @@ namespace Logic
 	DECL_COMP(RenderingComponent)
 	{
 		friend class Gfx::Renderer;
+
 		friend class RenderingSystem;
 
 		RenderingSystem& _system;
@@ -45,33 +46,69 @@ namespace Logic
 		bool _isVisible;
 		bool _isDirty;
 
-		Utils::Handle<Core::Mesh>						_mesh;
-		Utils::List<Utils::Handle<Core::Material>>		_materials;
-		Utils::List<Gfx::MaterialBatchMeshReference>	_batchHandles;
+		Utils::Handle<Core::Mesh> _mesh;
+		Utils::List<Utils::Handle<Core::Material>> _materials;
+		Utils::List<Gfx::MaterialBatchMeshReference> _batchHandles;
 
 	public:
-		inline explicit RenderingComponent(RenderingSystem& system, Memory::IMemoryBlock& memory)
-			: _system(system), _materials(memory), _batchHandles(memory),
-			  _isDirty(false), _isVisible(true)
+		inline explicit RenderingComponent(RenderingSystem &system, Memory::IMemoryBlock &memory)
+				: _system(system), _isDirty(false), _isVisible(true),
+				  _materials(memory), _batchHandles(memory),
+				  _mesh()
 		{
 			setDirty();
 		}
 
 		RenderingComponent(const RenderingComponent&) = delete;
+		RenderingComponent& operator=(const RenderingComponent&) = delete;
+		RenderingComponent& operator=(RenderingComponent&&) = delete;
+
+		/*RenderingComponent(const RenderingComponent& other)
+			: _system(other._system), _isDirty(false), _isVisible(other._isVisible),
+			  _materials(other._materials), _batchHandles(other._batchHandles),
+			  _mesh(other._mesh)
+		{
+			setDirty();
+		}*/
+
+		RenderingComponent(RenderingComponent&& other)
+			: _system(other._system), _isDirty(false), _isVisible(other._isVisible),
+			  _materials(std::move(other._materials)), _batchHandles(std::move(_batchHandles)),
+			  _mesh(std::move(other._mesh))
+		{
+
+		}
+
+		/*RenderingComponent& operator=(const RenderingComponent& other)
+		{
+			if(this != &other)
+			{
+				_system			= other._system;
+				_isVisible		= other._isVisible;
+				_materials		= other._materials;
+				_batchHandles	= other._batchHandles;
+				_mesh			= other._mesh;
+				setDirty();
+			}
+			return *this;
+		}*/
+
+		/*RenderingComponent& operator=(RenderingComponent&& other)
+		{
+			if(this != &other)
+			{
+				_system			= other._system;
+				_isVisible		= other._isVisible;
+				_materials		= std::move(other._materials);
+				_batchHandles	= std::move(other._batchHandles);
+				_mesh			= std::move(other._mesh);
+			}
+			return *this;
+		}*/
 
 		~RenderingComponent()
 		{
-
-		}
-
-		auto swap(RenderingComponent& other) noexcept -> void override
-		{
-			assert(false && "SWAP IN RENDERCOMP NOT IMPLEMENTED");
-		}
-
-		auto cleanUp() noexcept -> void override
-		{
-
+			// Wat do?
 		}
 
 		void setDirty();
@@ -122,13 +159,9 @@ namespace Logic
 	{
 		Core::Engine& _engine;
 		Memory::IMemoryBlock& _memory;
+
 		Utils::Container<RenderingComponentTrait> _components;
-
-		void uploadMeshToBucket(Gfx::Renderer& renderer, Core::Mesh& mesh);
-		void updateMeshInBucket(Gfx::Renderer& renderer, Core::Mesh& mesh);
-
 		Utils::List<RenderingComponent::handle_t> _dirtyComponents;
-	//	Utils::List<Gfx::RenderBatchTrait::handle> _dirtyBatches;
 
 		void refreshDirtyComponents();
 

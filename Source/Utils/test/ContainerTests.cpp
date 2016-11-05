@@ -17,19 +17,32 @@ namespace MemoryTests
 	{
 	public:
 		MOCK_METHOD0(Die, void());
+		MOCK_METHOD0(Foo, void());
 
-		~MyFooMock() { Die(); }
-		MyFooMock() {}
-		MyFooMock(unsigned t) : test(t) {}
+		virtual ~MyFooMock() { test = 0; Die(); }
+		MyFooMock() : Handle(), test(fooConst) {}
+		explicit MyFooMock(unsigned t) : Handle(), test(t) {}
+
+		MyFooMock(MyFooMock&& other) : Handle(), test(other.test) { }
 
 		MyFooMock(const MyFooMock&) = delete;
+		MyFooMock& operator=(const MyFooMock&) = delete;
+		MyFooMock& operator=(MyFooMock&&) = delete;
 
 		Utils::Handle<MyFooMock> Handle;
 		unsigned test;
 
-		auto swap(MyFooMock& other) -> void { }
-		auto cleanUp() -> void { }
+		static const uint32_t fooConst;
+
+		uint32_t Quack()
+		{
+			Foo();
+			return test;
+		}
+
 	};
+
+	const uint32_t MyFooMock::fooConst = 0xF00BACEC;
 
 	class FooTrait
 	{
@@ -39,12 +52,12 @@ namespace MemoryTests
 
 		inline static void cleanUp(type& first)
 		{
-			first.cleanUp();
+
 		}
 
 		inline static void swap(type& first, type& second) noexcept
 		{
-			first.swap(second);
+
 		}
 
 		inline static void incrementLiveId(Utils::Index<handle>& index) noexcept
@@ -155,5 +168,47 @@ namespace MemoryTests
 		EXPECT_CALL(obj, Die()).Times(1);
 
 		delete container;
+	}
+
+	TEST_F(ContainerTest, CanCreateManyItemsFromContainer)
+	{
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+
+		for(int i = 0; i < count; i++)
+			container->create(i);
+
+		EXPECT_EQ(container->size(), count);
+	}
+
+	TEST_F(ContainerTest, CanRemoveItemFromMiddleOfContainer)
+	{
+		const int elementCount = 5;
+		const int elementToDelete = 2;
+		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+
+		std::vector<FooTrait::handle> handles;
+
+		for(auto i = 0; i < elementCount; i++)
+			handles.push_back(container->create());
+
+		MyFooMock& deletedItem = container->get(handles[elementToDelete]);
+
+		EXPECT_EQ(elementCount, container->size());
+		EXPECT_CALL(deletedItem, Die());
+
+		container->remove(handles[elementToDelete]);
+
+		for(auto i = 0; i < elementCount; i++)
+		{
+			if(i != elementToDelete)
+			{
+				MyFooMock& element = container->get(handles[i]);
+				EXPECT_EQ(MyFooMock::fooConst, element.test);
+				uint32_t number = element.Quack();
+				EXPECT_EQ(MyFooMock::fooConst, number);
+			}
+		}
+
+		EXPECT_EQ(elementCount - 1, container->size());
 	}
 }

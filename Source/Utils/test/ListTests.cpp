@@ -87,6 +87,8 @@ namespace ListTests
 		auto list = new Utils::List<FooMock>(getMemory());
 
 		EXPECT_NE(nullptr, list);
+
+		delete list;
 	}
 
 	TEST_F(ListTest, CanCreateListWithCapacity)
@@ -96,6 +98,8 @@ namespace ListTests
 		EXPECT_NE(nullptr, list);
 		EXPECT_EQ(list->capacity(), listCapacity);
 		EXPECT_EQ(sizeof(FooMock) * listCapacity, allocator->getAllocationSize(list->begin()));
+
+		delete list;
 	}
 
 	TEST_F(ListTest, CanAddItemToList)
@@ -106,6 +110,8 @@ namespace ListTests
 
 		EXPECT_EQ(1, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
+
+		delete list;
 	}
 
 	TEST_F(ListTest, CanRemoveItemFromList)
@@ -121,6 +127,8 @@ namespace ListTests
 
 		EXPECT_EQ(0, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
+
+		delete list;
 	}
 
 	TEST_F(ListTest, CanAddManyItemsToList)
@@ -132,6 +140,8 @@ namespace ListTests
 
 		EXPECT_EQ(list->size(), listCapacity);
 		EXPECT_LE(list->size(), list->capacity());
+
+		delete list;
 	}
 
 	TEST_F(ListTest, CanRemoveItemFromMiddleOfList)
@@ -157,5 +167,7 @@ namespace ListTests
 
 		EXPECT_EQ(4, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
+
+		delete list;
 	}
 }

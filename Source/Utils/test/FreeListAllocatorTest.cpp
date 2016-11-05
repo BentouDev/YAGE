@@ -118,6 +118,40 @@ namespace FreeListAllocatorTests
 		EXPECT_EQ(second, fourth);
 	}
 
+	TEST_F(FreeListAllocatorTest, CanReallocateInOtherOrder)
+	{
+		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);
+
+		const uint32_t emptySize = allocator->getUsedSize();
+
+		auto first	 = allocator->allocate(allocSize, alignSize, 0);
+		auto second	 = allocator->allocate(allocSize, alignSize, 0);
+		auto third	 = allocator->allocate(allocSize, alignSize, 0);
+		auto fourth	 = allocator->allocate(allocSize, alignSize, 0);
+
+		allocator->deallocate(second);
+		allocator->deallocate(fourth);
+		allocator->deallocate(third);
+		allocator->deallocate(first);
+
+		EXPECT_EQ(emptySize, allocator->getUsedSize());
+
+		auto fifth	 = allocator->allocate(allocSize, alignSize, 0);
+		auto sixth	 = allocator->allocate(allocSize, alignSize, 0);
+		auto seventh = allocator->allocate(allocSize, alignSize, 0);
+		auto eighth	 = allocator->allocate(allocSize, alignSize, 0);
+
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(fifth));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(sixth));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(seventh));
+		EXPECT_EQ(allocSize, allocator->getAllocationSize(eighth));
+
+		EXPECT_EQ(first, fifth);
+		EXPECT_EQ(second, sixth);
+		EXPECT_EQ(third, seventh);
+		EXPECT_EQ(fourth, eighth);
+	}
+
 	TEST_F(FreeListAllocatorTest, CanReallocateInOtherOrderWithOffset)
 	{
 		auto allocator 	= new Memory::FreeListAllocator(memory, memorySize);

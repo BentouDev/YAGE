@@ -23,16 +23,15 @@ namespace Logic
 		handle_t Handle;
 
 	protected:
-		explicit Component() { }
-		explicit Component(Component&& other) { }
+		explicit Component() : Handle() { }
+		Component(Component&& other) : Handle() { }
 
 	public:
 		explicit Component(const Component&) = delete;
+		Component& operator=(const Component&) = delete;
+		Component& operator=(Component&&) = delete;
 
-		virtual ~Component(){ }
-
-		virtual auto swap(Comp& other) noexcept -> void = 0;
-		virtual auto cleanUp() noexcept -> void = 0;
+		virtual ~Component() noexcept { }
 	};
 }
 

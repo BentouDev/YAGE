@@ -2,6 +2,7 @@
 // Created by bentoo on 9/28/16.
 //
 
+#include <cstring>
 #include <assert.h>
 #include "Utils/FreeListAllocator.h"
 
@@ -46,38 +47,55 @@ namespace Memory
 		if(smallest == nullptr)
 			return nullptr;
 
+		// Calculate forward adjustment
 		std::size_t adjustment 		= Internal::calcForwardAlignmentAdjustment(smallest, alignment, headerSize);
 		std::size_t allocationSize 	= size + adjustment;
 
-		std::uintptr_t 	smallestAddress 		= reinterpret_cast<std::uintptr_t>(smallest);
-		std::uintptr_t 	currentAddress			= smallestAddress + adjustment;
-		std::uintptr_t 	nextAddress 			= smallestAddress + allocationSize;
+		std::uintptr_t 	smallestAddress 	= reinterpret_cast<std::uintptr_t>(smallest);
+		std::uintptr_t 	alignedAddress		= smallestAddress + adjustment;
+		std::uintptr_t 	endAddress 			= smallestAddress + allocationSize;
 
-		void* 			newPtr 	= reinterpret_cast<void*>(nextAddress);
+		void* 			newPtr 	= reinterpret_cast<void*>(endAddress);
 		FreeListHeader* pNew 	= reinterpret_cast<FreeListHeader*>(newPtr);
 
 		assert(smallest->next != pNew && "Deallocation has failed to join adjacent blocks!");
 
-		pNew->next		 	= nullptr;
-		pNew->size		 	= (uint32_t)(smallest->size - allocationSize);
-		pNew->adjustment 	= (uint8_t)0;
+		const uint32_t minimalSize = sizeof(FreeListHeader);
+		const uint32_t sizeLeft = smallest->size - allocationSize;
 
-		doRemoveFromList(_freeBlocks, smallest);
-		FreeListHeader* end = getListEnd(_freeBlocks);
-		end->next 			= pNew;
+		if(sizeLeft > minimalSize)
+		{
+			pNew->next		 	= nullptr;
+			pNew->size		 	= sizeLeft;
+			pNew->adjustment 	= (uint8_t)0;
+
+			// TODO: we may use ptr, as it already points to smallest
+			doRemoveFromList(_freeBlocks, smallest);
+			FreeListHeader* end = getListEnd(_freeBlocks);
+			end->next 			= pNew;
+		}
+		else
+		{
+			allocationSize = smallest->size;
+			doRemoveFromList(_freeBlocks, smallest);
+		}
 
 		if(smallest == _freeBlocks)
 		{
 			_freeBlocks = reinterpret_cast<FreeListHeader*>(smallest->next);
 		}
 
-		smallest->next		 = nullptr;
-		smallest->size 		 = (uint32_t)allocationSize;
-		smallest->adjustment = (uint8_t)adjustment;
+		std::memset(smallest, 0, adjustment);
+
+		FreeListHeader* userHeader = reinterpret_cast<FreeListHeader*>(alignedAddress - offset - sizeof(FreeListHeader));
+
+		userHeader->next		= nullptr;
+		userHeader->size		= (uint32_t)allocationSize;
+		userHeader->adjustment	= (uint8_t)adjustment;
 
 		_usedSize += allocationSize;
 
-		void*  userPtr = reinterpret_cast<void*>(currentAddress - offset);
+		void*  userPtr = reinterpret_cast<void*>(alignedAddress - offset);
 		return userPtr;
 	}
 
@@ -110,17 +128,20 @@ namespace Memory
 
 	void FreeListAllocator::deallocate(void *ptr)
 	{
-		std::size_t 	headerSize	= sizeof(FreeListHeader);
-		std::uintptr_t  ptrAddress	= reinterpret_cast<std::uintptr_t>(ptr);
-		void* 			rawBegin	= reinterpret_cast<void*>(ptrAddress - headerSize);
+		std::size_t 	headerSize		= sizeof(FreeListHeader);
+		std::uintptr_t  ptrAddress		= reinterpret_cast<std::uintptr_t>(ptr);
+		std::uintptr_t 	headerAddress	= ptrAddress - headerSize;
+		void* 			headerBegin		= reinterpret_cast<void*>(headerAddress);
 
-		FreeListHeader* header		= reinterpret_cast<FreeListHeader*>(rawBegin);
+		FreeListHeader* header		= reinterpret_cast<FreeListHeader*>(headerBegin);
+	//	std::uintptr_t	rawAddress	= ptrAddress - header->adjustment;
+		void*			rawBegin	= reinterpret_cast<void*>(headerBegin); //rawAddress
 
 		assert(header->adjustment != 0 && "Cannot deallocate address thats already free!");
 
 		std::size_t allocSize 			= header->size;
-		std::size_t originalAllocSize 	= allocSize - headerSize;
-		void* 		rawEnd 				= reinterpret_cast<void*>(ptrAddress + originalAllocSize);
+	//	std::size_t originalAllocSize 	= allocSize - headerSize;
+		void* 		rawEnd 				= reinterpret_cast<void*>(headerAddress + allocSize); // rawAddress
 		void* 		freeBeforeStart		= findRawPreviousInFreeList(rawBegin);
 		void* 		freeAfterEnd		= findInFreeList(rawEnd);
 
