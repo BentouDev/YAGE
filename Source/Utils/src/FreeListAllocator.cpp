@@ -52,9 +52,7 @@ namespace Memory
 		std::size_t allocationSize 	= size + adjustment;
 
 		std::uintptr_t 	smallestAddress 	= reinterpret_cast<std::uintptr_t>(smallest);
-		// Aligned address start
 		std::uintptr_t 	alignedAddress		= smallestAddress + adjustment;
-		// Address of block end
 		std::uintptr_t 	endAddress 			= smallestAddress + allocationSize;
 
 		void* 			newPtr 	= reinterpret_cast<void*>(endAddress);
@@ -67,17 +65,11 @@ namespace Memory
 
 		if(sizeLeft > minimalSize)
 		{
-			// TODO: fix baka mistake!
-			// WTF is that :D ?
-			// We shouldn't do this!
-			// We should check how big will remaining space be
-			// If its bigger than header, do as we do now
-			// But if its not, treat all this block as allocated!
 			pNew->next		 	= nullptr;
 			pNew->size		 	= sizeLeft;
 			pNew->adjustment 	= (uint8_t)0;
 
-			// we may use ptr, as it already points to smallest
+			// TODO: we may use ptr, as it already points to smallest
 			doRemoveFromList(_freeBlocks, smallest);
 			FreeListHeader* end = getListEnd(_freeBlocks);
 			end->next 			= pNew;
@@ -92,10 +84,6 @@ namespace Memory
 		{
 			_freeBlocks = reinterpret_cast<FreeListHeader*>(smallest->next);
 		}
-
-	//	smallest->next		 = nullptr;
-	//	smallest->size 		 = (uint32_t)allocationSize;
-	//	smallest->adjustment = (uint8_t)adjustment;
 
 		std::memset(smallest, 0, adjustment);
 
@@ -140,19 +128,20 @@ namespace Memory
 
 	void FreeListAllocator::deallocate(void *ptr)
 	{
-		std::size_t 	headerSize	= sizeof(FreeListHeader);
-		std::uintptr_t  ptrAddress	= reinterpret_cast<std::uintptr_t>(ptr);
-		void* 			headerBegin	= reinterpret_cast<void*>(ptrAddress - headerSize);
+		std::size_t 	headerSize		= sizeof(FreeListHeader);
+		std::uintptr_t  ptrAddress		= reinterpret_cast<std::uintptr_t>(ptr);
+		std::uintptr_t 	headerAddress	= ptrAddress - headerSize;
+		void* 			headerBegin		= reinterpret_cast<void*>(headerAddress);
 
 		FreeListHeader* header		= reinterpret_cast<FreeListHeader*>(headerBegin);
-		std::uintptr_t	rawAddress	= ptrAddress - header->adjustment;
+	//	std::uintptr_t	rawAddress	= ptrAddress - header->adjustment;
 		void*			rawBegin	= reinterpret_cast<void*>(headerBegin); //rawAddress
 
 		assert(header->adjustment != 0 && "Cannot deallocate address thats already free!");
 
 		std::size_t allocSize 			= header->size;
 	//	std::size_t originalAllocSize 	= allocSize - headerSize;
-		void* 		rawEnd 				= reinterpret_cast<void*>(headerBegin + allocSize); // rawAddress
+		void* 		rawEnd 				= reinterpret_cast<void*>(headerAddress + allocSize); // rawAddress
 		void* 		freeBeforeStart		= findRawPreviousInFreeList(rawBegin);
 		void* 		freeAfterEnd		= findInFreeList(rawEnd);
 
