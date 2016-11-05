@@ -1,0 +1,8 @@
+//
+// Created by bentoo on 05.11.16.
+//
+
+#ifndef GAME_SIMPLEMEMORYTRACKER_H
+#define GAME_SIMPLEMEMORYTRACKER_H
+
+#endif //GAME_SIMPLEMEMORYTRACKER_H
