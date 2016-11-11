@@ -21,7 +21,7 @@ namespace Memory
 		std::size_t _size;
 		std::size_t _usedSize;
 
-		IAllocator(void* memory, std::size_t size) : _size(size), _usedSize(0), _startPtr(memory) { }
+		IAllocator(void* memory, std::size_t size) : _startPtr(memory), _size(size), _usedSize(0) { }
 
 	public:
 		virtual void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) = 0;

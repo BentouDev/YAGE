@@ -107,9 +107,8 @@ namespace Core
 	};
 
 	template <typename T>
-	ConfigProperty<T>::ConfigProperty(Config* config, std::string name, T def) :
-		_value(def),
-		PropertyBase(config, name)
+	ConfigProperty<T>::ConfigProperty(Config* config, std::string name, T def)
+		: PropertyBase(config, name), _value(def)
 	{
 		_config.Register(this);
 	}

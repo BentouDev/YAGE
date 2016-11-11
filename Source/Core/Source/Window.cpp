@@ -10,10 +10,10 @@
 namespace Core
 {
 	Window::Window(Context ctx) :
-		hWindow {nullptr},
-		Height {ctx.Config->WindowHeight},
+		Title {ctx.Config->WindowTitle},
 		Width {ctx.Config->WindowWidth},
-		Title {ctx.Config->WindowTitle}
+		Height {ctx.Config->WindowHeight},
+		hWindow {nullptr}
 	//	_viewports(8)
 	{
 		Create();
@@ -69,7 +69,7 @@ namespace Core
 		return !IsAlive() || glfwWindowShouldClose(hWindow);
 	}
 
-	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void
+	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>&) noexcept -> void
 	{
 	//	Viewports.push_back(new Gfx::Viewport(rect));
 	//	_viewports.create(rect);

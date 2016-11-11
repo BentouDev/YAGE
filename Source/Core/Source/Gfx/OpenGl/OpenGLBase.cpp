@@ -112,8 +112,6 @@ namespace OpenGL
 			{ TypeInfo<uint32_t>::id(), gl::UNSIGNED_INT },
 		};
 
-		GLenum result = 0;
-
 		auto itr = dispatcher.find(type);
 		if(itr != dispatcher.end())
 		{
@@ -121,37 +119,5 @@ namespace OpenGL
 		}
 
 		else return gl::BYTE;
-
-		/*switch(type)
-		{
-			case TypeInfo<float>::id():
-				result = gl::FLOAT;
-				break;
-			case TypeInfo<double>::id():
-				result = gl::DOUBLE;
-				break;
-			case TypeInfo<signed char>::id():
-				result = gl::BYTE;
-				break;
-			case TypeInfo<unsigned char>::id():
-				gl::UNSIGNED_BYTE;
-				break;
-			case TypeInfo<int16_t>::id():
-				result = gl::SHORT;
-				break;
-			case TypeInfo<uint16_t>::id():
-				result = gl::UNSIGNED_SHORT;
-				break;
-			case TypeInfo<int32_t >::id():
-				result = gl::INT;
-				break;
-			case TypeInfo<uint32_t >::id():
-				result = gl::UNSIGNED_INT;
-				break;
-			default:
-				result = gl::BYTE;
-		}
-
-		return result;*/
 	}
 }

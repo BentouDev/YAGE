@@ -9,7 +9,7 @@ namespace Memory
 {
 	PoolAllocator::PoolAllocator(void *memory, std::size_t size,
 		 std::size_t typeSize, std::size_t typeAlign, std::size_t alignOffset)
-		: _typeSize(typeSize), _typeAlignment(typeAlign), _alignOffset(alignOffset), IAllocator(memory, size)
+		: IAllocator(memory, size), _alignOffset(alignOffset), _typeSize(typeSize), _typeAlignment(typeAlign)
 	{
 		assert(typeSize > sizeof(void*) && "Allocation size must be larger than sizeof(void*)!");
 
@@ -38,7 +38,7 @@ namespace Memory
 		*current = nullptr;
 	}
 
-	void* PoolAllocator::allocate(std::size_t size, std::size_t alignment, std::size_t offset)
+	void* PoolAllocator::allocate(std::size_t size, std::size_t alignment, std::size_t)
 	{
 		assert(size == _typeSize && alignment == _typeAlignment
 			   && "Cannot do allocation with other size and alignment");
@@ -54,7 +54,7 @@ namespace Memory
 		return newPtr;
 	}
 
-	std::size_t PoolAllocator::getAllocationSize(const void *ptr) const
+	std::size_t PoolAllocator::getAllocationSize(const void*) const
 	{
 		return _typeSize + _alignOffset;
 	}

@@ -46,12 +46,6 @@ namespace Gfx
 	//	bool hasCombination(Utils::Handle<Core::Mesh> mesh, Utils::Handle<Core::Material> material) const;
 
 	//	MaterialBatchMeshReference allocateMesh(const Core::Mesh& mesh);
-
-		virtual auto swap(MaterialBatch& other) noexcept -> void
-		{ }
-
-		virtual auto cleanUp() noexcept -> void
-		{ }
 	};
 
 	class MaterialBatchTrait : public Utils::DefaultTrait<MaterialBatch>

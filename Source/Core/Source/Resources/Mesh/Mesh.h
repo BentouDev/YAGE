@@ -34,7 +34,7 @@ namespace Core
 		struct PropertyInfo
 		{
 			explicit PropertyInfo(const char* Name, type_t Type, std::size_t propSize, uint32_t PropertyCount, bool Normalize)
-					: Name(Name), Type(Type), PropertySize(propSize), PropertyCount(PropertyCount), Normalize(Normalize)
+					: Name(Name), Type(Type), PropertyCount(PropertyCount), PropertySize(propSize), Normalize(Normalize)
 			{ }
 
 			const char* Name;
@@ -175,9 +175,9 @@ namespace Core
 		class PropertyData
 		{
 			void* _dataPtr;
-			std::size_t _rawSize;
 			std::size_t _vertexSize;
 			uint32_t _count;
+			std::size_t _rawSize;
 
 		public:
 			explicit PropertyData(void* data, std::size_t vertexSize, std::uint32_t count)

@@ -9,7 +9,7 @@
 
 namespace Resources
 {
-	typedef std::int32_t MeshSchemeId;
+	typedef std::size_t MeshSchemeId;
 }
 
 #endif //GAME_MESHSCHEME_H

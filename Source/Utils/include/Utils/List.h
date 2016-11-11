@@ -86,19 +86,19 @@ namespace Utils
 
 	public:
 		inline explicit List(Memory::IMemoryBlock &memory)
-			: _memory(&memory), _size(0), _capacity(0), _elements(nullptr)
+			: _memory(&memory), _elements(nullptr), _size(0), _capacity(0)
 		{
 
 		}
 
 		inline List(Memory::IMemoryBlock &memory, std::size_t capacity)
-			: _memory(&memory), _size(0), _capacity(0), _elements(nullptr)
+			: _memory(&memory), _elements(nullptr), _size(0), _capacity(0)
 		{
 			reserve(capacity);
 		}
 
 		inline List(const List& other)
-			: _memory(other._memory), _size(0), _capacity(0), _elements(nullptr)
+			: _memory(other._memory), _elements(nullptr), _size(0), _capacity(0)
 		{
 			uint32_t otherSize = other._size;
 			realloc(otherSize);
@@ -107,7 +107,7 @@ namespace Utils
 		}
 
 		inline List(List&& other)
-			: _memory(other._memory), _size(other._size), _capacity(other._capacity), _elements(other._elements)
+			: _memory(other._memory), _elements(other._elements), _size(other._size), _capacity(other._capacity)
 		{
 			other._elements	= nullptr;
 			other._size		= 0;

@@ -50,10 +50,10 @@ namespace Gfx
 		  std::size_t vertexSize, std::size_t indexSize,
 		  std::size_t vertexCount, std::size_t indexCount, Core::Context* context = nullptr)
 			: Handle(), _memory(&memory),
+			  _vbo(nullptr), _ibo(nullptr),
 			  _vertexSize(vertexSize), _indexSize(indexSize),
 			  _vertexCount(vertexCount), _indexCount(indexCount),
-			  _usedVertices(0), _usedIndices(0),
-			  _vbo(nullptr), _ibo(nullptr)
+			  _usedVertices(0), _usedIndices(0)
 		{
 			_vbo = OpenGL::VBO::Create(*_memory);
 			_ibo = OpenGL::IBO::Create(*_memory);

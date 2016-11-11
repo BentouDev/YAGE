@@ -6,7 +6,7 @@
 
 namespace Core
 {
-	void Engine::initializeReferences(Engine* engine)
+	void Engine::initializeReferences(Engine*)
 	{
 	//	engine->Logger->Default->info("Initializing YAGE for '{}'...", engine->Name);
 

@@ -27,14 +27,14 @@ namespace Gfx
 
 	class Shader
 	{
+	friend class Resources::ShaderBuilder;
+
 		ShaderType	_type;
 		GLuint 		_handle;
 		bool 		_isCompiled;
 
-		friend class Resources::ShaderBuilder;
-
 	public:
-		explicit inline Shader(ShaderType type) : _type(type), _isCompiled(false)
+		explicit inline Shader(ShaderType type) : _type(type), _handle(0), _isCompiled(false)
 		{
 			_handle = gl::CreateShader(type);
 		}
@@ -45,11 +45,11 @@ namespace Gfx
 		}
 
 		Shader(const Shader& shader)
-			: _type(shader._type), _isCompiled(shader._isCompiled), _handle(shader._handle)
+			: _type(shader._type), _handle(shader._handle), _isCompiled(shader._isCompiled)
 		{ }
 
 		Shader(Shader&& shader)
-			: _type(shader._type), _isCompiled(shader._isCompiled), _handle(shader._handle)
+			: _type(shader._type), _handle(shader._handle), _isCompiled(shader._isCompiled)
 		{ }
 
 		Shader& operator= (const Shader& shader)
@@ -65,7 +65,7 @@ namespace Gfx
 			_handle = other._handle;
 			_type = other._type;
 			_isCompiled = other._isCompiled;
-			other._handle = -1;
+			other._handle = 0;
 			return *this;
 		}
 

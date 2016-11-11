@@ -14,16 +14,6 @@ option(YAGE_VALGRIND "Build with valgrind headers" ON)
 # emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
-# Add codecov scripts module to cmake
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
-find_package(codecov REQUIRED)
-
-# Add Valgrind support for memory debugging
-if(YAGE_VALGRIND)
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Valgrind" ${CMAKE_MODULE_PATH})
-    find_package(VALGRIND)
-endif(YAGE_VALGRIND)
-
 # Add Vulkan
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_MODULE_PATH})
 find_package(Vulkan)
@@ -43,12 +33,6 @@ include_directories(${GLM_INCLUDE_DIRS})
 add_subdirectory(Dependencies/Assimp EXCLUDE_FROM_ALL)
 include_directories(Dependencies/Assimp/include)
 
-# Add GoogleTest
-set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
-add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
-
 # Add Spdlog
 add_subdirectory(Dependencies/Spdlog EXCLUDE_FROM_ALL)
 include_directories(Dependencies/Spdlog/include)
@@ -60,12 +44,29 @@ include_directories(Dependencies/Json/src)
 # Add CppLinq
 include_directories(Dependencies/CppLinq)
 
+if(YAGE_BUILD_TESTS)
+    # Add codecov scripts module to cmake
+    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
+    find_package(codecov REQUIRED)
+
+    # Add GoogleTest
+    set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
+    add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
+    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+    include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+endif()
+
 # Add QT5 when building Editor
 if(YAGE_BUILD_EDITOR)
-    # Instruct CMake to run moc automatically when needed.
     find_package(Qt5Widgets REQUIRED)
     find_package(Qt5WinExtras)
 endif(YAGE_BUILD_EDITOR)
+
+# Add Valgrind support for memory debugging
+if(YAGE_VALGRIND)
+    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Valgrind" ${CMAKE_MODULE_PATH})
+    find_package(VALGRIND)
+endif(YAGE_VALGRIND)
 
 # Revert to standard policy
 cmake_policy(POP)
@@ -86,4 +87,7 @@ target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 
-coverage_evaluate()
+# Evaluate test coverage when testing is enabled
+if(YAGE_BUILD_TESTS)
+    coverage_evaluate()
+endif()

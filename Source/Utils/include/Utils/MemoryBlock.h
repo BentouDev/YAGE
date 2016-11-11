@@ -76,7 +76,7 @@ namespace Memory
 		MemoryBlock(MemoryBlock&&) = delete;
 
 		explicit MemoryBlock(AllocatorType& allocator)
-			: _allocator(allocator), _memoryTracker(*this), IMemoryBlock()
+			: IMemoryBlock(), _allocator(allocator), _memoryTracker(*this)
 		{
 
 		}

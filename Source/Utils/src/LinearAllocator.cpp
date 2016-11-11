@@ -8,7 +8,7 @@
 namespace Memory
 {
 	LinearAllocator::LinearAllocator(void* memory, std::size_t size)
-		: _currentPtr(memory), IAllocator(memory, size)
+		: IAllocator(memory, size), _currentPtr(memory)
 	{
 
 	}

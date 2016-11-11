@@ -37,7 +37,7 @@ namespace Logic
 
 	void RenderingSystem::remove(RenderingComponent::handle_t handle)
 	{
-		auto& cmp = _components.get(handle);
+		// auto& cmp = _components.get(handle);
 
 		// dereference mesh
 		// dereference materials
@@ -155,7 +155,7 @@ namespace Logic
 		_dirtyComponents.clear();
 	}
 
-	void RenderingSystem::update(const Core::GameTime& time, Gfx::Renderer& renderer)
+	void RenderingSystem::update(const Core::GameTime&, Gfx::Renderer& renderer)
 	{
 		// recreate dirty batches
 		// add new meshes to them or change their data

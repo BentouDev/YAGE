@@ -14,7 +14,7 @@
 namespace Resources
 {
 	ShaderBuilder::ShaderBuilder(Core::Engine& engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _temporaryShaders(_memory), _shaders(_memory), _existing(nullptr)
+		: _engine(engine), _memory(memory), _shaders(_memory), _temporaryShaders(_memory), _existing(nullptr)
 	{
 
 	}
@@ -26,7 +26,7 @@ namespace Resources
 		if(_existing != nullptr)
 		{
 			program = _existing;
-			if((*program) != -1)
+			if((*program) > 0)
 			{
 				gl::DeleteProgram((*program));
 			}
@@ -69,22 +69,8 @@ namespace Resources
 			gl::AttachShader(*program, shader);
 		}
 
-		int linkStatus;
 		gl::LinkProgram(*program);
-
-		gl::GetProgramiv(*program, gl::LINK_STATUS, &linkStatus);
-		if(linkStatus == gl::FALSE_)
-		{
-			int bufferSize;
-			gl::GetProgramiv(*program, gl::INFO_LOG_LENGTH, &bufferSize);
-
-			Utils::String string(_memory);
-			string.reserve(bufferSize);
-
-			gl::GetProgramInfoLog(*program, bufferSize, &bufferSize, string.begin());
-
-			_engine.Logger->Default->error("Unable to link shader program '{}', cause :\n{}", program->Name, string.c_str());
-		}
+		checkForLinkErrors(*program);
 
 		return program->Handle;
 	}
@@ -204,6 +190,26 @@ namespace Resources
 		else
 		{
 			shader._isCompiled = true;
+		}
+	}
+
+	void ShaderBuilder::checkForLinkErrors(Gfx::ShaderProgram &program)
+	{
+		int linkStatus;
+
+		gl::GetProgramiv(program, gl::LINK_STATUS, &linkStatus);
+
+		if(linkStatus == gl::FALSE_)
+		{
+			int bufferSize;
+			gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &bufferSize);
+
+			Utils::String string(_memory);
+			string.reserve(bufferSize);
+
+			gl::GetProgramInfoLog(program, bufferSize, &bufferSize, string.begin());
+
+			_engine.Logger->Default->error("Unable to link shader program '{}', cause :\n{}", program.Name, string.c_str());
 		}
 	}
 }

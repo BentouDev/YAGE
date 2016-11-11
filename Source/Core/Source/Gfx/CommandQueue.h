@@ -25,22 +25,17 @@ namespace Gfx
 		using CommandCreator = void(*)(Component&);
 
 	protected:
+		Renderer& 					_renderer;
+
 		Memory::IMemoryBlock&		_memory;
 		Memory::LinearAllocator*	_frameMemory;
-		Utils::List<CommandData>	_data;
 		Utils::List<CommandKey>		_keys;
+		Utils::List<CommandData>	_data;
 	//	ICommandSorter<CommandKey>&	_sorter;
-
-		// TODO maybe we can move this to be template paramter?
-		// Does this make sense?
-		CommandFunction 			_command;
-		CommandCreator				_creator;
-
-		Renderer& 					_renderer;
 
 	public:
 		explicit CommandQueue(Memory::IMemoryBlock& memory, Renderer& renderer)//, ICommandSorter<CommandKey>& sorter)
-			: _memory(memory), _renderer(renderer), _frameMemory(nullptr), _keys(_memory), _data(memory) //, _sorter(sorter)
+			: _renderer(renderer), _memory(memory), _frameMemory(nullptr), _keys(_memory), _data(memory) //, _sorter(sorter)
 		{
 
 		}

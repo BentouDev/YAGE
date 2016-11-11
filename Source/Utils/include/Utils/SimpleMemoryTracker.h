@@ -44,17 +44,17 @@ namespace Memory
 			}
 		}
 
-		inline void OnAllocation(void* ptr, std::size_t size, std::size_t alignment, std::size_t frontOffset, const Utils::DebugSourceInfo& info) override
+		inline void OnAllocation(void* ptr, std::size_t, std::size_t, std::size_t, const Utils::DebugSourceInfo& info) override
 		{
 			_allAllocatedAddresses.push_back(PointerInfo(info.file, info.line, ptr));
 			_currentlyAllocatedAddresses.push_back(PointerInfo(info.file, info.line, ptr));
 		};
 
-		inline void OnDeallocation(void* ptr, std::size_t frontOffset) override
+		inline void OnDeallocation(void* ptr, std::size_t) override
 		{
 			bool freed  = false;
 			PointerInfo* info = nullptr;
-			for(auto i = 0; i < _currentlyAllocatedAddresses.size(); i++)
+			for(std::size_t i = 0; i < _currentlyAllocatedAddresses.size(); i++)
 			{
 				info = &_currentlyAllocatedAddresses[i];
 				if(info->ptr == ptr)
@@ -67,7 +67,7 @@ namespace Memory
 
 			if(!freed)
 			{
-				for(auto i = 0; i < _currentlyAllocatedAddresses.size(); i++)
+				for(std::size_t i = 0; i < _currentlyAllocatedAddresses.size(); i++)
 				{
 					info = &_currentlyAllocatedAddresses[i];
 					if(info->ptr == ptr)

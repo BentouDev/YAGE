@@ -20,8 +20,8 @@ namespace Resources
 	{
 		using handle_t = Core::Material::handle_t;
 
-		Memory::IMemoryBlock&	_memory;
 		Core::Engine&			_engine;
+		Memory::IMemoryBlock&	_memory;
 
 		Utils::Container<Core::MaterialTrait> _materialContainer;
 

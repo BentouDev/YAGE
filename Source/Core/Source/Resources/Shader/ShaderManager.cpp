@@ -25,7 +25,7 @@ namespace Resources
 			dispose(_shadersContainer.get(handle));
 	}
 
-	void ShaderManager::dispose(Gfx::ShaderProgram& program)
+	void ShaderManager::dispose(Gfx::ShaderProgram&)
 	{
 
 	}

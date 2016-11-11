@@ -6,7 +6,7 @@
 
 namespace Gfx
 {
-	void Viewport::Clear(const Utils::Color &color)
+	void Viewport::Clear(const Utils::Color&)
 	{
 
 	}

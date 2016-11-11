@@ -24,8 +24,8 @@ namespace Resources
 		using handle_t = Utils::Handle<Gfx::ShaderProgram>;
 
 	protected:
-		Memory::IMemoryBlock& _memory;
-		Core::Engine& _engine;
+		Core::Engine&			_engine;
+		Memory::IMemoryBlock&	_memory;
 
 		Utils::Container<Gfx::ShaderProgTrait> _shadersContainer;
 

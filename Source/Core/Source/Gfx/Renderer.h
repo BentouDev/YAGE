@@ -6,7 +6,7 @@
 #define GAME_RENDERER_H
 
 #include "../Context.h"
-#include "RenderPass.h"
+#include "OpenGl/OpenGLBase.h"
 #include "CommandQueue.h"
 
 #include <Utils/BorrowedPtr.h>
@@ -53,18 +53,17 @@ namespace Gfx
 		using queue_t = CommandQueue<RenderKey, RenderData, Logic::RenderingComponent>;
 
 	protected:
+		Core::Engine& _engine;
+		Core::Context _context;
+
+		Memory::IMemoryBlock& 	_memory;
+
+		queue_t _queue;
+
 		GLuint lastIBO;
 		GLuint lastVBO;
 		GLuint lastVAO;
 		GLuint lastProgram;
-
-		Memory::IMemoryBlock& 	_memory;
-		Utils::List<RenderPass>	_buckets;
-
-		Core::Engine& _engine;
-		Core::Context _context;
-
-		queue_t _queue;
 
 	public:
 		Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory);

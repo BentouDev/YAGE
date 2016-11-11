@@ -47,8 +47,8 @@ namespace Resources
 		using handle_t = Core::Mesh::handle_t;
 
 	protected:
-		Memory::IMemoryBlock&	_memory;
 		Core::Engine&			_engine;
+		Memory::IMemoryBlock&	_memory;
 		MeshSchemeManager		_schemeManager;
 
 		Utils::Container<Core::MeshTrait>	_meshContainer;

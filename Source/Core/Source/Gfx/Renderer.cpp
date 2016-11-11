@@ -3,8 +3,10 @@
 //
 
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "Renderer.h"
 #include "BatchManager.h"
+
 #include "../Engine.h"
 #include "../Resources/Mesh/Mesh.h"
 #include "../Resources/Mesh/MeshManager.h"
@@ -13,8 +15,8 @@
 namespace Gfx
 {
 	Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
-		: _engine(engine), _memory(memory), _buckets(_memory), _context(_engine.GetContext()),
-		  lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0), _queue(_memory, *this)
+		: _engine(engine), _context(_engine.GetContext()),_memory(memory), _queue(_memory, *this),
+		  lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0)
 	{
 
 	}

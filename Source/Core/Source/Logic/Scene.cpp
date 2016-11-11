@@ -42,7 +42,7 @@ namespace Logic
 		// gather lights
 	}
 
-	void Scene::Update(const Core::GameTime& time)
+	void Scene::Update(const Core::GameTime&)
 	{
 
 	}

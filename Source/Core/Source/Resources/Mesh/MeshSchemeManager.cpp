@@ -46,7 +46,7 @@ namespace Resources
 
 	Core::MeshScheme* MeshSchemeManager::tryGetMeshScheme(MeshSchemeId id)
 	{
-		if(id >= 0 && id < _registeredSchemes.size())
+		if(id < _registeredSchemes.size())
 		{
 			return &_registeredSchemes[id];
 		}

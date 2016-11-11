@@ -52,9 +52,9 @@ namespace Logic
 
 	public:
 		inline explicit RenderingComponent(RenderingSystem& system, Memory::IMemoryBlock& memory)
-				: _system(system), _isDirty(false), _isVisible(true),
-				  _cachedSubmeshInfo(memory), _materials(memory),
-				  _mesh()
+				: _system(system), _isVisible(true), _isDirty(false),
+				  _mesh(), _materials(memory), _cachedSubmeshInfo(memory)
+
 		{
 			setDirty();
 		}
@@ -64,10 +64,10 @@ namespace Logic
 		RenderingComponent& operator=(RenderingComponent&&) = delete;
 
 		RenderingComponent(RenderingComponent&& other)
-			: _system(other._system), _isDirty(false), _isVisible(other._isVisible),
-			  _cachedSubmeshInfo(std::move(other._cachedSubmeshInfo)),
+			: _system(other._system), _isVisible(other._isVisible), _isDirty(false),
+			  _mesh(std::move(other._mesh)),
 			  _materials(std::move(other._materials)),
-			  _mesh(std::move(other._mesh))
+			  _cachedSubmeshInfo(std::move(other._cachedSubmeshInfo))
 		{
 
 		}

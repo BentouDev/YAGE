@@ -9,7 +9,7 @@
 namespace Memory
 {
 	FreeListAllocator::FreeListAllocator(void *memory, std::size_t size)
-		: _freeBlocks((FreeListHeader*) memory), IAllocator(memory, size)
+		: IAllocator(memory, size), _freeBlocks((FreeListHeader*) memory)
 	{
 		_freeBlocks->next 		= nullptr;
 		_freeBlocks->size 		= (uint32_t )size;
@@ -33,11 +33,11 @@ namespace Memory
 		while(ptr != nullptr)
 		{
 			std::size_t  adjustment = Internal::calcForwardAlignmentAdjustment(ptr, alignment, headerSize);
-			std::int32_t sizeDiff 	= ptr->size - (uint32_t)(size + adjustment);
+			std::int64_t sizeDiff 	= ptr->size - (uint32_t)(size + adjustment);
 
-			if(sizeDiff > 0 && sizeDiff <= smallestSize)
+			if(sizeDiff > 0 && ((size_t) sizeDiff) <= smallestSize)
 			{
-				smallestSize = sizeDiff;
+				smallestSize = (size_t) sizeDiff;
 				smallest = ptr;
 			}
 
@@ -117,7 +117,7 @@ namespace Memory
 		return ptr;
 	}
 
-	void FreeListAllocator::doRemoveFromList(FreeListHeader* list, FreeListHeader* ptr)
+	void FreeListAllocator::doRemoveFromList(FreeListHeader*, FreeListHeader* ptr)
 	{
 		FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(findPreviousInFreeList(ptr));
 		if(previous != nullptr)
