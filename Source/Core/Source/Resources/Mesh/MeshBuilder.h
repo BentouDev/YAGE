@@ -28,9 +28,9 @@ namespace Resources
 		virtual ~MeshBuilder();
 
 		template<typename T>
-		MeshBuilder& withProperty(const char* name, T *ptr, uint32_t propCount, uint32_t arrayLength)
+		MeshBuilder& withProperty(const char* name, T *ptr, uint32_t propCount, uint32_t arrayLength, bool normalize = false)
 		{
-			_scheme->addPropertyInfo(name, TypeInfo<T>::id(), sizeof(T), propCount);
+			_scheme->addPropertyInfo(name, TypeInfo<T>::id(), sizeof(T), propCount, normalize);
 			_data->addPropertyData(ptr, propCount * sizeof(T), arrayLength);
 			return *this;
 		}

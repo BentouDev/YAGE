@@ -51,10 +51,11 @@ namespace Gfx
 				_frameMemory->clear();
 		}
 
-		void createCommands(Component& component)
+		CommandData& createCommands(CommandKey key)
 		{
-	//		_renderer.createDrawCallData(component);
-	//		_creator(component);
+			CommandData& data = _data.emplace();
+			_keys.emplace(key);
+			return data;
 		}
 
 		void reserve(std::size_t commandCount)
@@ -79,6 +80,7 @@ namespace Gfx
 
 		void issueCommands()
 		{
+
 			// SETUP RENDER TARGET
 			// SETUP RENDER STATE
 			// SETUP STATE UNIFORMS (BUFFER) ?

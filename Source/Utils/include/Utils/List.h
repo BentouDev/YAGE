@@ -57,7 +57,7 @@ namespace Utils
 			T* newPtr = nullptr;
 			if(newSize > 0)
 			{
-				newPtr = (T*)_memory->allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO);
+				newPtr = reinterpret_cast<T*>(_memory->allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO));
 
 				if(_elements != nullptr)
 				{

@@ -8,6 +8,8 @@
 #include <Utils/DefaultTrait.h>
 #include <Utils/Handle.h>
 #include <Utils/List.h>
+
+#include "../Resources/Mesh/MeshScheme.h"
 #include "OpenGl/OpenGLBuffers.h"
 
 namespace Core
@@ -32,18 +34,18 @@ namespace Gfx
 		handle_t Handle;
 
 	protected:
-		Utils::List<Utils::Handle<StaticBuffer>>	_staticBuffers;
-		Utils::Handle<Core::Material>				_material;
-		Utils::List<Utils::Handle<Core::Mesh>>		_referencedMeshes;
+		Utils::Handle<Core::Material>	_material;
+		Resources::MeshSchemeId			_schemeId;
 
 	public:
 	//	bool hasSize(uint32_t vertexCount, uint32_t indexCount) const;
-		bool hasMaterial(const Core::Material& material) const;
-		bool hasMaterial(Utils::Handle<Core::Material> material) const;
-		bool hasCombination(const Core::Mesh& mesh, const Core::Material& material) const;
-		bool hasCombination(Utils::Handle<Core::Mesh> mesh, Utils::Handle<Core::Material> material) const;
+	//	bool hasMaterial(const Core::Material& material) const;
+	//	bool hasMaterial(Utils::Handle<Core::Material> material) const;
 
-		MaterialBatchMeshReference allocateMesh(const Core::Mesh& mesh);
+	//	bool hasCombination(const Core::Mesh& mesh, const Core::Material& material) const;
+	//	bool hasCombination(Utils::Handle<Core::Mesh> mesh, Utils::Handle<Core::Material> material) const;
+
+	//	MaterialBatchMeshReference allocateMesh(const Core::Mesh& mesh);
 
 		virtual auto swap(MaterialBatch& other) noexcept -> void
 		{ }
@@ -55,7 +57,7 @@ namespace Gfx
 	class MaterialBatchTrait : public Utils::DefaultTrait<MaterialBatch>
 	{ };
 
-	struct MaterialBatchMeshReference
+	/*struct MaterialBatchMeshReference
 	{
 		MaterialBatch::handle_t BatchHandle;
 		OpenGL::VAO* 			VAO;
@@ -63,7 +65,7 @@ namespace Gfx
 		GLuint					IndexType;
 		GLuint					ElementCount;
 		GLuint					ShaderProgram;
-	};
+	};*/
 }
 
 #endif //GAME_MATERIALBATCH_H

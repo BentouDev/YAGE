@@ -2,36 +2,20 @@
 // Created by bentoo on 10/14/16.
 //
 
-#include <cstdint>
-#include <Utils/Container.h>
-#include <Gfx/CommandQueue.h>
-#include <Engine.h>
-
 #include "RenderingSystem.h"
 
-#include "../Gfx/RenderBatch.h"
-#include "../Gfx/Renderer.h"
+#include "../Engine.h"
+#include "../Logger.h"
+#include "../Gfx/CommandQueue.h"
+#include "../Gfx/BufferManager.h"
 #include "../Resources/Mesh/Mesh.h"
 #include "../Resources/Mesh/MeshManager.h"
 #include "../Resources/Material/Material.h"
 #include "../Resources/Material/MaterialManager.h"
+#include "../Resources/Shader/ShaderManager.h"
 
 namespace Logic
 {
-	void RenderingComponent::setMaterial(Core::Material& material, std::uint32_t index)
-	{
-		// TODO: protect from creating more materials than mesh supports,
-		// or just set size when setting mesh and force list bounds in here!
-	//	_debugMaterials.resize(index + 1);
-	//	_debugMaterials[index] = material.Handle;
-		setDirty();
-	}
-
-	void RenderingComponent::setDirty()
-	{
-		_system.setDirty(*this);
-	}
-
 	RenderingSystem::RenderingSystem(Core::Engine &engine, Memory::IMemoryBlock& memory)
 		: _engine(engine), _memory(memory), _components(memory), _dirtyComponents(memory)
 	{
@@ -53,13 +37,12 @@ namespace Logic
 
 	void RenderingSystem::remove(RenderingComponent::handle_t handle)
 	{
-		// Mesh is in some VBO
-		// that VBO needs to be destroyed
-		// and then recreated, to avoid holes in it
-
 		auto& cmp = _components.get(handle);
 
-	//	_dirtyBatches.add(cmp.getBatchIndex());
+		// dereference mesh
+		// dereference materials
+		// dereference textures
+
 		_components.remove(handle);
 	}
 
@@ -68,26 +51,102 @@ namespace Logic
 		return _components.get(handle);
 	}
 
+	void RenderingSystem::createVAO(RenderingComponent& component)
+	{
+		Core::Mesh* mesh = _engine.MeshManager.get().tryGetMesh(component.getMesh());
+
+		if(mesh == nullptr)
+			return;
+
+		Core::MeshScheme* scheme = _engine.MeshManager.get().tryGetMeshScheme(mesh->getMeshSchemeId());
+
+		if(scheme == nullptr)
+			return;
+
+		for(auto& info : component._cachedSubmeshInfo)
+		{
+			Memory::Delete(_memory, info.VAO);
+		}
+
+		component._cachedSubmeshInfo.resize(std::min(mesh->getSubmeshes().size(), component.getMaterials().size()));
+
+		const std::size_t vertexSize = scheme->vertexSize();
+
+		for(uint32_t i = 0; i < mesh->getSubmeshes().size() && i < component.getMaterials().size(); i++)
+		{
+			OpenGL::VAO*	vao		= OpenGL::VAO::Create(_memory);
+			GLuint			offset	= 0;
+
+			gl::BindVertexArray(*vao);
+
+			Core::Material& material = _engine.MaterialManager.get().getMaterial(component.getMaterials()[i]);
+			Gfx::ShaderProgram& shader = _engine.ShaderManager.get().get(material.getShaderProgram());
+
+			for(Core::MeshScheme::PropertyInfo& info : scheme->getPropertiesInfo())
+			{
+				GLint location = gl::GetAttribLocation(shader, info.Name);
+				OpenGL::checkError(_engine.GetContext());
+				if(location == -1)
+				{
+					// todo: Report error: there is no such attribute or its reserved for driver
+					_engine.Logger.get().Default->error (
+						"createVAO : theres no attribute named '{}' or its driver reserved.", info.Name
+					);
+				}
+				else
+				{
+					gl::EnableVertexAttribArray((GLuint)location);
+					// stride is size od vertex, offset is size of previous components
+					gl::VertexAttribPointer((GLuint)location, info.PropertyCount, OpenGL::toOpenGlType(info.Type),
+											(GLboolean)info.Normalize, (GLsizei)vertexSize, reinterpret_cast<void*>(offset));
+
+					offset += info.PropertySize * info.PropertyCount;
+				}
+			}
+
+			component._cachedSubmeshInfo[i].VAO = vao;
+			component._cachedSubmeshInfo[i].ShaderProgram = shader;
+
+			gl::BindVertexArray(0);
+		}
+	}
+
 	void RenderingSystem::refreshDirtyComponents()
 	{
 		for(RenderingComponent::handle_t handle : _dirtyComponents)
 		{
+			// At this moment we don't know what was changed
+			// Material list should stay untouched
+			// Mesh and material pair data has to be reloaded
+
 			RenderingComponent& comp = _components.get(handle);
-			if(comp._batchHandles.size() > 0)
+			/*if(comp._cachedSubmeshInfo.size() > 0)
 			{
-				for (auto& h : comp._batchHandles)
+				for (auto& h : comp._cachedSubmeshInfo)
 				{
-					_engine.BatchManager.get().invalidateBatch(h.BatchHandle);
+				//	_engine.BatchManager.get().invalidateBatch(h.BatchHandle);
 				}
 
-				comp._batchHandles.clear();
-			}
+				comp._cachedSubmeshInfo.clear();
+			}*/
 
-			Core::Mesh& mesh = _engine.MeshManager.get().getMesh(comp.getMesh());
-			for (auto matHandle : comp.getMaterials())
+			Core::Mesh* mesh = _engine.MeshManager.get().tryGetMesh(comp.getMesh());
+			if(mesh != nullptr)
 			{
-				const Core::Material& material = _engine.MaterialManager.get().getMaterial(matHandle);
-				comp._batchHandles.add(_engine.BatchManager.get().allocateMesh(mesh, material));
+				/*for (Core::Submesh& submesh : mesh->getSubmeshes())
+				{
+					//	const Core::Material& material = _engine.MaterialManager.get().getMaterial(matHandle);
+					//	comp._batchHandles.add(_engine.BatchManager.get().allocateMesh(mesh, material));
+				}*/
+
+				createVAO(comp);
+			}
+			else
+			{
+				// theres no mesh!
+				// do swap if container supports
+				comp._cachedSubmeshInfo.clear();
+				comp._isVisible = false;
 			}
 
 			comp._isDirty = false;
@@ -98,6 +157,9 @@ namespace Logic
 
 	void RenderingSystem::update(const Core::GameTime& time, Gfx::Renderer& renderer)
 	{
+		// recreate dirty batches
+		// add new meshes to them or change their data
+
 		refreshDirtyComponents();
 
 		// CULLING WOULD BE DONE HERE?
@@ -113,60 +175,37 @@ namespace Logic
 		Gfx::Renderer::queue_t& queue = renderer.getQueue();
 		for(RenderingComponent& comp : _components)
 		{
+			if(!comp.isVisible())
+				continue;
+
 			// Get new packet
 			// Set key information (this is only used for sorting, co no stress!)
-			queue.createCommands(comp);
-			// Set Data, like shader program, uniforms, vao etc.
-		}
+			const Core::Mesh&					mesh		= _engine.MeshManager.get().getMesh(comp.getMesh());
+			const Gfx::StaticBuffer&			buffer		= _engine.BufferManager.get().getBuffer(mesh.getBuffer());
+			const Core::MeshScheme&				scheme		= _engine.MeshManager.get().getMeshScheme(mesh.getMeshSchemeId());
+			const Utils::List<Core::Submesh>&	submeshes	= mesh.getSubmeshes();
 
-		// submit packet
-
-		// submit to renderer
-
-		// recreate dirty batches
-		// add new meshes to them or change their data
-
-	/*	const std::size_t dirtyBatchesCount = _dirtyBatches.size();
-		for(std::size_t i = 0; i < dirtyBatchesCount; i++)
-		{
-			//renderer.recreateBatch(_dirtyBatches[i]);
-		}
-
-		const std::size_t dirtyCompCount = _dirtyComponents.size();
-		for(std::size_t i = 0; i < dirtyCompCount; i++)
-		{
-		//	renderer.updateComponent(_dirtyComponents[i]);
-		}*/
-	}
-
-	/*void RenderingSystem::updateMeshInBucket(Gfx::Renderer& renderer, RenderingComponent& comp)
-	{
-		Core::Mesh& mesh = comp.getMesh();
-		Gfx::RenderPass* bucket = renderer.getBucket(mesh.getMeshData());
-		if(bucket != nullptr)
-		{
-			comp.getBucketIndex()
-		}
-		else
-		{
-			// TODO: Log Error!
-		}
-	}
-
-	void RenderingSystem::whatever()
-	{
-		for(std::uint32_t i = 0; i < _components.size(); i++)
-		{
-			Core::Mesh& mesh = _components[i].getMesh();
-			auto dataScheme = mesh.getDataScheme();
-			Gfx::RenderPass* bucket = renderer.getBucket(dataScheme);
-			if(bucket == nullptr)
+			// TODO: Maybe cachce entire submesh data?
+			for(std::size_t i = 0; i < comp._cachedSubmeshInfo.size(); i++)
 			{
-				bucket = renderer.createBukcet(dataScheme);
-			}
+				const Core::Submesh& submesh = submeshes[i];
+				const SubmeshInfo& info = comp._cachedSubmeshInfo[i];
 
-			// internal : create batch
-			bucket->addMesh(mesh);
+				Gfx::RenderKey key;
+				Gfx::RenderData& packet = queue.createCommands(key);
+
+				// Set Data, like shader program, uniforms, vao etc.
+				// No uniforms as for now
+				packet.baseVertex	 = (GLuint) submesh.getBaseVertex();
+				packet.elementCount	 = (GLuint) submesh.getIndiceCount();
+				packet.indexType	 = scheme.getIndexType();
+				packet.ShaderProgram = info.ShaderProgram;
+
+				// VAO has only mesh scheme!
+				packet.VAO = *info.VAO;
+				packet.VBO = buffer.getVBO();
+				packet.IBO = buffer.getIBO();
+			}
 		}
-	}*/
+	}
 }

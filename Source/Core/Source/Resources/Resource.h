@@ -31,8 +31,8 @@ namespace Core
 
 		virtual ~Resource(){ }
 
-		virtual auto swap(Res& other) noexcept -> void = 0;
-		virtual auto cleanUp() noexcept -> void = 0;
+	//	virtual auto swap(Res& other) noexcept -> void = 0;
+	//	virtual auto cleanUp() noexcept -> void = 0;
 
 		handle_t 	Handle;
 

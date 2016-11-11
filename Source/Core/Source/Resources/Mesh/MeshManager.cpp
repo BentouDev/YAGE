@@ -191,10 +191,15 @@ namespace Resources
 				const Core::MeshData::PropertyData&		propData	=   data.getPropertiesData()[i];
 				const Core::MeshScheme::PropertyInfo&	propInfo	= scheme.getPropertiesInfo()[i];
 				const std::size_t 						vertexSize	= propData.vertexSize();
+				char*									dataPtr		= static_cast<char*>(propData.getDataPtr());
+
+				dataPtr += vertex * vertexSize;//propInfo.PropertySize * propInfo.PropertyCount;
 
 				// TODO: we may have some sort of alignment/offset here, get this from propInfo!
 				// push its data to pointer
-				memcpy(vertexPtr, propData.getDataPtr(), vertexSize);
+				memcpy(vertexPtr, dataPtr, vertexSize);
+
+				_engine.Logger.get().Default->warn("Buffer '{}', src '{}'", *((int*)vertexPtr), *((int*)dataPtr));
 
 				// advance pointer by bytes
 				vertexPtr += vertexSize;
@@ -219,8 +224,8 @@ namespace Resources
 			memcpy(indexPtr, submesh.getIndicePtr(), submeshIndexSize);
 
 			indexPtr 			+= submeshIndexSize;
-			startingOffset		+= submesh.getIndiceCount();
 			submesh._baseVertex  = startingOffset;
+			startingOffset		+= submesh.getIndiceCount();
 		}
 
 		buffer->unmapIndexMemory();

@@ -5,10 +5,11 @@
 #include <fstream>
 #include <Engine.h>
 #include <Utils/String.h>
-#include "../../Gfx/OpenGl/OpenGLBase.h"
-#include "../../Logger.h"
+
 #include "ShaderBuilder.h"
-#include "Shader.h"
+#include "ShaderManager.h"
+
+#include "../../Logger.h"
 
 namespace Resources
 {
@@ -18,7 +19,7 @@ namespace Resources
 
 	}
 
-	Gfx::ShaderProgram* ShaderBuilder::debugBuild(const char *programName)
+	ShaderBuilder::handle_t ShaderBuilder::debugBuild(const char *programName)
 	{
 		Gfx::ShaderProgram* program = nullptr;
 
@@ -32,7 +33,8 @@ namespace Resources
 		}
 		else
 		{
-			program = YAGE_CREATE_NEW(_memory, Gfx::ShaderProgram)();
+			handle_t handle = _engine.ShaderManager.get().createNew();
+			program = &_engine.ShaderManager.get().get(handle);
 		}
 
 		program->Name = programName;
@@ -42,7 +44,7 @@ namespace Resources
 			if(!shader->isCompiled())
 			{
 				_engine.Logger->Default->error("Unable to create shader program '{}', cause 'sub shader not compiled'", programName);
-				return nullptr;
+				return handle_t::invalid();
 			}
 		}
 
@@ -51,7 +53,7 @@ namespace Resources
 			if(!shader.isCompiled())
 			{
 				_engine.Logger->Default->error("Unable to create shader program '{}', cause 'sub shader not compiled'", programName);
-				return nullptr;
+				return handle_t::invalid();
 			}
 		}
 
@@ -71,7 +73,7 @@ namespace Resources
 		gl::LinkProgram(*program);
 
 		gl::GetProgramiv(*program, gl::LINK_STATUS, &linkStatus);
-		if(linkStatus != 0)
+		if(linkStatus == gl::FALSE_)
 		{
 			int bufferSize;
 			gl::GetProgramiv(*program, gl::INFO_LOG_LENGTH, &bufferSize);
@@ -84,12 +86,18 @@ namespace Resources
 			_engine.Logger->Default->error("Unable to link shader program '{}', cause :\n{}", program->Name, string.c_str());
 		}
 
-		return program;
+		return program->Handle;
 	}
 
-	ShaderBuilder& ShaderBuilder::onExisting(Gfx::ShaderProgram *existing)
+	ShaderBuilder& ShaderBuilder::onExisting(handle_t existing)
 	{
-		_existing = existing;
+		_existing = _engine.ShaderManager.get().tryGet(existing);
+		return *this;
+	}
+
+	ShaderBuilder& ShaderBuilder::onExisting(Gfx::ShaderProgram& existing)
+	{
+		_existing = &existing;
 		return *this;
 	}
 
@@ -179,7 +187,7 @@ namespace Resources
 
 		gl::GetShaderiv(shader, gl::COMPILE_STATUS, &compileResult);
 
-		if (compileResult == 0)
+		if (compileResult == gl::FALSE_)
 		{
 			int bufferSize;
 			gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &bufferSize);

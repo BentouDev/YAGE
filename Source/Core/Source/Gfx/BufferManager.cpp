@@ -2,6 +2,7 @@
 // Created by bentoo on 11/3/16.
 //
 
+#include <Engine.h>
 #include "BufferManager.h"
 
 namespace Gfx

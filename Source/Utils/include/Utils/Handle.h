@@ -59,6 +59,16 @@ namespace Utils
 			return key != other.key;
 		}
 
+		auto operator==(const Handle<Resource>& other) const -> bool
+		{
+			return key == other.key;
+		}
+
+		auto operator!=(const Handle<Resource>& other) const -> bool
+		{
+			return key != other.key;
+		}
+
 		auto swap(Handle<Resource>& other) noexcept -> void
 		{
 			std::swap(key, other.key);

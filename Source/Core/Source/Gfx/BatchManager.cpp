@@ -20,7 +20,7 @@ namespace Gfx
 
 	}
 
-	MaterialBatch& BatchManager::getBatch(MaterialBatch::handle_t handle)
+	/*MaterialBatch& BatchManager::getBatch(MaterialBatch::handle_t handle)
 	{
 		return _materialBatchesContainer.get(handle);
 	}
@@ -28,7 +28,7 @@ namespace Gfx
 	void BatchManager::allocateMesh(MaterialBatch& batch, const Core::Mesh& mesh)
 	{
 
-	}
+	}*/
 
 	/*void BatchManager::findStaticBufferInMaterial(MaterialBatch& batch, Resources::MeshSchemeId scheme, std::size_t vertexCount, std::size_t indexCount)
 	{
@@ -59,7 +59,7 @@ namespace Gfx
 		}
 	}*/
 
-	MaterialBatchMeshReference BatchManager::allocateMesh(const Core::Mesh& mesh, const Core::Material& material)
+	/*MaterialBatchMeshReference BatchManager::allocateMesh(const Core::Mesh& mesh, const Core::Material& material)
 	{
 		MaterialBatchMeshReference result;
 		bool allocated = false;
@@ -101,5 +101,5 @@ namespace Gfx
 	{
 		// TODO: remove that mesh from list
 		// TODO: recreate batch for meshes that still use it
-	}
+	}*/
 }

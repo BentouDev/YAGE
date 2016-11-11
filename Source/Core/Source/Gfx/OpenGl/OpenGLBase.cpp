@@ -46,12 +46,14 @@ namespace OpenGL
 			didLoadFunctions = gl::sys::LoadFunctions();
 		}
 
+		gl::Enable(gl::DEPTH_TEST);
+
         return didLoadFunctions;
     }
 
 	void resizeWindow(const Core::Window& window)
 	{
-
+		gl::Viewport(0, 0, window.Width, window.Height);
 	}
 
 	bool checkError(Core::Context context)
@@ -95,5 +97,61 @@ namespace OpenGL
 		}
 
 		return false;
+	}
+
+	GLenum toOpenGlType(type_t type)
+	{
+		static std::map<type_t, GLenum> dispatcher = {
+			{ TypeInfo<float>::id(), gl::FLOAT },
+			{ TypeInfo<double>::id(), gl::DOUBLE },
+			{ TypeInfo<signed char>::id(), gl::BYTE },
+			{ TypeInfo<unsigned char>::id(), gl::UNSIGNED_BYTE },
+			{ TypeInfo<int16_t>::id(), gl::SHORT },
+			{ TypeInfo<uint16_t>::id(), gl::UNSIGNED_SHORT },
+			{ TypeInfo<int32_t>::id(), gl::INT },
+			{ TypeInfo<uint32_t>::id(), gl::UNSIGNED_INT },
+		};
+
+		GLenum result = 0;
+
+		auto itr = dispatcher.find(type);
+		if(itr != dispatcher.end())
+		{
+			return itr->second;
+		}
+
+		else return gl::BYTE;
+
+		/*switch(type)
+		{
+			case TypeInfo<float>::id():
+				result = gl::FLOAT;
+				break;
+			case TypeInfo<double>::id():
+				result = gl::DOUBLE;
+				break;
+			case TypeInfo<signed char>::id():
+				result = gl::BYTE;
+				break;
+			case TypeInfo<unsigned char>::id():
+				gl::UNSIGNED_BYTE;
+				break;
+			case TypeInfo<int16_t>::id():
+				result = gl::SHORT;
+				break;
+			case TypeInfo<uint16_t>::id():
+				result = gl::UNSIGNED_SHORT;
+				break;
+			case TypeInfo<int32_t >::id():
+				result = gl::INT;
+				break;
+			case TypeInfo<uint32_t >::id():
+				result = gl::UNSIGNED_INT;
+				break;
+			default:
+				result = gl::BYTE;
+		}
+
+		return result;*/
 	}
 }

@@ -46,7 +46,7 @@ namespace Resources
 		inline bool hasMesh(handle_t handle)
 		{ return _materialContainer.contains(handle); }
 
-		inline handle_t createMesh()
+		inline handle_t createMaterial()
 		{ return _materialContainer.create(_memory); }
 
 		inline Core::Material& getMaterial(handle_t handle)

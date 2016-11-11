@@ -39,6 +39,8 @@ namespace Gfx
 	struct RenderData
 	{
 		GLuint VAO;
+		GLuint VBO;
+		GLuint IBO;
 		GLuint ShaderProgram;
 		GLuint baseVertex;
 		GLenum indexType;
@@ -51,6 +53,8 @@ namespace Gfx
 		using queue_t = CommandQueue<RenderKey, RenderData, Logic::RenderingComponent>;
 
 	protected:
+		GLuint lastIBO;
+		GLuint lastVBO;
 		GLuint lastVAO;
 		GLuint lastProgram;
 
@@ -70,7 +74,6 @@ namespace Gfx
 
 		void draw();
 		void drawCall(RenderData&);
-		void createDrawCallData(Logic::RenderingComponent&);
 
 	};
 }

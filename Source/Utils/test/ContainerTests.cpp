@@ -128,8 +128,9 @@ namespace MemoryTests
 	TEST_F(ContainerTest, CanCreateObject)
 	{
 		Utils::Container<FooTrait> container(getMemory(), count);
-		auto handle = container.create(13);
+		FooTrait::handle handle = container.create(13);
 
+		ASSERT_NE(handle, FooTrait::handle::invalid());
 		ASSERT_NE(handle.key, 0);
 		ASSERT_NE(handle.liveId, 0);
 		ASSERT_EQ(handle.typeId, TypeInfo<MyFooMock>::id());

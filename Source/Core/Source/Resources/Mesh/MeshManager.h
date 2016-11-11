@@ -5,10 +5,10 @@
 #ifndef GAME_MESHMANAGER_H
 #define GAME_MESHMANAGER_H
 
+#include "Mesh.h"
+#include "MeshSchemeManager.h"
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
-#include "MeshSchemeManager.h"
-#include "Mesh.h"
 
 namespace Core
 {
@@ -29,7 +29,7 @@ namespace Resources
 
 	public:
 		inline explicit SchemeBuffer(Memory::IMemoryBlock& memory, MeshSchemeId scheme)
-				: _buffers(memory), _scheme(scheme)
+				: _scheme(scheme), _buffers(memory)
 		{ }
 
 		inline Utils::List<Utils::Handle<Gfx::StaticBuffer>>& getBuffers()
@@ -43,8 +43,10 @@ namespace Resources
 	{
 		friend class MeshBuilder;
 
+	public:
 		using handle_t = Core::Mesh::handle_t;
 
+	protected:
 		Memory::IMemoryBlock&	_memory;
 		Core::Engine&			_engine;
 		MeshSchemeManager		_schemeManager;
@@ -88,6 +90,9 @@ namespace Resources
 
 		inline Core::MeshScheme* tryGetMeshScheme(Resources::MeshSchemeId id)
 		{ return _schemeManager.tryGetMeshScheme(id); }
+
+		inline Core::MeshScheme& getMeshScheme(Resources::MeshSchemeId id)
+		{ return *_schemeManager.tryGetMeshScheme(id); }
 
 		inline bool hasScheme(const Core::MeshScheme& scheme) const
 		{ return _schemeManager.contains(scheme); }

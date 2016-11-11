@@ -6,7 +6,9 @@
 #define GAME_MESHSCHEMEMANAGER_H
 
 #include <cstdint>
+
 #include <Utils/List.h>
+
 #include "Mesh.h"
 
 namespace Resources

@@ -13,6 +13,8 @@
 #include <Utils/SafeDelete.h>
 #include <Utils/MemoryBlock.h>
 
+#include "MeshScheme.h"
+
 namespace Gfx
 {
 	class StaticBuffer;
@@ -22,7 +24,6 @@ namespace Resources
 {
 	class MeshBuilder;
 	class MeshManager;
-	typedef int32_t MeshSchemeId;
 }
 
 namespace Core
@@ -32,21 +33,23 @@ namespace Core
 	public:
 		struct PropertyInfo
 		{
-			explicit PropertyInfo(const char* Name, type_t Type, std::size_t propSize, uint32_t PropertyCount)
-					: Name(Name), Type(Type), PropertySize(propSize), PropertyCount(PropertyCount)
+			explicit PropertyInfo(const char* Name, type_t Type, std::size_t propSize, uint32_t PropertyCount, bool Normalize)
+					: Name(Name), Type(Type), PropertySize(propSize), PropertyCount(PropertyCount), Normalize(Normalize)
 			{ }
 
 			const char* Name;
 			const type_t Type;
 			const uint32_t PropertyCount;
 			const std::size_t PropertySize;
+			const bool Normalize;
 
 			inline bool operator==(const PropertyInfo& other)
 			{
 				if(this == &other)
 					return true;
 
-				if(Type != other.Type || PropertyCount != other.PropertyCount)
+				if(Type != other.Type || PropertyCount != other.PropertyCount
+					|| PropertySize != other.PropertySize || Normalize != other.Normalize)
 				{
 					return false;
 				}
@@ -116,9 +119,9 @@ namespace Core
 			IndexType = indexType;
 		}
 
-		inline void addPropertyInfo(const char* name, type_t type, std::size_t propSize, uint32_t propCount)
+		inline void addPropertyInfo(const char* name, type_t type, std::size_t propSize, uint32_t propCount, bool normalize)
 		{
-			PropertiesInfo.emplace(name, type, propSize, propCount);
+			PropertiesInfo.emplace(name, type, propSize, propCount, normalize);
 		}
 
 		inline const Utils::List<PropertyInfo>& getPropertiesInfo() const
@@ -129,6 +132,16 @@ namespace Core
 
 		inline type_t getIndexType() const
 		{ return IndexType; }
+
+		inline std::size_t vertexSize() const
+		{
+			std::size_t size = 0;
+			for(PropertyInfo& data : PropertiesInfo)
+			{
+				size += data.PropertyCount * data.PropertySize;
+			}
+			return size;
+		}
 
 		inline bool operator==(const MeshScheme& other)
 		{
@@ -168,7 +181,7 @@ namespace Core
 
 		public:
 			explicit PropertyData(void* data, std::size_t vertexSize, std::uint32_t count)
-					: _dataPtr(data), _count(count), _vertexSize(vertexSize), _rawSize(_vertexSize * _count)
+					: _dataPtr(data), _vertexSize(vertexSize), _count(count), _rawSize(_vertexSize * _count)
 			{
 
 			}
@@ -266,6 +279,7 @@ namespace Core
 
 		const void*			_indicesPtr;
 		const std::size_t	_indiceCount;
+
 		std::size_t 		_baseVertex;
 
 	public:
@@ -273,11 +287,14 @@ namespace Core
 			: _indicesPtr(ptr), _indiceCount(count), _baseVertex(0)
 		{ }
 
-		std::size_t getIndiceCount() const
+		inline std::size_t getIndiceCount() const noexcept
 		{ return _indiceCount; }
 
-		const void* getIndicePtr() const
+		inline const void* getIndicePtr() const noexcept
 		{ return _indicesPtr; }
+
+		inline std::size_t getBaseVertex() const noexcept
+		{ return _baseVertex; }
 	};
 
 	enum MeshStorageType
@@ -307,40 +324,27 @@ namespace Core
 			_data = YAGE_CREATE_NEW((*_memory), MeshData)(*_memory);
 		}
 
-		inline virtual ~Mesh() noexcept
-		{
-			cleanUp();
-		}
+		Mesh(const Mesh&) = delete;
+		Mesh& operator=(const Mesh&) = delete;
+		Mesh& operator=(Mesh&&) = delete;
 
 		Mesh(Mesh&& other)
-		: _memory(other._memory),
-		  _submeshes(std::move(other._submeshes)),
-		  _data(other._data),
-		  _storageType(other._storageType),
-		  _schemeId(other._schemeId),
-		  _buffer(std::move(other._buffer))
+			: _memory(other._memory),
+			  _submeshes(std::move(other._submeshes)),
+			  _data(other._data),
+			  _storageType(other._storageType),
+			  _schemeId(other._schemeId),
+			  _buffer(std::move(other._buffer))
 		{
 			other._memory = nullptr;
 			other._data = nullptr;
 			other._buffer = Utils::Handle<Gfx::StaticBuffer>::invalid();
 		}
 
-		Mesh& operator=(Mesh&& other)
+		inline virtual ~Mesh() noexcept
 		{
-			if(this != &other)
-			{
-				_memory = other._memory;
-				_submeshes = std::move(other._submeshes);
-				_data = other._data;
-				_storageType = other._storageType;
-				_schemeId = other._schemeId;
-				_buffer = std::move(other._buffer);
-
-				other._memory = nullptr;
-				other._data = nullptr;
-				other._buffer = Utils::Handle<Gfx::StaticBuffer>::invalid();
-			}
-			return *this;
+			_submeshes.clear();
+			Memory::Delete(*_memory, _data);
 		}
 
 		inline const Utils::List<Submesh> &getSubmeshes() const noexcept
@@ -352,24 +356,15 @@ namespace Core
 		inline Resources::MeshSchemeId getMeshSchemeId() const noexcept
 		{ return _schemeId; }
 
-		inline MeshStorageType getStorageType()
+		inline MeshStorageType getStorageType() const noexcept
 		{ return _storageType; }
+
+		inline Utils::Handle<Gfx::StaticBuffer> getBuffer() const noexcept
+		{ return _buffer; }
 
 		std::size_t getIndiceCount() const;
 
 		std::size_t getVertexCount() const;
-
-		void swap(Mesh &other) noexcept override
-		{
-			fputs("SWAP IN MESH NOT IMPLEMENTED", stderr);
-			assert(false && "SWAP IN MESH NOT IMPLEMENTED");
-		}
-
-		void cleanUp() noexcept override
-		{
-			_submeshes.clear();
-			Memory::Delete(*_memory, _data);
-		}
 	};
 
 	class MeshTrait : public Utils::DefaultTrait<Mesh> { };

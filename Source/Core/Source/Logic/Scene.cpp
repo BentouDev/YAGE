@@ -9,7 +9,7 @@
 namespace Logic
 {
 	Scene::Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name)
-		: engine(engine), _memory(memory), Name(memory, name)
+		: _memory(memory), Name(memory, name), engine(engine)
 	{
 		Rendering = YAGE_CREATE_NEW(_memory, RenderingSystem)(engine, _memory);
 	}
@@ -40,10 +40,6 @@ namespace Logic
 		// meshes know theirs also
 		// gather meshes by pass id
 		// gather lights
-		/*for
-		{
-
-		}*/
 	}
 
 	void Scene::Update(const Core::GameTime& time)

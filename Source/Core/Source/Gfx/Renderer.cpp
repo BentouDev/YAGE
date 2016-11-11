@@ -2,28 +2,22 @@
 // Created by bentoo on 10/19/16.
 //
 
+#include <glm/gtc/matrix_transform.hpp>
 #include "Renderer.h"
 #include "BatchManager.h"
 #include "../Engine.h"
 #include "../Resources/Mesh/Mesh.h"
 #include "../Resources/Mesh/MeshManager.h"
 #include "../Logic/RenderingSystem.h"
-#include <Utils/Handle.h>
 
 namespace Gfx
 {
 	Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
 		: _engine(engine), _memory(memory), _buckets(_memory), _context(_engine.GetContext()),
-		  lastProgram(0), lastVAO(0), _queue(_memory, *this)
-			/*_queue
-			(
-				_memory,
-				[&](RenderData& data){this->drawCall(data);},
-				[&](Logic::RenderingComponent& component){this->createDrawCallData(component);}
-			),*/
+		  lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0), _queue(_memory, *this)
 	{
 
-	};
+	}
 
 	void Renderer::drawCall(RenderData& data)
 	{
@@ -39,49 +33,53 @@ namespace Gfx
 			gl::BindVertexArray(data.VAO);
 		}
 
-		gl::DrawElementsBaseVertex(gl::TRIANGLES, data.elementCount, data.indexType, 0, data.baseVertex);
-	}
-
-	void Renderer::createDrawCallData(Logic::RenderingComponent& component)
-	{
-		for(MaterialBatchMeshReference& reference : component._batchHandles)
+		if(lastVBO != data.VBO)
 		{
-			RenderKey&		key	 = _queue._keys.emplace();
-			RenderData&		data = _queue._data.emplace();
-
-			// set values
-			data.ShaderProgram	= reference.ShaderProgram;
-			data.baseVertex		= reference.BaseVertex;
-			data.elementCount	= reference.ElementCount;
-			data.indexType		= reference.IndexType;
-			data.VAO			= (*reference.VAO);
+			lastVBO = data.VBO;
+			gl::BindBuffer(gl::ARRAY_BUFFER, data.VBO);
 		}
 
-		return;
-
-		// key doesnt matter for now
-		// but we can have submeshes, they should be bundled together
-		// So component really has reference to our batch
-		// And that bath is per material per vertex format
-		// So we get those bathes using component indices
-		// And create commands from them here
-		// Should have multiple outputs here tho
-
-		// Probably this mesh lookup is unnecessary here
-		const Core::Mesh& mesh = _engine.MeshManager.get().getMesh(component.getMesh());
-		const Utils::List<Core::Submesh>& submeshes = mesh.getSubmeshes();
-
-		for(std::size_t i = 0; i < submeshes.size(); i++)
+		if(lastIBO != data.IBO)
 		{
-			submeshes[i];
-			component.getMaterial(i);
+			lastIBO = data.IBO;
+			gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, data.IBO);
 		}
+
+		gl::DrawElementsBaseVertex(gl::TRIANGLES, data.elementCount, OpenGL::toOpenGlType(data.indexType), 0, data.baseVertex);
 	}
 
 	void Renderer::draw()
 	{
-		_queue.sort();
-		_queue.issueCommands();
+		glm::mat4 Projection = glm::perspective(
+			3.14f / 4.0f,         // The horizontal Field of View, in degrees : the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
+			4.0f / 3.0f, // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar ?
+			0.01f,        // Near clipping plane. Keep as big as possible, or you'll get precision issues.
+			100.0f       // Far clipping plane. Keep as little as possible.
+		);
+
+		glm::mat4 View = glm::lookAt(
+				glm::vec3(4,3,3), // Camera is at (4,3,3), in World Space
+				glm::vec3(0,0,0), // and looks at the origin
+				glm::vec3(0,1,0)  // Head is up (set to 0,-1,0 to look upside-down)
+		);
+
+// Model matrix : an identity matrix (model will be at the origin)
+		glm::mat4 Model = glm::mat4(1.0f);
+
+		gl::UniformMatrix4fv(1, 1, gl::FALSE_, &Projection[0][0]);
+		gl::UniformMatrix4fv(2, 1, gl::FALSE_, &View[0][0]);
+		gl::UniformMatrix4fv(3, 1, gl::FALSE_, &Model[0][0]);
+
+		//_queue.sort();
+		//_queue.issueCommands();
+
+		for(auto& data : _queue._data)
+		{
+			drawCall(data);
+		}
+
+		_queue._data.clear();
+		_queue._keys.clear();
 
 		/*const std::size_t bucketCount = _buckets.size();
 		for(std::size_t i = 0; i < bucketCount; i++)

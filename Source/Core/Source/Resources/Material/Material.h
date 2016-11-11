@@ -31,6 +31,11 @@ namespace Gfx
 	class ShaderProgram;
 }
 
+namespace Resources
+{
+	class ShaderManager;
+}
+
 namespace Core
 {
 	// uniform - pass name, get location
@@ -55,7 +60,7 @@ namespace Core
 		GLint	 _location;
 
 	public:
-		explicit IAutoUniform(const char* name, const Core::Material& material);
+		explicit IAutoUniform(const char*, const Core::Material&, const Resources::ShaderManager&);
 
 		virtual void set() = 0;
 	};
@@ -67,8 +72,8 @@ namespace Core
 		T _storedValue;
 
 	public:
-		inline explicit AutoUniform(const char* name, const Core::Material& material)
-			: IAutoUniform(name, material)
+		inline explicit AutoUniform(const char* name, const Core::Material& material, const Resources::ShaderManager& manager)
+			: IAutoUniform(name, material, manager)
 		{ }
 
 		void set() override
@@ -101,9 +106,9 @@ namespace Core
 		// for uniform blocks
 		Memory::LinearAllocator* _allocator;
 
-		Utils::List<IAutoUniform> _uniforms;
+		Utils::List<IAutoUniform*> _uniforms;
 
-		Gfx::ShaderProgram* _debugShader;
+		Utils::Handle<Gfx::ShaderProgram> _shader;
 
 	//	std::map<std::string, uint32_t > uniformMap;
 	//	std::vector<Uniform> uniforms;
@@ -113,53 +118,55 @@ namespace Core
 
 	public:
 		inline explicit Material(Memory::IMemoryBlock& memory)
-			: _memory(memory), _allocator(nullptr), _uniforms(_memory), _debugShader(nullptr)
+			: _memory(memory), _allocator(nullptr), _uniforms(_memory)
 		{ }
-
-		Material(Material&& other)
-			: _memory(other._memory),
-			  _allocator(other._allocator),
-			  _uniforms(std::move(other._uniforms)),
-			  _debugShader(std::move(other._debugShader))
-		{
-			other._allocator = nullptr;
-			other._debugShader = nullptr;
-		}
 
 		Material(const Material&) = delete;
 		Material& operator=(const Material&) = delete;
 		Material& operator=(Material&&) = delete;
 
-		template <typename T>
-		Core::Material& addUniform(const char* name)
+		Material(Material&& other)
+				: _memory(other._memory),
+				  _allocator(other._allocator),
+				  _uniforms(std::move(other._uniforms)),
+				  _shader(std::move(other._shader))
 		{
-			_uniforms.add(AutoUniform<T>(name, *this));
+			other._allocator = nullptr;
+			other._shader = Utils::Handle<Gfx::ShaderProgram>::invalid();
+		}
+
+		virtual ~Material()
+		{
+			for(IAutoUniform* uniform : _uniforms)
+			{
+				Memory::Delete(_memory, uniform);
+			}
+
+			_uniforms.clear();
+		}
+
+		template <typename T>
+		Core::Material& addUniform(const char* name, const Resources::ShaderManager& manager)
+		{
+			IAutoUniform* uniform = YAGE_CREATE_NEW(_memory, AutoUniform<T>)(name, *this, manager);
+			_uniforms.add(uniform);
 			return *this;
 		}
 
-		void bind()
+		void bindUniforms()
 		{
-			for(auto& uniform : _uniforms)
+			// TODO: uniform locations should be reloadeable
+			for(IAutoUniform* uniform : _uniforms)
 			{
-				uniform.set();
+				uniform->set();
 			}
 		}
 
-		Core::Material& setShaderProgram(Gfx::ShaderProgram& shader)
-		{ _debugShader = &shader; }
+		inline Core::Material& setShaderProgram(Utils::Handle<Gfx::ShaderProgram> shader)
+		{ _shader = shader; return *this; }
 
-		Gfx::ShaderProgram& getShaderProgram() const
-		{ return *_debugShader; }
-
-		void swap(Material& other) noexcept override
-		{
-			assert(false && "SWAP IN MATERIAL NOT IMPLEMENTED");
-		}
-
-		void cleanUp() noexcept override
-		{
-
-		}
+		Utils::Handle<Gfx::ShaderProgram> getShaderProgram() const
+		{ return _shader; }
 	};
 
 	class MaterialTrait : public Utils::DefaultTrait<Material> {};

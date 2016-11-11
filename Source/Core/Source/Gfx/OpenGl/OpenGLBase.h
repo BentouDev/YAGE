@@ -6,6 +6,7 @@
 #define GAME_OPENGLBASE_H
 
 #include "Generated/gl_core_3_3.hpp"
+#include <Utils/TypeInfo.h>
 
 #ifdef CREATE_NEW
 #undef CREATE_NEW
@@ -36,6 +37,8 @@ namespace OpenGL
 	bool registerWindow(const Core::Window& window);
 
 	bool checkError(Core::Context context);
+
+	GLenum toOpenGlType(type_t type);
 }
 
 #endif //GAME_OPENGLBASE_H

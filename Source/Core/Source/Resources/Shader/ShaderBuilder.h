@@ -22,6 +22,10 @@ namespace Resources
 {
 	class ShaderBuilder
 	{
+	public:
+		using handle_t = Utils::Handle<Gfx::ShaderProgram>;
+
+	protected:
 		Core::Engine&				_engine;
 		Memory::IMemoryBlock& 		_memory;
 		Utils::List<Gfx::Shader*>	_shaders;
@@ -35,7 +39,8 @@ namespace Resources
 	public:
 		ShaderBuilder(Core::Engine& engine, Memory::IMemoryBlock& memory);
 
-		ShaderBuilder&	onExisting(Gfx::ShaderProgram* existing);
+		ShaderBuilder&	onExisting(Gfx::ShaderProgram& existing);
+		ShaderBuilder&	onExisting(handle_t existing);
 
 		ShaderBuilder&	with(Gfx::Shader& shader);
 
@@ -45,7 +50,7 @@ namespace Resources
 		ShaderBuilder&	withFragmentFromFile(const char* path);
 		ShaderBuilder&	withFragmentFromSource(const char* source);
 
-		Gfx::ShaderProgram*	debugBuild(const char* programName);
+		handle_t		debugBuild(const char* programName);
 	};
 }
 

@@ -3,8 +3,10 @@
 //
 
 #include <glm/gtc/type_ptr.hpp>
+
 #include "Material.h"
 #include "../Shader/Shader.h"
+#include "../Shader/ShaderManager.h"
 
 namespace Gfx
 {
@@ -46,8 +48,9 @@ namespace Gfx
 
 namespace Core
 {
-	IAutoUniform::IAutoUniform(const char* name, const Core::Material& material)
+	IAutoUniform::IAutoUniform(const char* name, const Core::Material& material, const Resources::ShaderManager& manager)
 	{
-		_location = gl::GetUniformLocation(material.getShaderProgram(), name);
+		Gfx::ShaderProgram& program = manager.get(material.getShaderProgram());
+		_location = gl::GetUniformLocation(program, name);
 	}
 }

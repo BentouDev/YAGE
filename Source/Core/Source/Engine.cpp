@@ -202,4 +202,9 @@ namespace Core
 	{
 		MaterialManager.reset(manager);
 	}
+
+	void Engine::debugSetShaderManager(Resources::ShaderManager* manager)
+	{
+		ShaderManager.reset(manager);
+	}
 }

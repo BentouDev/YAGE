@@ -45,11 +45,11 @@ namespace Gfx
 		}
 
 		Shader(const Shader& shader)
-			: _type(shader._type), _handle(shader._handle)
+			: _type(shader._type), _isCompiled(shader._isCompiled), _handle(shader._handle)
 		{ }
 
 		Shader(Shader&& shader)
-			: _type(shader._type), _handle(shader._handle)
+			: _type(shader._type), _isCompiled(shader._isCompiled), _handle(shader._handle)
 		{ }
 
 		Shader& operator= (const Shader& shader)
@@ -64,11 +64,12 @@ namespace Gfx
 			gl::DeleteShader(_handle);
 			_handle = other._handle;
 			_type = other._type;
+			_isCompiled = other._isCompiled;
 			other._handle = -1;
 			return *this;
 		}
 
-		inline operator GLint() const noexcept
+		inline operator GLuint() const noexcept
 		{ return _handle; }
 
 		inline bool isCompiled() const noexcept
@@ -80,19 +81,27 @@ namespace Gfx
 		GLuint _handle;
 
 	public:
+		ShaderProgram() : _handle(0) { }
+
 		ShaderProgram(const ShaderProgram&) = delete;
-		ShaderProgram() : _handle(-1)
-		{ }
+		ShaderProgram& operator=(const ShaderProgram&) = delete;
+		ShaderProgram& operator=(ShaderProgram&&) = delete;
 
-		void init(GLint handle);
-
-		void cleanUp() noexcept;
-
-		inline void swap(ShaderProgram& other) noexcept
+		ShaderProgram(ShaderProgram&& other)
+			: _handle(other._handle)
 		{
-			_handle = other._handle;
-			assert(false && "SWAP IN SHADER NOT IMPLEMENTED");
+			other._handle = 0;
 		}
+
+		virtual ~ShaderProgram()
+		{
+			if(_handle > 0)
+			{
+				gl::DeleteProgram(_handle);
+			}
+		}
+
+		void init(GLuint handle);
 
 		inline operator GLuint() const noexcept
 		{ return _handle; }

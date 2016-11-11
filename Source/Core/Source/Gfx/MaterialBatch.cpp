@@ -9,7 +9,7 @@
 
 namespace Gfx
 {
-	bool MaterialBatch::hasMaterial(const Core::Material &material) const
+	/*bool MaterialBatch::hasMaterial(const Core::Material &material) const
 	{
 		return hasMaterial(material.Handle);
 	}
@@ -17,7 +17,7 @@ namespace Gfx
 	bool MaterialBatch::hasMaterial(Utils::Handle<Core::Material> material) const
 	{
 		return material == _material;
-	}
+	}*/
 
 	/*bool MaterialBatch::hasSize(uint32_t vertexCount, uint32_t indexCount) const
 	{
@@ -32,10 +32,10 @@ namespace Gfx
 		return false;
 	}*/
 
-	MaterialBatchMeshReference MaterialBatch::allocateMesh(const Core::Mesh &mesh)
+	/*MaterialBatchMeshReference MaterialBatch::allocateMesh(const Core::Mesh &mesh)
 	{
 		return MaterialBatchMeshReference();
-	/*	if(batch.hasSize(mesh.vertexCount(), submeshes[i]._indiceCount))
+		if(batch.hasSize(mesh.vertexCount(), submeshes[i]._indiceCount))
 		{
 			batch.allocate(mesh, i);
 			break;
@@ -43,6 +43,6 @@ namespace Gfx
 		else
 		{
 			// Create new buffer for this batch to allocate mesh
-		}*/
-	}
+		}
+	}*/
 }
