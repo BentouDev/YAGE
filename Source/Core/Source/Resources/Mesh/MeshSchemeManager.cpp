@@ -14,7 +14,7 @@ namespace Resources
 
 	MeshSchemeId MeshSchemeManager::registerScheme(const Core::MeshScheme& scheme)
 	{
-		_registeredSchemes.add(scheme);
+		_registeredSchemes.emplace(scheme);
 		return (MeshSchemeId) (_registeredSchemes.size() - 1);
 	}
 

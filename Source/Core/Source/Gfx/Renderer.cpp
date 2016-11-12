@@ -5,7 +5,6 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Renderer.h"
-#include "BatchManager.h"
 
 #include "../Engine.h"
 #include "../Resources/Mesh/Mesh.h"

@@ -9,7 +9,7 @@
 #include <Utils/DefaultTrait.h>
 
 #include "Component.h"
-#include "../Gfx/BatchManager.h"
+#include "../Gfx/OpenGl/OpenGLBuffers.h"
 
 namespace Gfx
 {

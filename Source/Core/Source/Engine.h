@@ -32,7 +32,6 @@ namespace Logic
 namespace Gfx
 {
 	class BufferManager;
-	class BatchManager;
 	class BaseApi
 	{};
 }
@@ -86,14 +85,13 @@ namespace Core
 
 		borrowed_ptr<Gfx::Renderer> Renderer;
 
-		borrowed_ptr<Gfx::BatchManager> BatchManager;
 		borrowed_ptr<Gfx::BufferManager> BufferManager;
 
 		borrowed_ptr<Resources::MeshManager> MeshManager;
 		borrowed_ptr<Resources::MaterialManager> MaterialManager;
 		borrowed_ptr<Resources::ShaderManager> ShaderManager;
 
-		explicit Engine(std::string name);
+		explicit Engine(std::string name, Memory::IMemoryBlock&);
 
 		virtual ~Engine() { CleanUp(); }
 
@@ -129,7 +127,6 @@ namespace Core
 		auto CleanUp() -> void;
 
 		void debugSetRenderer(Gfx::Renderer* renderer);
-		void debugSetBatchManager(Gfx::BatchManager* batchManager);
 		void debugSetBufferManager(Gfx::BufferManager* bufferManager);
 		void debugSetMeshManager(Resources::MeshManager* manager);
 		void debugSetMaterialManager(Resources::MaterialManager* manager);

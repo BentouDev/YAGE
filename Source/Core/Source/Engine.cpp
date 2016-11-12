@@ -9,8 +9,9 @@
 
 #include "Resources/ResourceManager.h"
 #include "Resources/Mesh/MeshManager.h"
+#include "Resources/Shader/ShaderManager.h"
+#include "Resources/Material/MaterialManager.h"
 #include "Gfx/BufferManager.h"
-#include "Gfx/BatchManager.h"
 #include "Gfx/Renderer.h"
 #include "Logic/Scene.h"
 #include "GameTime.h"
@@ -25,14 +26,13 @@
 
 namespace Core
 {
-	Engine::Engine(std::string name)
+	Engine::Engine(std::string name, Memory::IMemoryBlock& blah)
 		: Name(name),
 		  Logger(new Core::Logger()),
-		  Config(new Core::Config())
+		  Config(new Core::Config(blah))
 	//	  Renderer(new Gfx::Renderer())
 	{
 		Logger->setConfig(Config);
-		Config->setLogger(Logger);
 		Engine::initializeReferences(this);
 	}
 
@@ -166,9 +166,10 @@ namespace Core
 	//		Memory::SafeDelete(api.second);
 	//	}
 
-		Memory::SafeDelete(BatchManager);
-		Memory::SafeDelete(MeshManager);
 		Memory::SafeDelete(BufferManager);
+		Memory::SafeDelete(MeshManager);
+		Memory::SafeDelete(MaterialManager);
+		Memory::SafeDelete(ShaderManager);
 		Memory::SafeDelete(Renderer);
 		Memory::SafeDelete(Config);
 
@@ -181,11 +182,6 @@ namespace Core
 	void Engine::debugSetRenderer(Gfx::Renderer* renderer)
 	{
 		Renderer.reset(renderer);
-	}
-
-	void Engine::debugSetBatchManager(Gfx::BatchManager* batchManager)
-	{
-		BatchManager.reset(batchManager);
 	}
 
 	void Engine::debugSetBufferManager(Gfx::BufferManager* bufferManager)

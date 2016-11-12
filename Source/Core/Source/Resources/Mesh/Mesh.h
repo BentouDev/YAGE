@@ -70,20 +70,20 @@ namespace Core
 		type_t						IndexType;
 
 	public:
-		explicit MeshScheme(Memory::IMemoryBlock &memory)
+		explicit MeshScheme(Memory::IMemoryBlock& memory)
 			: PropertiesInfo(memory), IndexSize(0), IndexType(0)
 		{
 
 		}
 
-		MeshScheme(const MeshScheme &other)
+		MeshScheme(const MeshScheme& other)
 			: PropertiesInfo(other.PropertiesInfo),
 			  IndexSize(other.IndexSize), IndexType(other.IndexType)
 		{
 
 		}
 
-		MeshScheme(MeshScheme &&other)
+		MeshScheme(MeshScheme&& other)
 			: PropertiesInfo(other.PropertiesInfo),
 			  IndexSize(other.IndexSize), IndexType(other.IndexType)
 		{

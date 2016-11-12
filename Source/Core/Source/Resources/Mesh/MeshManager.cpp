@@ -199,8 +199,6 @@ namespace Resources
 				// push its data to pointer
 				memcpy(vertexPtr, dataPtr, vertexSize);
 
-				_engine.Logger.get().Default->warn("Buffer '{}', src '{}'", *((int*)vertexPtr), *((int*)dataPtr));
-
 				// advance pointer by bytes
 				vertexPtr += vertexSize;
 			}

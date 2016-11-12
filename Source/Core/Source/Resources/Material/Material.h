@@ -126,10 +126,10 @@ namespace Core
 		Material& operator=(Material&&) = delete;
 
 		Material(Material&& other)
-				: _memory(other._memory),
-				  _allocator(other._allocator),
-				  _uniforms(std::move(other._uniforms)),
-				  _shader(std::move(other._shader))
+			: _memory(other._memory),
+			  _allocator(other._allocator),
+			  _uniforms(std::move(other._uniforms)),
+			  _shader(std::move(other._shader))
 		{
 			other._allocator = nullptr;
 			other._shader = Utils::Handle<Gfx::ShaderProgram>::invalid();

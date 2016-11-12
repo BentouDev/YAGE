@@ -72,7 +72,7 @@ namespace Logic
 
 		const std::size_t vertexSize = scheme->vertexSize();
 
-		for(uint32_t i = 0; i < mesh->getSubmeshes().size() && i < component.getMaterials().size(); i++)
+		for(std::size_t i = 0; i < component._cachedSubmeshInfo.size(); i++)
 		{
 			OpenGL::VAO*	vao		= OpenGL::VAO::Create(_memory);
 			GLuint			offset	= 0;
