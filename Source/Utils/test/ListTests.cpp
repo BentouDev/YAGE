@@ -5,6 +5,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
+#include <Utils/SimpleMemoryBoundChecker.h>
+#include <Utils/SimpleMemoryTracker.h>
 #include "Utils/FreeListAllocator.h"
 #include "Utils/List.h"
 
@@ -21,7 +23,10 @@ namespace ListTests
 			 Memory::ValgrindMemoryBoundChecker,
 			 Memory::ValgrindMemoryTracker> MockMemory;
 #else
-	typedef Memory::MemoryBlock <Memory::FreeListAllocator> MockMemory;
+	typedef Memory::MemoryBlock <
+			Memory::FreeListAllocator,
+			Memory::SimpleMemoryBoundChecker,
+			Memory::SimpleMemoryTracker> MockMemory;
 #endif
 
 	class FooMock
@@ -97,7 +102,7 @@ namespace ListTests
 
 		EXPECT_NE(nullptr, list);
 		EXPECT_EQ(list->capacity(), listCapacity);
-		EXPECT_EQ(sizeof(FooMock) * listCapacity, allocator->getAllocationSize(list->begin()));
+		EXPECT_EQ(sizeof(FooMock) * listCapacity, getMemory().getAllocationSize(list->begin()));
 
 		delete list;
 	}
@@ -109,7 +114,7 @@ namespace ListTests
 		list->emplace();
 
 		EXPECT_EQ(1, list->size());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
+		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
 
 		delete list;
 	}
@@ -126,7 +131,7 @@ namespace ListTests
 		list->erase(0);
 
 		EXPECT_EQ(0, list->size());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
+		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
 
 		delete list;
 	}
@@ -166,7 +171,7 @@ namespace ListTests
 		}
 
 		EXPECT_EQ(4, list->size());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), allocator->getAllocationSize(list->begin()));
+		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
 
 		delete list;
 	}

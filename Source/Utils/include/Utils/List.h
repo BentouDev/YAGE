@@ -61,7 +61,7 @@ namespace Utils
 
 				if(_elements != nullptr)
 				{
-					memcpy(newPtr, _elements, sizeof(T) * _size);
+					memcpy(newPtr, _elements, sizeof(T) * _capacity);
 				}
 			}
 
@@ -100,7 +100,7 @@ namespace Utils
 		inline List(const List& other)
 			: _memory(other._memory), _elements(nullptr), _size(0), _capacity(0)
 		{
-			uint32_t otherSize = other._size;
+			std::size_t otherSize = other._size;
 			realloc(otherSize);
 			memcpy(_elements, other._elements, sizeof(T) * otherSize);
 			_size = otherSize;
@@ -118,7 +118,7 @@ namespace Utils
 		{
 			if(this != &other)
 			{
-				uint32_t otherSize = other._size;
+				std::size_t otherSize = other._size;
 
 				// we may have some data already
 				destructElements();
