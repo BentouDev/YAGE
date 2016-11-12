@@ -8,19 +8,30 @@
 
 namespace Core
 {
-	Config::Config() :
-		RenderingApi(this, "Window.Api", "opengl"),
-		WindowTitle(this, "Window.Title", "YAGE"),
-		WindowWidth(this, "Window.Width", 800),
-		WindowHeight(this, "Window.Height", 600),
-		DrawDebug(this, "Debug.DrawDebug", false),
-		DrawFPS(this, "Debug.DrawFPS", false)
+	Config::Config(Memory::IMemoryBlock& memory)
+		: _memory(memory), _properties(_memory),
+		  RenderingApi(this, "Window.Api", "opengl"),
+		  WindowTitle(this, "Window.Title", "YAGE"),
+		  WindowWidth(this, "Window.Width", 800),
+		  WindowHeight(this, "Window.Height", 600),
+		  DrawDebug(this, "Debug.DrawDebug", false),
+		  DrawFPS(this, "Debug.DrawFPS", false)
+	{ }
+
+	Config::Config(Config&& other)
+		: _memory(other._memory), _properties(std::move(other._properties)),
+		  RenderingApi(std::move(other.RenderingApi)),
+		  WindowTitle(std::move(other.WindowTitle)),
+		  WindowWidth(std::move(other.WindowWidth)),
+		  WindowHeight(std::move(other.WindowHeight)),
+		  DrawDebug(std::move(other.DrawDebug)),
+		  DrawFPS(std::move(other.DrawFPS))
 	{ }
 
 	template <typename T>
 	auto Config::Register(ConfigProperty<T>* prop) -> void
 	{
-		_properties.push_back(prop);
+		_properties.add(prop);
 	}
 
 	auto Config::Has(std::string name) -> bool
@@ -60,7 +71,7 @@ namespace Core
 
 	auto Config::Load(std::string path) -> bool
 	{
-		logger->Default->info("Attempt to load config from '{}'...", path);
+	//	logger->Default->info("Attempt to load config from '{}'...", path);
 
 		std::ifstream f(path);
 		try
@@ -71,11 +82,11 @@ namespace Core
 		}
 		catch(const std::exception& e)
 		{
-			logger->Default->error("Unable to parse log, cause '{}'", e.what());
+	//		logger->Default->error("Unable to parse log, cause '{}'", e.what());
 		}
 		catch(...)
 		{
-			logger->Default->critical("Uncaught exception while parsing config!");
+	//		logger->Default->critical("Uncaught exception while parsing config!");
 		}
 
 		f.close();
@@ -84,7 +95,7 @@ namespace Core
 
 		if(result)
 		{
-			logger->Default->info("Config loaded successfully!");
+	//		logger->Default->info("Config loaded successfully!");
 		}
 
 		return result;

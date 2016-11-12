@@ -9,6 +9,7 @@
 #include <json.hpp>
 #include <Utils/Handle.h>
 #include <Utils/BorrowedPtr.h>
+#include <Utils/List.h>
 
 namespace Core
 {
@@ -21,18 +22,23 @@ namespace Core
 	class PropertyBase
 	{
 		friend class Config;
+
 	protected:
 		Config& _config;
-		const std::string _name;
+		const char* _name;
 
-		PropertyBase(Config* config, std::string name) :
-			_config(*config),
-			_name(name) {}
+		PropertyBase(Config* config, const char* name)
+			: _config(*config), _name(name)
+		{ }
+
+		PropertyBase(PropertyBase&& other)
+			: _config(other._config), _name(other._name)
+		{ }
 
 		virtual auto reload() -> void = 0;
 
 	public:
-		auto name() -> std::string { return _name; }
+		auto name() -> const char* { return _name; }
 	};
 
 	template <typename T>
@@ -43,7 +49,8 @@ namespace Core
 		void reload();
 
 	public:
-		explicit ConfigProperty(Config* config, std::string name, T def);
+		explicit ConfigProperty(Config* config, const char* name, T def);
+		ConfigProperty(ConfigProperty&&);
 
 		ConfigProperty<T>& operator = (const T& new_value);
 
@@ -62,19 +69,14 @@ namespace Core
 	{
 		friend class Engine;
 
-		Utils::borrowed_ptr<Logger> logger;
+		Memory::IMemoryBlock& _memory;
+		Utils::List<PropertyBase*> _properties;
 
-		auto setLogger(Utils::borrowed_ptr<Logger> log) -> void
-		{
-			logger.reset(log.release());
-		}
-
-		std::vector<PropertyBase*> _properties;
 		nlohmann::json json;
 
-		Config();
-
 	public:
+		explicit Config(Memory::IMemoryBlock& memory);
+		Config(Config&&);
 
 		/*auto static get() -> Config& {
 			static Config config;
@@ -107,11 +109,16 @@ namespace Core
 	};
 
 	template <typename T>
-	ConfigProperty<T>::ConfigProperty(Config* config, std::string name, T def)
+	ConfigProperty<T>::ConfigProperty(Config* config, const char* name, T def)
 		: PropertyBase(config, name), _value(def)
 	{
 		_config.Register(this);
 	}
+
+	template <typename T>
+	ConfigProperty<T>::ConfigProperty(ConfigProperty<T>&& other)
+		: PropertyBase(std::move(other)), _value(std::move(other._value))
+	{ }
 
 	template <typename T>
 	ConfigProperty<T>& ConfigProperty<T>::operator = (const T& new_value)
@@ -127,6 +134,5 @@ namespace Core
 		_value = _config.Get<T>(_name, _value);
 	}
 }
-
 
 #endif //YAGE_CONFIG_H
