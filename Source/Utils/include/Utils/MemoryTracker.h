@@ -20,6 +20,8 @@ namespace Memory
 			: _block(memory)
 		{ }
 
+		void* getSuperblockPtr() const;
+
 	public:
 		virtual inline void OnAllocation(void*, std::size_t, std::size_t, std::size_t, const Utils::DebugSourceInfo&) = 0;
 		virtual inline void OnDeallocation(void*, std::size_t) = 0;

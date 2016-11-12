@@ -7,8 +7,9 @@
 
 #include "MemoryTracker.h"
 #include "ValgrindMemoryBoundChecker.h"
-#include <valgrind/valgrind.h>
 #include <cstdint>
+#include <valgrind/valgrind.h>
+#include <valgrind/memcheck.h>
 
 namespace Memory
 {
@@ -19,17 +20,23 @@ namespace Memory
 			: IMemoryTracker(memory)
 		{
 			VALGRIND_CREATE_MEMPOOL(&_block, ValgrindMemoryBoundChecker::BOUND_OFFSET, false);
+			VALGRIND_MAKE_MEM_NOACCESS(getSuperblockPtr(), _block.getCapacity());
 		}
 
-		inline void OnAllocation(void* ptr, std::size_t size, std::size_t alignment, std::size_t frontOffset, const Utils::DebugSourceInfo&) override
+		~ValgrindMemoryTracker()
 		{
-			const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(ptr);
+			VALGRIND_DESTROY_MEMPOOL(&_block);
+		}
+
+		inline void OnAllocation(void* ptr, std::size_t size, std::size_t, std::size_t frontOffset, const Utils::DebugSourceInfo&) override
+		{
+			const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(ptr) + frontOffset;
 			VALGRIND_MEMPOOL_ALLOC(&_block, reinterpret_cast<void*>(address), size); // + frontOffset
 		};
 
 		inline void OnDeallocation(void* ptr, std::size_t frontOffset) override
 		{
-			const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(ptr);
+			const std::uintptr_t address = reinterpret_cast<std::uintptr_t>(ptr) + frontOffset;
 			VALGRIND_MEMPOOL_FREE(&_block, reinterpret_cast<void*>(address)); // + frontOffset
 		};
 	};

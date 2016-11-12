@@ -8,11 +8,11 @@
 
 namespace Memory
 {
-	FreeListAllocator::FreeListAllocator(void *memory, std::size_t size)
-		: IAllocator(memory, size), _freeBlocks((FreeListHeader*) memory)
+	FreeListAllocator::FreeListAllocator(void* memory, std::size_t size)
+		: IAllocator(memory, size), _freeBlocks(reinterpret_cast<FreeListHeader*>(memory))
 	{
 		_freeBlocks->next 		= nullptr;
-		_freeBlocks->size 		= (uint32_t )size;
+		_freeBlocks->size 		= size;
 		_freeBlocks->adjustment = (uint8_t)0;
 	}
 
@@ -35,13 +35,13 @@ namespace Memory
 			std::size_t  adjustment = Internal::calcForwardAlignmentAdjustment(ptr, alignment, headerSize);
 			std::int64_t sizeDiff 	= ptr->size - (uint32_t)(size + adjustment);
 
-			if(sizeDiff > 0 && ((size_t) sizeDiff) <= smallestSize)
+			if(sizeDiff > 0 && ((std::size_t) sizeDiff) <= smallestSize)
 			{
-				smallestSize = (size_t) sizeDiff;
+				smallestSize = (std::size_t) sizeDiff;
 				smallest = ptr;
 			}
 
-			ptr = reinterpret_cast<FreeListHeader*>(ptr->next);
+			ptr = ptr->next;
 		}
 
 		if(smallest == nullptr)
@@ -61,7 +61,7 @@ namespace Memory
 		assert(smallest->next != pNew && "Deallocation has failed to join adjacent blocks!");
 
 		const uint32_t minimalSize = sizeof(FreeListHeader);
-		const uint32_t sizeLeft = smallest->size - allocationSize;
+		const std::size_t sizeLeft = smallest->size - allocationSize;
 
 		if(sizeLeft > minimalSize)
 		{
@@ -82,7 +82,7 @@ namespace Memory
 
 		if(smallest == _freeBlocks)
 		{
-			_freeBlocks = reinterpret_cast<FreeListHeader*>(smallest->next);
+			_freeBlocks = smallest->next;
 		}
 
 		std::memset(smallest, 0, adjustment);
@@ -90,7 +90,7 @@ namespace Memory
 		FreeListHeader* userHeader = reinterpret_cast<FreeListHeader*>(alignedAddress - offset - sizeof(FreeListHeader));
 
 		userHeader->next		= nullptr;
-		userHeader->size		= (uint32_t)allocationSize;
+		userHeader->size		= allocationSize;
 		userHeader->adjustment	= (uint8_t)adjustment;
 
 		_usedSize += allocationSize;
@@ -111,7 +111,7 @@ namespace Memory
 		FreeListHeader* ptr = list;
 		while(ptr->next != nullptr)
 		{
-			ptr = reinterpret_cast<FreeListHeader*>(ptr->next);
+			ptr = ptr->next;
 		}
 
 		return ptr;
@@ -209,7 +209,7 @@ namespace Memory
 		FreeListHeader* current = _freeBlocks;
 		while(current != nullptr && current->next != ptr)
 		{
-			current = reinterpret_cast<FreeListHeader*>(current->next);
+			current = current->next;
 		}
 
 		return current;
@@ -223,7 +223,7 @@ namespace Memory
 		std::uintptr_t 	currentAddress 	= reinterpret_cast<std::uintptr_t>(current);
 		while(current != nullptr && (currentAddress + current->size) != ptrAddress)
 		{
-			current = reinterpret_cast<FreeListHeader*>(current->next);
+			current = current->next;
 			currentAddress = reinterpret_cast<std::uintptr_t>(current);
 		}
 
@@ -236,7 +236,7 @@ namespace Memory
 		FreeListHeader* current = _freeBlocks;
 		while(current != nullptr && current != ptr)
 		{
-			current = reinterpret_cast<FreeListHeader*>(current->next);
+			current = current->next;
 		}
 
 		return current;

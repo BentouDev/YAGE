@@ -30,14 +30,22 @@ namespace Memory
 
 	class IMemoryBlock
 	{
+		friend class IMemoryBoundChecker;
+		friend class IMemoryTracker;
+
 	protected:
 		IMemoryBlock(){}
+
+		virtual void* getSuperblockPtr() const = 0;
+
 	private:
 		IMemoryBlock(const IMemoryBlock&) = delete;
 		IMemoryBlock(IMemoryBlock&&) = delete;
+
 	public:
-		virtual void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) = 0;
-		virtual void  deallocate(void* ptr) = 0;
+		virtual void*		allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) = 0;
+		virtual void		deallocate(void* ptr) = 0;
+		virtual std::size_t	getAllocationSize(void* ptr) = 0;
 
 		virtual std::size_t getFreeSize() = 0;
 		virtual std::size_t getUsedSize() = 0;
@@ -67,9 +75,15 @@ namespace Memory
 			"MemoryTrackerType must derive from IMemoryTrackerType"
 		);
 
+	protected:
 		AllocatorType& 			_allocator;
 		MemoryBoundCheckerType	_boundChecker;
 		MemoryTrackerType		_memoryTracker;
+
+		inline void* getSuperblockPtr() const override
+		{
+			return _allocator.getStart();
+		}
 
 	public:
 		MemoryBlock(const MemoryBlock&) = delete;
@@ -99,18 +113,27 @@ namespace Memory
 		void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) override
 		{
 			const std::size_t 	fronOffset		= _boundChecker.getSizeFront();
-			const std::size_t 	backOffset 		= _boundChecker.getSizeFront();
+			const std::size_t 	backOffset		= _boundChecker.getSizeFront();
 			const std::size_t	originalSize	= size;
-			const std::size_t	newSize 		= size + fronOffset + backOffset;
+			const std::size_t	newSize			= size + fronOffset + backOffset;
 			void*				allocationPtr	= _allocator.allocate(newSize, alignment, fronOffset);
 
 			std::uintptr_t allocationAddress = reinterpret_cast<std::uintptr_t>(allocationPtr);
 
 			_boundChecker.GuardFront(allocationPtr);
 			_boundChecker.GuardBack(reinterpret_cast<void*>(allocationAddress + fronOffset + originalSize));
-			_memoryTracker.OnAllocation(allocationPtr, newSize, alignment, fronOffset, sourceInfo);
+			_memoryTracker.OnAllocation(allocationPtr, size, alignment, fronOffset, sourceInfo);
 
 			return reinterpret_cast<void*>(allocationAddress + fronOffset);
+		}
+
+		std::size_t getAllocationSize(void* ptr) override
+		{
+			const std::size_t 		frontOffset		= _boundChecker.getSizeFront();
+			const std::size_t 		backOffset		= _boundChecker.getSizeBack();
+			const std::uintptr_t 	originalAddress	= reinterpret_cast<std::uintptr_t >(ptr) - frontOffset;
+			void* 					originalPtr		= reinterpret_cast<void*>(originalAddress);
+			return _allocator.getAllocationSize(originalPtr) - frontOffset - backOffset;
 		}
 
 		void deallocate(void* ptr) override
@@ -127,8 +150,6 @@ namespace Memory
 			_memoryTracker.OnDeallocation(originalPtr, frontOffset);
 
 			_allocator.deallocate(originalPtr);
-
-		//	std::memset(originalPtr, 0xCA, allocationSize);
 		}
 	};
 

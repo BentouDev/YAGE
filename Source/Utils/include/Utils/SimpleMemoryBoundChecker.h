@@ -40,19 +40,21 @@ namespace Memory
 
 		inline void CheckFront(const void* ptr) override
 		{
-			const std::uint32_t* guardPtr = reinterpret_cast<const std::uint32_t*>(ptr);
-			if((*guardPtr) != MAGIC_NUMBER_FRONT)
+			const std::uint32_t*	guardPtr	= reinterpret_cast<const std::uint32_t*>(ptr);
+			const std::uint32_t		guardValue	= *guardPtr;
+			if(guardValue != MAGIC_NUMBER_FRONT)
 			{
-				std::fprintf(stderr, "Front guard damaged for address '%p', was '%lu'\n", ptr, (unsigned long)(*guardPtr));
+				std::fprintf(stderr, "Front guard damaged for address '%p', was '%lu'\n", ptr, (unsigned long)(guardValue));
 			}
 		}
 
 		inline void CheckBack(const void* ptr) override
 		{
-			const std::uint32_t* guardPtr = reinterpret_cast<const std::uint32_t*>(ptr);
-			if((*guardPtr) != MAGIC_NUMBER_BACK)
+			const std::uint32_t*	guardPtr	= reinterpret_cast<const std::uint32_t*>(ptr);
+			const std::uint32_t		guardValue	= *guardPtr;
+			if(guardValue != MAGIC_NUMBER_BACK)
 			{
-				std::fprintf(stderr, "Back guard damaged for address '%p', was '%lu'\n", ptr, (unsigned long)(*guardPtr));
+				std::fprintf(stderr, "Back guard damaged for address '%p', was '%lu'\n", ptr, (unsigned long)(guardValue));
 			}
 		}
 	};

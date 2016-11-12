@@ -14,9 +14,9 @@ namespace Memory
 	private:
 		struct FreeListHeader
 		{
-			void* 	 next;
-			uint32_t size;
-			uint8_t  adjustment;
+			FreeListHeader* next;
+			std::size_t 	size;
+			uint8_t  		adjustment;
 		};
 
 		FreeListAllocator(const FreeListAllocator&) = delete;
