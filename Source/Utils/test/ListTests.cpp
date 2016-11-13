@@ -5,14 +5,16 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <malloc.h>
-#include <Utils/SimpleMemoryBoundChecker.h>
-#include <Utils/SimpleMemoryTracker.h>
+
 #include "Utils/FreeListAllocator.h"
 #include "Utils/List.h"
 
 #ifdef YAGE_VALGRIND
-#include <Utils/ValgrindMemoryBoundChecker.h>
-#include <Utils/ValgrindMemoryTracker.h>
+#include "Utils/ValgrindMemoryBoundChecker.h"
+#include "Utils/ValgrindMemoryTracker.h"
+#else
+#include "Utils/SimpleMemoryBoundChecker.h"
+#include "Utils/SimpleMemoryTracker.h"
 #endif
 
 namespace ListTests

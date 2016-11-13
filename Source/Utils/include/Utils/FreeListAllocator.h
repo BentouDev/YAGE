@@ -14,6 +14,10 @@ namespace Memory
 	private:
 		struct FreeListHeader
 		{
+			explicit FreeListHeader(std::size_t size)
+				: next(nullptr), size(size), adjustment(0)
+			{ }
+
 			FreeListHeader* next;
 			std::size_t 	size;
 			uint8_t  		adjustment;
@@ -24,11 +28,14 @@ namespace Memory
 
 		FreeListHeader* _freeBlocks;
 
+		void removeFromList(FreeListHeader* element);
+
 		void 			doRemoveFromList(FreeListHeader* list, FreeListHeader* ptr);
 		FreeListHeader* getListEnd(FreeListHeader* list);
 
-		void* findPreviousInFreeList(void *ptr);
-		void* findRawPreviousInFreeList(void *ptr);
+		FreeListHeader* findBestFitBlock(std::size_t size, std::size_t alignment, std::size_t offset);
+		void* findPreviousInFreeList(void* ptr);
+		void* findRawPreviousInFreeList(void* ptr);
 		void* findInFreeList(void* ptr);
 
 	public:
