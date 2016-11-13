@@ -31,7 +31,7 @@ namespace Core
 	template <typename T>
 	auto Config::Register(ConfigProperty<T>* prop) -> void
 	{
-		_properties.add(prop);
+		_properties.emplace(prop);
 	}
 
 	auto Config::Has(std::string name) -> bool
