@@ -24,8 +24,11 @@ namespace Logic
 
 	void RenderingSystem::setDirty(RenderingComponent &comp)
 	{
-		comp._isDirty = true;
-		_dirtyComponents.add(comp.Handle);
+		if(!comp._isDirty)
+		{
+			comp._isDirty = true;
+			_dirtyComponents.add(comp.Handle);
+		}
 	}
 
 	RenderingComponent::handle_t RenderingSystem::createNew()
@@ -74,6 +77,7 @@ namespace Logic
 
 		for(std::size_t i = 0; i < component._cachedSubmeshInfo.size(); i++)
 		{
+			SubmeshInfo&	submesh = component._cachedSubmeshInfo[i];
 			OpenGL::VAO*	vao		= OpenGL::VAO::Create(_memory);
 			GLuint			offset	= 0;
 
@@ -104,8 +108,8 @@ namespace Logic
 				}
 			}
 
-			component._cachedSubmeshInfo[i].VAO = vao;
-			component._cachedSubmeshInfo[i].ShaderProgram = shader;
+			submesh.VAO = vao;
+			submesh.ShaderProgram = shader;
 
 			gl::BindVertexArray(0);
 		}
