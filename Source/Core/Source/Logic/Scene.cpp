@@ -9,7 +9,7 @@
 namespace Logic
 {
 	Scene::Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name)
-		: _memory(memory), Name(memory, name), engine(engine)
+		: _memory(memory), Name(name), engine(engine)
 	{
 		Rendering = YAGE_CREATE_NEW(_memory, RenderingSystem)(engine, _memory);
 	}

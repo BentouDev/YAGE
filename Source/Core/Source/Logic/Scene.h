@@ -31,7 +31,7 @@ namespace Logic
 
 		Memory::IMemoryBlock& _memory;
 
-		Utils::String Name;
+		const char* Name;
 
 		Core::Engine& engine;
 
