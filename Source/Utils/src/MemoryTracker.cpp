@@ -11,4 +11,9 @@ namespace Memory
 	{
 		return _block.getSuperblockPtr();
 	}
+
+	const char* IMemoryTracker::getName() const
+	{
+		return _block.getName();
+	}
 }

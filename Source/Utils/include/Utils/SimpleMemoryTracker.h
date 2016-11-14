@@ -40,7 +40,8 @@ namespace Memory
 		{
 			for(auto& info : _currentlyAllocatedAddresses)
 			{
-				std::fprintf(stderr, "Possibly leaked address '%p', allocated in file '%s' at line '%lu'\n", info.ptr, info.file, info.line);
+				std::fprintf(stderr, "%s : Possibly leaked address '%p', allocated in file '%s' at line '%lu'\n",
+							 getName(), info.ptr, info.file, info.line);
 			}
 		}
 
@@ -72,7 +73,8 @@ namespace Memory
 					info = &_currentlyAllocatedAddresses[i];
 					if(info->ptr == ptr)
 					{
-						std::fprintf(stderr, "Address '%p' already freed, allocated in file '%s' at line '%lu'\n", ptr, info->file, info->line);
+						std::fprintf(stderr, "%s : Address '%p' already freed, allocated in file '%s' at line '%lu'\n",
+									 getName(), ptr, info->file, info->line);
 					}
 				}
 			}

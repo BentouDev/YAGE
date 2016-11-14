@@ -9,8 +9,19 @@
 
 namespace Memory
 {
+	class IMemoryBlock;
+
 	class IMemoryBoundChecker
 	{
+	protected:
+		Memory::IMemoryBlock& _block;
+		explicit IMemoryBoundChecker(Memory::IMemoryBlock& memory)
+			: _block(memory)
+		{ }
+
+		void* getSuperblockPtr() const;
+		const char* getName() const;
+
 	public:
 		virtual inline std::size_t getSizeFront() const = 0;
 		virtual inline std::size_t getSizeBack() const = 0;
@@ -25,6 +36,10 @@ namespace Memory
 	class NoMemoryBoundChecker : public IMemoryBoundChecker
 	{
 	public:
+		explicit NoMemoryBoundChecker(Memory::IMemoryBlock& memory)
+			: IMemoryBoundChecker(memory)
+		{ }
+
 		inline std::size_t getSizeFront() const override
 		{ return 0; };
 

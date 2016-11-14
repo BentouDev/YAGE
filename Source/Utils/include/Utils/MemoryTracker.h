@@ -21,6 +21,7 @@ namespace Memory
 		{ }
 
 		void* getSuperblockPtr() const;
+		const char* getName() const;
 
 	public:
 		virtual inline void OnAllocation(void*, std::size_t, std::size_t, std::size_t, const Utils::DebugSourceInfo&) = 0;

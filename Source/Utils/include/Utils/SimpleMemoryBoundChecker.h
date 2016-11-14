@@ -44,7 +44,8 @@ namespace Memory
 			const std::uint32_t		guardValue	= *guardPtr;
 			if(guardValue != MAGIC_NUMBER_FRONT)
 			{
-				std::fprintf(stderr, "Front guard damaged for address '%p', was '%lu'\n", ptr, (unsigned long)(guardValue));
+				std::fprintf(stderr, "%s : Front guard damaged for address '%p', was '%lu'\n",
+							 getName(), ptr, (unsigned long)(guardValue));
 			}
 		}
 
@@ -54,7 +55,8 @@ namespace Memory
 			const std::uint32_t		guardValue	= *guardPtr;
 			if(guardValue != MAGIC_NUMBER_BACK)
 			{
-				std::fprintf(stderr, "Back guard damaged for address '%p', was '%lu'\n", ptr, (unsigned long)(guardValue));
+				std::fprintf(stderr, "%s : Back guard damaged for address '%p', was '%lu'\n",
+							 getName(), ptr, (unsigned long)(guardValue));
 			}
 		}
 	};

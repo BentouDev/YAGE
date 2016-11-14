@@ -36,6 +36,7 @@ namespace Memory
 	protected:
 		IMemoryBlock(){}
 
+		virtual const char* getName() const = 0;
 		virtual void* getSuperblockPtr() const = 0;
 
 	private:
@@ -80,6 +81,8 @@ namespace Memory
 		MemoryBoundCheckerType	_boundChecker;
 		MemoryTrackerType		_memoryTracker;
 
+		const char*				_name;
+
 		inline void* getSuperblockPtr() const override
 		{
 			return _allocator.getStart();
@@ -89,11 +92,14 @@ namespace Memory
 		MemoryBlock(const MemoryBlock&) = delete;
 		MemoryBlock(MemoryBlock&&) = delete;
 
-		explicit MemoryBlock(AllocatorType& allocator)
-			: IMemoryBlock(), _allocator(allocator), _memoryTracker(*this)
+		explicit MemoryBlock(AllocatorType& allocator, const char* name)
+			: IMemoryBlock(), _allocator(allocator), _boundChecker(*this), _memoryTracker(*this), _name(name)
 		{
 
 		}
+
+		const char* getName() const override
+		{ return _name; }
 
 		std::size_t getFreeSize() override
 		{
