@@ -5,8 +5,10 @@
 #ifndef GAME_MESHMANAGER_H
 #define GAME_MESHMANAGER_H
 
+#include "Core/IManager.h"
 #include "Mesh.h"
 #include "MeshSchemeManager.h"
+
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
 
@@ -39,7 +41,7 @@ namespace Resources
 		{ return _scheme; }
 	};
 
-	class MeshManager
+	class MeshManager : public Core::IManager
 	{
 		friend class MeshBuilder;
 
@@ -47,8 +49,6 @@ namespace Resources
 		using handle_t = Core::Mesh::handle_t;
 
 	protected:
-		Core::Engine&			_engine;
-		Memory::IMemoryBlock&	_memory;
 		MeshSchemeManager		_schemeManager;
 
 		Utils::Container<Core::MeshTrait>	_meshContainer;
@@ -66,8 +66,10 @@ namespace Resources
 		explicit MeshManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
 		virtual ~MeshManager() noexcept;
 
-		MeshManager(const MeshManager&) = delete;
 		MeshManager(MeshManager&&) = delete;
+		MeshManager(const MeshManager&) = delete;
+		MeshManager& operator=(MeshManager&&) = delete;
+		MeshManager& operator=(const MeshManager&) = delete;
 
 		void disposeAll();
 		void reloadAll();

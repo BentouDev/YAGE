@@ -12,7 +12,7 @@
 namespace Resources
 {
 	MeshManager::MeshManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _schemeManager(_memory), _meshContainer(_memory), _schemeBuffers(_memory)
+		: IManager(engine, memory), _schemeManager(_memory), _meshContainer(_memory), _schemeBuffers(_memory)
 	{
 		_engine.Logger->Default->info("Created mesh manager with capacity {}", _meshContainer.capacity());
 	}
