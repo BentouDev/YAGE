@@ -14,7 +14,7 @@
 namespace Gfx
 {
 	Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
-		: _engine(engine), _context(_engine.GetContext()),_memory(memory), _queue(_memory, *this),
+		: _engine(engine), _memory(memory), _queue(_memory, *this),
 		  lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0)
 	{
 

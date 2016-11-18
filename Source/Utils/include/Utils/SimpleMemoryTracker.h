@@ -15,9 +15,10 @@ namespace Memory
 	{
 		struct PointerInfo
 		{
-			PointerInfo(const char* file, unsigned long line, void* ptr)
-				: file(file), line(line), ptr(ptr) { }
+			PointerInfo(std::size_t size, const char* file, unsigned long line, void* ptr)
+				: size(size), file(file), line(line), ptr(ptr) { }
 
+			std::size_t size;
 			const char* file;
 			unsigned long line;
 			void* ptr;
@@ -40,15 +41,15 @@ namespace Memory
 		{
 			for(auto& info : _currentlyAllocatedAddresses)
 			{
-				std::fprintf(stderr, "%s : Possibly leaked address '%p', allocated in file '%s' at line '%lu'\n",
-							 getName(), info.ptr, info.file, info.line);
+				std::fprintf(stderr, "%s : Address '%p' possibly leaked '%zu' bytes, allocated in file '%s' at line '%lu'\n",
+							 getName(), info.ptr, info.size, info.file, info.line);
 			}
 		}
 
-		inline void OnAllocation(void* ptr, std::size_t, std::size_t, std::size_t, const Utils::DebugSourceInfo& info) override
+		inline void OnAllocation(void* ptr, std::size_t size, std::size_t, std::size_t, const Utils::DebugSourceInfo& info) override
 		{
-			_allAllocatedAddresses.push_back(PointerInfo(info.file, info.line, ptr));
-			_currentlyAllocatedAddresses.push_back(PointerInfo(info.file, info.line, ptr));
+			_allAllocatedAddresses.push_back(PointerInfo(size, info.file, info.line, ptr));
+			_currentlyAllocatedAddresses.push_back(PointerInfo(size, info.file, info.line, ptr));
 		};
 
 		inline void OnDeallocation(void* ptr, std::size_t) override
@@ -73,8 +74,8 @@ namespace Memory
 					info = &_currentlyAllocatedAddresses[i];
 					if(info->ptr == ptr)
 					{
-						std::fprintf(stderr, "%s : Address '%p' already freed, allocated in file '%s' at line '%lu'\n",
-									 getName(), ptr, info->file, info->line);
+						std::fprintf(stderr, "%s : Address '%p' with '%zu' bytes already freed, allocated in file '%s' at line '%lu'\n",
+									 getName(), ptr, info->size, info->file, info->line);
 					}
 				}
 			}

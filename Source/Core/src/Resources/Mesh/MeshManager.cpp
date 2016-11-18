@@ -126,9 +126,7 @@ namespace Resources
 				maxIndexCount = vertexCount * scheme.getIndexSize();
 			}
 
-			Core::Context context = _engine.GetContext();
-
-			Gfx::StaticBuffer::handle_t	handle = _engine.BufferManager.get().createNew(vertexSize, scheme.getIndexSize(), maxVertexCount, maxIndexCount, &context);
+			Gfx::StaticBuffer::handle_t	handle = _engine.BufferManager.get().createNew(vertexSize, scheme.getIndexSize(), maxVertexCount, maxIndexCount);
 			Gfx::StaticBuffer&			buffer = _engine.BufferManager.get().getBuffer(handle);
 
 			result = &buffer;
@@ -180,7 +178,7 @@ namespace Resources
 		void* vertexMapPtr	= buffer->mapVertexMemory(allVertexCount, gl::MAP_WRITE_BIT);
 		char* vertexPtr		= static_cast<char*>(vertexMapPtr);
 
-		OpenGL::checkError(_engine.GetContext());
+		OpenGL::checkError(_engine.Logger.get());
 
 		for(uint32_t vertex = 0; vertex < allVertexCount; vertex++)
 		{

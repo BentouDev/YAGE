@@ -15,6 +15,10 @@ namespace Memory
 	{
 
 	public:
+		explicit SimpleMemoryBoundChecker(IMemoryBlock &memory)
+			: IMemoryBoundChecker(memory)
+		{ }
+
 		const static std::uint32_t MAGIC_NUMBER_FRONT = 0xDEADBEFF;
 		const static std::uint32_t MAGIC_NUMBER_BACK = 0xBAADF00D;
 		const static std::size_t BOUND_OFFSET_FRONT = sizeof(MAGIC_NUMBER_FRONT);
@@ -44,8 +48,8 @@ namespace Memory
 			const std::uint32_t		guardValue	= *guardPtr;
 			if(guardValue != MAGIC_NUMBER_FRONT)
 			{
-				std::fprintf(stderr, "%s : Front guard damaged for address '%p', was '%lu'\n",
-							 getName(), ptr, (unsigned long)(guardValue));
+				std::fprintf(stderr, "%s : Front guard damaged for address '%p', was '%zu'\n",
+							 getName(), ptr, (std::size_t)(guardValue));
 			}
 		}
 
@@ -55,8 +59,8 @@ namespace Memory
 			const std::uint32_t		guardValue	= *guardPtr;
 			if(guardValue != MAGIC_NUMBER_BACK)
 			{
-				std::fprintf(stderr, "%s : Back guard damaged for address '%p', was '%lu'\n",
-							 getName(), ptr, (unsigned long)(guardValue));
+				std::fprintf(stderr, "%s : Back guard damaged for address '%p', was '%zu'\n",
+							 getName(), ptr, (std::size_t)(guardValue));
 			}
 		}
 	};

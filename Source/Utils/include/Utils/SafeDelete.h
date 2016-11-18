@@ -60,6 +60,8 @@ namespace Memory
 		}
 	}
 
+	template <> void SafeFree(void*& pVal);
+
 	template< class T > void SafeFreeArray( T*& pVal, std::uint32_t count )
 	{
 		if(pVal != nullptr)

@@ -88,7 +88,7 @@ namespace Logic
 			for(Core::MeshScheme::PropertyInfo& info : scheme->getPropertiesInfo())
 			{
 				GLint location = gl::GetAttribLocation(shader, info.Name);
-				OpenGL::checkError(_engine.GetContext());
+				OpenGL::checkError(_engine.Logger.get());
 				if(location == -1)
 				{
 					// todo: Report error: there is no such attribute or its reserved for driver

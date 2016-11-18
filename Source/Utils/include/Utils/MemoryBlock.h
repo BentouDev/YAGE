@@ -14,6 +14,7 @@
 #include "DebugSourceInfo.h"
 #include "MemoryBoundChecker.h"
 #include "MemoryTracker.h"
+#include "BorrowedPtr.h"
 
 #define YAGE_CREATE_NEW(MemBlock, T) \
 	new ( MemBlock.allocate ( sizeof ( T ) , alignof ( T ) , Utils::DebugSourceInfo ( __FILE__ , __LINE__ ) ) ) T
@@ -30,14 +31,8 @@ namespace Memory
 
 	class IMemoryBlock
 	{
-		friend class IMemoryBoundChecker;
-		friend class IMemoryTracker;
-
 	protected:
 		IMemoryBlock(){}
-
-		virtual const char* getName() const = 0;
-		virtual void* getSuperblockPtr() const = 0;
 
 	private:
 		IMemoryBlock(const IMemoryBlock&) = delete;
@@ -48,12 +43,15 @@ namespace Memory
 		virtual void		deallocate(void* ptr) = 0;
 		virtual std::size_t	getAllocationSize(void* ptr) = 0;
 
+		virtual const char* getName() const = 0;
+		virtual void* getSuperblockPtr() const = 0;
+		virtual IAllocator& getAllocator() const = 0;
+
 		virtual std::size_t getFreeSize() = 0;
 		virtual std::size_t getUsedSize() = 0;
 		virtual std::size_t getCapacity() = 0;
 	};
 
-	// todo: mem checking, tracing
 	template
 	<	typename AllocatorType,
 		typename MemoryBoundCheckerType = NoMemoryBoundChecker,
@@ -83,11 +81,6 @@ namespace Memory
 
 		const char*				_name;
 
-		inline void* getSuperblockPtr() const override
-		{
-			return _allocator.getStart();
-		}
-
 	public:
 		MemoryBlock(const MemoryBlock&) = delete;
 		MemoryBlock(MemoryBlock&&) = delete;
@@ -100,6 +93,16 @@ namespace Memory
 
 		const char* getName() const override
 		{ return _name; }
+
+		inline void* getSuperblockPtr() const override
+		{
+			return _allocator.getStart();
+		}
+
+		IAllocator& getAllocator() const override
+		{
+			return _allocator;
+		}
 
 		std::size_t getFreeSize() override
 		{
@@ -196,6 +199,16 @@ namespace Memory
 
 		return memory.as_T - length;
 	}
+
+	template <typename MemoryBlock, typename T>
+	void Delete(MemoryBlock& block, Utils::borrowed_ptr<T>& ptr)
+	{
+		if(ptr)
+		{
+			ptr.get().~T();
+			block.deallocate(ptr.release());
+		}
+	};
 
 	template <typename MemoryBlock, typename T>
 	void Delete(MemoryBlock& block, T*& ptr)

@@ -12,6 +12,7 @@
 #include <Utils/List.h>
 
 #include "Core/Gfx/Renderer.h"
+#include "MemoryModule.h"
 #include "Context.h"
 
 #ifdef CREATE_NEW
@@ -62,22 +63,21 @@ namespace Core
 
 	struct GameTime;
 
+	class IManager;
+
 	class Engine
 	{
-		std::unordered_map<std::string, borrowed_ptr<Gfx::BaseApi>> _availableApis;
-
-		borrowed_ptr<Gfx::BaseApi> _api;
 		borrowed_ptr<Logic::Scene> activeScene;
 
 		bool _cleanedUp = false;
-
-		auto InitializeApi() -> bool;
 
 	public:
 
 		static void initializeReferences(Engine* engine);
 
 		const std::string Name;
+
+		borrowed_ptr<MemoryModule> MemoryModule;
 
 		borrowed_ptr<Core::Logger> Logger;
 
@@ -91,16 +91,9 @@ namespace Core
 		borrowed_ptr<Resources::MaterialManager> MaterialManager;
 		borrowed_ptr<Resources::ShaderManager> ShaderManager;
 
-		explicit Engine(std::string name, Memory::IMemoryBlock&);
+		explicit Engine(std::string name, std::size_t memorySize);
 
 		virtual ~Engine() { CleanUp(); }
-
-		auto GetContext() const noexcept  -> Context;
-
-		auto GetApi() const noexcept -> Gfx::BaseApi&;
-
-		template <typename Api>
-		auto RegisterApi() -> void;
 
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Window&;
@@ -109,7 +102,7 @@ namespace Core
 		auto LoadConfig(std::string path = "Config.json") -> bool;
 
 		// Initialize graphics context based on current config
-		auto Initialize(borrowed_ptr<Gfx::BaseApi> api = borrowed_ptr<Gfx::BaseApi>()) -> bool;
+		auto Initialize() -> bool;
 
 		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
 
@@ -126,11 +119,14 @@ namespace Core
 		// Free all resources
 		auto CleanUp() -> void;
 
-		void debugSetRenderer(Gfx::Renderer* renderer);
-		void debugSetBufferManager(Gfx::BufferManager* bufferManager);
-		void debugSetMeshManager(Resources::MeshManager* manager);
-		void debugSetMaterialManager(Resources::MaterialManager* manager);
-		void debugSetShaderManager(Resources::ShaderManager* manager);
+		template <typename T>
+		T* CreateManager(std::size_t memorySize)
+		{
+			Memory::IMemoryBlock& memoryBlock = MemoryModule.get().requestMemoryBlock(memorySize, TypeInfo<T>::cName());
+			T* manager = YAGE_CREATE_NEW(MemoryModule.get().masterBlock(), T)(*this, memoryBlock);
+
+			return manager;
+		}
 
 		// todo: Decide what to do next based on config
 		// todo: Render all

@@ -63,14 +63,14 @@ namespace Gfx
 			gl::BindBuffer(gl::ARRAY_BUFFER, getVBO());
 			gl::BufferData(gl::ARRAY_BUFFER, vertexSize * vertexCount, nullptr, gl::STATIC_DRAW);
 
-			if(context != nullptr)
-				OpenGL::checkError(*context);
+		//	if(context != nullptr)
+		//		OpenGL::checkError(*context);
 
 			gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, getIBO());
 			gl::BufferData(gl::ELEMENT_ARRAY_BUFFER, indexSize * indexCount, nullptr, gl::STATIC_DRAW);
 
-			if(context != nullptr)
-				OpenGL::checkError(*context);
+		//	if(context != nullptr)
+		//		OpenGL::checkError(*context);
 
 			gl::BindBuffer(gl::ARRAY_BUFFER, 0);
 			gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, 0);

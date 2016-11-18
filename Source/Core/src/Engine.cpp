@@ -4,9 +4,10 @@
 
 #include <algorithm>
 #include <Utils/TypeInfo.h>
+#include <Utils/MemorySizes.h>
 
 #include "Core/EngineApis.h"
-
+#include "Core/MemoryModule.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Resources/Mesh/MeshManager.h"
 #include "Core/Resources/Shader/ShaderManager.h"
@@ -26,33 +27,21 @@
 
 namespace Core
 {
-	Engine::Engine(std::string name, Memory::IMemoryBlock& blah)
-		: Name(name),
-		  Logger(new Core::Logger()),
-		  Config(new Core::Config(blah))
-	//	  Renderer(new Gfx::Renderer())
+	Engine::Engine(std::string name, std::size_t memorySize)
+		: Name(name)
 	{
+		MemoryModule	.reset(new Core::MemoryModule(memorySize));
+		Logger			.reset(new Core::Logger());
+		Config			.reset(new Core::Config(MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block")));
+
+		Renderer		.reset(CreateManager<Gfx::Renderer>(Memory::KB(100)));
+		BufferManager	.reset(CreateManager<Gfx::BufferManager>(Memory::KB(100)));
+		MeshManager		.reset(CreateManager<Resources::MeshManager>(Memory::KB(100)));
+		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
+		ShaderManager	.reset(CreateManager<Resources::ShaderManager>(Memory::KB(100)));
+
 		Logger->setConfig(Config);
 		Engine::initializeReferences(this);
-	}
-
-	auto Engine::GetContext() const noexcept -> Context
-	{
-		Context ctx(Config, Logger);
-		return ctx;
-	}
-
-	auto Engine::GetApi() const noexcept -> Gfx::BaseApi&
-	{
-		return *_api;
-	}
-
-	template <typename Api>
-	auto Engine::RegisterApi() -> void
-	{
-		auto api = new Api();
-		_availableApis[api->name()] = borrowed_ptr<Gfx::BaseApi>(api);
-		Logger->Default->info("Found {} renderer...", api->name());
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -62,13 +51,11 @@ namespace Core
 		// todo: use container with new, specialized for window trait, which depends on _api
 		// todo: _api may leak resources if we want to free them like we are doing now (in engine methods)!
 		// todo: pass _api to context!
-		Window* window = new Window(GetContext());
+		Window* window = new Window(((std::string)Config.get().WindowTitle).c_str(), Config.get().WindowWidth, Config.get().WindowHeight);
 
-	//	_api->registerWindow(*window);
-
-        if(!OpenGL::registerWindow(*window))
+		if(!OpenGL::registerWindow(*window))
 		{
-			Logger->Default->error("Unable to register window in Gfx Api!");
+			Logger->Default->error("Unable to register window in OpenGL!");
 		}
 
 		return *window;
@@ -79,33 +66,9 @@ namespace Core
 		return Config->Load(path);
 	}
 
-	auto Engine::Initialize(borrowed_ptr<Gfx::BaseApi> api) -> bool
+	auto Engine::Initialize() -> bool
 	{
-		if(api)
-		{
-			_api = api;
-		}
-		else
-		{
-			std::string requestedApi = Config->RenderingApi;
-			std::transform(requestedApi.begin(), requestedApi.end(), requestedApi.begin(), ::tolower);
-
-			auto itr = _availableApis.find(requestedApi);
-			if(itr != _availableApis.end())
-			{
-				_api = itr->second;
-			}
-		}
-
-		if(!_api)
-		{
-			OpenGL::initialize();
-			return false;
-		}
-		else
-		{
-			return InitializeApi();
-		}
+		return OpenGL::initialize();
 	}
 
 	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
@@ -116,12 +79,6 @@ namespace Core
 		activeScene = scene;
 
 		if(activeScene) activeScene->Start();
-	}
-
-	auto Engine::InitializeApi() -> bool
-	{
-	//	return _api->initialize();
-		return true;
 	}
 
 	// todo: remove window from here
@@ -155,52 +112,17 @@ namespace Core
 
 		Logger->Default->info("Cleaning up...");
 
-	//	if(_api)
-	//	{
-	//		_api->cleanUp();
-	//		_api.release();
-	//	}
-
-	//	for(auto api : _availableApis)
-	//	{
-	//		Memory::SafeDelete(api.second);
-	//	}
-
-		Memory::SafeDelete(BufferManager);
-		Memory::SafeDelete(MeshManager);
-		Memory::SafeDelete(MaterialManager);
-		Memory::SafeDelete(ShaderManager);
-		Memory::SafeDelete(Renderer);
-		Memory::SafeDelete(Config);
+		Memory::Delete(MemoryModule.get().masterBlock(), BufferManager);
+		Memory::Delete(MemoryModule.get().masterBlock(), MeshManager);
+		Memory::Delete(MemoryModule.get().masterBlock(), MaterialManager);
+		Memory::Delete(MemoryModule.get().masterBlock(), ShaderManager);
+		Memory::Delete(MemoryModule.get().masterBlock(), Renderer);
 
 		glfwTerminate();
 
 		Logger->Default->info("Cleaned up!");
+		Memory::SafeDelete(Config);
 		Memory::SafeDelete(Logger);
-	}
-
-	void Engine::debugSetRenderer(Gfx::Renderer* renderer)
-	{
-		Renderer.reset(renderer);
-	}
-
-	void Engine::debugSetBufferManager(Gfx::BufferManager* bufferManager)
-	{
-		BufferManager.reset(bufferManager);
-	}
-
-	void Engine::debugSetMeshManager(Resources::MeshManager* manager)
-	{
-		MeshManager.reset(manager);
-	}
-
-	void Engine::debugSetMaterialManager(Resources::MaterialManager* manager)
-	{
-		MaterialManager.reset(manager);
-	}
-
-	void Engine::debugSetShaderManager(Resources::ShaderManager* manager)
-	{
-		ShaderManager.reset(manager);
+		Memory::SafeDelete(MemoryModule);
 	}
 }

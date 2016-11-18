@@ -9,10 +9,10 @@
 
 namespace Core
 {
-	Window::Window(Context ctx) :
-		Title {ctx.Config->WindowTitle},
-		Width {ctx.Config->WindowWidth},
-		Height {ctx.Config->WindowHeight},
+	Window::Window(const char* title, unsigned width, unsigned height) :
+		Title {title},
+		Width {width},
+		Height {height},
 		hWindow {nullptr}
 	//	_viewports(8)
 	{

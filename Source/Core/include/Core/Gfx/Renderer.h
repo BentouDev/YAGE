@@ -54,7 +54,6 @@ namespace Gfx
 
 	protected:
 		Core::Engine& _engine;
-		Core::Context _context;
 
 		Memory::IMemoryBlock& 	_memory;
 

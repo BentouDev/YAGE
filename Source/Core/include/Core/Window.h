@@ -19,7 +19,7 @@ namespace Core
 	class Window
 	{
 	public:
-		Window(Context ctx);
+		explicit Window(const char* title, unsigned width, unsigned height);
 		virtual ~Window();
 
 		auto Create() -> void;
