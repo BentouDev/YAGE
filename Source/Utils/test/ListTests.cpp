@@ -80,7 +80,7 @@ namespace ListTests
 		{
 			memoryPtr = malloc(memorySize);
 			allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-			block = new MockMemory(*allocator);
+			block = new MockMemory(*allocator, "ListTests");
 		}
 
 		void TearDown()
@@ -162,18 +162,19 @@ namespace ListTests
 		list->emplace();
 
 		EXPECT_EQ(5, list->size());
-		EXPECT_CALL(deletedItem, Die());
 
 		list->erase(2);
 
 		for(auto i = 0; i < list->size(); i++)
 		{
-			uint32_t number = (*list)[1].Quack();
+			uint32_t number = (*list)[i].Quack();
 			EXPECT_EQ(FooMock::fooConst, number);
 		}
 
 		EXPECT_EQ(4, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
+
+		::testing::Mock::VerifyAndClearExpectations(&deletedItem);
 
 		delete list;
 	}

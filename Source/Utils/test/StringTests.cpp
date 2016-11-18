@@ -36,23 +36,25 @@ typedef Memory::MemoryBlock <
 	protected:
 		const std::size_t 	memorySize = 1024;
 		void* 				memory;
+		Memory::FreeListAllocator* allocator;
 
 	public:
 		void SetUp()
 		{
-			memory 		= malloc(memorySize);
+			memory = malloc(memorySize);
+			allocator = new Memory::FreeListAllocator(memory, memorySize);
 		}
 
 		void TearDown()
 		{
+			delete allocator;
 			free(memory);
 		}
 	};
 
 	TEST_F(StringTest, CanCreateString)
 	{
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memory, memorySize);
-		MockMemory block(*allocator);
+		MockMemory block(*allocator, "CanCreateString");
 
 		Utils::String* s = new Utils::String(block);
 
@@ -63,8 +65,7 @@ typedef Memory::MemoryBlock <
 
 	TEST_F(StringTest, CanInitializeString)
 	{
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memory, memorySize);
-		MockMemory block(*allocator);
+		MockMemory block(*allocator, "CanInitializeString");
 
 		Utils::String* s = new Utils::String(block, "Some sample string");
 
@@ -75,8 +76,7 @@ typedef Memory::MemoryBlock <
 
 	TEST_F(StringTest, CanAppendString)
 	{
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memory, memorySize);
-		MockMemory block(*allocator);
+		MockMemory block(*allocator, "CanAppendString");
 
 		Utils::String* s = new Utils::String(block);
 		s->append("Some sample string");
@@ -88,8 +88,7 @@ typedef Memory::MemoryBlock <
 
 	TEST_F(StringTest, CanCreateMultipleStrings)
 	{
-		Memory::FreeListAllocator* allocator = new Memory::FreeListAllocator(memory, memorySize);
-		MockMemory block(*allocator);
+		MockMemory block(*allocator, "CanCreateMultipleStrings");
 
 		Utils::String* first = new Utils::String(block, "Some sample string");
 		Utils::String* second = new Utils::String(block, "Other");

@@ -158,11 +158,14 @@ namespace MemoryTests
 	{
 		const std::size_t memorySize = 1024;
 		void*			  memoryPtr  = malloc(memorySize);
+		auto*			  allocator  = new Memory::StackAllocator(memoryPtr, memorySize);
 
-		MockMemory block(*new Memory::StackAllocator(memoryPtr, memorySize));
+		MockMemory block(*allocator, "");
 		FooMock* foo = YAGE_CREATE_NEW(block, FooMock)();
 
 		EXPECT_NE(nullptr, foo);
+
+		delete(allocator);
 
 		free(memoryPtr);
 	}
@@ -172,8 +175,9 @@ namespace MemoryTests
 		const std::size_t memorySize = 1024;
 		void*			  memoryPtr  = malloc(memorySize);
 		FooMock* 		  foo 		 = nullptr;
+		auto*			  allocator  = new Memory::StackAllocator(memoryPtr, memorySize);
 
-		MockMemory block(*new Memory::StackAllocator(memoryPtr, memorySize));
+		MockMemory block(*allocator, "CanAllocateAndFreeMemoryFromBlock");
 		foo = YAGE_CREATE_NEW(block, FooMock)();
 
 		EXPECT_CALL(*foo, Die());
@@ -181,6 +185,8 @@ namespace MemoryTests
 		Memory::Delete(block, foo);
 
 		EXPECT_EQ(nullptr, foo);
+
+		delete allocator;
 
 		free(memoryPtr);
 	}

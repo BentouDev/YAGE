@@ -107,7 +107,7 @@ namespace MemoryTests
 		void SetUp()
 		{
 			memory = malloc(memorySize);
-			memoryBlock = new MockMemory(* new Memory::FreeListAllocator(memory, memorySize));
+			memoryBlock = new MockMemory(* new Memory::FreeListAllocator(memory, memorySize), "ContainerBlock");
 		}
 
 		void TearDown()
