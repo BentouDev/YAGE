@@ -39,6 +39,8 @@ namespace Memory
 		IMemoryBlock(IMemoryBlock&&) = delete;
 
 	public:
+		virtual ~IMemoryBlock() { }
+
 		virtual void*		allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) = 0;
 		virtual void		deallocate(void* ptr) = 0;
 		virtual std::size_t	getAllocationSize(void* ptr) = 0;
@@ -90,6 +92,8 @@ namespace Memory
 		{
 
 		}
+
+		virtual ~MemoryBlock() { }
 
 		const char* getName() const override
 		{ return _name; }

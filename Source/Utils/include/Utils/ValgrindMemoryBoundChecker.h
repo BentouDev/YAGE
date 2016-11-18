@@ -16,6 +16,10 @@ namespace Memory
 	public:
 		const static std::size_t BOUND_OFFSET = 4;
 
+		explicit ValgrindMemoryBoundChecker(IMemoryBlock &memory)
+			: IMemoryBoundChecker(memory)
+		{ }
+
 		inline std::size_t getSizeFront() const override
 		{ return BOUND_OFFSET; };
 

@@ -20,6 +20,8 @@ namespace Memory
 			: _block(memory)
 		{ }
 
+		virtual ~IMemoryTracker(){}
+
 		void* getSuperblockPtr() const;
 		const char* getName() const;
 

@@ -13,8 +13,9 @@ namespace Core
 		: _userBlocks(nullptr), _masterMemoryPtr(nullptr),
 		  _masterMemorySize(allocationSize), _masterMemoryBlock(nullptr)
 	{
-		_masterMemoryPtr = malloc(_masterMemorySize);
-		_masterMemoryBlock = new master_block_t (*new Memory::FreeListAllocator(_masterMemoryPtr, _masterMemorySize), "MemoryModule Master Block");
+		_masterMemoryPtr	= malloc(_masterMemorySize);
+		_masterAllocator	= new Memory::FreeListAllocator(_masterMemoryPtr, _masterMemorySize);
+		_masterMemoryBlock	= new master_block_t (*_masterAllocator, "MemoryModule Master Block");
 	}
 
 	MemoryModule::~MemoryModule()
@@ -38,6 +39,7 @@ namespace Core
 		}
 
 		Memory::SafeDelete(_masterMemoryBlock);
+		Memory::SafeDelete(_masterAllocator);
 		Memory::SafeFree(_masterMemoryPtr);
 
 		return result;

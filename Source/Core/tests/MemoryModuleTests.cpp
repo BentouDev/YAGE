@@ -56,6 +56,16 @@ namespace MemoryModuleTests
 		delete module;
 	}
 
+	TEST_F(MemoryModuleTest, CanCreateMemoryBlockOfSize)
+	{
+		auto* module = new Core::MemoryModule(MemorySize);
+		auto& block = module->requestMemoryBlock(Memory::KB(1), "CanCreateMemoryBlockOfSize");
+
+		EXPECT_EQ(block.getFreeSize(), Memory::KB(1));
+
+		delete module;
+	}
+
 	TEST_F(MemoryModuleTest, DoesReportWhenLeaked)
 	{
 		auto* module = new Core::MemoryModule(MemorySize);
