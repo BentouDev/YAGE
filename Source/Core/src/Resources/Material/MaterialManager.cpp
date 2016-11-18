@@ -11,7 +11,7 @@ namespace Resources
 	MaterialManager::MaterialManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
 		: _engine(engine), _memory(memory), _materialContainer(_memory)
 	{
-
+		Core::Logger::get()->info("Created material manager with capacity {}", _materialContainer.capacity());
 	}
 
 	MaterialManager::~MaterialManager() noexcept
@@ -21,7 +21,7 @@ namespace Resources
 
 	void MaterialManager::disposeAll()
 	{
-		_engine.Logger->Default->info("Releasing all meshes...");
+		Core::Logger::get()->info("Releasing all materials...");
 
 		for(Core::Material& material : _materialContainer)
 		{
@@ -30,7 +30,7 @@ namespace Resources
 
 		_materialContainer.clear();
 
-		_engine.Logger->Default->info("Released all meshes");
+		Core::Logger::get()->info("Released all materials");
 	}
 
 	Core::Material* MaterialManager::tryGetMaterial(handle_t handle)

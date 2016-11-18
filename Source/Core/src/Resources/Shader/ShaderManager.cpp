@@ -11,7 +11,7 @@ namespace Resources
 	ShaderManager::ShaderManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
 	 : _engine(engine), _memory(memory), _shadersContainer(_memory)
 	{
-		_engine.Logger->Default->info("Created shader manager with capacity {}", _shadersContainer.capacity());
+		Core::Logger::get()->info("Created shader manager with capacity {}", _shadersContainer.capacity());
 	}
 
 	ShaderManager::~ShaderManager()

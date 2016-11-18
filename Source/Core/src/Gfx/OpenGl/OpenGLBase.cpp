@@ -56,7 +56,7 @@ namespace OpenGL
 		gl::Viewport(0, 0, window.Width, window.Height);
 	}
 
-	bool checkError(Core::Logger& logger)
+	bool checkError()
 	{
 		GLenum errorCode = gl::GetError();
 		if(errorCode != gl::NO_ERROR_)
@@ -64,33 +64,33 @@ namespace OpenGL
 			switch(errorCode)
 			{
 				case gl::INVALID_ENUM:
-					logger.Default->error("An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::get()->error("An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::INVALID_VALUE:
-					logger.Default->error("A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::get()->error("A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::INVALID_OPERATION:
-					logger.Default->error("The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::get()->error("The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::INVALID_FRAMEBUFFER_OPERATION:
-					logger.Default->error("The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::get()->error("The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::OUT_OF_MEMORY:
-					logger.Default->error("There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
+					Core::Logger::get()->error("There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
 					break;
 
 				/*case gl::STACK_UNDERFLOW:
-					context.Logger->Default->error("An attempt has been made to perform an operation that would cause an internal stack to underflow.");
+					Logger::get()->error("An attempt has been made to perform an operation that would cause an internal stack to underflow.");
 
 				case gl::STACK_OVERFLOW:
-					context.Logger->Default->error("An attempt has been made to perform an operation that would cause an internal stack to overflow.");*/
+					Logger::get()->error("An attempt has been made to perform an operation that would cause an internal stack to overflow.");*/
 
 				default:
-					logger.Default->critical("Unknown OpenGL, possibly memory corruption!");
+					Core::Logger::get()->critical("Unknown OpenGL, possibly memory corruption!");
 			}
 
 			return true;

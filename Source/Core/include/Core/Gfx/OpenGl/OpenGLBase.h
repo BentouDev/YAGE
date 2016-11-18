@@ -36,7 +36,7 @@ namespace OpenGL
 
 	bool registerWindow(const Core::Window& window);
 
-	bool checkError(Core::Logger& logger);
+	bool checkError();
 
 	GLenum toOpenGlType(type_t type);
 }

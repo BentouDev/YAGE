@@ -88,11 +88,12 @@ namespace Logic
 			for(Core::MeshScheme::PropertyInfo& info : scheme->getPropertiesInfo())
 			{
 				GLint location = gl::GetAttribLocation(shader, info.Name);
-				OpenGL::checkError(_engine.Logger.get());
+				OpenGL::checkError();
+
 				if(location == -1)
 				{
 					// todo: Report error: there is no such attribute or its reserved for driver
-					_engine.Logger.get().Default->error (
+					Core::Logger::get()->error (
 						"createVAO : theres no attribute named '{}' or its driver reserved.", info.Name
 					);
 				}

@@ -71,7 +71,7 @@ namespace Core
 
 	auto Config::Load(std::string path) -> bool
 	{
-	//	logger->Default->info("Attempt to load config from '{}'...", path);
+		Logger::get()->info("Attempt to load config from '{}'...", path);
 
 		std::ifstream f(path);
 		try
@@ -82,11 +82,11 @@ namespace Core
 		}
 		catch(const std::exception& e)
 		{
-	//		logger->Default->error("Unable to parse log, cause '{}'", e.what());
+			Logger::get()->error("Unable to parse log, cause '{}'", e.what());
 		}
 		catch(...)
 		{
-	//		logger->Default->critical("Uncaught exception while parsing config!");
+			Logger::get()->critical("Uncaught exception while parsing config!");
 		}
 
 		f.close();
@@ -95,7 +95,7 @@ namespace Core
 
 		if(result)
 		{
-	//		logger->Default->info("Config loaded successfully!");
+			Logger::get()->info("Config loaded successfully!");
 		}
 
 		return result;

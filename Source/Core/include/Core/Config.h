@@ -78,11 +78,6 @@ namespace Core
 		explicit Config(Memory::IMemoryBlock& memory);
 		Config(Config&&);
 
-		/*auto static get() -> Config& {
-			static Config config;
-			return config;
-		}*/
-
 		auto Load(std::string path) -> bool;
 
 		auto Save(std::string path) -> bool;

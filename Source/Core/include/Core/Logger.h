@@ -18,33 +18,36 @@ namespace Core
 	{
 		friend class Engine;
 
-		Utils::borrowed_ptr<Config> config;
-
-		auto setConfig(Utils::borrowed_ptr<Config> conf) -> void
-		{
-			config.reset(conf.release());
-		}
-
 	public:
-	//	static Logger& get()
-	//	{
-	//		static Logger instance;
-	//		return instance;
-	//	}
+		static Logger& get()
+		{
+			static Logger instance;
+			return instance;
+		}
 
 		std::shared_ptr<spdlog::logger> Default;
 
 	private:
-		static constexpr char const* sinkName = "console";
-		Logger() : Default(spdlog::stdout_logger_mt(sinkName, true)) { };
+		static constexpr char const* defaultSinkName = "console";
+		Logger() : Default(spdlog::stdout_logger_mt(defaultSinkName, true)) { };
 
 	public:
-		virtual ~Logger() { spdlog::drop(sinkName); }
+		virtual ~Logger() { destroy(); }
 
 		Logger(Logger const&) = delete;
 		Logger(Logger&&) = delete;
 		void operator=(Logger const&) = delete;
 		void operator=(Logger&&) = delete;
+
+		spdlog::logger* operator->()
+		{
+			return Default.get();
+		}
+
+		inline void destroy()
+		{
+			spdlog::drop(defaultSinkName);
+		}
 	};
 }
 

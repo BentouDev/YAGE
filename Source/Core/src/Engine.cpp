@@ -31,7 +31,6 @@ namespace Core
 		: Name(name)
 	{
 		MemoryModule	.reset(new Core::MemoryModule(memorySize));
-		Logger			.reset(new Core::Logger());
 		Config			.reset(new Core::Config(MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block")));
 
 		Renderer		.reset(CreateManager<Gfx::Renderer>(Memory::KB(100)));
@@ -39,9 +38,6 @@ namespace Core
 		MeshManager		.reset(CreateManager<Resources::MeshManager>(Memory::KB(100)));
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
 		ShaderManager	.reset(CreateManager<Resources::ShaderManager>(Memory::KB(100)));
-
-		Logger->setConfig(Config);
-		Engine::initializeReferences(this);
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window&
@@ -55,7 +51,7 @@ namespace Core
 
 		if(!OpenGL::registerWindow(*window))
 		{
-			Logger->Default->error("Unable to register window in OpenGL!");
+			Logger::get()->error("Unable to register window in OpenGL!");
 		}
 
 		return *window;
@@ -110,9 +106,9 @@ namespace Core
 
 		_cleanedUp = true;
 
-		Logger->Default->info("Cleaning up...");
+		Logger::get()->info("Cleaning up...");
 
-		Memory::Delete(MemoryModule.get().masterBlock(), BufferManager);
+		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
 		Memory::Delete(MemoryModule.get().masterBlock(), MeshManager);
 		Memory::Delete(MemoryModule.get().masterBlock(), MaterialManager);
 		Memory::Delete(MemoryModule.get().masterBlock(), ShaderManager);
@@ -120,9 +116,9 @@ namespace Core
 
 		glfwTerminate();
 
-		Logger->Default->info("Cleaned up!");
+		Logger::get()->info("Cleaned up!");
 		Memory::SafeDelete(Config);
-		Memory::SafeDelete(Logger);
 		Memory::SafeDelete(MemoryModule);
+		Logger::get().destroy();
 	}
 }

@@ -79,8 +79,6 @@ namespace Core
 
 		borrowed_ptr<MemoryModule> MemoryModule;
 
-		borrowed_ptr<Core::Logger> Logger;
-
 		borrowed_ptr<Core::Config> Config;
 
 		borrowed_ptr<Gfx::Renderer> Renderer;

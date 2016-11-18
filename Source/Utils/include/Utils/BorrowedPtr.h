@@ -56,6 +56,11 @@ namespace Utils
 			return value != nullptr;
 		}
 
+		auto operator->() noexcept -> T*
+		{
+			return getRaw();
+		}
+
 		auto operator->() const noexcept -> T*
 		{
 			return getRaw();

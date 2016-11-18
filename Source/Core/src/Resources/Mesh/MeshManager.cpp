@@ -14,7 +14,7 @@ namespace Resources
 	MeshManager::MeshManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
 		: IManager(engine, memory), _schemeManager(_memory), _meshContainer(_memory), _schemeBuffers(_memory)
 	{
-		_engine.Logger->Default->info("Created mesh manager with capacity {}", _meshContainer.capacity());
+		Core::Logger::get()->info("Created mesh manager with capacity {}", _meshContainer.capacity());
 	}
 
 	MeshManager::~MeshManager() noexcept
@@ -24,7 +24,7 @@ namespace Resources
 
 	void MeshManager::disposeAll()
 	{
-		_engine.Logger->Default->info("Releasing all meshes...");
+		Core::Logger::get()->info("Releasing all meshes...");
 
 		for(Core::Mesh& mesh : _meshContainer)
 		{
@@ -33,7 +33,7 @@ namespace Resources
 
 		_meshContainer.clear();
 
-		_engine.Logger->Default->info("Released all meshes");
+		Core::Logger::get()->info("Released all meshes");
 	}
 
 	Core::Mesh* MeshManager::tryGetMesh(handle_t handle)
@@ -178,7 +178,7 @@ namespace Resources
 		void* vertexMapPtr	= buffer->mapVertexMemory(allVertexCount, gl::MAP_WRITE_BIT);
 		char* vertexPtr		= static_cast<char*>(vertexMapPtr);
 
-		OpenGL::checkError(_engine.Logger.get());
+		OpenGL::checkError();
 
 		for(uint32_t vertex = 0; vertex < allVertexCount; vertex++)
 		{
