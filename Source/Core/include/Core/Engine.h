@@ -76,7 +76,7 @@ namespace Core
 
 		const std::string Name;
 
-		borrowed_ptr<MemoryModule> MemoryModule;
+		borrowed_ptr<Core::MemoryModule> MemoryModule;
 
 		borrowed_ptr<Core::Config> Config;
 
