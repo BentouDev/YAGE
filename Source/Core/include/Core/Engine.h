@@ -11,9 +11,7 @@
 #include <Utils/Handle.h>
 #include <Utils/List.h>
 
-#include "Core/Gfx/Renderer.h"
 #include "MemoryModule.h"
-#include "Context.h"
 
 #ifdef CREATE_NEW
 #undef CREATE_NEW
@@ -32,9 +30,8 @@ namespace Logic
 
 namespace Gfx
 {
+	class Renderer;
 	class BufferManager;
-	class BaseApi
-	{};
 }
 
 namespace Resources
@@ -58,6 +55,8 @@ namespace Core
 	class Logger;
 
 	class Window;
+
+	class WindowManager;
 
 	struct Context;
 
@@ -88,13 +87,14 @@ namespace Core
 		borrowed_ptr<Resources::MeshManager> MeshManager;
 		borrowed_ptr<Resources::MaterialManager> MaterialManager;
 		borrowed_ptr<Resources::ShaderManager> ShaderManager;
+		borrowed_ptr<Core::WindowManager> WindowManager;
 
 		explicit Engine(std::string name, std::size_t memorySize);
 
 		virtual ~Engine() { CleanUp(); }
 
 		// Create Window based on current configuration
-		auto CreateWindow() const noexcept -> Window&;
+		auto CreateWindow() const noexcept -> Utils::Handle<Window>;
 
 		// Load configuration
 		auto LoadConfig(std::string path = "Config.json") -> bool;
@@ -125,11 +125,6 @@ namespace Core
 
 			return manager;
 		}
-
-		// todo: Decide what to do next based on config
-		// todo: Render all
-		// todo: Gather all input
-		// todo: Threads, etc.
 	};
 }
 

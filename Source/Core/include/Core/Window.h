@@ -19,8 +19,23 @@ namespace Core
 	class Window
 	{
 	public:
+		using handle_t = Utils::Handle<Window>;
+
 		explicit Window(const char* title, unsigned width, unsigned height);
 		virtual ~Window();
+
+		Window(Window&& other)
+			: Title(std::move(other.Title)),
+			  Width(other.Width), Height(other.Height),
+			  Viewports(std::move(other.Viewports)),
+			  hWindow(other.hWindow)
+		{
+			other.hWindow = nullptr;
+		}
+
+		Window(const Window&) = delete;
+		Window& operator=(Window&&) = delete;
+		Window& operator=(const Window&) = delete;
 
 		auto Create() -> void;
 		auto Destroy() -> void;
@@ -40,6 +55,7 @@ namespace Core
 
 		//Todo: wrap handle into smart pointer
 		GLFWwindow* hWindow;
+		handle_t Handle;
 
 		auto operator==(const Window& other) -> bool
 		{
@@ -47,10 +63,7 @@ namespace Core
 		}
 	};
 
-	/*auto operator==(const Window& first, const Window& second) -> bool
-	{
-		return first.hWindow == second.hWindow;
-	}*/
+	class WindowTrait : public Utils::DefaultTrait<Window> { };
 }
 
 #endif //YAGE_WINDOW_H

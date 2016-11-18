@@ -6,6 +6,7 @@
 #define GAME_SHADERBUILDER_H
 
 #include <Utils/MemoryBlock.h>
+#include "Core/Gfx/OpenGl/OpenGLBase.h"
 
 namespace Gfx
 {

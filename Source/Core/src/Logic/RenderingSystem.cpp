@@ -7,6 +7,7 @@
 #include "Core/Engine.h"
 #include "Core/Logger.h"
 #include "Core/Gfx/BufferManager.h"
+#include "Core/Gfx/Renderer.h"
 #include "Core/Resources/Mesh/Mesh.h"
 #include "Core/Resources/Mesh/MeshManager.h"
 #include "Core/Resources/Material/Material.h"

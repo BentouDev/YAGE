@@ -8,6 +8,7 @@
 
 #include "Core/EngineApis.h"
 #include "Core/MemoryModule.h"
+#include "Core/WindowManager.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Resources/Mesh/MeshManager.h"
 #include "Core/Resources/Shader/ShaderManager.h"
@@ -17,7 +18,6 @@
 #include "Core/Logic/Scene.h"
 #include "Core/GameTime.h"
 #include "Core/Engine.h"
-#include "Core/Window.h"
 #include "Core/Logger.h"
 #include "Core/Config.h"
 
@@ -38,23 +38,29 @@ namespace Core
 		MeshManager		.reset(CreateManager<Resources::MeshManager>(Memory::KB(100)));
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
 		ShaderManager	.reset(CreateManager<Resources::ShaderManager>(Memory::KB(100)));
+		WindowManager	.reset(CreateManager<Core::WindowManager>(Memory::KB(10)));
 	}
 
-	auto Engine::CreateWindow() const noexcept -> Window&
+	auto Engine::CreateWindow() const noexcept -> Window::handle_t
 	{
-		// todo: save that goddamn pointer somewhere to be reachable!
-		// todo: also replace raw ptr with nice handler
-		// todo: use container with new, specialized for window trait, which depends on _api
-		// todo: _api may leak resources if we want to free them like we are doing now (in engine methods)!
-		// todo: pass _api to context!
-		Window* window = new Window(((std::string)Config.get().WindowTitle).c_str(), Config.get().WindowWidth, Config.get().WindowHeight);
+		auto handle = WindowManager.get().createNew(((std::string)Config.get().WindowTitle).c_str(),
+													  Config.get().WindowWidth,
+													  Config.get().WindowHeight);
 
-		if(!OpenGL::registerWindow(*window))
+		auto* window = WindowManager.get().tryGet(handle);
+		if(window != nullptr)
 		{
-			Logger::get()->error("Unable to register window in OpenGL!");
+			if(!OpenGL::registerWindow(*window))
+			{
+				Logger::get()->error("Unable to register window in OpenGL!");
+			}
+		}
+		else
+		{
+			Logger::get()->error("Unable to create window!");
 		}
 
-		return *window;
+		return handle;
 	}
 
 	auto Engine::LoadConfig(std::string path) -> bool
@@ -80,9 +86,12 @@ namespace Core
 	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window) -> void
 	{
+		// TODO: implement proper time management
+		static GameTime time;
+
 		OpenGL::beginDraw(window);
 
-		activeScene->Draw(*new GameTime, Renderer.get());
+		activeScene->Draw(time, Renderer.get());
 
 		Renderer->draw();
 
@@ -108,7 +117,8 @@ namespace Core
 
 		Logger::get()->info("Cleaning up...");
 
-		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
+		Memory::Delete(MemoryModule.get().masterBlock(), WindowManager);
+		Memory::Delete(MemoryModule.get().masterBlock(), BufferManager);
 		Memory::Delete(MemoryModule.get().masterBlock(), MeshManager);
 		Memory::Delete(MemoryModule.get().masterBlock(), MaterialManager);
 		Memory::Delete(MemoryModule.get().masterBlock(), ShaderManager);
