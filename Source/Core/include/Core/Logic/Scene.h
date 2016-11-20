@@ -17,6 +17,7 @@ namespace Gfx
 {
 	class Renderer;
 	class Camera;
+	class Viewport;
 }
 
 namespace Logic
@@ -39,6 +40,7 @@ namespace Logic
 		RenderingSystem* Rendering;
 
 		Gfx::Camera* defaultCamera;
+		Gfx::Viewport* defaultViewport;
 
 	public:
 		Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);
@@ -53,6 +55,9 @@ namespace Logic
 		virtual void Start();
 
 		virtual void End();
+
+		inline void setViewport(Gfx::Viewport* viewport)
+		{ defaultViewport = viewport; }
 	};
 }
 

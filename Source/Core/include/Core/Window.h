@@ -7,10 +7,10 @@
 
 #include <string>
 #include <vector>
-#include <Utils/Container.h>
+#include <Utils/List.h>
+
 #include "Core/Gfx/Viewport.h"
 #include "Core/Gfx/RenderTarget.h"
-#include "Context.h"
 
 struct GLFWwindow;
 
@@ -22,15 +22,18 @@ namespace Core
 		using handle_t = Utils::Handle<Window>;
 		using trait_t = Utils::DefaultTrait<Window>;
 
-		explicit Window(const char* title, unsigned width, unsigned height);
+		explicit Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height);
 		virtual ~Window();
 
 		Window(Window&& other)
-			: Title(std::move(other.Title)),
+			: _memory(other._memory),
+			  Title(std::move(other.Title)),
 			  Width(other.Width), Height(other.Height),
-			  Viewports(std::move(other.Viewports)),
-			  hWindow(other.hWindow)
+			  DefaultViewport(other.DefaultViewport),
+			  hWindow(other.hWindow),
+			  Handle(other.Handle)
 		{
+			other.DefaultViewport = nullptr;
 			other.hWindow = nullptr;
 		}
 
@@ -43,20 +46,18 @@ namespace Core
 		auto IsAlive() const noexcept -> bool;
 		auto ShouldClose() const noexcept -> bool;
 		auto Show() const noexcept -> void;
-		auto CreateViewport(const Gfx::Rectangle<int32_t>& rect) noexcept -> void;
 		auto GetDefaultViewport() -> Gfx::Viewport&;
 
-		std::string Title;
-		unsigned	Width;
-		unsigned	Height;
+		Memory::IMemoryBlock&	_memory;
 
-		// Replace with handle/pointer, store viewport elswhere (renderer? context?)
-		std::vector<Gfx::Viewport*> Viewports;
-	//	Utils::Container<typename Gfx::Viewport::Trait> _viewports;
+		std::string				Title;
+		unsigned				Width;
+		unsigned				Height;
 
-		//Todo: wrap handle into smart pointer
-		GLFWwindow* hWindow;
-		handle_t Handle;
+		Gfx::Viewport*			DefaultViewport;
+
+		GLFWwindow*				hWindow;
+		handle_t				Handle;
 
 		auto operator==(const Window& other) -> bool
 		{

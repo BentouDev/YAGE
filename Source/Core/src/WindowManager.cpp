@@ -15,7 +15,7 @@ namespace Core
 
 	WindowManager::handle_t WindowManager::createNew(const char *name, unsigned width, unsigned height)
 	{
-		handle_t handle = _windowContainer.create(name, width, height);
+		handle_t handle = _windowContainer.create(_memory, name, width, height);
 		return handle;
 	}
 

@@ -70,8 +70,8 @@ namespace Gfx
 		_queue._camera->recalculate(_queue._renderTarget->getAspect());
 
 		gl::UniformMatrix4fv(1, 1, gl::FALSE_, _queue._camera->projectionPtr());
-		gl::UniformMatrix4fv(1, 1, gl::FALSE_, _queue._camera->viewPtr());
-		gl::UniformMatrix4fv(1, 1, gl::FALSE_, &Model[0][0]);
+		gl::UniformMatrix4fv(2, 1, gl::FALSE_, _queue._camera->viewPtr());
+		gl::UniformMatrix4fv(3, 1, gl::FALSE_, &Model[0][0]);
 
 		for(auto& data : _queue._data)
 		{

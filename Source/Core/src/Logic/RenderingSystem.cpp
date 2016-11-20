@@ -3,6 +3,7 @@
 //
 
 #include <Core/Gfx/Camera.h>
+#include <Core/Gfx/Viewport.h>
 #include "Core/Logic/RenderingSystem.h"
 
 #include "Core/Engine.h"
@@ -161,7 +162,7 @@ namespace Logic
 		_dirtyComponents.clear();
 	}
 
-	void RenderingSystem::update(const Core::GameTime &, Gfx::Renderer &renderer, Gfx::Camera *pCamera)
+	void RenderingSystem::update(const Core::GameTime&, Gfx::Renderer& renderer, Gfx::Camera* pCamera, Gfx::Viewport* pViewport)
 	{
 		// recreate dirty batches
 		// add new meshes to them or change their data
@@ -180,6 +181,7 @@ namespace Logic
 		// And submit calls to GPU
 		Gfx::Renderer::queue_t& queue = renderer.getQueue();
 		queue.setCamera(pCamera);
+		queue.setRenderTarget(pViewport);
 		for(RenderingComponent& comp : _components)
 		{
 			if(!comp.isVisible())

@@ -18,8 +18,8 @@ namespace Logic
 		defaultCamera->nearCulling = 0.01f;
 		defaultCamera->farCulling = 100.0f;
 		defaultCamera->position = glm::vec3(4,3,3); // Camera is at (4,3,3), in World Space
-		defaultCamera->forward = glm::vec3(0,0,0), // and looks at the origin
-		defaultCamera->up = glm::vec3(0,0,1);  // Head is up (set to 0,-1,0 to look upside-down)
+		defaultCamera->forward = glm::vec3(-4,-3,-3), // and looks at the origin
+		defaultCamera->up = glm::vec3(0,1,0);  // Head is up (set to 0,-1,0 to look upside-down)
 	}
 
 	Scene::~Scene()
@@ -36,7 +36,7 @@ namespace Logic
 		// so using that we can access batch for scheme & material pair
 
 		// this can be divided into threads
-		Rendering->update(time, renderer, defaultCamera);
+		Rendering->update(time, renderer, defaultCamera, defaultViewport);
 
 		// what main classes do we have?
 		// submesh, material, light, postprocess

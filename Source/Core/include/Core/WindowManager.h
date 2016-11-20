@@ -6,6 +6,7 @@
 #define GAME_WINDOWMANAGER_H
 
 #include <Utils/MemoryBlock.h>
+#include <Utils/Container.h>
 #include "Core/Window.h"
 
 namespace Core

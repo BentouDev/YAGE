@@ -15,4 +15,14 @@ namespace Gfx
 	{
 
 	}
+
+	void Viewport::Bind()
+	{
+
+	}
+
+	float Viewport::getAspect()
+	{
+		return (float)_rect.getWidth() / (float)_rect.getHeight();
+	}
 }

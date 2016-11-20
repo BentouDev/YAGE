@@ -25,7 +25,9 @@ namespace Gfx
 		{ }
 
 		void Clear(const Utils::Color& color) override;
+		void Bind() override;
 		void Submit() override;
+		float getAspect() override;
 	};
 }
 
