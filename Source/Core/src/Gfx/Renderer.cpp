@@ -48,7 +48,7 @@ namespace Gfx
 			gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, data.IBO);
 		}
 
-		gl::DrawElementsBaseVertex(gl::TRIANGLES, data.elementCount, OpenGL::toOpenGlType(data.indexType), 0, data.baseVertex);
+		gl::DrawElementsBaseVertex(gl::TRIANGLES, data.elementCount, data.indexType, 0, data.baseVertex);
 	}
 
 	void Renderer::draw()

@@ -5,6 +5,7 @@
 #ifndef YAGE_MESH_H
 #define YAGE_MESH_H
 
+#include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Resources/Resource.h"
 
 #include <Utils/List.h>
@@ -67,7 +68,7 @@ namespace Core
 	protected:
 		Utils::List<PropertyInfo>	PropertiesInfo;
 		std::size_t					IndexSize;
-		type_t						IndexType;
+		GLenum						IndexType;
 
 	public:
 		explicit MeshScheme(Memory::IMemoryBlock& memory)
@@ -116,7 +117,7 @@ namespace Core
 		inline void setIndexType(std::size_t indexSize, type_t indexType)
 		{
 			IndexSize = indexSize;
-			IndexType = indexType;
+			IndexType = OpenGL::toOpenGlType(indexType);
 		}
 
 		inline void addPropertyInfo(const char* name, type_t type, std::size_t propSize, uint32_t propCount, bool normalize)
@@ -130,7 +131,7 @@ namespace Core
 		inline std::size_t getIndexSize() const
 		{ return IndexSize; }
 
-		inline type_t getIndexType() const
+		inline GLenum getIndexType() const
 		{ return IndexType; }
 
 		inline std::size_t vertexSize() const
