@@ -11,12 +11,21 @@ namespace Logic
 	Scene::Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name)
 		: _memory(memory), Name(name), engine(engine)
 	{
+		defaultCamera = YAGE_CREATE_NEW(_memory, Gfx::Camera)();
 		Rendering = YAGE_CREATE_NEW(_memory, RenderingSystem)(engine, _memory);
+
+		defaultCamera->FOV = 3.14f / 4.0f;
+		defaultCamera->nearCulling = 0.01f;
+		defaultCamera->farCulling = 100.0f;
+		defaultCamera->position = glm::vec3(4,3,3); // Camera is at (4,3,3), in World Space
+		defaultCamera->forward = glm::vec3(0,0,0), // and looks at the origin
+		defaultCamera->up = glm::vec3(0,0,1);  // Head is up (set to 0,-1,0 to look upside-down)
 	}
 
 	Scene::~Scene()
 	{
 		Memory::Delete(_memory, Rendering);
+		Memory::Delete(_memory, defaultCamera);
 	}
 
 	void Scene::Draw(const Core::GameTime& time, Gfx::Renderer& renderer)
@@ -27,7 +36,7 @@ namespace Logic
 		// so using that we can access batch for scheme & material pair
 
 		// this can be divided into threads
-		Rendering->update(time, renderer);
+		Rendering->update(time, renderer, defaultCamera);
 
 		// what main classes do we have?
 		// submesh, material, light, postprocess

@@ -2,6 +2,7 @@
 // Created by bentoo on 10/14/16.
 //
 
+#include <Core/Gfx/Camera.h>
 #include "Core/Logic/RenderingSystem.h"
 
 #include "Core/Engine.h"
@@ -160,7 +161,7 @@ namespace Logic
 		_dirtyComponents.clear();
 	}
 
-	void RenderingSystem::update(const Core::GameTime&, Gfx::Renderer& renderer)
+	void RenderingSystem::update(const Core::GameTime &, Gfx::Renderer &renderer, Gfx::Camera *pCamera)
 	{
 		// recreate dirty batches
 		// add new meshes to them or change their data
@@ -178,6 +179,7 @@ namespace Logic
 		// Then it will sort them in renderer
 		// And submit calls to GPU
 		Gfx::Renderer::queue_t& queue = renderer.getQueue();
+		queue.setCamera(pCamera);
 		for(RenderingComponent& comp : _components)
 		{
 			if(!comp.isVisible())

@@ -20,6 +20,7 @@ namespace Core
 	{
 	public:
 		using handle_t = Utils::Handle<Window>;
+		using trait_t = Utils::DefaultTrait<Window>;
 
 		explicit Window(const char* title, unsigned width, unsigned height);
 		virtual ~Window();
@@ -62,8 +63,6 @@ namespace Core
 			return this->hWindow == other.hWindow;
 		}
 	};
-
-	class WindowTrait : public Utils::DefaultTrait<Window> { };
 }
 
 #endif //YAGE_WINDOW_H

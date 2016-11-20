@@ -8,7 +8,7 @@
 namespace Core
 {
 	WindowManager::WindowManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _windowContainer(memory)
+		: _engine(engine), _memory(memory), _windowContainer(memory, 1)
 	{
 		Core::Logger::get()->info("Created window manager with capacity '{}'", _windowContainer.capacity());
 	}

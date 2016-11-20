@@ -16,6 +16,7 @@ namespace Core
 namespace Gfx
 {
 	class Renderer;
+	class Camera;
 }
 
 namespace Logic
@@ -36,6 +37,8 @@ namespace Logic
 		Core::Engine& engine;
 
 		RenderingSystem* Rendering;
+
+		Gfx::Camera* defaultCamera;
 
 	public:
 		Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);

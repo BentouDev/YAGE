@@ -15,14 +15,4 @@ namespace Gfx
 	{
 
 	}
-
-	void Viewport::cleanUp()
-	{
-		
-	}
-
-	void Viewport::swap(Viewport &other)
-	{
-		Handle.swap(other.Handle);
-	}
 }

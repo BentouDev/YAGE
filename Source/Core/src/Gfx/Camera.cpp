@@ -15,4 +15,20 @@ namespace Gfx
 	{
 
 	}
+
+	const GLfloat* Camera::projectionPtr()
+	{
+		return &projectionMatrix[0][0];
+	}
+
+	const GLfloat* Camera::viewPtr()
+	{
+		return &viewMatrix[0][0];
+	}
+
+	void Camera::recalculate(float aspect)
+	{
+		viewMatrix			= glm::lookAt(position, position + forward, up);
+		projectionMatrix	= glm::perspective(FOV, aspect, nearCulling, farCulling);
+	}
 }
