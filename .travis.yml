@@ -1,5 +1,8 @@
 language: cpp
 
+notifications:
+  email: false
+
 sudo: required
 dist: trusty
 
@@ -14,10 +17,12 @@ addons:
     packages:
       - cmake
       - cmake-data
+      - gcc-6.2
+      - g++-6.2
+      - clang-3.7
       - xorg-dev
       - libxxf86vm-dev
       - libglu1-mesa-dev
-      - clang-3.7
       - qt5-default
       - qttools5-dev-tools
 
