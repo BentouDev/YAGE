@@ -17,8 +17,8 @@ addons:
     packages:
       - cmake
       - cmake-data
-      - gcc-6.2
-      - g++-6.2
+      - gcc-6
+      - g++-6
       - clang-3.7
       - xorg-dev
       - libxxf86vm-dev
@@ -36,7 +36,7 @@ matrix:
         - cmake --target all .
 
     - os: linux
-      compiler: gcc-6.2
+      compiler: gcc-6
       before_script:
         - cmake -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage " -DENABLE_COVERAGE=On --target all .
       after_success:
