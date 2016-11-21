@@ -22,11 +22,11 @@ namespace Utils
 		template <typename T>
 		static constexpr indexValueHolder checkIndex(std::size_t counter = 0)
 		{
-			auto list = std::initializer_list<indexValueHolder>
+			auto list =
 			{
 				indexValueHolder{std::is_same<Types, T>::value, counter++}...
 			};
-			for(auto& i : list)
+			for(auto i : list)
 			{
 				if(i.exists)
 					return i;
@@ -38,7 +38,7 @@ namespace Utils
 		class IndexOf
 		{
 		protected:
-			static constexpr indexValueHolder value { checkIndex<T>() };
+			static constexpr indexValueHolder value = checkIndex<T>();
 		public:
 			static constexpr std::size_t index()
 			{
@@ -55,7 +55,8 @@ namespace Utils
 		template <typename T>
 		static constexpr std::size_t indexOf()
 		{
-			static_assert(IndexOf<T>::exists(), "Type T must be in TypeIndexList parameters!");
+			constexpr bool exists = IndexOf<T>::exists();
+			static_assert(exists, "Type T must be in TypeIndexList parameters!");
 			return IndexOf<T>::index();
 		}
 

@@ -17,6 +17,8 @@ target_compile_features(Utils PUBLIC
         cxx_auto_type
         cxx_return_type_deduction
         cxx_trailing_return_types
+        cxx_constexpr
+        cxx_relaxed_constexpr
         cxx_nullptr
         cxx_variadic_templates)
 
