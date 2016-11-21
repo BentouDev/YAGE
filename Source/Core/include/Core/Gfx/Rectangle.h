@@ -16,6 +16,10 @@ namespace Gfx
 		glm::tvec2<N, glm::precision::defaultp> _max;
 
 	public:
+		explicit Rectangle(N x, N y, N width, N height)
+			: _min(x, y), _max(x + width, y + height)
+		{ }
+
 		auto getWidth() -> N { return _max.x - _min.x; }
 		auto getHeight() -> N { return _max.y - _min.y; }
 

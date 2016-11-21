@@ -16,13 +16,13 @@ namespace Gfx
 
 	}
 
-	void Viewport::cleanUp()
+	void Viewport::Bind()
 	{
-		
+
 	}
 
-	void Viewport::swap(Viewport &other)
+	float Viewport::getAspect()
 	{
-		Handle.swap(other.Handle);
+		return (float)_rect.getWidth() / (float)_rect.getHeight();
 	}
 }

@@ -6,6 +6,8 @@
 #define GAME_RENDERINGSYSTEM_H
 
 #include <Utils/Container.h>
+#include <Core/Gfx/Camera.h>
+#include <Core/Gfx/Viewport.h>
 
 #include "RenderingComponent.h"
 
@@ -46,7 +48,8 @@ namespace Logic
 		auto setDirty(RenderingComponent& comp) -> void;
 		auto createNew() -> RenderingComponent::handle_t;
 		auto remove(RenderingComponent::handle_t handle) -> void;
-		void update(const Core::GameTime& time, Gfx::Renderer& renderer);
+		void
+		update(const Core::GameTime &time, Gfx::Renderer &renderer, Gfx::Camera *pCamera, Gfx::Viewport *pViewport);
 		RenderingComponent& get(RenderingComponent::handle_t) const;
 	};
 }

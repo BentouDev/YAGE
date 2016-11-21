@@ -2,19 +2,15 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
-#include "../include/Core/Window.h"
-#include "../include/Core/Platform.h"
-#include "Core/Gfx/Rectangle.h"
-#include "../include/Core/Config.h"
+#include "Core/Window.h"
+#include "Core/Platform.h"
+#include "Core/Gfx/Viewport.h"
 
 namespace Core
 {
-	Window::Window(const char* title, unsigned width, unsigned height) :
-		Title {title},
-		Width {width},
-		Height {height},
-		hWindow {nullptr}
-	//	_viewports(8)
+	Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
+		: _memory(memory), Title {title}, Width {width}, Height {height},
+		  DefaultViewport{nullptr}, hWindow {nullptr}
 	{
 		Create();
 	}
@@ -22,8 +18,7 @@ namespace Core
 	Window::~Window()
 	{
 		Destroy();
-	//	Viewports.clear();
-	//	_viewports.clear();
+		Memory::Delete(_memory, DefaultViewport);
 	}
 
 	auto Window::Create() -> void
@@ -32,7 +27,8 @@ namespace Core
 			return;
 
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
-	//	_viewports.create(Gfx::Rectangle<int32_t>());
+		const Gfx::Rectangle<int32_t> rect(0, 0, Width, Height);
+		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(rect);
 	}
 
 	auto Window::Show() const noexcept -> void
@@ -54,9 +50,7 @@ namespace Core
 
 	auto Window::GetDefaultViewport() -> Gfx::Viewport&
 	{
-		// todo: assert
-		//assert(Viewports.size() > 0);
-		return *Viewports[0];
+		return *DefaultViewport;
 	}
 
 	auto Window::IsAlive() const noexcept -> bool
@@ -67,11 +61,5 @@ namespace Core
 	auto Window::ShouldClose() const noexcept -> bool
 	{
 		return !IsAlive() || glfwWindowShouldClose(hWindow);
-	}
-
-	auto Window::CreateViewport(const Gfx::Rectangle<int32_t>&) noexcept -> void
-	{
-	//	Viewports.push_back(new Gfx::Viewport(rect));
-	//	_viewports.create(rect);
 	}
 }

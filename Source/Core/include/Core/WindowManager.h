@@ -6,6 +6,7 @@
 #define GAME_WINDOWMANAGER_H
 
 #include <Utils/MemoryBlock.h>
+#include <Utils/Container.h>
 #include "Core/Window.h"
 
 namespace Core
@@ -21,7 +22,7 @@ namespace Core
 		Core::Engine& _engine;
 		Memory::IMemoryBlock& _memory;
 
-		Utils::Container<WindowTrait> _windowContainer;
+		Utils::Container<Window::trait_t> _windowContainer;
 
 	public:
 		explicit WindowManager(Core::Engine& engine, Memory::IMemoryBlock& memory);

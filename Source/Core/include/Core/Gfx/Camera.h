@@ -12,25 +12,32 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <Utils/PropertyMacro.h>
+#include "Core/Gfx/OpenGl/OpenGLBase.h"
 
 namespace Gfx
 {
 	class Camera
 	{
-		glm::mat4x4 _viewMatrix;
-		glm::mat4x4 _projectionMatrix;
+		friend class Renderer;
 
-		float _FOV = 60;
-		float _nearCulling = 0.01f;
-		float _farCulling = 100.f;
+		const GLfloat* projectionPtr();
+		const GLfloat* viewPtr();
+
+		void recalculate(float aspect);
 
 	public:
 		explicit Camera();
 		virtual ~Camera();
 
-		YAGE_PROPERTY_NAMED(_FOV, FOV);
-		YAGE_PROPERTY_NAMED(_nearCulling, NearCulling);
-		YAGE_PROPERTY_NAMED(_farCulling, FarCulling);
+		glm::mat4x4 viewMatrix;
+		glm::mat4x4 projectionMatrix;
+		glm::vec3	position;
+		glm::vec3	forward;
+		glm::vec3	up;
+
+		float		FOV = 60;
+		float		nearCulling = 0.01f;
+		float		farCulling = 100.f;
 	};
 }
 

@@ -11,6 +11,8 @@
 namespace Gfx
 {
 	class Renderer;
+	class Camera;
+	class RenderTarget;
 
 	template <typename CommandKey, typename CommandData, typename Component>
 	class CommandQueue
@@ -26,6 +28,8 @@ namespace Gfx
 
 	protected:
 		Renderer& 					_renderer;
+		Camera*						_camera;
+		RenderTarget*				_renderTarget;
 
 		Memory::IMemoryBlock&		_memory;
 		Memory::LinearAllocator*	_frameMemory;
@@ -34,17 +38,24 @@ namespace Gfx
 	//	ICommandSorter<CommandKey>&	_sorter;
 
 	public:
-		explicit CommandQueue(Memory::IMemoryBlock& memory, Renderer& renderer)//, ICommandSorter<CommandKey>& sorter)
-			: _renderer(renderer), _memory(memory), _frameMemory(nullptr), _keys(_memory), _data(memory) //, _sorter(sorter)
+		inline explicit CommandQueue(Memory::IMemoryBlock& memory, Renderer& renderer)//, ICommandSorter<CommandKey>& sorter)
+			: _renderer(renderer), _camera(nullptr), _renderTarget(nullptr),
+			  _memory(memory), _frameMemory(nullptr), _keys(_memory), _data(memory) //, _sorter(sorter)
 		{
 
 		}
 
-		virtual ~CommandQueue() noexcept
+		inline virtual ~CommandQueue() noexcept
 		{
 			if(_frameMemory)
 				_frameMemory->clear();
 		}
+
+		inline void setCamera(Camera* cam)
+		{ _camera = cam; }
+
+		inline void setRenderTarget(RenderTarget* target)
+		{ _renderTarget = target; }
 
 		CommandData& createCommands(CommandKey key)
 		{

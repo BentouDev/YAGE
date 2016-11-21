@@ -5,7 +5,6 @@
 #ifndef GAME_RENDERER_H
 #define GAME_RENDERER_H
 
-#include "Core/Context.h"
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Gfx/CommandQueue.h"
 

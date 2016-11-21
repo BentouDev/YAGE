@@ -8,14 +8,14 @@
 namespace Core
 {
 	WindowManager::WindowManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _windowContainer(memory)
+		: _engine(engine), _memory(memory), _windowContainer(memory, 1)
 	{
 		Core::Logger::get()->info("Created window manager with capacity '{}'", _windowContainer.capacity());
 	}
 
 	WindowManager::handle_t WindowManager::createNew(const char *name, unsigned width, unsigned height)
 	{
-		handle_t handle = _windowContainer.create(name, width, height);
+		handle_t handle = _windowContainer.create(_memory, name, width, height);
 		return handle;
 	}
 

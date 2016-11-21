@@ -18,6 +18,8 @@ namespace Gfx
 		virtual void Submit() = 0;
 
 		static void Reset();
+
+		virtual float getAspect() = 0;
 	};
 }
 
