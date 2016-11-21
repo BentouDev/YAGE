@@ -1,5 +1,8 @@
 version: 1.0.{build}
 
+cache:
+  - Dependencies
+
 configuration:
   - Release
 
@@ -15,6 +18,7 @@ before_build:
 
 build:
   project: C:\projects\yage\Build\ALL_BUILD.vcxproj
+  verbosity: minimal
   parallel: true
 
 test_script:

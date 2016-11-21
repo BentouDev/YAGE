@@ -3,6 +3,8 @@ language: cpp
 sudo: required
 dist: trusty
 
+cache: Dependencies
+
 addons:
   apt:
     sources:
