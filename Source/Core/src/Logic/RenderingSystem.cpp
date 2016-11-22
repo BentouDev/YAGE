@@ -162,7 +162,7 @@ namespace Logic
 		_dirtyComponents.clear();
 	}
 
-	void RenderingSystem::update(const Core::GameTime&, Gfx::Renderer& renderer, Gfx::Camera* pCamera, Gfx::Viewport* pViewport)
+	void RenderingSystem::update(const Core::GameTime& time, Gfx::Renderer& renderer, Gfx::Camera* pCamera, Gfx::Viewport* pViewport)
 	{
 		// recreate dirty batches
 		// add new meshes to them or change their data

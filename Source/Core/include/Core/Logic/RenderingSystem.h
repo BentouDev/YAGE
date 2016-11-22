@@ -24,7 +24,7 @@ namespace Memory
 namespace Core
 {
 	class Engine;
-	class GameTime;
+	struct GameTime;
 }
 
 namespace Logic
@@ -48,8 +48,7 @@ namespace Logic
 		auto setDirty(RenderingComponent& comp) -> void;
 		auto createNew() -> RenderingComponent::handle_t;
 		auto remove(RenderingComponent::handle_t handle) -> void;
-		void
-		update(const Core::GameTime &time, Gfx::Renderer &renderer, Gfx::Camera *pCamera, Gfx::Viewport *pViewport);
+		void update(const Core::GameTime& time, Gfx::Renderer& renderer, Gfx::Camera* pCamera, Gfx::Viewport* pViewport);
 		RenderingComponent& get(RenderingComponent::handle_t) const;
 	};
 }
