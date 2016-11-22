@@ -14,13 +14,14 @@ target_include_directories(Utils PUBLIC
         PRIVATE src)
 
 target_compile_features(Utils PUBLIC
-        cxx_auto_type
-        cxx_return_type_deduction
-        cxx_trailing_return_types
-        cxx_constexpr
-        cxx_relaxed_constexpr
         cxx_nullptr
-        cxx_variadic_templates)
+        cxx_auto_type
+        cxx_variadic_templates
+        cxx_trailing_return_types
+        cxx_return_type_deduction
+        cxx_right_angle_brackets
+        cxx_constexpr)
+#        cxx_relaxed_constexpr)
 
 if(VALGRIND_FOUND)
     target_compile_definitions(Utils PRIVATE YAGE_VALGRIND=1)
