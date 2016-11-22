@@ -13,8 +13,6 @@ namespace Utils
 	template <typename ... Types>
 	class TypeIndexList
 	{
-		using dupa = bool[sizeof...(Types)];
-
 		template <typename T>
 		struct valueHome
 		{
@@ -32,7 +30,7 @@ namespace Utils
 		template <typename T>
 		struct IndexOf
 		{
-			static constexpr int index = checkIndex<T>();
+			static constexpr std::size_t index = checkIndex<T>();
 			static constexpr bool exists()
 			{
 				return index < sizeof...(Types);

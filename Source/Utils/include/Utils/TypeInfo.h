@@ -14,11 +14,16 @@
 
 typedef uint8_t type_t;
 
-class TypeCounter
+namespace
 {
-public:
-	static std::atomic<type_t> _lastTypeId;
-};
+	class TypeCounter
+	{
+	public:
+		static std::atomic<type_t> _lastTypeId;
+	};
+}
+
+std::atomic<type_t> (::TypeCounter::_lastTypeId) { 0 };
 
 template <typename T>
 class TypeInfo
@@ -30,7 +35,7 @@ class TypeInfo
 public:
 	static auto id() noexcept -> type_t
 	{
-		static type_t id = TypeCounter::_lastTypeId++;
+		static type_t id = ::TypeCounter::_lastTypeId++;
 		assert(id != 255 && "Danger, typeId exceded uint8_t maximum!");
 		return id;
 	};
