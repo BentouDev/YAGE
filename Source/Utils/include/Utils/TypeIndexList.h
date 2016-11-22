@@ -6,64 +6,51 @@
 #define GAME_TYPEINDEXLIST_H
 
 #include <cstddef>
-#include <type_traits>
+#include <limits>
 
 namespace Utils
 {
 	template <typename ... Types>
 	class TypeIndexList
 	{
-		struct indexValueHolder
+		using dupa = bool[sizeof...(Types)];
+
+		template <typename T>
+		struct valueHome
 		{
-			bool exists;
-			std::size_t index;
+			static constexpr bool value[] = { std::is_same<T, Types>::value... };
 		};
 
 		template <typename T>
-		static constexpr indexValueHolder checkIndex(std::size_t counter = 0)
+		static constexpr std::size_t checkIndex(std::size_t count = 0)
 		{
-			auto list =
-			{
-				indexValueHolder{std::is_same<Types, T>::value, counter++}...
-			};
-			for(auto i : list)
-			{
-				if(i.exists)
-					return i;
-			}
-			return indexValueHolder{false,std::numeric_limits<std::size_t>::max()};
+			return count < sizeof...(Types) ? (
+				valueHome<T>::value[count] ? count : checkIndex<T>(count + 1)
+			) : std::numeric_limits<std::size_t>::max();
 		}
 
 		template <typename T>
-		class IndexOf
+		struct IndexOf
 		{
-		protected:
-			static constexpr indexValueHolder value = checkIndex<T>();
-		public:
-			static constexpr std::size_t index()
-			{
-				return value.index;
-			}
-
+			static constexpr int index = checkIndex<T>();
 			static constexpr bool exists()
 			{
-				return value.exists;
+				return index < sizeof...(Types);
 			}
 		};
 
 	public:
 		template <typename T>
-		static constexpr std::size_t indexOf()
-		{
-			constexpr bool exists = IndexOf<T>::exists();
-			static_assert(exists, "Type T must be in TypeIndexList parameters!");
-			return IndexOf<T>::index();
-		}
-
-		template <typename T>
 		static constexpr bool contains()
 		{
 			return IndexOf<T>::exists();
+		}
+
+		template <typename T>
+		static constexpr std::size_t indexOf()
+		{
+			static_assert(IndexOf<T>::exists(), "Type T must be in TypeIndexList parameters!");
+			return IndexOf<T>::index;
 		}
 	};
 }
