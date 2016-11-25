@@ -133,7 +133,7 @@ namespace Utils
 		inline void remove(handle_t handle)
 		{
 			assert(contains(handle)
-				   && "ArrayContainer : Cannot remove element by invalid handle!");
+				   && "HandleContainer : Cannot remove element by invalid handle!");
 
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = _elements[in.index];

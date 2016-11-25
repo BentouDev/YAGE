@@ -9,10 +9,16 @@
 
 namespace Utils
 {
-	template<typename Handle>
+	struct Nothing
+	{
+		int _[0];
+	};
+
+	static_assert(sizeof(Nothing) == 0, "Nothing must have size 0!");
+
+	template<typename Handle = Nothing>
 	struct Index
 	{
-	public:
 		Handle handle;
 		uint16_t index;
 		uint16_t next;
