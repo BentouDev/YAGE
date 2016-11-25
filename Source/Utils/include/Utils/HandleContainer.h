@@ -19,8 +19,8 @@ namespace Utils
 	class HandleContainer
 	{
 	public:
-		using object_t = Trait::object_t;
-		using handle_t = Trait::handle_t;
+		using object_t = typename Trait::object_t;
+		using handle_t = typename Trait::handle_t;
 
 		static_assert(std::is_move_constructible<object_t>::value,
 					  "Trait type must be move constructible! (due to internal swap)");
@@ -121,7 +121,7 @@ namespace Utils
 
 			for(int i = 0; i < N; i++)
 			{
-				new (&_array[N][in.index]) T();
+				new (&_array[i][in.index]) T();
 			}
 
 			object_t& o = _elements[in.index];
@@ -176,7 +176,14 @@ namespace Utils
 		inline auto get(handle_t handle, uint8_t index) const -> T&
 		{
 			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
-			return _array[N][in.index];
+			return _array[index][in.index];
+		}
+
+		inline auto set(handle_t handle, uint8_t index, T value)
+		{
+			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
+			T& old = _array[index][in.index];
+			new (&old) T(std::move(value));
 		}
 
 		inline auto operator[](uint32_t index) -> Slice<T>&

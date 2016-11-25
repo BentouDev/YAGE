@@ -6,7 +6,8 @@
 #define YAGE_CONTAINER_H
 
 #include <vector>
-#include <stdlib.h>
+#include <cassert>
+#include <cstdlib>
 #include <malloc.h>
 #include <memory.h>
 

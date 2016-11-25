@@ -24,10 +24,9 @@ namespace Utils
 			: _begin(begin), _size(end - begin)
 		{ }
 
+		// Slice is not freeing its resources!
 		~Slice()
-		{
-			// Slice is not freeing its resources!
-		}
+		{ }
 
 		inline auto operator[](std::size_t index) -> T&
 		{
