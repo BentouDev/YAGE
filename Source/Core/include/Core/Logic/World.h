@@ -179,6 +179,8 @@ namespace Logic
 				if(info.type == TypeInfo<T>::id())
 					return true;
 			}
+
+			return false;
 		}
 
 		template <typename T, typename ... Args>

@@ -78,7 +78,7 @@ namespace Logic
 	auto World::getEntity(entity_handle_t handle) const -> Entity&
 	{
 		assert(containsEntity(handle) && "Cannot get Entity with invalid handle!");
-		_entityManager->getEntity(handle);
+		return _entityManager->getEntity(handle);
 	}
 
 	auto World::tryGetEntity(entity_handle_t handle) const -> Entity*
