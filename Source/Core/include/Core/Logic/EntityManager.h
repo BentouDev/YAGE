@@ -11,6 +11,9 @@
 
 namespace Logic
 {
+	class World;
+	class Scene;
+
 	class EntityManager
 	{
 	public:
@@ -26,7 +29,7 @@ namespace Logic
 		explicit EntityManager(Memory::IMemoryBlock& memory);
 		virtual ~EntityManager() noexcept;
 
-		auto createNew() -> handle_t;
+		auto createNew(World* world, Scene* scene) -> handle_t;
 
 		void remove(handle_t handle);
 

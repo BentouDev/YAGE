@@ -17,9 +17,9 @@ namespace Logic
 
 	}
 
-	EntityManager::handle_t EntityManager::createNew()
+	EntityManager::handle_t EntityManager::createNew(World* world, Scene* scene)
 	{
-		_entityContainer.create();
+		return _entityContainer.create(world, scene);
 	}
 
 	Utils::RawHandle EntityManager::getComponentHandle(handle_t handle, comp_id_t bit) const

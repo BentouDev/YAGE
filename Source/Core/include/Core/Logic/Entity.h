@@ -20,8 +20,14 @@ namespace Logic
 	{
 		friend class World;
 
+		struct Status
+		{
+			bool dirty : 1;
+		} _status;
+
 		// TODO: expose component count to compile time setting
 		World*			_world;
+		Scene*			_scene;
 		std::bitset<32>	componentBits;
 
 	public:
@@ -30,18 +36,35 @@ namespace Logic
 
 		handle_t Handle;
 
-		explicit Entity();
-		virtual ~Entity();
+		explicit Entity(World* world, Scene* scene)
+			: _world(world), _scene(scene), Handle()
+		{ }
 
-		Entity(Entity&&);
+		virtual ~Entity()
+		{ }
+
+		Entity(Entity&& other)
+			: _status(other._status), _world(other._world), _scene(other._scene),
+			  componentBits(std::move(other.componentBits)), Handle()
+		{
+			other._world = nullptr;
+			other._scene = nullptr;
+			other.componentBits.reset();
+		}
 
 		Entity(const Entity&) = delete;
 		Entity& operator=(Entity&&) = delete;
 		Entity& operator=(const Entity&) = delete;
 
+		inline Scene& getScene() const
+		{
+			assert(_scene != nullptr && "Entity : Scene cannot be nullptr!");
+			return *_scene;
+		}
+
 		inline World& getWorld() const
 		{
-			assert(_world != nullptr && "World in Entity cannot be nullptr!");
+			assert(_world != nullptr && "Entity : World cannot be nullptr!");
 			return *_world;
 		}
 
@@ -52,10 +75,10 @@ namespace Logic
 			return componentBits.test(IComponent::GetComponentId<T>());
 		}
 
-		template <typename T>
-		T& addComponent()
+		template <typename T, typename ... Args>
+		T& addComponent(Args&& ... args)
 		{
-			return getWorld().addComponent<T>(*this);
+			return getWorld().addComponent<T, Args...>(*this, std::forward<Args>(args)...);
 		}
 
 		template <typename T>
