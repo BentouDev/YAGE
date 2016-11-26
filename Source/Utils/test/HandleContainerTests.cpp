@@ -1,5 +1,5 @@
 //
-// Created by mrjaqbq on 06.03.16.
+// Created by bentoo on 26.11.16.
 //
 
 #include <gtest/gtest.h>
@@ -7,9 +7,9 @@
 
 #include "Utils/FreeListAllocator.h"
 #include "Utils/Handle.h"
-#include "Utils/Container.h"
+#include "Utils/HandleContainer.h"
 
-namespace MemoryTests
+namespace HandleContainerTests
 {
 	typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
 
@@ -91,7 +91,7 @@ namespace MemoryTests
 		}
 	};
 
-	class ContainerTest : public ::testing::Test
+	class HandleContainerTest : public ::testing::Test
 	{
 	public:
 		MockMemory* memoryBlock;
@@ -116,40 +116,42 @@ namespace MemoryTests
 		}
 	};
 
-	TEST_F(ContainerTest, CanCreateContainer)
+	TEST_F(HandleContainerTest, CanCreateContainer)
 	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>* container =
+				new Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>(getMemory(), count);
 
 		ASSERT_NE(container, nullptr);
 
 		delete container;
 	}
 
-	TEST_F(ContainerTest, CanCreateObject)
+	TEST_F(HandleContainerTest, CanCreateObject)
 	{
-		Utils::Container<FooTrait> container(getMemory(), count);
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1> container(getMemory(), count);
 		FooTrait::handle_t handle = container.create(13);
 
 		ASSERT_NE(handle, FooTrait::handle_t::invalid());
 		ASSERT_NE(handle.key, 0);
 		ASSERT_NE(handle.liveId, 0);
 		ASSERT_EQ(handle.typeId, TypeInfo<MyFooMock>::id());
-		ASSERT_EQ(container[handle].test, 13);
+		ASSERT_EQ(container.get(handle).test, 13);
 		ASSERT_TRUE(container.contains(handle));
 	}
 
-	TEST_F(ContainerTest, CanRemoveObject)
+	TEST_F(HandleContainerTest, CanRemoveObject)
 	{
-		Utils::Container<FooTrait> container(getMemory(), count);
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1> container(getMemory(), count);
+
 		auto handle = container.create();
 		container.remove(handle);
 
 		ASSERT_FALSE(container.contains(handle));
 	}
 
-	TEST_F(ContainerTest, CanReuseObject)
+	TEST_F(HandleContainerTest, CanReuseObject)
 	{
-		Utils::Container<FooTrait> container(getMemory(), count);
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1> container(getMemory(), count);
 
 		auto oldHandle = container.create();
 		container.remove(oldHandle);
@@ -160,9 +162,11 @@ namespace MemoryTests
 		ASSERT_NE(oldHandle.key, newHandle.key);
 	}
 
-	TEST_F(ContainerTest, CanFreeContainer)
+	TEST_F(HandleContainerTest, CanFreeContainer)
 	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>* container =
+				new Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>(getMemory(), count);
+
 		auto handle = container->create();
 		auto& obj = container->get(handle);
 
@@ -171,9 +175,10 @@ namespace MemoryTests
 		delete container;
 	}
 
-	TEST_F(ContainerTest, CanCreateManyItemsFromContainer)
+	TEST_F(HandleContainerTest, CanCreateManyItemsFromContainer)
 	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>* container =
+				new Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>(getMemory(), count);
 
 		for(int i = 0; i < count; i++)
 			container->create(i);
@@ -181,11 +186,13 @@ namespace MemoryTests
 		EXPECT_EQ(container->size(), count);
 	}
 
-	TEST_F(ContainerTest, CanRemoveItemFromMiddleOfContainer)
+	TEST_F(HandleContainerTest, CanRemoveItemFromMiddleOfContainer)
 	{
 		const int elementCount = 5;
 		const int elementToDelete = 2;
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+
+		Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>* container =
+				new Utils::HandleContainer<FooTrait, Utils::RawHandle, 1>(getMemory(), count);
 
 		std::vector<FooTrait::handle_t> handles;
 
