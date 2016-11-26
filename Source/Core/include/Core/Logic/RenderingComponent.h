@@ -38,11 +38,14 @@ namespace Logic
 
 	DECL_COMP(RenderingComponent)
 	{
+	public:
 		friend class Gfx::Renderer;
 		friend class RenderingSystem;
 
-		RenderingSystem& _system;
+		using handle_t	= Utils::Handle<RenderingComponent>;
+		using trait_t	= Utils::DefaultTrait<RenderingComponent>;
 
+	private:
 		bool _isVisible;
 		bool _isDirty;
 
@@ -51,10 +54,9 @@ namespace Logic
 		Utils::List<SubmeshInfo>					_cachedSubmeshInfo;
 
 	public:
-		inline explicit RenderingComponent(RenderingSystem& system, Memory::IMemoryBlock& memory)
-				: _system(system), _isVisible(true), _isDirty(false),
+		inline explicit RenderingComponent(Memory::IMemoryBlock& memory)
+				: _isVisible(true), _isDirty(false),
 				  _mesh(), _materials(memory), _cachedSubmeshInfo(memory)
-
 		{
 			setDirty();
 		}
@@ -64,7 +66,7 @@ namespace Logic
 		RenderingComponent& operator=(RenderingComponent&&) = delete;
 
 		RenderingComponent(RenderingComponent&& other)
-			: _system(other._system), _isVisible(other._isVisible), _isDirty(false),
+			: _isVisible(other._isVisible), _isDirty(false),
 			  _mesh(std::move(other._mesh)),
 			  _materials(std::move(other._materials)),
 			  _cachedSubmeshInfo(std::move(other._cachedSubmeshInfo))
@@ -115,8 +117,6 @@ namespace Logic
 		inline const Utils::List<Utils::Handle<Core::Material>>& getMaterials() const
 		{ return _materials; }
 	};
-
-	class RenderingComponentTrait : public Utils::DefaultTrait<RenderingComponent> { };
 }
 
 #endif //GAME_RENDERINGCOMPONENT_H

@@ -34,14 +34,16 @@ namespace Logic
 
 	void RenderingComponent::setDirty()
 	{
-		_system.setDirty(*this);
+	//	_system.setDirty(*this);
+		_isDirty = true;
 	}
 
 	RenderingComponent::~RenderingComponent()
 	{
 		for(auto& info : _cachedSubmeshInfo)
 		{
-			Memory::Delete(_system._memory, info.VAO);
+			assert(false && "FIXME : LEAK");
+		//	Memory::Delete(_memory, info.VAO);
 		}
 
 		_cachedSubmeshInfo.clear();

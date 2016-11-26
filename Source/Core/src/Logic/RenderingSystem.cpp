@@ -4,6 +4,7 @@
 
 #include <Core/Gfx/Camera.h>
 #include <Core/Gfx/Viewport.h>
+#include <Core/Logic/Scene.h>
 #include "Core/Logic/RenderingSystem.h"
 
 #include "Core/Engine.h"
@@ -18,8 +19,8 @@
 
 namespace Logic
 {
-	RenderingSystem::RenderingSystem(Core::Engine &engine, Memory::IMemoryBlock& memory)
-		: _engine(engine), _memory(memory), _components(memory), _dirtyComponents(memory)
+	RenderingSystem::RenderingSystem(Core::Engine &engine, Memory::IMemoryBlock& memory, World& world)
+		: System(memory), _engine(engine), _memory(memory), _world(world), _dirtyComponents(memory), _sceneEntities(memory)
 	{
 
 	}
@@ -31,29 +32,6 @@ namespace Logic
 			comp._isDirty = true;
 			_dirtyComponents.add(comp.Handle);
 		}
-	}
-
-	RenderingComponent::handle_t RenderingSystem::createNew()
-	{
-		RenderingComponent::handle_t handle = _components.create(*this, _memory);
-
-		return handle;
-	}
-
-	void RenderingSystem::remove(RenderingComponent::handle_t handle)
-	{
-		// auto& cmp = _components.get(handle);
-
-		// dereference mesh
-		// dereference materials
-		// dereference textures
-
-		_components.remove(handle);
-	}
-
-	RenderingComponent& RenderingSystem::get(RenderingComponent::handle_t handle) const
-	{
-		return _components.get(handle);
 	}
 
 	void RenderingSystem::createVAO(RenderingComponent& component)
@@ -120,14 +98,14 @@ namespace Logic
 
 	void RenderingSystem::refreshDirtyComponents()
 	{
-		for(RenderingComponent::handle_t handle : _dirtyComponents)
+		/*for(RenderingComponent::handle_t handle : _dirtyComponents)
 		{
 			// At this moment we don't know what was changed
 			// Material list should stay untouched
 			// Mesh and material pair data has to be reloaded
 
 			RenderingComponent& comp = _components.get(handle);
-			/*if(comp._cachedSubmeshInfo.size() > 0)
+			//if(comp._cachedSubmeshInfo.size() > 0)
 			{
 				for (auto& h : comp._cachedSubmeshInfo)
 				{
@@ -135,34 +113,39 @@ namespace Logic
 				}
 
 				comp._cachedSubmeshInfo.clear();
-			}*/
+			}//
 
-			Core::Mesh* mesh = _engine.MeshManager.get().tryGetMesh(comp.getMesh());
-			if(mesh != nullptr)
-			{
-				/*for (Core::Submesh& submesh : mesh->getSubmeshes())
-				{
-					//	const Core::Material& material = _engine.MaterialManager.get().getMaterial(matHandle);
-					//	comp._batchHandles.add(_engine.BatchManager.get().allocateMesh(mesh, material));
-				}*/
-
-				createVAO(comp);
-			}
-			else
-			{
-				// theres no mesh!
-				// do swap if container supports
-				comp._cachedSubmeshInfo.clear();
-				comp._isVisible = false;
-			}
-
-			comp._isDirty = false;
+			refreshDirtyComponent(comp);
 		}
 
-		_dirtyComponents.clear();
+		_dirtyComponents.clear();*/
 	}
 
-	void RenderingSystem::update(const Core::GameTime& time, Gfx::Renderer& renderer, Gfx::Camera* pCamera, Gfx::Viewport* pViewport)
+	void RenderingSystem::refreshDirtyComponent(RenderingComponent& component)
+	{
+		Core::Mesh* mesh = _engine.MeshManager.get().tryGetMesh(component.getMesh());
+		if(mesh != nullptr)
+		{
+			/*for (Core::Submesh& submesh : mesh->getSubmeshes())
+			{
+				//	const Core::Material& material = _engine.MaterialManager.get().getMaterial(matHandle);
+				//	comp._batchHandles.add(_engine.BatchManager.get().allocateMesh(mesh, material));
+			}*/
+
+			createVAO(component);
+		}
+		else
+		{
+			// theres no mesh!
+			// do swap if container supports
+			component._cachedSubmeshInfo.clear();
+			component._isVisible = false;
+		}
+
+		component._isDirty = false;
+	}
+
+	void RenderingSystem::update(const Core::GameTime& time)
 	{
 		// recreate dirty batches
 		// add new meshes to them or change their data
@@ -179,42 +162,80 @@ namespace Logic
 		// From appropriate system (maybe on separate threads even)!
 		// Then it will sort them in renderer
 		// And submit calls to GPU
-		Gfx::Renderer::queue_t& queue = renderer.getQueue();
-		queue.setCamera(pCamera);
-		queue.setRenderTarget(pViewport);
-		for(RenderingComponent& comp : _components)
+
+		// Group entities by their camera
+		// That will mean that this generic list that we are providing is worth shit
+		// OnAddEntity or something will be overriden
+		// And then some struct like CamBatch { Cam; List<Entity> } will be introduced
+
+		for(SceneInfo& info : _sceneEntities)
 		{
-			if(!comp.isVisible())
-				continue;
-
-			// Get new packet
-			// Set key information (this is only used for sorting, co no stress!)
-			const Core::Mesh&					mesh		= _engine.MeshManager.get().getMesh(comp.getMesh());
-			const Gfx::StaticBuffer&			buffer		= _engine.BufferManager.get().getBuffer(mesh.getBuffer());
-			const Core::MeshScheme&				scheme		= _engine.MeshManager.get().getMeshScheme(mesh.getMeshSchemeId());
-			const Utils::List<Core::Submesh>&	submeshes	= mesh.getSubmeshes();
-
-			// TODO: Maybe cachce entire submesh data?
-			for(std::size_t i = 0; i < comp._cachedSubmeshInfo.size(); i++)
+			for(Entity::handle_t handle : info.entities)
 			{
-				const Core::Submesh& submesh = submeshes[i];
-				const SubmeshInfo& info = comp._cachedSubmeshInfo[i];
+				Gfx::Renderer::queue_t& queue = _engine.Renderer->getQueue();
+				queue.setCamera(info.scene->defaultCamera);
+				queue.setRenderTarget(info.scene->defaultViewport);
 
-				Gfx::RenderKey key;
-				Gfx::RenderData& packet = queue.createCommands(key);
+				// TODO: we are using handle to get entity, and World internaly extracts handle to pass it to manager, so getting this instance is useless
+				Entity& entity = _world.getEntity(handle);
+				RenderingComponent& comp = entity.getComponent<RenderingComponent>();
 
-				// Set Data, like shader program, uniforms, vao etc.
-				// No uniforms as for now
-				packet.baseVertex	 = (GLuint) submesh.getBaseVertex();
-				packet.elementCount	 = (GLuint) submesh.getIndiceCount();
-				packet.indexType	 = scheme.getIndexType();
-				packet.ShaderProgram = info.ShaderProgram;
+				// TODO: introduce activation to container and exclude inactive ones straight ahead
+				// But that wont help, will it?
+				if(!comp.isVisible())
+					continue;
 
-				// VAO has only mesh scheme!
-				packet.VAO = *info.VAO;
-				packet.VBO = buffer.getVBO();
-				packet.IBO = buffer.getIBO();
+				// TODO: this cannot be called here, move it away!
+				if(comp.isDirty())
+					refreshDirtyComponent(comp);
+
+				const Core::Mesh&					mesh		= _engine.MeshManager.get().getMesh(comp.getMesh());
+				const Gfx::StaticBuffer&			buffer		= _engine.BufferManager.get().getBuffer(mesh.getBuffer());
+				const Core::MeshScheme&				scheme		= _engine.MeshManager.get().getMeshScheme(mesh.getMeshSchemeId());
+				const Utils::List<Core::Submesh>&	submeshes	= mesh.getSubmeshes();
+
+				// TODO: Maybe cachce entire submesh data?
+				for(std::size_t i = 0; i < comp._cachedSubmeshInfo.size(); i++)
+				{
+					const Core::Submesh& submesh = submeshes[i];
+					const SubmeshInfo& info = comp._cachedSubmeshInfo[i];
+
+					Gfx::RenderKey key;
+					Gfx::RenderData& packet = queue.createCommands(key);
+
+					// Set Data, like shader program, uniforms, vao etc.
+					// No uniforms as for now
+					packet.baseVertex	 = (GLuint) submesh.getBaseVertex();
+					packet.elementCount	 = (GLuint) submesh.getIndiceCount();
+					packet.indexType	 = scheme.getIndexType();
+					packet.ShaderProgram = info.ShaderProgram;
+
+					// VAO has only mesh scheme!
+					packet.VAO = *info.VAO;
+					packet.VBO = buffer.getVBO();
+					packet.IBO = buffer.getIBO();
+				}
 			}
+		}
+	}
+
+	void RenderingSystem::addEntity(ISystem::entity_handle_t handle)
+	{
+		Entity&	entity	= _world.getEntity(handle);
+		bool	added	= false;
+
+		for(SceneInfo& info : _sceneEntities)
+		{
+			if(info.scene == &entity.getScene())
+			{
+				added = true;
+				info.entities.add(handle);
+			}
+		}
+
+		if(!added)
+		{
+			_sceneEntities.emplace(&entity.getScene(), _memory, handle);
 		}
 	}
 }
