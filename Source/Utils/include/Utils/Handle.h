@@ -120,7 +120,7 @@ namespace Utils
 	{
 		Handle h;
 
-		static_assert(h.typeId == handle.typeId, "Unable to cast handles for different types!");
+		assert(h.typeId == handle.typeId && "handle_cast : Unable to cast handles for different types!");
 
 		h.liveId	= handle.liveId;
 		h.index		= handle.index;
