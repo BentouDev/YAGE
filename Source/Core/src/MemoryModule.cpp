@@ -53,7 +53,7 @@ namespace Core
 		Memory::IAllocator& allocator = block->getAllocator();
 		if(allocator.getUsedSize() != 0)
 		{
-			std::fprintf(stderr, "Block '%s' leaked '%zu' bytes", block->getName(), allocator.getUsedSize());
+			std::fprintf(stderr, "Block '%s' leaked '%zu' bytes\n", block->getName(), allocator.getUsedSize());
 			return true;
 		}
 
