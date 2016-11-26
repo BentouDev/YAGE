@@ -1,7 +1,6 @@
 //
 // Created by bentoo on 21.11.16.
 //
-
 #ifndef GAME_SYSTEM_H
 #define GAME_SYSTEM_H
 
@@ -18,18 +17,31 @@ namespace Logic
 	template <typename ... Components>
 	class Requires
 	{
+	public:
 		using component_list_t = Utils::TypeIndexList<Components...>;
+
+		static std::bitset<32> BuildBitset()
+		{
+			std::uint8_t componentBits[] = { IComponent::GetComponentId<Components>()... };
+			std::bitset<32> bitset;
+
+			for(auto i = 0; i < sizeof...(Components); i++)
+			{
+				bitset.set(componentBits[i]);
+			}
+
+			return bitset;
+		}
 	};
 
 	template <typename Sys, typename Reqs>
-	class System : private ISystem
+	class System : public ISystem
 	{
 	protected:
 		explicit System(Memory::IMemoryBlock& memory)
-			: ISystem(memory, TypeInfo<Sys>::cName(), TypeInfo<Sys>::id(), ISystem::GetSystemId<Sys>())
-		{
-	//		Core::Logger::get()->info("Created system '{}' with memory '{}'", name(), memory.getName());
-		}
+			: ISystem(memory, TypeInfo<Sys>::cName(), TypeInfo<Sys>::id(), ISystem::GetSystemId<Sys>(),
+					  Reqs::BuildBitset())
+		{ }
 	};
 }
 

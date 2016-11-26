@@ -13,39 +13,48 @@
 
 #include "Entity.h"
 
+namespace Core
+{
+	struct GameTime;
+}
+
 namespace Logic
 {
+	class Entity;
+
+	using system_id_t = std::uint8_t;
+
 	class ISystem
 	{
-		static std::atomic<std::size_t> _lastTypeId;
+	public:
+		friend class World;
+		using entity_handle_t = Utils::Handle<Entity>;
 
-		const char*	_name;
-		std::size_t	_systemId;
-		type_t		_type;
+	private:
+		static std::atomic<system_id_t> _lastTypeId;
+
+		std::bitset<32>	componentBits;
+		const char*		_name;
+		system_id_t		_systemId;
+		type_t			_type;
 
 	protected:
-		explicit ISystem(Memory::IMemoryBlock& memory, const char* name, type_t type, std::size_t systemId)
-			: _name(name), _systemId(systemId), _type(type), _entities(memory)
-		{ }
+		explicit ISystem(Memory::IMemoryBlock& memory, const char* name, type_t type,
+						 std::size_t systemId, std::bitset<32> bits);
 
 		template <typename T>
-		std::size_t GetSystemId()
-		{
-			static_assert(std::is_base_of<ISystem, T>::value, "T Must derive from System!");
-			static std::size_t id = _lastTypeId++;
-			return id;
-		}
+		system_id_t GetSystemId();
 
 		Utils::List<Entity::handle_t> _entities;
 
 	public:
-		const char* name() const
+		inline const char* name() const
 		{ return _name; }
 
-		std::size_t systemId() const
+		inline std::size_t systemId() const
 		{ return _systemId; }
 
-		type_t type() const
+		inline type_t type() const
 		{ return _type; }
 
 		inline const Utils::List<Entity::handle_t>& getEntities() const
@@ -53,7 +62,18 @@ namespace Logic
 
 		inline Utils::List<Entity::handle_t>& getEntities()
 		{ return _entities; }
+
+		virtual void update(const Core::GameTime&) = 0;
+		virtual void addEntity(entity_handle_t) = 0;
 	};
+
+	template <typename T>
+	system_id_t ISystem::GetSystemId()
+	{
+		static_assert(std::is_base_of<ISystem, T>::value, "T Must derive from System!");
+		static system_id_t id = _lastTypeId++;
+		return id;
+	}
 }
 
 #endif //GAME_ISYSTEM_H
