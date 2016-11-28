@@ -10,20 +10,30 @@ cmake_policy(SET CMP0048 OLD)
 option(YAGE_BUILD_TESTS "Build Tests" ON)
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
+option(YAGE_BUILD_GLFW "Build GLFW from source" ON)
 
 # emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
+# Set modules directory
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+
 # Add Vulkan
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_MODULE_PATH})
 find_package(Vulkan)
 
 # Add OpenGl
 find_package(OpenGL)
 
 # Add GLFW
-add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)
-include_directories(Dependencies/GLFW/include)
+if(YAGE_BUILD_GLFW)
+    add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)
+    include_directories(Dependencies/GLFW/include)
+    set(GLFW_LIBRARY glfw)
+    set(GLFW_TARGET glfw)
+else()
+    find_package(GLFW)
+    include_directories(${GLFW_INCLUDE_DIR})
+endif(YAGE_BUILD_GLFW)
 
 # Add GLM
 add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)
@@ -64,7 +74,6 @@ endif(YAGE_BUILD_EDITOR)
 
 # Add Valgrind support for memory debugging
 if(YAGE_VALGRIND)
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Valgrind" ${CMAKE_MODULE_PATH})
     find_package(VALGRIND)
 endif(YAGE_VALGRIND)
 

@@ -21,7 +21,7 @@ target_compile_features(Core
         PRIVATE cxx_variadic_templates
         cxx_nullptr)
 
-target_link_libraries(Core YAGE::Utils glm glfw)
+target_link_libraries(Core YAGE::Utils glm ${GLFW_LIBRARY})
 
 if(OPENGL_FOUND)
     target_compile_definitions(Core PRIVATE YAGE_OPENGL=1)
@@ -37,7 +37,7 @@ install(TARGETS Core
 install(DIRECTORY include/ DESTINATION include)
 
 # This makes the project importable from the build directory
-export(TARGETS glfw Core FILE CoreConfig.cmake)
+export(TARGETS ${GLFW_TARGET} Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course
