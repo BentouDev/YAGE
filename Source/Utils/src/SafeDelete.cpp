@@ -3,6 +3,7 @@
 //
 
 #include "Utils/SafeDelete.h"
+#include <malloc.h>
 
 namespace Memory
 {

@@ -78,9 +78,11 @@ static PROC WinGetProcAddress(const char *name)
 	#else
 		#if defined(__sgi) || defined(__sun)
 			#define IntGetProcAddress(name) SunGetProcAddress(name)
+		#elif defined(EMSCRIPTEN)
+			#include <EGL/egl.h>
+			#define IntGetProcAddress(name) (*eglGetProcAddress)(name)
 		#else /* GLX */
-		    #include <GL/glx.h>
-
+			#include <GL/glx.h>
 			#define IntGetProcAddress(name) (*glXGetProcAddressARB)((const GLubyte*)name)
 		#endif
 	#endif

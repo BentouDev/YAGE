@@ -6,6 +6,8 @@
 #define YAGE_DEBUG_H
 
 #include <cstdint>
+#include <memory.h>
+#include <stdlib.h>
 #include "BorrowedPtr.h"
 
 namespace Memory
