@@ -1,7 +1,7 @@
 version: 1.0.{build}
 
-cache:
-  - Dependencies
+#cache:
+#  - Dependencies
 
 configuration:
   - Release
