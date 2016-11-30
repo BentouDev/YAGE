@@ -61,7 +61,7 @@ namespace Logic
 
 		inline World& getWorld() const
 		{
-			assert(world != nullptr && "World in scene cannot be nullptr!");
+			YAGE_ASSERT(world != nullptr, "Scene '%s' : World in scene cannot be nullptr!", Name);
 			return *world;
 		}
 

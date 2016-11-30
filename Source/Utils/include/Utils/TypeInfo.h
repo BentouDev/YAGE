@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <atomic>
 #include <string>
-#include <assert.h>
+#include "Assert.h"
 
 #define AS_STRING(arg) #arg
 
@@ -36,7 +36,7 @@ public:
 	static auto id() noexcept -> type_t
 	{
 		static type_t id = ::TypeCounter::_lastTypeId++;
-		assert(id != 255 && "Danger, typeId exceded uint8_t maximum!");
+		YAGE_ASSERT(id != 255, "TypeInfo : Danger, typeId exceded uint8_t maximum!");
 		return id;
 	};
 

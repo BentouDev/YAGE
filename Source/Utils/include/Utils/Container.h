@@ -6,12 +6,12 @@
 #define YAGE_CONTAINER_H
 
 #include <vector>
-#include <cassert>
 #include <cstdlib>
 #include <malloc.h>
 #include <memory.h>
 
 #include "IContainer.h"
+#include "Assert.h"
 #include "List.h"
 #include "Index.h"
 #include "SafeDelete.h"
@@ -140,8 +140,8 @@ namespace Utils
 
 		inline void remove(handle_t handle)
 		{
-			assert(contains(handle)
-				   && "Container : Cannot remove element by invalid handle!");
+			YAGE_ASSERT(contains(handle),
+				   "Container : Cannot remove element by invalid handle!");
 
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
@@ -183,6 +183,12 @@ namespace Utils
 
 		inline auto get(handle_t handle) const -> object_t&
 		{
+#ifndef NDEBUG
+			// ifndef added to help compiler inlining this in Release, ((void)0); would be ommited.
+			YAGE_ASSERT(contains(handle),
+						"Container : Cannot get element by invalid handle!");
+#endif
+
 			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			return elements[in.index];
 		}

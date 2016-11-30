@@ -61,13 +61,13 @@ namespace Logic
 
 		inline Scene& getScene() const
 		{
-			assert(_scene != nullptr && "Entity : Scene cannot be nullptr!");
+			YAGE_ASSERT(_scene != nullptr, "Entity '%zu' : Scene cannot be nullptr!", Handle.key);
 			return *_scene;
 		}
 
 		inline World& getWorld() const
 		{
-			assert(_world != nullptr && "Entity : World cannot be nullptr!");
+			YAGE_ASSERT(_world != nullptr, "Entity '%zu' : World cannot be nullptr!", Handle.key);
 			return *_world;
 		}
 

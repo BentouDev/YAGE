@@ -2,7 +2,7 @@
 // Created by bentoo on 9/28/16.
 //
 
-#include <assert.h>
+#include "Utils/Assert.h"
 #include "Utils/PoolAllocator.h"
 
 namespace Memory
@@ -11,7 +11,9 @@ namespace Memory
 		 std::size_t typeSize, std::size_t typeAlign, std::size_t alignOffset)
 		: IAllocator(memory, size), _alignOffset(alignOffset), _typeSize(typeSize), _typeAlignment(typeAlign)
 	{
-		assert(typeSize > sizeof(void*) && "Allocation size must be larger than sizeof(void*)!");
+		YAGE_ASSERT(typeSize > sizeof(void*),
+					"PoolAllocator : Allocation size must be larger than sizeof(void*), which is '%zu'!",
+					sizeof(void*));
 
 		std::size_t allocSize 	= typeSize + alignOffset;
 		std::size_t adjustment 	= Internal::calcForwardAlignmentAdjustment(_startPtr, typeAlign, alignOffset);
@@ -40,8 +42,9 @@ namespace Memory
 
 	void* PoolAllocator::allocate(std::size_t size, std::size_t alignment, std::size_t)
 	{
-		assert(size == _typeSize && alignment == _typeAlignment
-			   && "Cannot do allocation with other size and alignment");
+		YAGE_ASSERT(size == _typeSize && alignment == _typeAlignment,
+			   "PoolAllocator : Cannot do allocation with size and alignment other than '%zu' and '%zu'!",
+			   _typeSize, _typeAlignment);
 
 		if(_freePtr == nullptr)
 			return nullptr;

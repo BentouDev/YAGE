@@ -2,7 +2,7 @@
 // Created by bentoo on 9/27/16.
 //
 
-#include <cassert>
+#include "Utils/Assert.h"
 #include "Utils/LinearAllocator.h"
 
 namespace Memory
@@ -47,7 +47,8 @@ namespace Memory
 
 	void LinearAllocator::deallocate(void*)
 	{
-		assert(false && "Cannot deallocate from linear allocator, use clear() instead!");
+		YAGE_ASSERT(false,
+					"LinearAllocator : Cannot deallocate from linear allocator, use clear() instead!");
 	}
 
 	bool LinearAllocator::hasAddress(const void* ptr) const

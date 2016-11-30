@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <utility>
 #include "TypeInfo.h"
+#include "Assert.h"
 
 namespace Utils
 {
@@ -120,7 +121,9 @@ namespace Utils
 	{
 		Handle h;
 
-		assert(h.typeId == handle.typeId && "handle_cast : Unable to cast handles for different types!");
+		YAGE_ASSERT(h.typeId == handle.typeId,
+					"handle_cast : Unable to cast handles from '%d' to '%d'!",
+					h.typeId, h.typeId);
 
 		h.liveId	= handle.liveId;
 		h.index		= handle.index;

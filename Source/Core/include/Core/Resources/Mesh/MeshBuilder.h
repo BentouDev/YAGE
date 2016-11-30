@@ -45,9 +45,10 @@ namespace Resources
 		template<typename T>
 		MeshBuilder& withSubmeshIndices(T *ptr, uint32_t indiceCount)
 		{
-			assert(_scheme->getIndexSize() == sizeof(T)
-				   && _scheme->getIndexType() == OpenGL::toOpenGlType(TypeInfo<T>::id())
-				   && "All submeshes must have same index type!");
+			YAGE_ASSERT(_scheme->getIndexSize() == sizeof(T)
+				   && _scheme->getIndexType() == OpenGL::toOpenGlType(TypeInfo<T>::id()),
+				   "All submeshes must have same index type! Expected : '%zu', got : '%zu'",
+				   _scheme->getIndexType(), OpenGL::toOpenGlType(TypeInfo<T>::id()));
 
 			_submeshes.emplace(ptr, indiceCount);
 			return *this;

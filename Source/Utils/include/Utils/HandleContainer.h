@@ -6,12 +6,12 @@
 #define GAME_ARRAYCONTAINER_H
 
 #include <tuple>
-#include <cassert>
 
 #include "TypeIndexList.h"
 #include "Index.h"
 #include "List.h"
 #include "Slice.h"
+#include "Assert.h"
 
 namespace Utils
 {
@@ -132,8 +132,8 @@ namespace Utils
 
 		inline void remove(handle_t handle)
 		{
-			assert(contains(handle)
-				   && "HandleContainer : Cannot remove element by invalid handle!");
+			YAGE_ASSERT(contains(handle),
+				   "HandleContainer : Cannot remove element by invalid handle!");
 
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = _elements[in.index];
@@ -169,18 +169,35 @@ namespace Utils
 
 		inline auto get(handle_t handle) const -> object_t&
 		{
+#ifndef NDEBUG
+			// ifndef added to help compiler inlining this in Release, ((void)0); would be ommited.
+			YAGE_ASSERT(contains(handle),
+						"HandleContainer : Cannot get element by invalid handle!");
+#endif
+
 			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			return _elements[in.index];
 		}
 
 		inline auto get(handle_t handle, uint8_t index) const -> T&
 		{
+#ifndef NDEBUG
+			// ifndef added to help compiler inlining this in Release, ((void)0); would be ommited.
+			YAGE_ASSERT(contains(handle),
+						"HandleContainer : Cannot get element by invalid handle!");
+#endif
+
 			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			return _array[index][in.index];
 		}
 
 		inline auto set(handle_t handle, uint8_t index, T value)
 		{
+#ifndef NDEBUG
+			// ifndef added to help compiler inlining this in Release, ((void)0); would be ommited.
+			YAGE_ASSERT(contains(handle),
+						"HandleContainer : Cannot set element by invalid handle!");
+#endif
 			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			T& old = _array[index][in.index];
 			new (&old) T(std::move(value));

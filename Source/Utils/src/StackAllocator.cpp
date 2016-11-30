@@ -2,7 +2,7 @@
 // Created by bentoo on 9/28/16.
 //
 
-#include <cassert>
+#include "Utils/Assert.h"
 #include "Utils/StackAllocator.h"
 
 namespace Memory
@@ -52,7 +52,8 @@ namespace Memory
 
 	void StackAllocator::deallocate(void *ptr)
 	{
-		assert(ptr == _lastAllocation && "Can only deallocate from the top of a stack");
+		YAGE_ASSERT(ptr == _lastAllocation,
+					"StackAllocator : Can only deallocate from the top of a stack");
 
 		std::size_t lastAddress 	= reinterpret_cast<uintptr_t>(_lastAllocation);
 		std::uintptr_t 	allocationSizeAddress	= reinterpret_cast<std::uintptr_t>(ptr) - ALLOCATION_SIZE_BYTES;
