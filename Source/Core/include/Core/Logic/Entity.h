@@ -20,16 +20,20 @@ namespace Logic
 	{
 		friend class World;
 
-		struct Status
-		{
-			bool dirty : 1;
-		} _status;
-
 		// TODO: expose component count to compile time setting
 		World*			_world;
 		Scene*			_scene;
 		std::bitset<32>	componentBits;
 		std::bitset<32>	cachedComponentBits;
+
+		struct Status
+		{
+			bool dirty : 1;
+			bool removed : 1;
+		} _status;
+
+		static_assert(sizeof(Status) <= sizeof(char),
+					  "Status struct cannot take more than 1 byte!");
 
 	public:
 		using handle_t	= Utils::Handle<Entity>;
@@ -39,7 +43,7 @@ namespace Logic
 
 		explicit Entity(World* world, Scene* scene)
 			: _world(world), _scene(scene), Handle()
-		{ _status.dirty = true; }
+		{ _status.dirty = false; }
 
 		virtual ~Entity()
 		{ }

@@ -10,7 +10,7 @@ namespace Logic
 {
 	World::World(Memory::IMemoryBlock& memory)
 		: _memory(memory), _entityManager(nullptr), _componentContainers{nullptr},
-		  _registeredSystems(_memory), _dirtyEntities(_memory)
+		  _registeredSystems(_memory), _dirtyEntities(_memory), _removedEntities(_memory)
 	{
 		_entityManager = YAGE_CREATE_NEW(_memory, EntityManager)(_memory);
 	}
@@ -33,7 +33,7 @@ namespace Logic
 		Memory::Delete(_memory, _entityManager);
 	}
 
-	void World::update(const Core::GameTime& time)
+	void World::refresh()
 	{
 		for(auto handle : _dirtyEntities)
 		{
@@ -59,7 +59,31 @@ namespace Logic
 			entity.cachedComponentBits = entity.componentBits;
 		}
 
+		for(auto handle : _removedEntities)
+		{
+			Entity& entity = getEntity(handle);
+
+			for (SystemInfo& info : _registeredSystems)
+			{
+				if(matchComponentSignature(entity.componentBits, info.instance->componentBits))
+				{
+					info.instance->removeEntity(handle);
+				}
+			}
+
+			_entityManager->remove(handle);
+		}
+
+		_removedEntities.clear();
 		_dirtyEntities.clear();
+	}
+
+	void World::update(const Core::GameTime& time, bool andRefresh)
+	{
+		if(andRefresh)
+		{
+			refresh();
+		}
 
 		// iterate over each system
 		for(SystemInfo& info : _registeredSystems)
@@ -73,7 +97,7 @@ namespace Logic
 		return ((entity & system) == system);
 	}
 
-	void World::setDirty(Entity& entity)
+	void World::setAsDirty(Entity& entity)
 	{
 		if(!entity._status.dirty)
 		{
@@ -82,7 +106,23 @@ namespace Logic
 		}
 	}
 
-	bool World::containsEntity(entity_handle_t handle) const
+	void World::setAsRemoved(Entity& entity)
+	{
+		if(!entity._status.removed)
+		{
+			entity._status.removed = true;
+			_removedEntities.add(entity.Handle);
+		}
+	}
+
+	bool World::isAlive(entity_handle_t handle) const
+	{
+		return isAliveInCurrentFrame(handle) ? (
+			!getEntity(handle)._status.removed
+		) : false;
+	}
+
+	bool World::isAliveInCurrentFrame(entity_handle_t handle) const
 	{
 		return _entityManager->contains(handle);
 	}
@@ -94,13 +134,15 @@ namespace Logic
 
 	void World::removeEntity(entity_handle_t handle)
 	{
-		YAGE_ASSERT(containsEntity(handle), "Cannot remove Entity with invalid handle : '%zu'!", handle.key);
-		_entityManager->remove(handle);
+		YAGE_ASSERT(isAliveInCurrentFrame(handle), "Cannot remove Entity with invalid handle : '%zu'!", handle.key);
+
+		setAsRemoved(getEntity(handle));
 	}
 
 	auto World::getEntity(entity_handle_t handle) const -> Entity&
 	{
-		YAGE_ASSERT(containsEntity(handle), "Cannot get Entity with invalid handle : '%zu'!", handle.key);
+		YAGE_ASSERT(isAliveInCurrentFrame(handle), "Cannot get Entity with invalid handle : '%zu'!", handle.key);
+
 		return _entityManager->getEntity(handle);
 	}
 
@@ -134,7 +176,7 @@ namespace Logic
 		entity.componentBits.set(bit, true);
 		_entityManager->setComponentHandle(entity.Handle, bit, handle);
 
-		setDirty(entity);
+		setAsDirty(entity);
 	}
 
 	void World::removeComponent(Entity& entity, comp_id_t bit)
@@ -142,6 +184,6 @@ namespace Logic
 		entity.componentBits.set(bit, false);
 		_entityManager->setComponentHandle(entity.Handle, bit, Utils::RawHandle::invalid());
 
-		setDirty(entity);
+		setAsDirty(entity);
 	}
 }

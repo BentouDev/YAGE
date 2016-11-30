@@ -42,7 +42,7 @@ export(TARGETS glfw Core FILE CoreConfig.cmake)
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course
     add_executable(CoreTests
-            tests/CoreTests.cpp tests/MemoryModuleTests.cpp)
+            tests/CoreTests.cpp tests/MemoryModuleTests.cpp tests/WorldTests.cpp)
 
     target_link_libraries(CoreTests
             Core glfw gtest gtest_main gmock)

@@ -38,9 +38,15 @@ namespace Logic
 
 		// TODO: expose component count to compile time setting
 	protected:
+		struct SystemInfo;
+
 		Memory::IMemoryBlock&	_memory;
 		EntityManager*			_entityManager;
 		Utils::IContainer*		_componentContainers[32];
+
+		Utils::List<SystemInfo>			_registeredSystems;
+		Utils::List<entity_handle_t>	_dirtyEntities;
+		Utils::List<entity_handle_t>	_removedEntities;
 
 		auto getComponent(entity_handle_t, comp_id_t) const -> Utils::RawHandle;
 		auto getComponent(Entity&, comp_id_t) const -> Utils::RawHandle;
@@ -49,7 +55,8 @@ namespace Logic
 		void addComponent(Entity&, comp_id_t, Utils::RawHandle);
 		void removeComponent(Entity&, comp_id_t);
 
-		void setDirty(Entity&);
+		void setAsDirty(Entity&);
+		void setAsRemoved(Entity&);
 
 		bool matchComponentSignature(std::bitset<32>, std::bitset<32>);
 
@@ -105,16 +112,17 @@ namespace Logic
 			type_t		type;
 		};
 
-		Utils::List<SystemInfo>			_registeredSystems;
-		Utils::List<entity_handle_t>	_dirtyEntities;
-
 	public:
 		explicit World(Memory::IMemoryBlock& memory);
 		virtual ~World();
 
-		void update(const Core::GameTime& time);
+		void refresh();
 
-		bool containsEntity(entity_handle_t) const;
+		void update(const Core::GameTime& time, bool andRefresh = true);
+
+		bool isAlive(entity_handle_t) const;
+
+		bool isAliveInCurrentFrame(entity_handle_t) const;
 
 		auto createEntity(Scene* scene) -> entity_handle_t;
 
