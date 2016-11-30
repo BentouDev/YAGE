@@ -50,6 +50,15 @@ namespace Utils
 			static_assert(IndexOf<T>::exists(), "Type T must be in TypeIndexList parameters!");
 			return IndexOf<T>::index;
 		}
+
+		template <template <typename X> typename T, typename ... Args>
+		static void foreach(Args&& ... args)
+		{
+			(void)std::initializer_list<int>
+			{
+				(T<Types>(std::forward<Args>(args)...)(), 0)...
+			};
+		}
 	};
 }
 
