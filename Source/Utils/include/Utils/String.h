@@ -21,7 +21,7 @@ namespace Utils
 			if(back() != '\0')
 			{
 				add('\0');
-				erase(size() - 1);
+				eraseAt(size() - 1);
 			}
 		}
 

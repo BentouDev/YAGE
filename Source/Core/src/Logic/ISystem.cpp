@@ -28,6 +28,6 @@ namespace Logic
 
 	void ISystem::removeEntity(entity_handle_t handle)
 	{
-		_entities.erase(std::find(_entities.begin(), _entities.end(), handle));
+		_entities.eraseAddress(std::find(_entities.begin(), _entities.end(), handle));
 	}
 }
