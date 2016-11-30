@@ -5,7 +5,10 @@
 #ifndef GAME_MEMORYBLOCK_H
 #define GAME_MEMORYBLOCK_H
 
+#include <assert.h>
+#include <cstdio>
 #include <cstdint>
+#include <cstdlib>
 #include <cstring>
 
 #include <new>
@@ -15,6 +18,7 @@
 #include "MemoryBoundChecker.h"
 #include "MemoryTracker.h"
 #include "BorrowedPtr.h"
+#include "Assert.h"
 
 #define YAGE_CREATE_NEW(MemBlock, T) \
 	new ( MemBlock.allocate ( sizeof ( T ) , alignof ( T ) , Utils::DebugSourceInfo ( __FILE__ , __LINE__ ) ) ) T
@@ -132,6 +136,12 @@ namespace Memory
 			void*				allocationPtr	= _allocator.allocate(newSize, alignment, fronOffset);
 
 			std::uintptr_t allocationAddress = reinterpret_cast<std::uintptr_t>(allocationPtr);
+
+			YAGE_ASSERT (
+				allocationPtr != nullptr,
+				"\nBlock '%s' run out of memory in \n\t%s line %zu,\n\trequested %zu bytes, total space left was %zu bytes\n",
+				getName(), sourceInfo.file, sourceInfo.line, newSize, getFreeSize()
+			);
 
 			_boundChecker.GuardFront(allocationPtr);
 			_boundChecker.GuardBack(reinterpret_cast<void*>(allocationAddress + fronOffset + originalSize));
