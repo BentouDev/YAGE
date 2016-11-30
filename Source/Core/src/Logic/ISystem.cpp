@@ -15,4 +15,19 @@ namespace Logic
 	{
 		Core::Logger::get()->info("Created system '{}' with memory '{}'", this->name(), memory.getName());
 	}
+
+	ISystem::~ISystem()
+	{
+		Core::Logger::get()->info("Destroying system '{}'...", this->name());
+	}
+
+	void ISystem::addEntity(entity_handle_t handle)
+	{
+		_entities.add(handle);
+	}
+
+	void ISystem::removeEntity(entity_handle_t handle)
+	{
+		_entities.erase(std::find(_entities.begin(), _entities.end(), handle));
+	}
 }

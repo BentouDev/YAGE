@@ -43,11 +43,13 @@ namespace Logic
 						 std::size_t systemId, std::bitset<32> bits);
 
 		template <typename T>
-		system_id_t GetSystemId();
+		static system_id_t GetSystemId();
 
 		Utils::List<Entity::handle_t> _entities;
 
 	public:
+		virtual ~ISystem();
+
 		inline const char* name() const
 		{ return _name; }
 
@@ -64,7 +66,8 @@ namespace Logic
 		{ return _entities; }
 
 		virtual void update(const Core::GameTime&) = 0;
-		virtual void addEntity(entity_handle_t) = 0;
+		virtual void addEntity(entity_handle_t);
+		virtual void removeEntity(entity_handle_t);
 	};
 
 	template <typename T>

@@ -37,6 +37,12 @@ namespace Logic
 	template <typename Sys, typename Reqs>
 	class System : public ISystem
 	{
+	public:
+		using requirements = Reqs;
+
+		virtual ~System()
+		{ }
+
 	protected:
 		explicit System(Memory::IMemoryBlock& memory)
 			: ISystem(memory, TypeInfo<Sys>::cName(), TypeInfo<Sys>::id(), ISystem::GetSystemId<Sys>(),
