@@ -9,7 +9,7 @@
 namespace Logic
 {
 	World::World(Memory::IMemoryBlock& memory)
-		: _memory(memory), _entityManager(nullptr),
+		: _memory(memory), _entityManager(nullptr), _componentContainers{nullptr},
 		  _registeredSystems(_memory), _dirtyEntities(_memory)
 	{
 		_entityManager = YAGE_CREATE_NEW(_memory, EntityManager)(_memory);
@@ -17,6 +17,19 @@ namespace Logic
 
 	World::~World()
 	{
+		for(auto& info : _registeredSystems)
+		{
+			Memory::Delete(_memory, info.instance);
+		}
+
+		for(Utils::IContainer* ptr : _componentContainers)
+		{
+			if(ptr != nullptr)
+			{
+				Memory::Delete(_memory, ptr);
+			}
+		}
+
 		Memory::Delete(_memory, _entityManager);
 	}
 
@@ -29,11 +42,21 @@ namespace Logic
 
 			for (SystemInfo& info : _registeredSystems)
 			{
-				if(componentSignatureMatches(entity.componentBits, info.instance->componentBits))
+				if(matchComponentSignature(entity.componentBits, info.instance->componentBits))
 				{
-					info.instance->addEntity(entity.Handle);
+					// If component wasn't in this system previously, add it!
+					if(!matchComponentSignature(entity.cachedComponentBits, info.instance->componentBits))
+						info.instance->addEntity(entity.Handle);
+				}
+				else
+				{
+					// If component was in this system previously, remove it!
+					if(matchComponentSignature(entity.cachedComponentBits, info.instance->componentBits))
+						info.instance->removeEntity(entity.Handle);
 				}
 			}
+
+			entity.cachedComponentBits = entity.componentBits;
 		}
 
 		_dirtyEntities.clear();
@@ -45,7 +68,7 @@ namespace Logic
 		}
 	}
 
-	bool World::componentSignatureMatches(std::bitset<32> entity, std::bitset<32> system)
+	bool World::matchComponentSignature(std::bitset<32> entity, std::bitset<32> system)
 	{
 		return ((entity & system) == system);
 	}
@@ -71,13 +94,13 @@ namespace Logic
 
 	void World::removeEntity(entity_handle_t handle)
 	{
-		assert(containsEntity(handle) && "Cannot remove Entity with invalid handle!");
+		YAGE_ASSERT(containsEntity(handle), "Cannot remove Entity with invalid handle : '%zu'!", handle.key);
 		_entityManager->remove(handle);
 	}
 
 	auto World::getEntity(entity_handle_t handle) const -> Entity&
 	{
-		assert(containsEntity(handle) && "Cannot get Entity with invalid handle!");
+		YAGE_ASSERT(containsEntity(handle), "Cannot get Entity with invalid handle : '%zu'!", handle.key);
 		return _entityManager->getEntity(handle);
 	}
 
@@ -111,7 +134,6 @@ namespace Logic
 		entity.componentBits.set(bit, true);
 		_entityManager->setComponentHandle(entity.Handle, bit, handle);
 
-		// TODO : Notify systems about that, or put entity to list and update later
 		setDirty(entity);
 	}
 
@@ -120,7 +142,6 @@ namespace Logic
 		entity.componentBits.set(bit, false);
 		_entityManager->setComponentHandle(entity.Handle, bit, Utils::RawHandle::invalid());
 
-		// TODO : Notify systems about that, or put entity to list and update later
 		setDirty(entity);
 	}
 }

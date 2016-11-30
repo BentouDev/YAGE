@@ -11,15 +11,16 @@
 #include <malloc.h>
 #include <memory.h>
 
+#include "IContainer.h"
+#include "List.h"
 #include "Index.h"
 #include "SafeDelete.h"
 #include "MemoryBlock.h"
-#include "List.h"
 
 namespace Utils
 {
 	template<typename Trait>
-	class Container
+	class Container : public IContainer
 	{
 	public:
 		using object_t = typename Trait::object_t;

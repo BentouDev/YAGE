@@ -29,6 +29,7 @@ namespace Logic
 		World*			_world;
 		Scene*			_scene;
 		std::bitset<32>	componentBits;
+		std::bitset<32>	cachedComponentBits;
 
 	public:
 		using handle_t	= Utils::Handle<Entity>;
@@ -38,14 +39,16 @@ namespace Logic
 
 		explicit Entity(World* world, Scene* scene)
 			: _world(world), _scene(scene), Handle()
-		{ }
+		{ _status.dirty = true; }
 
 		virtual ~Entity()
 		{ }
 
 		Entity(Entity&& other)
 			: _status(other._status), _world(other._world), _scene(other._scene),
-			  componentBits(std::move(other.componentBits)), Handle()
+			  componentBits(std::move(other.componentBits)),
+			  cachedComponentBits(std::move(other.cachedComponentBits)),
+			  Handle()
 		{
 			other._world = nullptr;
 			other._scene = nullptr;

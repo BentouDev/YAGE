@@ -5,8 +5,9 @@
 #ifndef GAME_WORLD_H
 #define GAME_WORLD_H
 
-#include <Utils/Container.h>
 #include <bitset>
+#include <Utils/Container.h>
+#include <Utils/Assert.h>
 
 #include "Component.h"
 
@@ -39,7 +40,7 @@ namespace Logic
 	protected:
 		Memory::IMemoryBlock&	_memory;
 		EntityManager*			_entityManager;
-		void*					_componentContainers[32];
+		Utils::IContainer*		_componentContainers[32];
 
 		auto getComponent(entity_handle_t, comp_id_t) const -> Utils::RawHandle;
 		auto getComponent(Entity&, comp_id_t) const -> Utils::RawHandle;
@@ -47,9 +48,51 @@ namespace Logic
 		bool hasComponent(Entity&, comp_id_t) const;
 		void addComponent(Entity&, comp_id_t, Utils::RawHandle);
 		void removeComponent(Entity&, comp_id_t);
+
 		void setDirty(Entity&);
 
-		bool componentSignatureMatches(std::bitset<32>, std::bitset<32>);
+		bool matchComponentSignature(std::bitset<32>, std::bitset<32>);
+
+		template <typename T>
+		class ComponentContainerFunctor
+		{
+			static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
+
+			using trait_t = typename T::trait_t;
+
+			World* world;
+
+		public:
+			explicit ComponentContainerFunctor(World* world)
+				: world(world)
+			{ }
+
+			void operator()()
+			{
+				Utils::IContainer** containerPtr = &world->_componentContainers[IComponent::GetComponentId<T>()];
+				if((*containerPtr) == nullptr)
+				{
+					(*containerPtr) = YAGE_CREATE_NEW(world->_memory, Utils::Container<trait_t>)(world->_memory);
+				}
+			}
+		};
+
+		template <typename ComponentList>
+		void createComponentContainers()
+		{
+			ComponentList::template foreach<ComponentContainerFunctor>(this);
+		}
+
+		template <typename T>
+		Utils::Container<typename T::trait_t>& getComponentContainer() const
+		{
+			static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
+			using trait_t = typename T::trait_t;
+
+			Utils::IContainer* containerPtr = _componentContainers[IComponent::GetComponentId<T>()];
+
+			return *static_cast<Utils::Container<trait_t>*>(containerPtr);
+		}
 
 		// TODO : better system handling, have a TypeIndexList, use it!
 		struct SystemInfo
@@ -80,24 +123,6 @@ namespace Logic
 		auto getEntity(entity_handle_t) const -> Entity&;
 
 		auto tryGetEntity(entity_handle_t) const -> Entity*;
-
-		template <typename T>
-		void debugRegisterComponent()
-		{
-			static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
-			_componentContainers[IComponent::GetComponentId<T>()] =
-					YAGE_CREATE_NEW(_memory, Utils::Container<typename T::trait_t>)(_memory);
-		}
-
-		template <typename T>
-		Utils::Container<typename T::trait_t>& getComponentContainer() const
-		{
-			static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
-
-			void* containerPtr = _componentContainers[IComponent::GetComponentId<T>()];
-
-			return *static_cast<Utils::Container<typename T::trait_t>*>(containerPtr);
-		}
 
 		template <typename T>
 		bool hasComponent(entity_handle_t h) const
@@ -173,7 +198,8 @@ namespace Logic
 		template <typename T>
 		bool hasSystem()
 		{
-			static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem!");
+			static_assert(std::is_base_of<ISystem, T>::value, "TSystem must derive from ISystem!");
+
 			for(SystemInfo& info : _registeredSystems)
 			{
 				if(info.type == TypeInfo<T>::id())
@@ -184,13 +210,15 @@ namespace Logic
 		}
 
 		template <typename T, typename ... Args>
-		void registerSystem(Args&& ... args)
+		void createAndRegisterSystem(Args&& ... args)
 		{
 			static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem!");
-			assert(!hasSystem<T>() && "World : Cannot register same system twice!");
+
+			YAGE_ASSERT(!hasSystem<T>(), "World : Cannot register '%s' system twice!", TypeInfo<T>::cName());
+
+			createComponentContainers<typename T::requirements::component_list_t>();
 
 			T* instance = YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...);
-
 			_registeredSystems.emplace(instance, TypeInfo<T>::id());
 		};
 	};
