@@ -15,24 +15,24 @@ namespace Utils
 	class DefaultTrait
 	{
 	public:
-		using type = T;
-		using handle = Utils::Handle<T>;
+		using object_t = T;
+		using handle_t = Utils::Handle<T>;
 
-		inline static void cleanUp(type& first) { first.cleanUp(); }
+		inline static void cleanUp(object_t& first) { first.cleanUp(); }
 
-		inline static void swap(type& first, type& second) noexcept { first.swap(second); }
+		inline static void swap(object_t& first, object_t& second) noexcept { first.swap(second); }
 
-		inline static void incrementLiveId(Utils::Index<handle>& index) noexcept { index.handle.liveId++; }
+		inline static void incrementLiveId(Utils::Index<handle_t>& index) noexcept { index.handle.liveId++; }
 
-		inline static void setIndex(Utils::Index<handle>& index, uint16_t i) noexcept { index.handle.index = i; }
+		inline static void setIndex(Utils::Index<handle_t>& index, uint16_t i) noexcept { index.handle.index = i; }
 
-		inline static uint16_t getIndex(Utils::Index<handle>& index) noexcept { return index.handle.index; }
+		inline static uint16_t getIndex(Utils::Index<handle_t>& index) noexcept { return index.handle.index; }
 
-		inline static uint16_t getIndex(handle _handle) noexcept { return _handle.index; }
+		inline static uint16_t getIndex(handle_t _handle) noexcept { return _handle.index; }
 
-		inline static void setHandle(type& obj, handle& _handle) noexcept { obj.Handle = _handle; }
+		inline static void setHandle(object_t& obj, handle_t& _handle) noexcept { obj.Handle = _handle; }
 
-		inline static handle getHandle(type& obj) noexcept { return obj.Handle; }
+		inline static handle_t getHandle(object_t& obj) noexcept { return obj.Handle; }
 	};
 }
 

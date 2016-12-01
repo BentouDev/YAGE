@@ -130,7 +130,7 @@ namespace ListTests
 		EXPECT_EQ(1, list->size());
 		EXPECT_CALL((*list)[0], Die());
 
-		list->erase(0);
+		list->eraseAt(0);
 
 		EXPECT_EQ(0, list->size());
 		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
@@ -163,7 +163,7 @@ namespace ListTests
 
 		EXPECT_EQ(5, list->size());
 
-		list->erase(2);
+		list->eraseAt(2);
 
 		for(auto i = 0; i < list->size(); i++)
 		{

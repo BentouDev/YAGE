@@ -1,7 +1,12 @@
 language: cpp
 
+notifications:
+  email: false
+
 sudo: required
 dist: trusty
+
+cache: Dependencies
 
 addons:
   apt:
@@ -12,10 +17,12 @@ addons:
     packages:
       - cmake
       - cmake-data
+      - gcc-6
+      - g++-6
+      - clang-3.7
       - xorg-dev
       - libxxf86vm-dev
       - libglu1-mesa-dev
-      - clang-3.7
       - qt5-default
       - qttools5-dev-tools
 
@@ -29,8 +36,10 @@ matrix:
         - cmake --target all .
 
     - os: linux
-      compiler: gcc
+      compiler: gcc-6
       before_script:
+        - export CXX=g++-6
+        - export CC=gcc-6
         - cmake -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage " -DENABLE_COVERAGE=On --target all .
       after_success:
         - make test

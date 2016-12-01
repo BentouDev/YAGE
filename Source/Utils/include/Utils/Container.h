@@ -6,31 +6,33 @@
 #define YAGE_CONTAINER_H
 
 #include <vector>
-#include <stdlib.h>
+#include <cstdlib>
 #include <malloc.h>
 #include <memory.h>
 
+#include "IContainer.h"
+#include "Assert.h"
+#include "List.h"
 #include "Index.h"
 #include "SafeDelete.h"
 #include "MemoryBlock.h"
-#include "List.h"
 
 namespace Utils
 {
 	template<typename Trait>
-	class Container
+	class Container : public IContainer
 	{
 	public:
-		using object_t = typename Trait::type;
-		using handle_t = typename Trait::handle;
+		using object_t = typename Trait::object_t;
+		using handle_t = typename Trait::handle_t;
 		using activeCondition = bool(*)(object_t&);
 
-		static_assert(std::is_move_constructible<object_t>::value, "Trait type must be move constructible! (due to internal swap)");
-	//	static_assert(std::is_move_assignable<object_t>::value, "Trait type must be move assignable! (due to internal swap)");
+		static_assert(std::is_move_constructible<object_t>::value,
+					  "Trait type must be move constructible! (due to internal swap)");
 
 	private:
-		Memory::IMemoryBlock& _memory;
-		Utils::List<Index<handle_t>> _indices;
+		Memory::IMemoryBlock&			_memory;
+		Utils::List<Index<handle_t>>	_indices;
 
 		object_t* 	elements;
 
@@ -95,7 +97,7 @@ namespace Utils
 			container->unactivelistStart = 0;
 			container->unactivelistEnd = 0;
 			container->freelistStart = 0;
-			container->freelistEnd = container->maxSize - 1;
+			container->freelistEnd = (uint16_t) (container->maxSize - 1);
 		}
 
 	public:
@@ -113,7 +115,6 @@ namespace Utils
 		inline virtual ~Container()
 		{
 			removeAllElements();
-		//	destructElements();
 
 			_memory.deallocate(elements);
 			_indices.clear();
@@ -139,22 +140,15 @@ namespace Utils
 
 		inline void remove(handle_t handle)
 		{
+			YAGE_ASSERT(contains(handle),
+				   "Container : Cannot remove element by invalid handle!");
+
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
-
-		//	Trait::cleanUp(o);
 
 			--elementCount;
 			object_t& lastElement = elements[elementCount];
 
-			// TODO: check what happens with id
-			// Probably should be swapped to
-		//	Trait::swap(o, elements[--elementCount]);
-
-			// TODO: Create move assign operators and constructors for all these types
-			//std::swap(o, lastElement);
-
-			// o is going to be 'deleted' anyway
 			o.~object_t();
 			new (&o) object_t(std::move(lastElement));
 
@@ -165,10 +159,6 @@ namespace Utils
 			auto oldIndex = Trait::getIndex(handle);
 			_indices[freelistEnd].next = oldIndex;
 			freelistEnd = oldIndex;
-
-			// I PROBABLY SHOULDN'T HAVE THIS CLEAN UP METHOD AT ALL
-			// AFTER THIS CALL O is no longer an valid object!
-			// lastElement.~object_t();
 		}
 
 		/*inline auto activate(handle_t handle) noexcept -> void
@@ -193,6 +183,12 @@ namespace Utils
 
 		inline auto get(handle_t handle) const -> object_t&
 		{
+#ifndef NDEBUG
+			// ifndef added to help compiler inlining this in Release, ((void)0); would be ommited.
+			YAGE_ASSERT(contains(handle),
+						"Container : Cannot get element by invalid handle!");
+#endif
+
 			const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			return elements[in.index];
 		}

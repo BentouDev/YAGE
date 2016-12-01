@@ -213,7 +213,15 @@ namespace Utils
 			return *result;
 		}
 
-		void erase(std::size_t index)
+		void eraseAddress(T* ptr)
+		{
+			if(ptr >= begin() && ptr < end())
+			{
+				eraseAt(ptr - begin());
+			}
+		}
+
+		void eraseAt(std::size_t index)
 		{
 			if(index >= _size)
 				return;

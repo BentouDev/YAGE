@@ -6,6 +6,7 @@
 #define GAME_SCENE_H
 
 #include <Utils/String.h>
+#include <cassert>
 
 namespace Core
 {
@@ -22,14 +23,12 @@ namespace Gfx
 
 namespace Logic
 {
+	class World;
 	class RenderingSystem;
 
 	class Scene
 	{
 	protected:
-		// Reference to script module
-		// Containers for entites
-		// Containers for entity components
 
 		Memory::IMemoryBlock& _memory;
 
@@ -37,19 +36,18 @@ namespace Logic
 
 		Core::Engine& engine;
 
-		RenderingSystem* Rendering;
+		Logic::World* world;
 
-		Gfx::Camera* defaultCamera;
-		Gfx::Viewport* defaultViewport;
+		// Scene may have list of Entities
+		// So when its unloaded from Game/World it may try to free all of them :)
 
 	public:
-		Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);
+		explicit Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);
 
 		virtual ~Scene();
 
 		virtual void Update(const Core::GameTime& time);
 
-		// Is this necessary?
 		virtual void Draw(const Core::GameTime& time, Gfx::Renderer& renderer);
 
 		virtual void Start();
@@ -58,6 +56,17 @@ namespace Logic
 
 		inline void setViewport(Gfx::Viewport* viewport)
 		{ defaultViewport = viewport; }
+
+		void setWorld(World* newWorld);
+
+		inline World& getWorld() const
+		{
+			YAGE_ASSERT(world != nullptr, "Scene '%s' : World in scene cannot be nullptr!", Name);
+			return *world;
+		}
+
+		Gfx::Viewport*	defaultViewport;
+		Gfx::Camera*	defaultCamera;
 	};
 }
 

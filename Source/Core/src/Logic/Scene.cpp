@@ -12,7 +12,6 @@ namespace Logic
 		: _memory(memory), Name(name), engine(engine)
 	{
 		defaultCamera = YAGE_CREATE_NEW(_memory, Gfx::Camera)();
-		Rendering = YAGE_CREATE_NEW(_memory, RenderingSystem)(engine, _memory);
 
 		defaultCamera->FOV = 3.14f / 4.0f;
 		defaultCamera->nearCulling = 0.01f;
@@ -24,8 +23,23 @@ namespace Logic
 
 	Scene::~Scene()
 	{
-		Memory::Delete(_memory, Rendering);
 		Memory::Delete(_memory, defaultCamera);
+	}
+
+	void Scene::setWorld(World *newWorld)
+	{
+		if(world != nullptr)
+		{
+			// Remove all entities..
+			// Load scene once again
+		}
+
+		world = newWorld;
+	}
+
+	void Scene::Update(const Core::GameTime& time)
+	{
+
 	}
 
 	void Scene::Draw(const Core::GameTime& time, Gfx::Renderer& renderer)
@@ -36,7 +50,7 @@ namespace Logic
 		// so using that we can access batch for scheme & material pair
 
 		// this can be divided into threads
-		Rendering->update(time, renderer, defaultCamera, defaultViewport);
+	//	Rendering->update(time, renderer, defaultCamera, defaultViewport);
 
 		// what main classes do we have?
 		// submesh, material, light, postprocess
@@ -49,11 +63,6 @@ namespace Logic
 		// meshes know theirs also
 		// gather meshes by pass id
 		// gather lights
-	}
-
-	void Scene::Update(const Core::GameTime&)
-	{
-
 	}
 
 	void Scene::Start()

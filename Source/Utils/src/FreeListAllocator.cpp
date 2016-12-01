@@ -3,12 +3,13 @@
 //
 
 #include <cstring>
-#include <assert.h>
+#include "Utils/Assert.h"
 #include "Utils/FreeListAllocator.h"
 
 #if YAGE_VALGRIND
 #include <valgrind/valgrind.h>
 #include <valgrind/memcheck.h>
+
 #endif
 
 namespace Memory
@@ -73,7 +74,9 @@ namespace Memory
 		void* 			newPtr	= reinterpret_cast<void*>(endAddress);
 		FreeListHeader* pNew	= reinterpret_cast<FreeListHeader*>(newPtr);
 
-		assert(blockPtr->next != pNew && "Deallocation has failed to join adjacent blocks!");
+		YAGE_ASSERT(blockPtr->next != pNew,
+					"FreeListAllocator : Deallocation has failed to join adjacent blocks for address '%p'!",
+					pNew);
 
 		const uint32_t minimalSize = sizeof(FreeListHeader);
 		const std::size_t sizeLeft = blockPtr->size - allocationSize;
@@ -172,7 +175,9 @@ namespace Memory
 		void* 			rawBegin		= reinterpret_cast<void*>(headerAddress);
 		FreeListHeader* header			= reinterpret_cast<FreeListHeader*>(rawBegin);
 
-		assert(header->adjustment != 0 && "Cannot deallocate address thats already free!");
+		YAGE_ASSERT(header->adjustment != 0,
+					"FreeListAllocator : Cannot deallocate address '%p', its already free!",
+					header);
 
 		std::size_t allocSize 			= header->size;
 		void* 		rawEnd 				= reinterpret_cast<void*>(headerAddress + allocSize);
