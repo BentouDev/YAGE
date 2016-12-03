@@ -19,6 +19,12 @@
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Resources/Resource.h"
 
+namespace Resources
+{
+	class Texture;
+	class ShaderManager;
+}
+
 namespace Gfx
 {
 	void setUniform(GLint location, float value);
@@ -30,11 +36,6 @@ namespace Gfx
 	void setUniform(GLint location, Utils::Color value);
 
 	class ShaderProgram;
-}
-
-namespace Resources
-{
-	class ShaderManager;
 }
 
 namespace Core

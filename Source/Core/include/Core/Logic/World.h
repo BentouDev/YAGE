@@ -51,6 +51,7 @@ namespace Logic
 		auto getComponent(entity_handle_t, comp_id_t) const -> Utils::RawHandle;
 		auto getComponent(Entity&, comp_id_t) const -> Utils::RawHandle;
 
+
 		bool hasComponent(Entity&, comp_id_t) const;
 		void addComponent(Entity&, comp_id_t, Utils::RawHandle);
 		void removeComponent(Entity&, comp_id_t);
