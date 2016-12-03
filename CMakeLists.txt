@@ -44,6 +44,10 @@ include_directories(Dependencies/Json/src)
 # Add CppLinq
 include_directories(Dependencies/CppLinq)
 
+# Add LodePng
+include_directories(Dependencies/lodepng)
+add_library(lodepng Dependencies/lodepng/lodepng.cpp Dependencies/lodepng/lodepng.h)
+
 if(YAGE_BUILD_TESTS)
     # Add codecov scripts module to cmake
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})

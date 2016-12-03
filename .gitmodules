@@ -22,3 +22,6 @@
 [submodule "Dependencies/Assimp"]
 	path = Dependencies/Assimp
 	url = https://github.com/assimp/assimp.git
+[submodule "Dependencies/lodepng"]
+	path = Dependencies/lodepng
+	url = https://github.com/lvandeve/lodepng.git
