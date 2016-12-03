@@ -40,8 +40,8 @@ namespace Resources
 
 		lodepng::State state;
 
-		unsigned char*	data;
-		unsigned long	size;
+		std::uint8_t*	data;
+		std::size_t		size;
 
 		// TODO : use custom file size check function
 		// TODO : instead of using lodepngs load_file use their load buffer functions
