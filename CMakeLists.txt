@@ -14,8 +14,10 @@ option(YAGE_VALGRIND "Build with valgrind headers" ON)
 # emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
+# Add modules
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+
 # Add Vulkan
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Vulkan" ${CMAKE_MODULE_PATH})
 find_package(Vulkan)
 
 # Add OpenGl
@@ -45,12 +47,12 @@ include_directories(Dependencies/Json/src)
 include_directories(Dependencies/CppLinq)
 
 # Add LodePng
-include_directories(Dependencies/lodepng)
-add_library(lodepng Dependencies/lodepng/lodepng.cpp Dependencies/lodepng/lodepng.h)
+include_directories(Dependencies/Lodepng)
+add_library(lodepng Dependencies/Lodepng/lodepng.cpp Dependencies/Lodepng/lodepng.h)
 
 if(YAGE_BUILD_TESTS)
     # Add codecov scripts module to cmake
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
+    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
     find_package(codecov REQUIRED)
 
     # Add GoogleTest
@@ -68,8 +70,7 @@ endif(YAGE_BUILD_EDITOR)
 
 # Add Valgrind support for memory debugging
 if(YAGE_VALGRIND)
-    set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Dependencies/Valgrind" ${CMAKE_MODULE_PATH})
-    find_package(VALGRIND)
+    find_package(Valgrind)
 endif(YAGE_VALGRIND)
 
 # Revert to standard policy
