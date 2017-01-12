@@ -209,6 +209,7 @@ namespace Logic
 					packet.elementCount	 = (GLuint) submesh.getIndiceCount();
 					packet.indexType	 = scheme.getIndexType();
 					packet.ShaderProgram = info.ShaderProgram;
+					packet.material		 = &_engine.MaterialManager->getMaterial(comp._materials[i]);
 
 					// VAO has only mesh scheme!
 					packet.VAO = *info.VAO;

@@ -24,6 +24,7 @@ namespace Core
 	class Engine;
 	class Mesh;
 	class MeshData;
+	class Material;
 }
 
 namespace Gfx
@@ -44,6 +45,7 @@ namespace Gfx
 		GLuint baseVertex;
 		GLenum indexType;
 		GLuint elementCount;
+		Core::Material* material;
 	};
 
 	class Renderer

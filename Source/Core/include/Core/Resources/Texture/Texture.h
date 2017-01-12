@@ -37,6 +37,9 @@ namespace Resources
 		Texture(Texture&& other);
 
 		virtual ~Texture();
+
+		inline operator GLuint() const
+		{ return _handle; }
 	};
 }
 

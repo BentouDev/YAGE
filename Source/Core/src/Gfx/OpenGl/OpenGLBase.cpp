@@ -47,9 +47,12 @@ namespace OpenGL
 		}
 
 		gl::Enable(gl::DEPTH_TEST);
+		// gl::Enable(gl::TEXTURE_2D);
 
-        return didLoadFunctions;
-    }
+		OpenGL::checkError();
+
+		return didLoadFunctions;
+	}
 
 	void resizeWindow(const Core::Window& window)
 	{

@@ -11,6 +11,7 @@
 #include "Core/Engine.h"
 #include "Core/Resources/Mesh/Mesh.h"
 #include "Core/Resources/Mesh/MeshManager.h"
+#include "Core/Resources/Material/Material.h"
 #include "Core/Logic/RenderingSystem.h"
 
 namespace Gfx
@@ -29,6 +30,9 @@ namespace Gfx
 			lastProgram = data.ShaderProgram;
 			gl::UseProgram(data.ShaderProgram);
 		}
+
+		if(data.material != nullptr)
+			data.material->bindUniforms();
 
 		if(lastVAO != data.VAO)
 		{

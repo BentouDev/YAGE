@@ -150,6 +150,7 @@ namespace Resources
 		}
 		else*/
 		{
+			gl::BindTexture(gl::TEXTURE_2D, texture._handle);
 			gl::TexImage2D (
 				gl::TEXTURE_2D, 0, texture._pixelFormat,
 				texture._width, texture._height, 0, texture._format,
@@ -191,6 +192,7 @@ namespace Resources
 		}
 
 		gl::BindTexture(gl::TEXTURE_2D, 0);
+		OpenGL::checkError();
 	}
 
 	TextureLoader& TextureLoader::setParameter(GLenum key, GLenum value)

@@ -39,6 +39,17 @@ namespace Gfx
 				-0.5f, -0.5f, -0.5f,
 			};
 
+			static float _texcoords[] = {
+				0.f, 0.f,
+				0.f, 0.f,
+				0.f, 0.f,
+				0.f, 0.f,
+				0.f, 0.f,
+				0.f, 0.f,
+				0.f, 0.f,
+				0.f, 0.f
+			};
+
 			static float _normals[] = {
 				-1.f,  1.f,  1.f,
 				1.f,  1.f,  1.f,

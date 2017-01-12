@@ -27,14 +27,6 @@ namespace Resources
 
 namespace Gfx
 {
-	void setUniform(GLint location, float value);
-	void setUniform(GLint location, int value);
-	void setUniform(GLint location, glm::vec2 value);
-	void setUniform(GLint location, glm::vec3 value);
-	void setUniform(GLint location, glm::vec4 value);
-	void setUniform(GLint location, glm::mat4x4 value);
-	void setUniform(GLint location, Utils::Color value);
-
 	class ShaderProgram;
 }
 
@@ -58,41 +50,14 @@ namespace Core
 	class IAutoUniform
 	{
 	protected:
-		uint32_t _offset;
-		GLint	 _location;
+		uint32_t		_offset;
+		GLint			_location;
+		Core::Material&	_material;
 
 	public:
-		explicit IAutoUniform(const char*, const Core::Material&, const Resources::ShaderManager&);
+		explicit IAutoUniform(const char*, Core::Material&, const Resources::ShaderManager&);
 
 		virtual void set() = 0;
-	};
-
-	template <typename T>
-	class AutoUniform : public IAutoUniform
-	{
-	protected:
-		T _storedValue;
-
-	public:
-		inline explicit AutoUniform(const char* name, const Core::Material& material, const Resources::ShaderManager& manager)
-			: IAutoUniform(name, material, manager)
-		{ }
-
-		void set() override
-		{
-			Gfx::setUniform(_location, _storedValue);
-		}
-
-		AutoUniform& operator=(T value)
-		{
-			_storedValue = value;
-			return *this;
-		}
-
-		operator T()
-		{
-			return _storedValue;
-		}
 	};
 
 	DECL_RESOURCE(Material)
@@ -117,6 +82,8 @@ namespace Core
 
 		// GLOBAL - data that is shared between objects
 		// LOCAL - array with data per object, limited size ofc
+
+		std::uint32_t _textureIndex;
 
 	public:
 		inline explicit Material(Memory::IMemoryBlock& memory)
@@ -148,16 +115,15 @@ namespace Core
 		}
 
 		template <typename T>
-		Core::Material& addUniform(const char* name, const Resources::ShaderManager& manager)
-		{
-			IAutoUniform* uniform = YAGE_CREATE_NEW(_memory, AutoUniform<T>)(name, *this, manager);
-			_uniforms.add(uniform);
-			return *this;
-		}
+		Core::Material& addUniform(const char* name, const Resources::ShaderManager& manager);
+
+		template <typename T>
+		void setUniform(const char* name, T value);
 
 		void bindUniforms()
 		{
 			// TODO: uniform locations should be reloadeable
+			_textureIndex = 0;
 			for(IAutoUniform* uniform : _uniforms)
 			{
 				uniform->set();
@@ -169,9 +135,70 @@ namespace Core
 
 		Utils::Handle<Gfx::ShaderProgram> getShaderProgram() const
 		{ return _shader; }
+
+		GLint getLocation(const char* name, const Resources::ShaderManager& manager) const;
+
+		void setUniform(GLint location, float value);
+		void setUniform(GLint location, int value);
+		void setUniform(GLint location, glm::vec2 value);
+		void setUniform(GLint location, glm::vec3 value);
+		void setUniform(GLint location, glm::vec4 value);
+		void setUniform(GLint location, glm::mat4x4 value);
+		void setUniform(GLint location, Utils::Color value);
+		void setUniform(GLint location, Resources::Texture* texture);
 	};
 
 	class MaterialTrait : public Utils::DefaultTrait<Material> {};
+
+	template <typename T>
+	class AutoUniform : public IAutoUniform
+	{
+	protected:
+		T _storedValue;
+
+	public:
+		inline explicit AutoUniform(const char* name, Core::Material& material, const Resources::ShaderManager& manager)
+			: IAutoUniform(name, material, manager)
+		{ }
+
+		void setValue(T value)
+		{
+			_storedValue = value;
+		}
+
+		void set() override
+		{
+			_material.setUniform(_location, _storedValue);
+		}
+
+		AutoUniform& operator=(T value)
+		{
+			_storedValue = value;
+			return *this;
+		}
+
+		operator T()
+		{
+			return _storedValue;
+		}
+	};
+
+	template <typename T>
+	Core::Material& Material::addUniform(const char* name, const Resources::ShaderManager& manager)
+	{
+		IAutoUniform* uniform = YAGE_CREATE_NEW(_memory, AutoUniform<T>)(name, *this, manager);
+		_uniforms.add(uniform);
+		return *this;
+	}
+
+	template <typename T>
+	void Material::setUniform(const char* name, T value)
+	{
+		for(IAutoUniform* property : _uniforms)
+		{
+			static_cast<AutoUniform<T>*>(property)->setValue(value);
+		}
+	}
 }
 
 #endif //GAME_MATERIAL_H
