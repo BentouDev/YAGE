@@ -17,6 +17,8 @@ include(CMakeToolsHelpers OPTIONAL)
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
 
+include ("${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake")
+
 # Add Vulkan
 find_package(Vulkan)
 
@@ -24,8 +26,8 @@ find_package(Vulkan)
 find_package(OpenGL)
 
 # Add GLFW
-add_subdirectory(Dependencies/GLFW EXCLUDE_FROM_ALL)
-include_directories(Dependencies/GLFW/include)
+yage_setup_dependency(GLFW SOURCE Dependencies/GLFW Dependencies/GLFW/include glfw)
+include_directories(${GLFW_INCLUDE_DIR})
 
 # Add GLM
 add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)
@@ -81,6 +83,7 @@ enable_testing()
 add_subdirectory(Source/Utils)
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Script)
+add_subdirectory(Source/Package)
 
 # Include Editor
 if(YAGE_BUILD_EDITOR)
@@ -88,7 +91,7 @@ if(YAGE_BUILD_EDITOR)
 endif(YAGE_BUILD_EDITOR)
 
 add_library(YAGE INTERFACE)
-target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)
+target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script YAGE::Package)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 
