@@ -37,7 +37,7 @@ install(TARGETS Core
 install(DIRECTORY include/ DESTINATION include)
 
 # This makes the project importable from the build directory
-export(TARGETS ${GLFW_TARGET} assimp zlibstatic lodepng Core FILE CoreConfig.cmake)
+export(TARGETS ${GLFW_TARGET} ${ASSIMP_TARGETS} lodepng Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course

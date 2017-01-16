@@ -37,6 +37,13 @@ include_directories(${GLM_INCLUDE_DIRS})
 add_subdirectory(Dependencies/Assimp EXCLUDE_FROM_ALL)
 include_directories(Dependencies/Assimp/include)
 
+# windows needs zlibstatic in assimp export target
+if(WIN32)
+    set(ASSIMP_TARGETS assimp zlibstatic)
+else()
+    set(ASSIMP_TARGETS assimp)
+endif()
+
 # Add Spdlog
 add_subdirectory(Dependencies/Spdlog EXCLUDE_FROM_ALL)
 include_directories(Dependencies/Spdlog/include)
@@ -83,7 +90,6 @@ enable_testing()
 add_subdirectory(Source/Utils)
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Script)
-add_subdirectory(Source/Package)
 
 # Include Editor
 if(YAGE_BUILD_EDITOR)
@@ -91,7 +97,7 @@ if(YAGE_BUILD_EDITOR)
 endif(YAGE_BUILD_EDITOR)
 
 add_library(YAGE INTERFACE)
-target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script YAGE::Package)
+target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 
