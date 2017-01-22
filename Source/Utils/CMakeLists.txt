@@ -5,7 +5,7 @@ if(VALGRIND_FOUND)
     set(VALGRIND_ADDITIONAL_HEADERS ${VALGRIND_INCLUDE_DIR} include/Utils/ValgrindMemoryBoundChecker.h include/Utils/ValgrindMemoryTracker.h)
 endif(VALGRIND_FOUND)
 
-add_library(Utils ${VALGRIND_ADDITIONAL_HEADERS} include/Utils/SafeDelete.h src/Debug.cpp include/Utils/Handle.h include/Utils/Container.h include/Utils/Color.hpp include/Utils/Using.h include/Utils/Index.h include/Utils/TypeInfo.h include/Utils/BorrowedPtr.h include/Utils/DefaultTrait.h include/Utils/File.h include/Utils/Allocator.h src/LinearAllocator.cpp include/Utils/LinearAllocator.h include/Utils/DebugSourceInfo.h include/Utils/MemoryBlock.h src/StackAllocator.cpp include/Utils/StackAllocator.h src/FreeListAllocator.cpp include/Utils/FreeListAllocator.h src/PoolAllocator.cpp include/Utils/PoolAllocator.h include/Utils/List.h include/Utils/String.h src/String.cpp include/Utils/Dictionary.h include/Utils/PropertyMacro.h include/Utils/MemoryBoundChecker.h include/Utils/MemoryTracker.h include/Utils/MemorySizes.h include/Utils/SimpleMemoryTracker.h include/Utils/SimpleMemoryBoundChecker.h src/MemoryTracker.cpp src/MemoryBoundChecker.cpp src/SafeDelete.cpp include/Utils/TypeIndexList.h include/Utils/ForEachType.h include/Utils/HandleContainer.h include/Utils/Slice.h include/Utils/Assert.h src/Assert.cpp include/Utils/IContainer.h)
+add_library(Utils ${VALGRIND_ADDITIONAL_HEADERS} include/Utils/SafeDelete.h src/Debug.cpp include/Utils/Handle.h include/Utils/Container.h include/Utils/Color.hpp include/Utils/Using.h include/Utils/Index.h include/Utils/TypeInfo.h include/Utils/BorrowedPtr.h include/Utils/DefaultTrait.h include/Utils/File.h include/Utils/Allocator.h src/LinearAllocator.cpp include/Utils/LinearAllocator.h include/Utils/DebugSourceInfo.h include/Utils/MemoryBlock.h src/StackAllocator.cpp include/Utils/StackAllocator.h src/FreeListAllocator.cpp include/Utils/FreeListAllocator.h src/PoolAllocator.cpp include/Utils/PoolAllocator.h include/Utils/List.h include/Utils/String.h src/String.cpp include/Utils/Dictionary.h include/Utils/PropertyMacro.h include/Utils/MemoryBoundChecker.h include/Utils/MemoryTracker.h include/Utils/MemorySizes.h include/Utils/SimpleMemoryTracker.h include/Utils/SimpleMemoryBoundChecker.h src/MemoryTracker.cpp src/MemoryBoundChecker.cpp src/SafeDelete.cpp include/Utils/TypeIndexList.h include/Utils/ForEachType.h include/Utils/HandleContainer.h include/Utils/Slice.h include/Utils/Assert.h src/Assert.cpp include/Utils/IContainer.h include/Utils/Hash.h src/Hash.cpp)
 add_library(YAGE::Utils ALIAS Utils)
 
 target_include_directories(Utils PUBLIC
@@ -23,6 +23,8 @@ target_compile_features(Utils PUBLIC
         cxx_constexpr)
 #        cxx_relaxed_constexpr)
 
+target_link_libraries(Utils MurmurHash3)
+
 if(VALGRIND_FOUND)
     target_compile_definitions(Utils PRIVATE YAGE_VALGRIND=1)
     target_include_directories(Utils PRIVATE ${VALGRIND_INCLUDE_DIR})
@@ -36,7 +38,7 @@ install(TARGETS Utils
 install(DIRECTORY include/ DESTINATION include)
 
 # This makes the project importable from the build directory
-export(TARGETS Utils FILE UtilsConfig.cmake)
+export(TARGETS Utils MurmurHash3 FILE UtilsConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course

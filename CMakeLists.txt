@@ -59,6 +59,10 @@ include_directories(Dependencies/CppLinq)
 include_directories(Dependencies/Lodepng)
 add_library(lodepng Dependencies/Lodepng/lodepng.cpp Dependencies/Lodepng/lodepng.h)
 
+# Add MurmurHash3
+include_directories(Dependencies/MurmurHash3)
+add_library(MurmurHash3 Dependencies/MurmurHash3/MurmurHash3.cpp Dependencies/MurmurHash3/MurmurHash3.h)
+
 if(YAGE_BUILD_TESTS)
     # Add codecov scripts module to cmake
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
