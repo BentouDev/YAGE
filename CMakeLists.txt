@@ -90,6 +90,7 @@ enable_testing()
 add_subdirectory(Source/Utils)
 add_subdirectory(Source/Core)
 add_subdirectory(Source/Script)
+add_subdirectory(Source/Package)
 
 # Include Editor
 if(YAGE_BUILD_EDITOR)
@@ -97,7 +98,7 @@ if(YAGE_BUILD_EDITOR)
 endif(YAGE_BUILD_EDITOR)
 
 add_library(YAGE INTERFACE)
-target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)
+target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script YAGE::Package)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 
