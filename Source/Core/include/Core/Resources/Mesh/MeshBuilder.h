@@ -28,7 +28,7 @@ namespace Resources
 		virtual ~MeshBuilder();
 
 		template<typename T>
-		MeshBuilder& withProperty(const char* name, T *ptr, uint32_t propCount, uint32_t arrayLength, bool normalize = false)
+		MeshBuilder& withProperty(const char* name, const T* ptr, uint32_t propCount, uint32_t arrayLength, bool normalize = false)
 		{
 			_scheme->addPropertyInfo(name, TypeInfo<T>::id(), sizeof(T), propCount, normalize);
 			_data->addPropertyData(ptr, propCount * sizeof(T), arrayLength);
@@ -43,7 +43,7 @@ namespace Resources
 		}
 
 		template<typename T>
-		MeshBuilder& withSubmeshIndices(T *ptr, uint32_t indiceCount)
+		MeshBuilder& withSubmeshIndices(const T* ptr, uint32_t indiceCount)
 		{
 			YAGE_ASSERT(_scheme->getIndexSize() == sizeof(T)
 				   && _scheme->getIndexType() == OpenGL::toOpenGlType(TypeInfo<T>::id()),

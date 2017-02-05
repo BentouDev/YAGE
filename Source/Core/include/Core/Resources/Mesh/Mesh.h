@@ -175,19 +175,19 @@ namespace Core
 	public:
 		class PropertyData
 		{
-			void* _dataPtr;
+			const void* _dataPtr;
 			std::size_t _vertexSize;
 			uint32_t _count;
 			std::size_t _rawSize;
 
 		public:
-			explicit PropertyData(void* data, std::size_t vertexSize, std::uint32_t count)
+			explicit PropertyData(const void* data, std::size_t vertexSize, std::uint32_t count)
 					: _dataPtr(data), _vertexSize(vertexSize), _count(count), _rawSize(_vertexSize * _count)
 			{
 
 			}
 
-			inline void* getDataPtr() const
+			inline const void* getDataPtr() const
 			{ return _dataPtr; }
 
 			inline size_t size() const
@@ -246,7 +246,7 @@ namespace Core
 			return *this;
 		}
 
-		inline void addPropertyData(void* ptr, std::size_t vertexSize, std::uint32_t count)
+		inline void addPropertyData(const void* ptr, std::size_t vertexSize, std::uint32_t count)
 		{
 			PropertiesData.emplace(ptr, vertexSize, count);
 		}
@@ -284,7 +284,7 @@ namespace Core
 		std::size_t 		_baseVertex;
 
 	public:
-		inline explicit Submesh(void* ptr, std::size_t count)
+		inline explicit Submesh(const void* ptr, std::size_t count)
 			: _indicesPtr(ptr), _indiceCount(count), _baseVertex(0)
 		{ }
 
@@ -348,19 +348,19 @@ namespace Core
 			Memory::Delete(*_memory, _data);
 		}
 
-		inline const Utils::List<Submesh> &getSubmeshes() const noexcept
+		inline auto getSubmeshes() const noexcept -> const Utils::List<Submesh>&
 		{ return _submeshes; }
 
-		inline MeshData& getMeshData() const noexcept
+		inline auto getMeshData() const noexcept -> MeshData&
 		{ return *_data; }
 
-		inline Resources::MeshSchemeId getMeshSchemeId() const noexcept
+		inline auto getMeshSchemeId() const noexcept -> Resources::MeshSchemeId
 		{ return _schemeId; }
 
-		inline MeshStorageType getStorageType() const noexcept
+		inline auto getStorageType() const noexcept -> MeshStorageType
 		{ return _storageType; }
 
-		inline Utils::Handle<Gfx::StaticBuffer> getBuffer() const noexcept
+		inline auto getBuffer() const noexcept -> Utils::Handle<Gfx::StaticBuffer>
 		{ return _buffer; }
 
 		std::size_t getIndiceCount() const;

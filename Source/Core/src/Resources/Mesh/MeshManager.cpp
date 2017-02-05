@@ -190,7 +190,7 @@ namespace Resources
 				const Core::MeshData::PropertyData&		propData	=   data.getPropertiesData()[i];
 				const Core::MeshScheme::PropertyInfo&	propInfo	= scheme.getPropertiesInfo()[i];
 				const std::size_t 						vertexSize	= propData.vertexSize();
-				char*									dataPtr		= static_cast<char*>(propData.getDataPtr());
+				const char*								dataPtr		= static_cast<const char*>(propData.getDataPtr());
 
 				dataPtr += vertex * vertexSize;//propInfo.PropertySize * propInfo.PropertyCount;
 
