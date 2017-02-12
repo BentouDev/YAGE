@@ -3,6 +3,7 @@
 //
 
 #include <Utils/MemorySizes.h>
+#include <Core/GameTime.h>
 #include "Core/Game.h"
 #include "Core/Logger.h"
 #include "Core/WindowManager.h"
@@ -40,7 +41,7 @@ namespace Yage
 	void Game::OnCleanUp()
 	{ }
 
-	void Game::OnUpdate()
+	void Game::OnUpdate(Core::GameTime &gameTime)
 	{ }
 
 	void Game::Init(Core::Engine* engineInstance)
@@ -66,17 +67,53 @@ namespace Yage
 
 	void Game::Loop()
 	{
+		Core::GameTime time;
+
+		frames 			= 0;
+		fpsTime			= 0.0;
+		lagAccumulator	= 0.0;
+		lastTime		= engine->GetCurrentTime();
+
 		while(!window->ShouldClose())
 		{
-			Update();
+			Update(time);
 		}
 	}
 
-	void Game::Update()
+	void Game::Update(Core::GameTime& time)
 	{
+		double current	= engine->GetCurrentTime();
+		double elapsed	= current - lastTime;
+		lastTime		= current;
+		lagAccumulator += elapsed;
+
 		engine->ProcessEvents();
-		engine->Draw(*window);
-		OnUpdate();
+
+		time.Time 	  += elapsed;
+		time.FrameTime = elapsed;
+
+		while (lagAccumulator >= time.FixedDeltaTime)
+		{
+			engine->Update(time);
+
+			time.DeltaTime = time.FixedDeltaTime * time.Speed;
+			OnUpdate(time);
+
+			lagAccumulator -= time.FixedDeltaTime;
+
+			frames++;
+			fpsTime += time.FixedDeltaTime;
+		}
+
+		time.DeltaTime = lagAccumulator / time.FixedDeltaTime;
+		engine->Draw(*window, time);
+
+		if(fpsTime >= 1.0f)
+		{
+			time.Fps	= frames / fpsTime;
+			frames		= 0;
+			fpsTime		= 0.0f;
+		}
 	}
 
 	void Game::CleanUp()

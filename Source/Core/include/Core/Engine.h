@@ -110,10 +110,17 @@ namespace Core
 		// Initialize graphics context based on current config
 		auto Initialize() -> bool;
 
+		// Change active scene
 		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
 
-		// Draw all renderpasses for active scenes
-		auto Draw(const Core::Window& window) -> void;
+		// Draw active scene
+		auto Draw(const Core::Window& window, Core::GameTime& time) -> void;
+
+		// Update active scene
+		auto Update(Core::GameTime& time) -> void;
+
+		// Return current time in ms
+		auto GetCurrentTime() -> double;
 
 		// todo: each window should have queue of events to process
 		// Process user input

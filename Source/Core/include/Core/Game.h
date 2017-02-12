@@ -17,6 +17,11 @@ namespace Yage
 	 */
 	class Game
 	{
+		float lastTime;
+		float lagAccumulator;
+		float fpsTime;
+		int frames;
+
 	protected:
 
 		Core::Engine* engine;
@@ -24,23 +29,23 @@ namespace Yage
 
 		virtual void OnInit();
 		virtual void OnCleanUp();
-		virtual void OnUpdate();
+		virtual void OnUpdate(Core::GameTime &gameTime);
 
 	public:
-				 Game();
+		         Game();
 		virtual ~Game();
 
-		// Inits engine and starts main loop. Cleans up after itself
+		// Initializes engine and starts main loop. Cleans up after itself
 		void Run(const char* name = "Yage");
 
-		// Initis engine
+		// Initializes engine
 		void Init(Core::Engine* engineInstance);
 
-		// starts and processes main loop
+		// Starts and processes main loop
 		void Loop();
 
 		// Single iteration of main loop
-		void Update();
+		void Update(Core::GameTime& time);
 
 		// Cleans up after itself
 		void CleanUp();

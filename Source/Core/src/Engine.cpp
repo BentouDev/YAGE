@@ -94,15 +94,11 @@ namespace Core
 	}
 
 	// todo: remove window from here
-	auto Engine::Draw(const Core::Window& window) -> void
+	auto Engine::Draw(const Core::Window& window, Core::GameTime& time) -> void
 	{
-		// TODO: implement proper time management
-		static GameTime time;
-
 		OpenGL::beginDraw(window);
 
-		if(activeScene)
-			activeScene->Draw(time, Renderer.get());
+		if(activeScene) activeScene->Draw(time, Renderer.get());
 
 		Renderer->draw();
 
@@ -112,6 +108,16 @@ namespace Core
 	auto Engine::ProcessEvents() -> void
 	{
 		glfwPollEvents();
+	}
+
+	void Engine::Update(GameTime &time)
+	{
+		if(activeScene) activeScene->Update(time);
+	}
+
+	double Engine::GetCurrentTime()
+	{
+		return glfwGetTime();
 	}
 
 	auto Engine::Resize(const Window& window) -> void
