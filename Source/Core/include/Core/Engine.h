@@ -59,6 +59,10 @@ namespace Core
 
 	class WindowManager;
 
+	class MessageDispather;
+
+	class InputManager;
+
 	struct Context;
 
 	struct GameTime;
@@ -90,6 +94,8 @@ namespace Core
 		borrowed_ptr<Resources::MaterialManager> MaterialManager;
 		borrowed_ptr<Resources::ShaderManager> ShaderManager;
 		borrowed_ptr<Core::WindowManager> WindowManager;
+		borrowed_ptr<Core::MessageDispather> MessageDispather;
+		borrowed_ptr<Core::InputManager> InputManager;
 
 		explicit Engine(std::string name, std::size_t memorySize);
 
@@ -118,6 +124,8 @@ namespace Core
 
 		// Free all resources
 		auto CleanUp() -> void;
+
+		bool WasCleanedUp();
 
 		template <typename T>
 		T* CreateManager(std::size_t memorySize)
