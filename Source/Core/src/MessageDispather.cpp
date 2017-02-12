@@ -3,7 +3,7 @@
 //
 
 #include "Core/Window.h"
-#include "Core/MessageDispather.h"
+#include "Core/Input/MessageDispather.h"
 #include "Core/WindowManager.h"
 #include "Core/Platform.h"
 #include "Core/Engine.h"

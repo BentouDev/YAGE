@@ -2,7 +2,7 @@
 // Created by Bentoo on 2017-02-11.
 //
 
-#include "Core/Logic/ControlScheme.h"
+#include "Core/Input/ControlScheme.h"
 #include "Core/Platform.h"
 #include "Core/GameTime.h"
 #include "Core/Logger.h"
