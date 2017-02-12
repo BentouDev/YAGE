@@ -1,0 +1,50 @@
+//
+// Created by bentoo on 12.02.17.
+//
+
+#ifndef YAGE_GAME_H
+#define YAGE_GAME_H
+
+#include "Core/Engine.h"
+
+namespace Yage
+{
+	/*
+	 * Basic boilerplate for game.
+	 * Handles engine initialization, window creation and proper clean up.
+	 *
+	 * You dont have to use it, feel free to write appropriate code yourself.
+	 */
+	class Game
+	{
+	protected:
+
+		Core::Engine* engine;
+		Core::Window* window;
+
+		virtual void OnInit();
+		virtual void OnCleanUp();
+		virtual void OnUpdate();
+
+	public:
+				 Game();
+		virtual ~Game();
+
+		// Inits engine and starts main loop. Cleans up after itself
+		void Run(const char* name = "Yage");
+
+		// Initis engine
+		void Init(Core::Engine* engineInstance);
+
+		// starts and processes main loop
+		void Loop();
+
+		// Single iteration of main loop
+		void Update();
+
+		// Cleans up after itself
+		void CleanUp();
+	};
+}
+
+#endif // YAGE_GAME_H
