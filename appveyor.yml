@@ -1,6 +1,7 @@
 version: 1.0.{build}
 
-#cache:
+cache:
+  - C:\sdl_root
 #  - Dependencies
 
 configuration:
@@ -10,6 +11,17 @@ install:
   - git submodule update --init --recursive
   - set QTDIR=C:\Qt\5.7\msvc2015
   - set PATH=%PATH%;%QTDIR%\bin
+  # SDL2
+  - ps: |
+      $SDL_VERSION = "2.0.4"
+      $SDL_PREFIX = "C:\sdl_root\SDL2-$SDL_VERSION"
+      if (!(Test-Path -Path $SDL_PREFIX)) {
+        Start-FileDownload https://libsdl.org/release/SDL2-devel-$SDL_VERSION-VC.zip
+        7z x SDL2-devel-$SDL_VERSION-VC.zip -oC:\sdl_root\
+      }
+      $env:SDL2_INCLUDE = "$SDL_PREFIX\include"
+      $env:SDL2_LIB = "$SDL_PREFIX\lib"
+      $env:SDL2_PATH = "$SDL_PREFIX"
 
 before_build:
   - msbuild /version
