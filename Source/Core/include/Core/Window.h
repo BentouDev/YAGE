@@ -19,6 +19,8 @@ namespace Core
 {
 	class Window
 	{
+		friend class WindowManager;
+
 	public:
 		using handle_t = Utils::Handle<Window>;
 		using trait_t = Utils::DefaultTrait<Window>;
@@ -47,7 +49,8 @@ namespace Core
 		auto IsAlive() const noexcept -> bool;
 		auto ShouldClose() const noexcept -> bool;
 		auto Show() const noexcept -> void;
-		auto GetDefaultViewport() -> Gfx::Viewport&;
+		auto GetDefaultViewport() const noexcept -> Gfx::Viewport&;
+		auto Resize(std::int32_t width, std::int32_t height) -> void;
 
 		Memory::IMemoryBlock&	_memory;
 

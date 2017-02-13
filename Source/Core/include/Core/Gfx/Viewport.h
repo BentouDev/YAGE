@@ -16,18 +16,22 @@ namespace Gfx
 		Rectangle<int32_t> _rect;
 
 	public:
-		using trait_t = Utils::DefaultTrait<Viewport>;
-		using handle_t = Utils::Handle<Viewport>;
+		using trait_t	= Utils::DefaultTrait<Viewport>;
+		using handle_t	= Utils::Handle<Viewport>;
 
 		handle_t Handle;
 
-		explicit Viewport(const Rectangle<int32_t>& rect) : _rect(rect)
+		explicit Viewport(const Rectangle<int32_t>& rect)
+			: _rect(rect)
 		{ }
 
-		void Clear(const Utils::Color& color) override;
-		void Bind() override;
-		void Submit() override;
-		float getAspect() override;
+		void	Clear(const Utils::Color& color) override;
+		void	Bind() override;
+		void	Submit() override;
+
+		float	getAspect() override;
+		auto	getRect() -> const Rectangle<int32_t>& override;
+		void	setRect(const Rectangle<int32_t>& rect);
 	};
 }
 

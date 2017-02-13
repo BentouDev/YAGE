@@ -25,4 +25,14 @@ namespace Gfx
 	{
 		return (float)_rect.getWidth() / (float)_rect.getHeight();
 	}
+
+	const Rectangle<int32_t>& Viewport::getRect()
+	{
+		return _rect;
+	}
+
+	void Viewport::setRect(const Rectangle<int32_t>& rect)
+	{
+		_rect = rect;
+	}
 }

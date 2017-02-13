@@ -9,7 +9,6 @@
 #include "Core/EngineApis.h"
 #include "Core/MemoryModule.h"
 #include "Core/WindowManager.h"
-#include "Core/Input/MessageDispather.h"
 #include "Core/Input/InputManager.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Resources/Mesh/MeshManager.h"
@@ -43,7 +42,6 @@ namespace Core
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
 		ShaderManager	.reset(CreateManager<Resources::ShaderManager>(Memory::KB(100)));
 		WindowManager	.reset(CreateManager<Core::WindowManager>(Memory::KB(10)));
-		MessageDispather.reset(CreateManager<Core::MessageDispather>(Memory::KB(10)));
 		InputManager	.reset(CreateManager<Core::InputManager>(Memory::KB(10)));
 	}
 
@@ -60,8 +58,6 @@ namespace Core
 			{
 				Logger::error("Unable to register window in OpenGL!");
 			}
-
-			MessageDispather->registerWindow(*window);
 		}
 		else
 		{
@@ -78,9 +74,9 @@ namespace Core
 
 	auto Engine::Initialize() -> bool
 	{
-		bool success = OpenGL::initialize();
-		if(success) MessageDispather->initialize();
-		return success;
+		bool video = OpenGL::initialize();
+		if(video) SDL_Init(SDL_INIT_GAMECONTROLLER);
+		return video;
 	}
 
 	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
@@ -105,8 +101,11 @@ namespace Core
 		OpenGL::endDraw(window);
 	}
 
-	auto Engine::ProcessEvents() -> void
+	auto Engine::ProcessEvents(Core::GameTime& time) -> void
 	{
+		if(ShouldClose())
+			return;
+
 		SDL_Event event;
 		while(SDL_PollEvent(&event))
 		{
@@ -114,6 +113,12 @@ namespace Core
 			{
 				case SDL_QUIT:
 					Quit();
+					break;
+				case SDL_WINDOWEVENT:
+					WindowManager->handleWindowEvent(event);
+					break;
+				default:
+					InputManager->handleInputEvent(event, time);
 					break;
 			}
 		}
@@ -127,11 +132,6 @@ namespace Core
 	double Engine::GetCurrentTime()
 	{
 		return SDL_GetTicks() / 1000.0;
-	}
-
-	auto Engine::Resize(const Window& window) -> void
-	{
-		OpenGL::resizeWindow(window);
 	}
 
 	auto Engine::Quit() -> void
@@ -148,7 +148,6 @@ namespace Core
 		Logger::info("Cleaning up...");
 
 		Memory::Delete(MemoryModule->masterBlock(), InputManager);
-		Memory::Delete(MemoryModule->masterBlock(), MessageDispather);
 		Memory::Delete(MemoryModule->masterBlock(), WindowManager);
 		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
 		Memory::Delete(MemoryModule->masterBlock(), MeshManager);
@@ -174,6 +173,6 @@ namespace Core
 
 	bool Engine::ShouldClose()
 	{
-		return _isDone;
+		return _isDone || WasCleanedUp();
 	}
 }

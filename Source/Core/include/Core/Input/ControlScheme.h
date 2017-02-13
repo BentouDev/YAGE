@@ -13,6 +13,7 @@
 namespace Core
 {
 	struct GameTime;
+	class InputManager;
 }
 
 namespace Logic
@@ -63,7 +64,7 @@ namespace Logic
 
 	class ControlScheme
 	{
-		friend class InputManager;
+		friend class Core::InputManager;
 
 	private:
 		Memory::IMemoryBlock&			_memory;

@@ -5,9 +5,12 @@
 #ifndef GAME_WINDOWMANAGER_H
 #define GAME_WINDOWMANAGER_H
 
+#include <map>
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
 #include "Core/Window.h"
+
+union SDL_Event;
 
 namespace Core
 {
@@ -24,6 +27,13 @@ namespace Core
 
 		Utils::Container<Window::trait_t> _windowContainer;
 
+		std::map<std::uint32_t, Window::handle_t> _windowIdMapper;
+
+		Window* getWindowById(std::uint32_t id);
+
+		void onResizeWindow(std::uint32_t id, std::int32_t width, std::int32_t height);
+		void onCloseWindow (std::uint32_t id);
+
 	public:
 		explicit WindowManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
 		virtual ~WindowManager();
@@ -36,6 +46,7 @@ namespace Core
 		Window* tryGet(handle_t);
 
 		void closeAllWindows();
+		void handleWindowEvent(const SDL_Event& event);
 	};
 }
 

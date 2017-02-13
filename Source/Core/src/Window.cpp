@@ -6,6 +6,7 @@
 #include "Core/Window.h"
 #include "Core/Platform.h"
 #include "Core/Gfx/Viewport.h"
+#include "Core/Gfx/OpenGl/OpenGLBase.h"
 
 namespace Core
 {
@@ -44,8 +45,9 @@ namespace Core
 
 		hContext = SDL_GL_CreateContext(hWindow);
 
-		const Gfx::Rectangle<int32_t> rect(0, 0, Width, Height);
-		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(rect);
+		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(
+			Gfx::Rectangle<int32_t>(0, 0, Width, Height)
+		);
 	}
 
 	auto Window::Show() const noexcept -> void
@@ -54,6 +56,21 @@ namespace Core
 			return;
 
 		SDL_ShowWindow(hWindow);
+	}
+
+	auto Window::Resize(std::int32_t width, std::int32_t height) -> void
+	{
+		if(width == Width && height == Height)
+			return;
+
+		Width  = width;
+		Height = height;
+
+		SDL_SetWindowSize(hWindow, Width, Height);
+
+		DefaultViewport->setRect(Gfx::Rectangle<int32_t>(0, 0, Width, Height));
+
+		OpenGL::resizeWindow(*this);
 	}
 
 	auto Window::Destroy() -> void
@@ -67,7 +84,7 @@ namespace Core
 		hWindow  = nullptr;
 	}
 
-	auto Window::GetDefaultViewport() -> Gfx::Viewport&
+	auto Window::GetDefaultViewport() const noexcept -> Gfx::Viewport&
 	{
 		return *DefaultViewport;
 	}

@@ -82,21 +82,16 @@ namespace Core
 
 		const std::string Name;
 
-		borrowed_ptr<Core::MemoryModule> MemoryModule;
-
-		borrowed_ptr<Core::Config> Config;
-
-		borrowed_ptr<Gfx::Renderer> Renderer;
-
-		borrowed_ptr<Gfx::BufferManager> BufferManager;
-
-		borrowed_ptr<Resources::MeshManager> MeshManager;
-		borrowed_ptr<Resources::TextureManager> TextureManager;
-		borrowed_ptr<Resources::MaterialManager> MaterialManager;
-		borrowed_ptr<Resources::ShaderManager> ShaderManager;
-		borrowed_ptr<Core::WindowManager> WindowManager;
-		borrowed_ptr<Core::MessageDispather> MessageDispather;
-		borrowed_ptr<Core::InputManager> InputManager;
+		borrowed_ptr<Core::MemoryModule>			MemoryModule;
+		borrowed_ptr<Core::Config>					Config;
+		borrowed_ptr<Gfx::Renderer>					Renderer;
+		borrowed_ptr<Gfx::BufferManager>			BufferManager;
+		borrowed_ptr<Resources::MeshManager>		MeshManager;
+		borrowed_ptr<Resources::TextureManager>		TextureManager;
+		borrowed_ptr<Resources::MaterialManager>	MaterialManager;
+		borrowed_ptr<Resources::ShaderManager>		ShaderManager;
+		borrowed_ptr<Core::WindowManager>			WindowManager;
+		borrowed_ptr<Core::InputManager>			InputManager;
 
 		explicit Engine(std::string name, std::size_t memorySize);
 
@@ -123,12 +118,8 @@ namespace Core
 		// Return current time in ms
 		auto GetCurrentTime() -> double;
 
-		// todo: each window should have queue of events to process
 		// Process user input
-		auto ProcessEvents() -> void;
-
-		// Resize window
-		auto Resize(const Window& window) -> void;
+		auto ProcessEvents(Core::GameTime& time) -> void;
 
 		// Free all resources
 		auto CleanUp() -> void;

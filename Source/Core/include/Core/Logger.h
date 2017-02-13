@@ -14,6 +14,20 @@ namespace Core
 
 	class Config;
 
+	namespace LogLevel
+	{
+		enum LogLevelEnum
+		{
+			trace = 0,
+			debug = 1,
+			info = 2,
+			warn = 3,
+			err = 4,
+			critical = 5,
+			off = 6
+		};
+	}
+
 	class Logger
 	{
 		friend class Engine;
@@ -39,17 +53,20 @@ namespace Core
 		void operator=(Logger const&) = delete;
 		void operator=(Logger&&) = delete;
 
-		template <typename... Args> static void log(spdlog::level::level_enum lvl, const char* fmt, const Args&... args)
-		{ get().Default->log(lvl, fmt, args...); }
+		static void setLogLevel(LogLevel::LogLevelEnum level)
+		{ spdlog::set_level((spdlog::level::level_enum)((int)level)); }
 
-		template <typename... Args> static void log(spdlog::level::level_enum lvl, const char* msg)
-		{ get().Default->log(lvl, msg); }
+		template <typename... Args> static void log(LogLevel::LogLevelEnum lvl, const char* fmt, const Args&... args)
+		{ get().Default->log((spdlog::level::level_enum)((int)lvl), fmt, args...); }
+
+		template <typename... Args> static void log(LogLevel::LogLevelEnum lvl, const char* msg)
+		{ get().Default->log((spdlog::level::level_enum)((int)lvl), msg); }
 
 		template <typename... Args> static void trace(const char* fmt, const Args&... args)
 		{ get().Default->trace(fmt, args...); }
 
 		template <typename... Args> static void debug(const char* fmt, const Args&... args)
-		{ get().Default->trace(fmt, args...); }
+		{ get().Default->debug(fmt, args...); }
 
 		template <typename... Args> static void info(const char* fmt, const Args&... args)
 		{ get().Default->info(fmt, args...); }

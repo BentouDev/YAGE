@@ -68,7 +68,13 @@ namespace OpenGL
 
 	void resizeWindow(const Core::Window& window)
 	{
-		gl::Viewport(0, 0, window.Width, window.Height);
+		SDL_GL_MakeCurrent(window.hWindow, window.hContext);
+		// for(auto& view : window.getViewports())
+		auto& view = window.GetDefaultViewport();
+		{
+			const auto& rect = view.getRect();
+			gl::Viewport(rect.getLeft(), rect.getBottom(), rect.getWidth(), rect.getHeight());
+		}
 	}
 
 	bool checkError()

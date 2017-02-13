@@ -46,6 +46,8 @@ namespace Yage
 
 	void Game::Init(Core::Engine* engineInstance)
 	{
+		Core::Logger::setLogLevel(Core::LogLevel::debug);
+
 		if(engineInstance == nullptr)
 		{
 			Core::Logger::critical("Game : cannot start without engine! Did you forget to create it?");
@@ -87,10 +89,10 @@ namespace Yage
 		lastTime		= current;
 		lagAccumulator += elapsed;
 
-		engine->ProcessEvents();
-
 		time.Time 	  += elapsed;
 		time.FrameTime = elapsed;
+
+		engine->ProcessEvents(time);
 
 		while (lagAccumulator >= time.FixedDeltaTime)
 		{
