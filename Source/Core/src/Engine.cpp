@@ -75,7 +75,7 @@ namespace Core
 	auto Engine::Initialize() -> bool
 	{
 		bool video = OpenGL::initialize();
-		if(video) SDL_Init(SDL_INIT_GAMECONTROLLER);
+		if(video) SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
 		return video;
 	}
 
