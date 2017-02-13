@@ -156,7 +156,7 @@ namespace Core
 		Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
 		Memory::Delete(MemoryModule->masterBlock(), Renderer);
 
-		SDL_QuitSubSystem( SDL_INIT_VIDEO );
+		SDL_QuitSubSystem( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
 		SDL_Quit();
 
 		Logger::info("Cleaned up!");
