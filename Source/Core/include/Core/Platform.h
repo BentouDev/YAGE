@@ -5,7 +5,7 @@
 #ifndef YAGE_PLATFORM_H
 #define YAGE_PLATFORM_H
 
-#include "GLFW/glfw3.h"
+#include <SDL2/SDL.h>
 
 #ifdef CREATE_NEW
 #undef CREATE_NEW

@@ -13,6 +13,11 @@ namespace Core
 		Core::Logger::get()->info("Created window manager with capacity '{}'", _windowContainer.capacity());
 	}
 
+	WindowManager::~WindowManager()
+	{
+
+	}
+
 	WindowManager::handle_t WindowManager::createNew(const char *name, unsigned width, unsigned height)
 	{
 		handle_t handle = _windowContainer.create(_memory, name, width, height);
@@ -29,8 +34,11 @@ namespace Core
 		return nullptr;
 	}
 
-	WindowManager::~WindowManager()
+	void WindowManager::closeAllWindows()
 	{
-
+		for(auto& window : _windowContainer)
+		{
+			window.Destroy();
+		}
 	}
 }

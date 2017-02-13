@@ -31,7 +31,7 @@
 namespace Core
 {
 	Engine::Engine(std::string name, std::size_t memorySize)
-		: Name(name)
+		: Name(name), _isDone(false), _cleanedUp(false)
 	{
 		MemoryModule	.reset(new Core::MemoryModule(memorySize));
 		Config			.reset(new Core::Config(MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block")));
@@ -107,7 +107,16 @@ namespace Core
 
 	auto Engine::ProcessEvents() -> void
 	{
-		glfwPollEvents();
+		SDL_Event event;
+		while(SDL_PollEvent(&event))
+		{
+			switch(event.type)
+			{
+				case SDL_QUIT:
+					Quit();
+					break;
+			}
+		}
 	}
 
 	void Engine::Update(GameTime &time)
@@ -117,12 +126,18 @@ namespace Core
 
 	double Engine::GetCurrentTime()
 	{
-		return glfwGetTime();
+		return SDL_GetTicks() / 1000.0;
 	}
 
 	auto Engine::Resize(const Window& window) -> void
 	{
 		OpenGL::resizeWindow(window);
+	}
+
+	auto Engine::Quit() -> void
+	{
+		WindowManager->closeAllWindows();
+		_isDone = true;
 	}
 
 	auto Engine::CleanUp() -> void
@@ -142,7 +157,8 @@ namespace Core
 		Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
 		Memory::Delete(MemoryModule->masterBlock(), Renderer);
 
-		glfwTerminate();
+		SDL_QuitSubSystem( SDL_INIT_VIDEO );
+		SDL_Quit();
 
 		Logger::info("Cleaned up!");
 		Memory::SafeDelete(Config);
@@ -154,5 +170,10 @@ namespace Core
 	bool Engine::WasCleanedUp()
 	{
 		return _cleanedUp;
+	}
+
+	bool Engine::ShouldClose()
+	{
+		return _isDone;
 	}
 }

@@ -25,3 +25,6 @@
 [submodule "Dependencies/Lodepng"]
 	path = Dependencies/Lodepng
 	url = https://github.com/lvandeve/lodepng.git
+[submodule "Modules/CMake-SDL2"]
+	path = Modules/CMake-SDL2
+	url = https://github.com/tcbrindle/sdl2-cmake-scripts.git

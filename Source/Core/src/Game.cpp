@@ -74,7 +74,7 @@ namespace Yage
 		lagAccumulator	= 0.0;
 		lastTime		= engine->GetCurrentTime();
 
-		while(!window->ShouldClose())
+		while(!engine->ShouldClose())
 		{
 			Update(time);
 		}
@@ -122,5 +122,8 @@ namespace Yage
 
 		window->Destroy();
 		engine->CleanUp();
+
+		window = nullptr;
+		engine = nullptr;
 	}
 }

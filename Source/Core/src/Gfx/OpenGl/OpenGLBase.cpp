@@ -14,33 +14,45 @@ namespace OpenGL
 
 	auto initialize() -> bool
 	{
-		if(!glfwInit())
+		auto code = SDL_Init(SDL_INIT_VIDEO);
+		if(code != 0)
+		{
+			Core::Logger::error("SDL : unable to initialize video system : code '{}'\n\t'{}'", code, SDL_GetError());
 			return false;
+		}
 
 		// todo: pick from config
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, gl::TRUE_);
+
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+
+		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, SDL_TRUE);
+
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_TRUE);
+		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); /*Config::mZBufferBits*/
+
+		SDL_GL_SetSwapInterval(1);
 
 		return true;
 	}
 
 	void beginDraw(const Core::Window& window)
 	{
-		glfwMakeContextCurrent(window.hWindow);
+		SDL_GL_MakeCurrent(window.hWindow, window.hContext);
 		gl::ClearColor(0.5f, 0.75f, 0.25f, 0.0f);
 		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 	}
 
 	void endDraw(const Core::Window& window)
 	{
-		glfwSwapBuffers(window.hWindow);
+		SDL_GL_SwapWindow(window.hWindow);
 	}
 
     bool registerWindow(const Core::Window& window)
     {
-		glfwMakeContextCurrent(window.hWindow);
+		SDL_GL_MakeCurrent(window.hWindow, window.hContext);
 		if(!didLoadFunctions)
 		{
 			didLoadFunctions = gl::sys::LoadFunctions();
@@ -67,23 +79,23 @@ namespace OpenGL
 			switch(errorCode)
 			{
 				case gl::INVALID_ENUM:
-					Core::Logger::get()->error("An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::error("An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::INVALID_VALUE:
-					Core::Logger::get()->error("A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::error("A numeric argument is out of range. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::INVALID_OPERATION:
-					Core::Logger::get()->error("The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::error("The specified operation is not allowed in the current state. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::INVALID_FRAMEBUFFER_OPERATION:
-					Core::Logger::get()->error("The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.");
+					Core::Logger::error("The framebuffer object is not complete. The offending command is ignored and has no other side effect than to set the error flag.");
 					break;
 
 				case gl::OUT_OF_MEMORY:
-					Core::Logger::get()->error("There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
+					Core::Logger::error("There is not enough memory left to execute the command. The state of the GL is undefined, except for the state of the error flags, after this error is recorded.");
 					break;
 
 				/*case gl::STACK_UNDERFLOW:
@@ -93,7 +105,7 @@ namespace OpenGL
 					Logger::get()->error("An attempt has been made to perform an operation that would cause an internal stack to overflow.");*/
 
 				default:
-					Core::Logger::get()->critical("Unknown OpenGL, possibly memory corruption!");
+					Core::Logger::critical("Unknown OpenGL, possibly memory corruption!");
 			}
 
 			return true;

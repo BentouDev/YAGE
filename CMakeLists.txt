@@ -16,6 +16,7 @@ include(CMakeToolsHelpers OPTIONAL)
 
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-SDL2" ${CMAKE_MODULE_PATH})
 
 include ("${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake")
 
@@ -25,9 +26,14 @@ find_package(Vulkan)
 # Add OpenGl
 find_package(OpenGL)
 
+# Add SDL2
+find_package(SDL2)
+include_directories(${SDL2_INCLUDE_DIR})
+set(SDL_BUILDING_LIBRARY TRUE)
+
 # Add GLFW
-yage_setup_dependency(GLFW SOURCE Dependencies/GLFW Dependencies/GLFW/include glfw)
-include_directories(${GLFW_INCLUDE_DIR})
+#yage_setup_dependency(GLFW SOURCE Dependencies/GLFW Dependencies/GLFW/include glfw)
+#include_directories(${GLFW_INCLUDE_DIR})
 
 # Add GLM
 add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)

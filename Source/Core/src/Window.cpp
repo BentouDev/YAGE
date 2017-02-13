@@ -2,6 +2,7 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
+#include "Core/Logger.h"
 #include "Core/Window.h"
 #include "Core/Platform.h"
 #include "Core/Gfx/Viewport.h"
@@ -26,7 +27,23 @@ namespace Core
 		if(IsAlive())
 			return;
 
-		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
+		hWindow = SDL_CreateWindow (
+			Title.c_str(),
+			SDL_WINDOWPOS_UNDEFINED,
+			SDL_WINDOWPOS_UNDEFINED,
+			Width,
+			Height,
+			SDL_WINDOW_OPENGL
+		);
+
+		if(hWindow == nullptr)
+		{
+			Core::Logger::error("SDL : Unable to create window!\n\t{}", SDL_GetError());
+			return;
+		}
+
+		hContext = SDL_GL_CreateContext(hWindow);
+
 		const Gfx::Rectangle<int32_t> rect(0, 0, Width, Height);
 		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(rect);
 	}
@@ -36,7 +53,7 @@ namespace Core
 		if(!IsAlive())
 			return;
 
-		glfwShowWindow(hWindow);
+		SDL_ShowWindow(hWindow);
 	}
 
 	auto Window::Destroy() -> void
@@ -44,8 +61,10 @@ namespace Core
 		if(!IsAlive())
 			return;
 
-		glfwDestroyWindow(hWindow);
-		hWindow = nullptr;
+		SDL_GL_DeleteContext(hContext);
+		SDL_DestroyWindow   (hWindow);
+		hContext = nullptr;
+		hWindow  = nullptr;
 	}
 
 	auto Window::GetDefaultViewport() -> Gfx::Viewport&
@@ -60,6 +79,6 @@ namespace Core
 
 	auto Window::ShouldClose() const noexcept -> bool
 	{
-		return !IsAlive() || glfwWindowShouldClose(hWindow);
+		return !IsAlive() || IsCloseRequested;
 	}
 }

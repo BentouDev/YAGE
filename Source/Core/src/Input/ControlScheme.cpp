@@ -15,9 +15,10 @@ namespace Logic
 		  _buttonStateDatas(_memory),
 		  _buttonStateEnums(_memory),
 		  _boundScancodes(_memory)
-	{
+	{ }
 
-	}
+	ControlScheme::~ControlScheme()
+	{ }
 
 	ControlAction* ControlScheme::bindAction(ControlAction* action, std::uint32_t scancode)
 	{
@@ -64,7 +65,7 @@ namespace Logic
 		ButtonStateData&	stateData	= _buttonStateDatas[index];
 		ButtonStateEnum&	stateEnum	= _buttonStateEnums[index];
 
-		bool button		= state != GLFW_RELEASE;
+		bool button		= state != SDL_RELEASED;
 		bool clean		= stateEnum == None;
 		bool changed	= stateData.Value != state;
 		bool buffered	= stateData.Frames < FramesInBuffer;

@@ -74,6 +74,7 @@ namespace Core
 		borrowed_ptr<Logic::Scene> activeScene;
 
 		bool _cleanedUp = false;
+		bool _isDone = false;
 
 	public:
 
@@ -132,7 +133,12 @@ namespace Core
 		// Free all resources
 		auto CleanUp() -> void;
 
+		// Call this when user wants to quit
+		auto Quit() -> void;
+
 		bool WasCleanedUp();
+
+		bool ShouldClose();
 
 		template <typename T>
 		T* CreateManager(std::size_t memorySize)

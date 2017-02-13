@@ -34,6 +34,8 @@ namespace Core
 		{ return _windowContainer.get(handle); }
 
 		Window* tryGet(handle_t);
+
+		void closeAllWindows();
 	};
 }
 

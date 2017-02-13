@@ -7,11 +7,13 @@
 
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Gfx/CommandQueue.h"
+#include "Rectangle.h"
 
 #include <Utils/BorrowedPtr.h>
 #include <Utils/MemoryBlock.h>
 #include <Utils/List.h>
 #include <Utils/Container.h>
+#include <Utils/Color.hpp>
 
 namespace Logic
 {
@@ -74,6 +76,35 @@ namespace Gfx
 		void draw();
 		void drawCall(RenderData&);
 
+		// Will add quad to buffer
+		// And use default 2D shader for this
+	//	void drawRect(Rectangle rect, Utils::Color color);
+
+		// Will draw quad, but in 3D!
+		// With proper rotation and shit
+	//	void drawQuad(Rectangle rect, Utils::Color color, glm::mat4);
+
+	//	void drawLine(glm::vec3 start, glm::vec3 end, Utils::Color color);
+
+		// {
+		// SpriteDrawCall
+		// Rect - vertex data
+		// Texcoord* - two 2D vectors
+		// Matrix* - where the hell would I put that...
+		// Color* - can go to vertex data too
+		// Material* - ???, batching probably!
+		// }
+
+		// void drawRect(Rectangle rect, Utils::Color color, Texture* texture);
+		// void drawRect(Rectangle rect, Utils::Color color, Material);
+		// void drawRect(Rectangle rect, Material);
+
+		// Text rendering
+		// basically
+		// - methods for length and height calculation
+		// - methods for length based offset calculation
+		// - methods for getting begin/end for whole region
+		// - methods for building VBO for those
 	};
 }
 

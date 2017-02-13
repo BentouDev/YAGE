@@ -12,7 +12,8 @@
 #include "Core/Gfx/Viewport.h"
 #include "Core/Gfx/RenderTarget.h"
 
-struct GLFWwindow;
+struct SDL_Window;
+typedef void* SDL_GLContext;
 
 namespace Core
 {
@@ -50,13 +51,16 @@ namespace Core
 
 		Memory::IMemoryBlock&	_memory;
 
+		bool					IsCloseRequested;
+
 		std::string				Title;
 		unsigned				Width;
 		unsigned				Height;
 
 		Gfx::Viewport*			DefaultViewport;
 
-		GLFWwindow*				hWindow;
+		SDL_Window*				hWindow;
+		SDL_GLContext			hContext;
 		handle_t				Handle;
 
 		auto operator==(const Window& other) -> bool
