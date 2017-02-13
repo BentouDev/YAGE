@@ -1,6 +1,6 @@
 ## Yet Another Game Engine
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
-project(YAGE VERSION 0.1 LANGUAGES CXX)
+project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
 # Supress warning for dependencies with old Cmake files
 cmake_policy(PUSH)
