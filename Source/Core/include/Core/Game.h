@@ -17,12 +17,18 @@ namespace Yage
 	 */
 	class Game
 	{
-		float lastTime;
-		float lagAccumulator;
-		float fpsTime;
-		int frames;
+		float	lastTime;
+		float	lagAccumulator;
+		float	fpsTime;
+		int		frames;
+
+		Memory::IMemoryBlock* persistentBlock;
+		Memory::IMemoryBlock* frameBlock;
 
 	protected:
+
+		std::uint32_t persistentBlockSize;
+		std::uint32_t frameBlockSize;
 
 		Core::Engine* engine;
 		Core::Window* window;
@@ -30,6 +36,9 @@ namespace Yage
 		virtual void OnInit();
 		virtual void OnCleanUp();
 		virtual void OnUpdate(Core::GameTime &gameTime);
+
+		Memory::IMemoryBlock& getPersistentBlock();
+		Memory::IMemoryBlock& getFrameBlock();
 
 	public:
 		         Game();

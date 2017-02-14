@@ -33,16 +33,18 @@ namespace Core
 		: Name(name), _isDone(false), _cleanedUp(false)
 	{
 		MemoryModule	.reset(new Core::MemoryModule(memorySize));
-		Config			.reset(new Core::Config(MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block")));
+		Config			.reset(new Core::Config(
+			MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block"))
+		);
 
-		Renderer		.reset(CreateManager<Gfx::Renderer>(Memory::KB(100)));
-		BufferManager	.reset(CreateManager<Gfx::BufferManager>(Memory::KB(100)));
-		MeshManager		.reset(CreateManager<Resources::MeshManager>(Memory::KB(100)));
-		TextureManager	.reset(CreateManager<Resources::TextureManager>(Memory::MB(4)));
+		Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
+		BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
+		MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
+		TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
-		ShaderManager	.reset(CreateManager<Resources::ShaderManager>(Memory::KB(100)));
-		WindowManager	.reset(CreateManager<Core::WindowManager>(Memory::KB(10)));
-		InputManager	.reset(CreateManager<Core::InputManager>(Memory::KB(10)));
+		ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
+		WindowManager	.reset(CreateManager<Core::WindowManager>       (Memory::KB(10)));
+		InputManager	.reset(CreateManager<Core::InputManager>        (Memory::KB(10)));
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window::handle_t

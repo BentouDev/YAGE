@@ -11,7 +11,11 @@
 namespace Yage
 {
 	Game::Game()
-		: engine(nullptr)
+		: engine(nullptr),
+		  persistentBlock    (nullptr),
+		  frameBlock         (nullptr),
+		  persistentBlockSize(Memory::KB(100)),
+		  frameBlockSize     (Memory::KB(100))
 	{
 		Core::Logger::info("Game : instance created!");
 	}
@@ -23,6 +27,18 @@ namespace Yage
 			Core::Logger::warn("Game : Cleanup was not called until Game destructor!");
 			CleanUp();
 		}
+	}
+
+	Memory::IMemoryBlock& Game::getFrameBlock()
+	{
+		YAGE_ASSERT(frameBlock != nullptr, "Game : Cannot use frameBlock before initialization!");
+		return *frameBlock;
+	}
+
+	Memory::IMemoryBlock& Game::getPersistentBlock()
+	{
+		YAGE_ASSERT(persistentBlock != nullptr, "Game : Cannot use persistentBlock before initialization!");
+		return *persistentBlock;
 	}
 
 	void Game::Run(const char* name)
@@ -58,6 +74,9 @@ namespace Yage
 
 		engine->LoadConfig();
 		engine->Initialize();
+
+		persistentBlock	= &engine->MemoryModule->requestMemoryBlock(persistentBlockSize, "GamePersistentBlock");
+		frameBlock		= &engine->MemoryModule->requestMemoryBlock(frameBlockSize,      "GameFrameBlock");
 
 		auto windowHandle = engine->CreateWindow();
 
@@ -121,6 +140,9 @@ namespace Yage
 	void Game::CleanUp()
 	{
 		this->OnCleanUp();
+
+		engine->MemoryModule->freeMemoryBlock(persistentBlock);
+		engine->MemoryModule->freeMemoryBlock(frameBlock);
 
 		window->Destroy();
 		engine->CleanUp();
