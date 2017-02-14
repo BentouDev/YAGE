@@ -44,7 +44,7 @@ namespace Logic
 		ControlScheme* _parentScheme;
 
 		std::uint32_t	boundScancode;
-		const char*		actionName;
+		std::string		actionName;
 		ButtonStateEnum	buttonState;
 
 	public:
@@ -98,9 +98,13 @@ namespace Logic
 		explicit ControlScheme(Memory::IMemoryBlock& memory);
 		virtual ~ControlScheme();
 
-		ControlAction* getAction(const char* name);
-		ControlAction* bindAction(ControlAction* action, std::uint32_t scancode);
-		ControlAction* bindAction(const char* name, std::uint32_t scancode);
+		ControlAction* getAction(std::string name);
+
+		ControlAction* bindActionByScancode(ControlAction* action, std::uint32_t scancode);
+		ControlAction* bindActionByScancode(std::string name, std::uint32_t scancode);
+
+		ControlAction* bindActionByKeycode(ControlAction* action, std::uint32_t keycode);
+		ControlAction* bindActionByKeycode(std::string name, std::uint32_t keycode);
 	};
 }
 

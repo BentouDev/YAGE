@@ -18,14 +18,29 @@ namespace Logic
 	{ }
 
 	ControlScheme::~ControlScheme()
-	{ }
-
-	ControlAction* ControlScheme::bindAction(ControlAction* action, std::uint32_t scancode)
 	{
-		return bindAction(action->actionName, scancode);
+		for(auto action : _controlActions)
+		{
+			Memory::Delete(_memory, action);
+		}
 	}
 
-	ControlAction* ControlScheme::bindAction(const char* name, std::uint32_t scancode)
+	ControlAction* ControlScheme::bindActionByKeycode(ControlAction* action, std::uint32_t keycode)
+	{
+		return bindActionByScancode(action->actionName, SDL_GetScancodeFromKey(keycode));
+	}
+
+	ControlAction* ControlScheme::bindActionByKeycode(std::string name, std::uint32_t keycode)
+	{
+		return bindActionByScancode(name, SDL_GetScancodeFromKey(keycode));
+	}
+
+	ControlAction* ControlScheme::bindActionByScancode(ControlAction* action, std::uint32_t scancode)
+	{
+		return bindActionByScancode(action->actionName, scancode);
+	}
+
+	ControlAction* ControlScheme::bindActionByScancode(std::string name, std::uint32_t scancode)
 	{
 		ControlAction* result = nullptr;
 
@@ -51,6 +66,9 @@ namespace Logic
 
 			_controlActions.add(action);
 			_boundScancodes.add(scancode);
+			_buttonStateDatas.emplace();
+			_buttonStateEnums.emplace();
+			_nameMap    [name]     = index;
 			_scancodeMap[scancode] = index;
 
 			result = action;
@@ -118,7 +136,7 @@ namespace Logic
 		updateButtonByIndex(index, state, time);
 	}
 
-	ControlAction* ControlScheme::getAction(const char *name)
+	ControlAction* ControlScheme::getAction(std::string name)
 	{
 		auto itr = _nameMap.find(name);
 		if(itr == _nameMap.end())
