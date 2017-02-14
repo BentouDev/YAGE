@@ -13,14 +13,6 @@
 
 #include "MemoryModule.h"
 
-#ifdef CREATE_NEW
-#undef CREATE_NEW
-#endif
-
-#ifdef CreateWindow
-#undef CreateWindow
-#endif
-
 namespace Logic
 {
 	class Scene;

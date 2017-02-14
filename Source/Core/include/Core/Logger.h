@@ -5,8 +5,28 @@
 #ifndef GAME_LOGGER_H
 #define GAME_LOGGER_H
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include <spdlog/spdlog.h>
 #include <Utils/Handle.h>
+
+#ifdef CREATE_NEW
+#undef CREATE_NEW
+#endif
+
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
 
 namespace Core
 {
