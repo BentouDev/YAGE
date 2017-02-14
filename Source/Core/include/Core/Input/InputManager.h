@@ -14,7 +14,7 @@ union SDL_Event;
 struct _SDL_GameController;
 typedef struct _SDL_GameController SDL_GameController;
 
-namespace Logic
+namespace Input
 {
 	class ControlScheme;
 }
@@ -35,7 +35,7 @@ namespace Core
 
 		const char* 			_name;
 		SDL_GameController*		_hController;
-		Logic::ControlScheme*	_scheme;
+		Input::ControlScheme*	_scheme;
 
 	};
 
@@ -46,7 +46,7 @@ namespace Core
 		Memory::IMemoryBlock&	_memory;
 		Core::Engine&			_engine;
 
-		Logic::ControlScheme*	_currentScheme;
+		Input::ControlScheme*	_currentScheme;
 
 		std::map<std::int32_t, InputDevice*> _controllerIdMap;
 
@@ -57,7 +57,7 @@ namespace Core
 		void onAxis					(InputDevice* device, std::int32_t axis, std::int32_t x, std::int32_t y, Core::GameTime& time);
 
 		auto getDeviceForId			(std::int32_t id) -> InputDevice*;
-		auto getSchemeForDevice		(InputDevice* device) -> Logic::ControlScheme*;
+		auto getSchemeForDevice		(InputDevice* device) -> Input::ControlScheme*;
 
 	public:
 		explicit InputManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
@@ -67,10 +67,10 @@ namespace Core
 
 		virtual ~InputManager();
 
-		inline void setScheme(Logic::ControlScheme& scheme)
+		inline void setScheme(Input::ControlScheme& scheme)
 		{ _currentScheme = &scheme; }
 
-		inline auto getCurrentScheme() const -> Logic::ControlScheme*
+		inline auto getCurrentScheme() const -> Input::ControlScheme*
 		{ return _currentScheme; }
 
 		void handleInputEvent(SDL_Event& event, Core::GameTime& gameTime);

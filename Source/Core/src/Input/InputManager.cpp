@@ -44,7 +44,7 @@ namespace Core
 		return result;
 	}
 
-	auto InputManager::getSchemeForDevice(InputDevice* device) -> Logic::ControlScheme*
+	auto InputManager::getSchemeForDevice(InputDevice* device) -> Input::ControlScheme*
 	{
 		if(device == nullptr)
 			return nullptr;
@@ -93,7 +93,7 @@ namespace Core
 
 	void InputManager::onKey(InputDevice* device, std::int32_t scancode, std::int32_t state, Core::GameTime& time)
 	{
-		Logic::ControlScheme* scheme = getSchemeForDevice(device);
+		Input::ControlScheme* scheme = getSchemeForDevice(device);
 		if(scheme != nullptr)
 		{
 			scheme->updateButtonByScancode(scancode, state, time);
@@ -102,7 +102,7 @@ namespace Core
 
 	void InputManager::onAxis(InputDevice* device, std::int32_t axis, std::int32_t x, std::int32_t y, Core::GameTime& time)
 	{
-		Logic::ControlScheme* scheme = getSchemeForDevice(device);
+		Input::ControlScheme* scheme = getSchemeForDevice(device);
 		if(scheme != nullptr)
 		{
 		//	scheme->updateAxisById(axis, x, y);

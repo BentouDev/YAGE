@@ -7,7 +7,7 @@
 #include "Core/GameTime.h"
 #include "Core/Logger.h"
 
-namespace Logic
+namespace Input
 {
 	ControlScheme::ControlScheme(Memory::IMemoryBlock& memory)
 		: _memory(memory),

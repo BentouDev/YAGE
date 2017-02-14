@@ -16,7 +16,7 @@ namespace Core
 	class InputManager;
 }
 
-namespace Logic
+namespace Input
 {
 	class ControlScheme;
 
