@@ -70,7 +70,6 @@ namespace Input
 		Memory::IMemoryBlock&			_memory;
 		Utils::List<ControlAction*>		_controlActions;
 		Utils::List<ButtonStateData>	_buttonStateDatas;
-		Utils::List<ButtonStateEnum>	_buttonStateEnums; // is this even needed? noo...
 		Utils::List<std::uint32_t>		_boundScancodes;
 
 		std::map<std::string,   std::uint32_t>	_nameMap;

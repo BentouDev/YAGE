@@ -13,7 +13,6 @@ namespace Input
 		: _memory(memory),
 		  _controlActions(_memory),
 		  _buttonStateDatas(_memory),
-		  _buttonStateEnums(_memory),
 		  _boundScancodes(_memory)
 	{ }
 
@@ -67,7 +66,6 @@ namespace Input
 			_controlActions.add(action);
 			_boundScancodes.add(scancode);
 			_buttonStateDatas.emplace();
-			_buttonStateEnums.emplace();
 			_nameMap    [name]     = index;
 			_scancodeMap[scancode] = index;
 
@@ -81,10 +79,9 @@ namespace Input
 	{
 		ControlAction*		action		= _controlActions[index];
 		ButtonStateData&	stateData	= _buttonStateDatas[index];
-		ButtonStateEnum&	stateEnum	= _buttonStateEnums[index];
 
 		bool button		= state != SDL_RELEASED;
-		bool clean		= stateEnum == None;
+		bool clean		= action->buttonState == None;
 		bool changed	= stateData.Value != state;
 		bool buffered	= stateData.Frames < FramesInBuffer;
 
@@ -122,8 +119,6 @@ namespace Input
 		}
 
 		action->buttonState = button && stateData.Elapsed > HoldTimeRequirement ? Hold : action->buttonState;
-
-		stateEnum = action->buttonState;
 	}
 
 	void ControlScheme::updateButtonByScancode(std::uint32_t scancode, std::uint32_t state, const Core::GameTime& time)
