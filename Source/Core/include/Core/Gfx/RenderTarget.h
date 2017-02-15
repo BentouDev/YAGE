@@ -6,6 +6,7 @@
 #define YAGE_RENDERTARGET_H
 
 #include <Utils/Color.hpp>
+#include "Rectangle.h"
 
 namespace Gfx
 {
@@ -20,6 +21,7 @@ namespace Gfx
 		static void Reset();
 
 		virtual float getAspect() = 0;
+		virtual const Rectangle<int32_t>& getRect() = 0;
 	};
 }
 

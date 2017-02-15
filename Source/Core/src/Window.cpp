@@ -2,9 +2,10 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
+#include "Core/Logger.h"
 #include "Core/Window.h"
+#include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Platform.h"
-#include "Core/Gfx/Viewport.h"
 
 namespace Core
 {
@@ -27,8 +28,16 @@ namespace Core
 			return;
 
 		hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
-		const Gfx::Rectangle<int32_t> rect(0, 0, Width, Height);
-		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(rect);
+
+		if(hWindow == nullptr)
+		{
+			Core::Logger::error("GLFW : Unable to create window!");
+			return;
+		}
+
+		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(
+			Gfx::Rectangle<int32_t>(0, 0, Width, Height)
+		);
 	}
 
 	auto Window::Show() const noexcept -> void
@@ -37,6 +46,24 @@ namespace Core
 			return;
 
 		glfwShowWindow(hWindow);
+	}
+
+	void Window::OnResize(std::int32_t width, std::int32_t height)
+	{
+		if(width == Width && height == Height)
+			return;
+
+		Width  = width;
+		Height = height;
+
+		DefaultViewport->setRect(Gfx::Rectangle<int32_t>(0, 0, Width, Height));
+
+		OpenGL::resizeWindow(*this);
+	}
+
+	auto Window::Resize(std::int32_t width, std::int32_t height) -> void
+	{
+		glfwSetWindowSize(hWindow, width, height);
 	}
 
 	auto Window::Destroy() -> void
@@ -48,7 +75,7 @@ namespace Core
 		hWindow = nullptr;
 	}
 
-	auto Window::GetDefaultViewport() -> Gfx::Viewport&
+	auto Window::GetDefaultViewport() const noexcept -> Gfx::Viewport&
 	{
 		return *DefaultViewport;
 	}
@@ -60,6 +87,6 @@ namespace Core
 
 	auto Window::ShouldClose() const noexcept -> bool
 	{
-		return !IsAlive() || glfwWindowShouldClose(hWindow);
+		return !IsAlive() || IsCloseRequested;
 	}
 }

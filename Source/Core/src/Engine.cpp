@@ -9,6 +9,7 @@
 #include "Core/EngineApis.h"
 #include "Core/MemoryModule.h"
 #include "Core/WindowManager.h"
+#include "Core/Input/InputManager.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Resources/Mesh/MeshManager.h"
 #include "Core/Resources/Shader/ShaderManager.h"
@@ -17,6 +18,7 @@
 #include "Core/Gfx/BufferManager.h"
 #include "Core/Gfx/Renderer.h"
 #include "Core/Logic/Scene.h"
+#include "Core/EventQueue.h"
 #include "Core/GameTime.h"
 #include "Core/Engine.h"
 #include "Core/Logger.h"
@@ -29,37 +31,54 @@
 namespace Core
 {
 	Engine::Engine(std::string name, std::size_t memorySize)
-		: Name(name)
+		: Name(name), _isDone(false), _cleanedUp(false)
 	{
 		MemoryModule	.reset(new Core::MemoryModule(memorySize));
-		Config			.reset(new Core::Config(MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block")));
+		Config			.reset(new Core::Config(
+			MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block"))
+		);
 
-		Renderer		.reset(CreateManager<Gfx::Renderer>(Memory::KB(100)));
-		BufferManager	.reset(CreateManager<Gfx::BufferManager>(Memory::KB(100)));
-		MeshManager		.reset(CreateManager<Resources::MeshManager>(Memory::KB(100)));
-		TextureManager	.reset(CreateManager<Resources::TextureManager>(Memory::MB(4)));
+		Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
+		BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
+		MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
+		TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
-		ShaderManager	.reset(CreateManager<Resources::ShaderManager>(Memory::KB(100)));
-		WindowManager	.reset(CreateManager<Core::WindowManager>(Memory::KB(10)));
+		ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
+		WindowManager	.reset(CreateManager<Core::WindowManager>       (Memory::KB(10)));
+		InputManager	.reset(CreateManager<Core::InputManager>        (Memory::KB(10)));
+
+		glfwSetErrorCallback(&Engine::ErrorCallback);
+	}
+
+	void Engine::ErrorCallback(int code, const char* description)
+	{
+		Logger::critical("GLFW : Error '{}' occured :\n\t{}", code, description);
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window::handle_t
 	{
-		auto handle = WindowManager.get().createNew(((std::string)Config.get().WindowTitle).c_str(),
-													  Config.get().WindowWidth,
-													  Config.get().WindowHeight);
+		auto handle = WindowManager.get().createNew (
+			((std::string)Config.get().WindowTitle).c_str(),
+			 Config.get().WindowWidth,
+			 Config.get().WindowHeight
+		);
 
 		auto* window = WindowManager.get().tryGet(handle);
 		if(window != nullptr)
 		{
 			if(!OpenGL::registerWindow(*window))
 			{
-				Logger::get()->error("Unable to register window in OpenGL!");
+				Logger::error("Engine : Unable to register window in OpenGL!");
+			}
+
+			if(!EventQueue::registerWindow(window))
+			{
+				Logger::error("Engine : Unable to register window in EventQueue!");
 			}
 		}
 		else
 		{
-			Logger::get()->error("Unable to create window!");
+			Logger::error("Unable to create window!");
 		}
 
 		return handle;
@@ -72,7 +91,10 @@ namespace Core
 
 	auto Engine::Initialize() -> bool
 	{
-		return OpenGL::initialize();
+		bool success = true;
+		success &= OpenGL::initialize();
+		success &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
+		return success;
 	}
 
 	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
@@ -86,28 +108,57 @@ namespace Core
 	}
 
 	// todo: remove window from here
-	auto Engine::Draw(const Core::Window& window) -> void
+	auto Engine::Draw(const Core::Window& window, Core::GameTime& time) -> void
 	{
-		// TODO: implement proper time management
-		static GameTime time;
-
 		OpenGL::beginDraw(window);
 
-		activeScene->Draw(time, Renderer.get());
+		if(activeScene) activeScene->Draw(time, Renderer.get());
 
 		Renderer->draw();
 
 		OpenGL::endDraw(window);
 	}
 
-	auto Engine::ProcessEvents() -> void
+	auto Engine::ProcessEvents(Core::GameTime& time) -> void
 	{
-		glfwPollEvents();
+		if(ShouldClose())
+			return;
+
+		Event event;
+		while(EventQueue::pollEvent(&event))
+		{
+			switch(event.type)
+			{
+				case EventType::WINDOW:
+					WindowManager->handleWindowEvent(event);
+					break;
+				case EventType::INPUT:
+					InputManager->handleInputEvent(event, time);
+					break;
+				case EventType::APP:
+					break;
+			}
+		}
 	}
 
-	auto Engine::Resize(const Window& window) -> void
+	void Engine::Update(GameTime& time)
 	{
-		OpenGL::resizeWindow(window);
+		if(activeScene)
+			activeScene->Update(time);
+
+		if(WindowManager->allWindowsClosed())
+			Quit();
+	}
+
+	double Engine::GetCurrentTime()
+	{
+		return glfwGetTime();
+	}
+
+	auto Engine::Quit() -> void
+	{
+		WindowManager->closeAllWindows();
+		_isDone = true;
 	}
 
 	auto Engine::CleanUp() -> void
@@ -115,23 +166,35 @@ namespace Core
 		if(_cleanedUp)
 			return;
 
-		_cleanedUp = true;
+		Logger::info("Cleaning up...");
 
-		Logger::get()->info("Cleaning up...");
+		EventQueue::destroy();
 
-		Memory::Delete(MemoryModule.get().masterBlock(), WindowManager);
-		Memory::Delete(MemoryModule.get().masterBlock(), BufferManager);
-		Memory::Delete(MemoryModule.get().masterBlock(), MeshManager);
-		Memory::Delete(MemoryModule.get().masterBlock(), TextureManager);
-		Memory::Delete(MemoryModule.get().masterBlock(), MaterialManager);
-		Memory::Delete(MemoryModule.get().masterBlock(), ShaderManager);
-		Memory::Delete(MemoryModule.get().masterBlock(), Renderer);
+		Memory::Delete(MemoryModule->masterBlock(), InputManager);
+		Memory::Delete(MemoryModule->masterBlock(), WindowManager);
+		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
+		Memory::Delete(MemoryModule->masterBlock(), MeshManager);
+		Memory::Delete(MemoryModule->masterBlock(), TextureManager);
+		Memory::Delete(MemoryModule->masterBlock(), MaterialManager);
+		Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
+		Memory::Delete(MemoryModule->masterBlock(), Renderer);
 
 		glfwTerminate();
 
-		Logger::get()->info("Cleaned up!");
+		Logger::info("Cleaned up!");
 		Memory::SafeDelete(Config);
 		Memory::SafeDelete(MemoryModule);
-		Logger::get().destroy();
+
+		_cleanedUp = true;
+	}
+
+	bool Engine::WasCleanedUp()
+	{
+		return _cleanedUp;
+	}
+
+	bool Engine::ShouldClose()
+	{
+		return _isDone || WasCleanedUp();
 	}
 }

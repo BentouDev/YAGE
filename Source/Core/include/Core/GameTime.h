@@ -10,14 +10,18 @@ namespace Core
 	struct GameTime
 	{
 	public:
+		GameTime()
+			: DeltaTime(0), Time(0), FixedDeltaTime(1/60.0f),
+			  RealTime(0), Speed(1), Fps(0), FrameTime(0)
+		{ }
+
 		float DeltaTime;
 		float Time;
-		float Fps;
-		float FrameTime;
+		float FixedDeltaTime;
 		float RealTime;
 		float Speed;
-		float TimeStep;
-		float MaxFrameTime;
+		float Fps;
+		float FrameTime;
 	};
 }
 

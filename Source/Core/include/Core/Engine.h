@@ -13,14 +13,6 @@
 
 #include "MemoryModule.h"
 
-#ifdef CREATE_NEW
-#undef CREATE_NEW
-#endif
-
-#ifdef CreateWindow
-#undef CreateWindow
-#endif
-
 namespace Logic
 {
 	class Scene;
@@ -59,6 +51,10 @@ namespace Core
 
 	class WindowManager;
 
+	class MessageDispather;
+
+	class InputManager;
+
 	struct Context;
 
 	struct GameTime;
@@ -70,6 +66,9 @@ namespace Core
 		borrowed_ptr<Logic::Scene> activeScene;
 
 		bool _cleanedUp = false;
+		bool _isDone = false;
+
+		static void ErrorCallback(int code, const char* description);
 
 	public:
 
@@ -77,19 +76,16 @@ namespace Core
 
 		const std::string Name;
 
-		borrowed_ptr<Core::MemoryModule> MemoryModule;
-
-		borrowed_ptr<Core::Config> Config;
-
-		borrowed_ptr<Gfx::Renderer> Renderer;
-
-		borrowed_ptr<Gfx::BufferManager> BufferManager;
-
-		borrowed_ptr<Resources::MeshManager> MeshManager;
-		borrowed_ptr<Resources::TextureManager> TextureManager;
-		borrowed_ptr<Resources::MaterialManager> MaterialManager;
-		borrowed_ptr<Resources::ShaderManager> ShaderManager;
-		borrowed_ptr<Core::WindowManager> WindowManager;
+		borrowed_ptr<Core::MemoryModule>			MemoryModule;
+		borrowed_ptr<Core::Config>					Config;
+		borrowed_ptr<Gfx::Renderer>					Renderer;
+		borrowed_ptr<Gfx::BufferManager>			BufferManager;
+		borrowed_ptr<Resources::MeshManager>		MeshManager;
+		borrowed_ptr<Resources::TextureManager>		TextureManager;
+		borrowed_ptr<Resources::MaterialManager>	MaterialManager;
+		borrowed_ptr<Resources::ShaderManager>		ShaderManager;
+		borrowed_ptr<Core::WindowManager>			WindowManager;
+		borrowed_ptr<Core::InputManager>			InputManager;
 
 		explicit Engine(std::string name, std::size_t memorySize);
 
@@ -104,20 +100,30 @@ namespace Core
 		// Initialize graphics context based on current config
 		auto Initialize() -> bool;
 
+		// Change active scene
 		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
 
-		// Draw all renderpasses for active scenes
-		auto Draw(const Core::Window& window) -> void;
+		// Draw active scene
+		auto Draw(const Core::Window& window, Core::GameTime& time) -> void;
 
-		// todo: each window should have queue of events to process
+		// Update active scene
+		auto Update(Core::GameTime& time) -> void;
+
+		// Return current time in ms
+		auto GetCurrentTime() -> double;
+
 		// Process user input
-		auto ProcessEvents() -> void;
-
-		// Resize window
-		auto Resize(const Window& window) -> void;
+		auto ProcessEvents(Core::GameTime& time) -> void;
 
 		// Free all resources
 		auto CleanUp() -> void;
+
+		// Call this when user wants to quit
+		auto Quit() -> void;
+
+		bool WasCleanedUp();
+
+		bool ShouldClose();
 
 		template <typename T>
 		T* CreateManager(std::size_t memorySize)

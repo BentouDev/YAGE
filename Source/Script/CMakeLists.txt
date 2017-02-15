@@ -1,7 +1,7 @@
 ## Provides easy to use bindings for lua and squirell
 project(Script VERSION 0.1 LANGUAGES CXX)
 
-add_library(Script Source/Binding.cpp Source/Binding.h)
+add_library(Script STATIC Source/Binding.cpp Source/Binding.h)
 add_library(YAGE::Script ALIAS Script)
 
 target_include_directories(Script PUBLIC

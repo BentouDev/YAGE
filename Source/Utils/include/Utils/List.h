@@ -260,6 +260,11 @@ namespace Utils
 			resize(0);
 		}
 
+		inline bool empty() const
+		{
+			return size() == 0;
+		}
+
 		T& front()
 		{
 			return _elements[0];
