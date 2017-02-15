@@ -12,18 +12,13 @@
 
 namespace Core
 {
-	InputDevice::InputDevice(SDL_GameController* controller)
-		: //_name(SDL_GameControllerName(controller)),
-		  _hController(controller), _scheme(nullptr)
+	InputDevice::InputDevice(Memory::IMemoryBlock& memory, std::int32_t deviceId)
+		: name(memory, glfwGetJoystickName(deviceId)),
+		  scheme(nullptr), type(Input::DeviceType::CONTROLLER)
 	{ }
 
 	InputDevice::~InputDevice()
-	{
-		if(_hController != nullptr)
-		{
-		//	SDL_GameControllerClose(_hController);
-		}
-	}
+	{ }
 
 	InputManager::~InputManager()
 	{
@@ -47,42 +42,58 @@ namespace Core
 		return result;
 	}
 
+	InputDevice* InputManager::getDeviceForEvent(const Input::InputEvent& event)
+	{
+		InputDevice* result = nullptr;
+
+		switch(event.deviceType)
+		{
+			case Input::DeviceType::MOUSE:
+				result = &Mouse;
+				break;
+			case Input::DeviceType::KEYBOARD:
+				result = &Keyboard;
+				break;
+			case Input::DeviceType::CONTROLLER:
+				result = getDeviceForId(event.deviceId);
+				break;
+		}
+
+		return result;
+	}
+
 	auto InputManager::getSchemeForDevice(InputDevice* device) -> Input::ControlScheme*
 	{
 		if(device == nullptr)
 			return nullptr;
 
-		return device->_scheme != nullptr ? device->_scheme : _currentScheme;
+		return device->scheme != nullptr ? device->scheme : _currentScheme;
 	}
 
-	void InputManager::onDeviceDisconnected(InputDevice* device)
+	void InputManager::onDeviceDisconnected(const Input::ConnectionEvent& event)
 	{
+		auto device = getDeviceForId(event.deviceId);
 		if(device != nullptr)
 		{
-			Core::Logger::debug("Controller : Disconnected '{}', named '{}'.", device->_id, device->_name);
+			Core::Logger::debug("Controller : Disconnected '{}', named '{}'.",
+								device->id, device->name.c_str());
 
-			_controllerIdMap.erase(device->_id);
+			_controllerIdMap.erase(device->id);
 			Memory::Delete(_memory, device);
 		}
 	}
 
-	void InputManager::onDeviceConnected(InputDevice* device)
+	void InputManager::onDeviceConnected(const Input::ConnectionEvent& event)
 	{
-		if(device != nullptr)
+		if(event.deviceId == Input::DeviceType::CONTROLLER
+	   	&& glfwJoystickPresent(event.deviceId))
 		{
-			/*SDL_GameController* controller = SDL_GameControllerOpen(event.cdevice.which);
-			if(controller != nullptr)
-			{
-				auto inputDevice = YAGE_CREATE_NEW(_memory, InputDevice)(controller);
+			auto inputDevice = YAGE_CREATE_NEW(_memory, InputDevice)(_memory, event.deviceId);
 
-				Core::Logger::debug("Controller : Connected '{}', named '{}'.",
-									event.cdevice.which, inputDevice->_name);
+			Core::Logger::debug("Controller : Connected '{}', named '{}'.",
+								event.deviceId, inputDevice->name.c_str());
 
-				SDL_Joystick	*joy		= SDL_GameControllerGetJoystick( controller );
-				int				instanceID	= SDL_JoystickInstanceID( joy );
-
-				_controllerIdMap[instanceID] = inputDevice;
-			}*/
+			_controllerIdMap[event.deviceId] = inputDevice;
 		}
 	}
 
@@ -91,7 +102,7 @@ namespace Core
 		Input::ControlScheme* scheme = getSchemeForDevice(device);
 		if(scheme != nullptr)
 		{
-			scheme->updateButtonByScancode(scancode, state, time);
+			scheme->updateButtonByScancode(device->type, scancode, state, time);
 		}
 	}
 
@@ -100,14 +111,15 @@ namespace Core
 		Input::ControlScheme* scheme = getSchemeForDevice(device);
 		if(scheme != nullptr)
 		{
-		//	scheme->updateAxisById(axis, x, y);
+		//	scheme->updateAxisById(device->type, axis, x, y, time);
 		}
 	}
 
 	void InputManager::handleInputEvent(const Core::Event& event, Core::GameTime& time)
 	{
 		auto input  = event.inputData;
-		auto device = input.isKeyboardAndMouseEvent() ? &MouseAndKeyboard : getDeviceForId(input.getDeviceId());
+		auto device = getDeviceForEvent(input);
+
 		switch(input.type)
 		{
 			case Input::EventType::BUTTON:
@@ -117,10 +129,10 @@ namespace Core
 				onAxis(device, input.axis.axisId, input.axis.x, input.axis.y, time);
 				break;
 			case Input::EventType::CONNECTED:
-				onDeviceConnected(device);
+				onDeviceConnected(input.connection);
 				break;
 			case Input::EventType::DISCONNECTED:
-				onDeviceDisconnected(device);
+				onDeviceDisconnected(input.connection);
 				break;
 		}
 	}

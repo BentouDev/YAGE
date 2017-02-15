@@ -11,9 +11,8 @@ namespace Input
 {
 	ControlScheme::ControlScheme(Memory::IMemoryBlock& memory)
 		: _memory(memory),
-		  _controlActions(_memory),
-		  _buttonStateDatas(_memory),
-		  _boundScancodes(_memory)
+		  _controlActions  (_memory),
+		  _buttonStateDatas(_memory)
 	{ }
 
 	ControlScheme::~ControlScheme()
@@ -24,36 +23,21 @@ namespace Input
 		}
 	}
 
-	ControlAction* ControlScheme::bindActionByKeycode(ControlAction* action, std::uint32_t keycode)
+	ControlAction* ControlScheme::bindAction(DeviceType::Enum device, std::string name, std::uint32_t scancode)
 	{
-		return bindActionByScancode(action->actionName, keycode);
-	}
-
-	ControlAction* ControlScheme::bindActionByKeycode(std::string name, std::uint32_t keycode)
-	{
-		return bindActionByScancode(name, keycode);
-	}
-
-	ControlAction* ControlScheme::bindActionByScancode(ControlAction* action, std::uint32_t scancode)
-	{
-		return bindActionByScancode(action->actionName, scancode);
-	}
-
-	ControlAction* ControlScheme::bindActionByScancode(std::string name, std::uint32_t scancode)
-	{
+		auto& codeMap = _deviceCodeMap[device];
 		ControlAction* result = nullptr;
 
 		auto itr = _nameMap.find(name);
 		if(itr != _nameMap.end())
 		{
-			auto	index	= itr->second;
-					result	= _controlActions[index];
+			auto index  = itr->second;
+				 result = _controlActions[index];
 
-			_scancodeMap.erase(result->boundScancode);
+			codeMap.erase(result->boundScancode);
 
-			result->boundScancode	= scancode;
-			_boundScancodes[index]	= scancode;
-			_scancodeMap[scancode]	= index;
+			result->boundScancode = scancode;
+			codeMap[scancode]     = index;
 		}
 		else
 		{
@@ -64,10 +48,9 @@ namespace Input
 			action->boundScancode	= scancode;
 
 			_controlActions.add(action);
-			_boundScancodes.add(scancode);
 			_buttonStateDatas.emplace();
 			_nameMap    [name]     = index;
-			_scancodeMap[scancode] = index;
+			codeMap     [scancode] = index;
 
 			result = action;
 		}
@@ -121,10 +104,11 @@ namespace Input
 		action->buttonState = button && stateData.Elapsed > HoldTimeRequirement ? Hold : action->buttonState;
 	}
 
-	void ControlScheme::updateButtonByScancode(std::uint32_t scancode, std::uint32_t state, const Core::GameTime& time)
+	void ControlScheme::updateButtonByScancode(DeviceType::Enum device, std::uint32_t scancode, std::uint32_t state, const Core::GameTime& time)
 	{
-		auto itr = _scancodeMap.find(scancode);
-		if(itr == _scancodeMap.end())
+		auto& codeMap = _deviceCodeMap[device];
+		auto itr = codeMap.find(scancode);
+		if(itr == codeMap.end())
 			return;
 
 		auto index = itr->second;

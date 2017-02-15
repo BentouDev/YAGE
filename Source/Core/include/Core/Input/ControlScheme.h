@@ -5,10 +5,11 @@
 #ifndef YAGE_CONTROLSCHEME_H
 #define YAGE_CONTROLSCHEME_H
 
+#include <map>
+
 #include <Utils/MemoryBlock.h>
 #include <Utils/List.h>
-#include <map>
-#include <Utils/Range.h>
+#include <Core/Input/DeviceType.h>
 
 namespace Core
 {
@@ -70,13 +71,20 @@ namespace Input
 		Memory::IMemoryBlock&			_memory;
 		Utils::List<ControlAction*>		_controlActions;
 		Utils::List<ButtonStateData>	_buttonStateDatas;
-		Utils::List<std::uint32_t>		_boundScancodes;
 
+		std::map<std::uint32_t, std::uint32_t>	_deviceCodeMap[DeviceType::_COUNT];
 		std::map<std::string,   std::uint32_t>	_nameMap;
-		std::map<std::uint32_t, std::uint32_t>	_scancodeMap;
 
-		void updateButtonByIndex	(std::uint32_t index,	 std::uint32_t state, const Core::GameTime& time);
-		void updateButtonByScancode	(std::uint32_t scancode, std::uint32_t state, const Core::GameTime& time);
+		void updateButtonByScancode	(DeviceType::Enum device,
+									 std::uint32_t scancode, std::uint32_t state,
+									 const Core::GameTime& time);
+
+		void updateAxisById			(DeviceType::Enum device,
+									 std::int32_t axisId, std::int32_t x, std::int32_t y,
+									 const Core::GameTime& time);
+
+		void updateButtonByIndex	(std::uint32_t index, std::uint32_t state,
+									 const Core::GameTime& time);
 
 		// 1, 32
 		int FramesInBuffer { 4 };
@@ -99,11 +107,7 @@ namespace Input
 
 		ControlAction* getAction(std::string name);
 
-		ControlAction* bindActionByScancode(ControlAction* action, std::uint32_t scancode);
-		ControlAction* bindActionByScancode(std::string name, std::uint32_t scancode);
-
-		ControlAction* bindActionByKeycode(ControlAction* action, std::uint32_t keycode);
-		ControlAction* bindActionByKeycode(std::string name, std::uint32_t keycode);
+		ControlAction* bindAction(DeviceType::Enum device, std::string name, std::uint32_t scancode);
 	};
 }
 

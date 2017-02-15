@@ -5,9 +5,11 @@
 #ifndef YAGE_INPUTMANAGER_H
 #define YAGE_INPUTMANAGER_H
 
-#include <Utils/MemoryBlock.h>
 #include <map>
+#include <Utils/MemoryBlock.h>
+#include <Utils/String.h>
 #include <Core/GameTime.h>
+#include <Core/Input/DeviceType.h>
 
 struct _SDL_GameController;
 typedef struct _SDL_GameController SDL_GameController;
@@ -16,6 +18,7 @@ namespace Input
 {
 	class ControlScheme;
 	union InputEvent;
+	struct ConnectionEvent;
 }
 
 namespace Core
@@ -25,43 +28,46 @@ namespace Core
 
 	struct InputDevice
 	{
-		explicit InputDevice(const char* name)
-			: _name(name), _hController(nullptr), _scheme(nullptr)
+		explicit InputDevice(Memory::IMemoryBlock& memory, const char* name, Input::DeviceType::Enum type)
+			: name(memory, name), id(-1), scheme(nullptr), type(type)
 		{ }
 
-		explicit InputDevice(SDL_GameController* controller);
+		explicit InputDevice(Memory::IMemoryBlock& memory, std::int32_t deviceId);
 
 		virtual ~InputDevice();
 
-		const char* 			_name;
-		SDL_GameController*		_hController;
-		Input::ControlScheme*	_scheme;
-		std::int32_t 			_id;
+		Utils::String			name;
+		Input::ControlScheme*	scheme;
+		Input::DeviceType::Enum	type;
+		std::int32_t 			id;
 	};
 
 	class InputManager
 	{
-		InputDevice				MouseAndKeyboard;
-
 		Memory::IMemoryBlock&	_memory;
 		Core::Engine&			_engine;
+
+		InputDevice				Mouse;
+		InputDevice				Keyboard;
 
 		Input::ControlScheme*	_currentScheme;
 
 		std::map<std::int32_t, InputDevice*> _controllerIdMap;
 
-		void onDeviceConnected		(InputDevice* device);
-		void onDeviceDisconnected	(InputDevice* device);
+		void onDeviceConnected		(const Input::ConnectionEvent& event);
+		void onDeviceDisconnected	(const Input::ConnectionEvent& event);
 		void onKey					(InputDevice* device, std::int32_t scancode, std::int32_t state, Core::GameTime& time);
 		void onAxis					(InputDevice* device, std::int32_t axis, std::int32_t x, std::int32_t y, Core::GameTime& time);
 
+		auto getDeviceForEvent		(const Input::InputEvent& event) -> InputDevice*;
 		auto getDeviceForId			(std::int32_t id) -> InputDevice*;
 		auto getSchemeForDevice		(InputDevice* device) -> Input::ControlScheme*;
 
 	public:
 		explicit InputManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
-			: MouseAndKeyboard("MouseAndKeyboard"),
-			  _engine(engine), _memory(memory), _currentScheme(nullptr)
+			: _engine(engine), _memory(memory), _currentScheme(nullptr),
+			  Mouse   (_memory, "Mouse",    Input::DeviceType::MOUSE),
+			  Keyboard(_memory, "Keyboard", Input::DeviceType::KEYBOARD)
 		{ }
 
 		virtual ~InputManager();
