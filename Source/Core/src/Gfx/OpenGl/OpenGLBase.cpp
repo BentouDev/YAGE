@@ -14,45 +14,45 @@ namespace OpenGL
 
 	auto initialize() -> bool
 	{
-		auto code = SDL_Init(SDL_INIT_VIDEO);
-		if(code != 0)
+		if(!glfwInit())
 		{
-			Core::Logger::error("SDL : unable to initialize video system : code '{}'\n\t'{}'", code, SDL_GetError());
+			Core::Logger::error("GLFW : unable to initialize!");
 			return false;
 		}
 
 		// todo: pick from config
-
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-		SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
-
-		SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, SDL_TRUE);
-
-		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, SDL_TRUE);
-		SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24); /*Config::mZBufferBits*/
-
-		SDL_GL_SetSwapInterval(1);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, gl::TRUE_);
 
 		return true;
 	}
 
 	void beginDraw(const Core::Window& window)
 	{
-		SDL_GL_MakeCurrent(window.hWindow, window.hContext);
+		if(!window.IsAlive())
+			return;
+
+		glfwMakeContextCurrent(window.hWindow);
 		gl::ClearColor(0.5f, 0.75f, 0.25f, 0.0f);
 		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 	}
 
 	void endDraw(const Core::Window& window)
 	{
-		SDL_GL_SwapWindow(window.hWindow);
+		if(!window.IsAlive())
+			return;
+
+		glfwSwapBuffers(window.hWindow);
 	}
 
     bool registerWindow(const Core::Window& window)
     {
-		SDL_GL_MakeCurrent(window.hWindow, window.hContext);
+		if(!window.IsAlive())
+			return false;
+
+		glfwMakeContextCurrent(window.hWindow);
 		if(!didLoadFunctions)
 		{
 			didLoadFunctions = gl::sys::LoadFunctions();
@@ -68,7 +68,10 @@ namespace OpenGL
 
 	void resizeWindow(const Core::Window& window)
 	{
-		SDL_GL_MakeCurrent(window.hWindow, window.hContext);
+		if(!window.IsAlive())
+			return;
+
+		glfwMakeContextCurrent(window.hWindow);
 		// for(auto& view : window.getViewports())
 		auto& view = window.GetDefaultViewport();
 		{

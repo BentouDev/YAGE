@@ -5,6 +5,7 @@
 #include "Core/WindowManager.h"
 #include "Core/Logger.h"
 #include "Core/Platform.h"
+#include "Core/EventQueue.h"
 
 namespace Core
 {
@@ -19,12 +20,11 @@ namespace Core
 
 	}
 
-	WindowManager::handle_t WindowManager::createNew(const char *name, unsigned width, unsigned height)
+	WindowManager::handle_t WindowManager::createNew(const char* name, unsigned width, unsigned height)
 	{
 		handle_t	handle	= _windowContainer.create(_memory, name, width, height);
-		auto		id		= SDL_GetWindowID(get(handle).hWindow);
 
-		_windowIdMapper[id] = handle;
+		_windowIdMapper[reinterpret_cast<std::uintptr_t>(get(handle).hWindow)] = handle;
 
 		return handle;
 	}
@@ -48,7 +48,7 @@ namespace Core
 		}
 	}
 
-	Window* WindowManager::getWindowById(std::uint32_t id)
+	Window* WindowManager::getWindowById(std::uintptr_t id)
 	{
 		auto itr = _windowIdMapper.find(id);
 		if (itr == _windowIdMapper.end())
@@ -60,75 +60,61 @@ namespace Core
 		return window;
 	}
 
-	void WindowManager::onResizeWindow(std::uint32_t id, std::int32_t width, std::int32_t height)
+	void WindowManager::handleWindowEvent(Window* window, const Event& event)
 	{
-		auto* window = getWindowById(id);
 		if(window == nullptr)
 			return;
 
-		window->Resize(width, height);
-	}
-
-	void WindowManager::onCloseWindow(std::uint32_t id)
-	{
-		auto* window = getWindowById(id);
-		if(window == nullptr)
-			return;
-
-		window->IsCloseRequested = true;
-	}
-
-	void WindowManager::handleWindowEvent(const SDL_Event& event)
-	{
-		const SDL_WindowEvent& window = event.window;
-		switch (window.event)
+		switch(event.windowData.type)
 		{
-			case SDL_WINDOWEVENT_SHOWN:
-				Core::Logger::debug("Window : '{}' shown.", window.windowID );
+			case WindowEventType::FOCUS:
 				break;
-			case SDL_WINDOWEVENT_HIDDEN:
-				Core::Logger::debug("Window : '{}' hidden.", window.windowID );
+			case WindowEventType::LOST_FOCUS:
 				break;
-			case SDL_WINDOWEVENT_EXPOSED:
-				Core::Logger::debug("Window : '{}' exposed.", window.windowID);
+			case WindowEventType::MAXIMIZE:
 				break;
-			case SDL_WINDOWEVENT_MOVED:
-				Core::Logger::debug("Window : '{}' moved to '{}' x '{}'.",
-								   window.windowID, window.data1, window.data2);
+			case WindowEventType::MINIMIZE:
 				break;
-			case SDL_WINDOWEVENT_RESIZED:
-				onResizeWindow(window.windowID, window.data1, window.data2);
-				Core::Logger::info("Window : '{}' resized to '{}' x '{}'.",
-								   window.windowID, window.data1, window.data2);
+			case WindowEventType::ICONIFY:
 				break;
-			case SDL_WINDOWEVENT_MINIMIZED:
-				Core::Logger::debug("Window : '{}' minimized.", window.windowID);
+			case WindowEventType::MOVE:
 				break;
-			case SDL_WINDOWEVENT_MAXIMIZED:
-				Core::Logger::debug("Window : '{}' maximized.", window.windowID);
+			case WindowEventType::RESIZE:
+				window->OnResize(event.windowData.coord.x, event.windowData.coord.y);
 				break;
-			case SDL_WINDOWEVENT_RESTORED:
-				Core::Logger::debug("Window : '{}' restored.", window.windowID);
+			case WindowEventType::DROP:
 				break;
-			case SDL_WINDOWEVENT_ENTER:
-				Core::Logger::debug("Window : '{}' mouse enter.", window.windowID);
-				break;
-			case SDL_WINDOWEVENT_LEAVE:
-				Core::Logger::debug("Window : '{}' mouse leave.", window.windowID);
-				break;
-			case SDL_WINDOWEVENT_FOCUS_GAINED:
-				Core::Logger::debug("Window : '{}' focus gained.", window.windowID);
-				break;
-			case SDL_WINDOWEVENT_FOCUS_LOST:
-				Core::Logger::debug("Window : '{}' focus lost.", window.windowID);
-				break;
-			case SDL_WINDOWEVENT_CLOSE:
-				onCloseWindow(window.windowID);
-				Core::Logger::debug("Window : '{}' closed.", window.windowID);
+			case WindowEventType::CLOSE:
+				window->IsCloseRequested = true;
 				break;
 			default:
-				Core::Logger::debug("Window : '{}' UNKNOWN EVENT", window.windowID);
+				Core::Logger::debug("Window : '{}' UNKNOWN EVENT", window->Handle.key);
 				break;
 		}
+	}
+
+	void WindowManager::handleWindowEvent(const Event& event)
+	{
+		auto* window = getWindowById(reinterpret_cast<std::uintptr_t>(event.window));
+		if(window != nullptr)
+		{
+			handleWindowEvent(window, event);
+		}
+	}
+
+	bool WindowManager::allWindowsClosed() const
+	{
+		bool result = true;
+
+		for(auto& window : _windowContainer)
+		{
+			if(window.IsAlive() && !window.ShouldClose())
+			{
+				result = false;
+				break;
+			}
+		}
+
+		return result;
 	}
 }

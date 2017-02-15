@@ -2,15 +2,18 @@
 // Created by bentoo on 13.02.17.
 //
 
+#include <Core/Input/InputEvent.h>
+#include <Core/EventQueue.h>
 #include "Core/Input/InputManager.h"
 #include "Core/Input/ControlScheme.h"
+#include "Core/Input/InputEvent.h"
 #include "Core/Platform.h"
 #include "Core/Logger.h"
 
 namespace Core
 {
 	InputDevice::InputDevice(SDL_GameController* controller)
-		: _name(SDL_GameControllerName(controller)),
+		: //_name(SDL_GameControllerName(controller)),
 		  _hController(controller), _scheme(nullptr)
 	{ }
 
@@ -18,7 +21,7 @@ namespace Core
 	{
 		if(_hController != nullptr)
 		{
-			SDL_GameControllerClose(_hController);
+		//	SDL_GameControllerClose(_hController);
 		}
 	}
 
@@ -52,24 +55,22 @@ namespace Core
 		return device->_scheme != nullptr ? device->_scheme : _currentScheme;
 	}
 
-	void InputManager::onDeviceDisconnected(const SDL_Event &event)
+	void InputManager::onDeviceDisconnected(InputDevice* device)
 	{
-		auto itr = _controllerIdMap.find(event.jdevice.which);
-		if(itr != _controllerIdMap.end())
+		if(device != nullptr)
 		{
-			Core::Logger::debug("Controller : Disconnected '{}', named '{}'.",
-								event.cdevice.which, itr->second->_name);
+			Core::Logger::debug("Controller : Disconnected '{}', named '{}'.", device->_id, device->_name);
 
-			Memory::Delete(_memory, itr->second);
-			_controllerIdMap.erase(itr->first);
+			_controllerIdMap.erase(device->_id);
+			Memory::Delete(_memory, device);
 		}
 	}
 
-	void InputManager::onDeviceConnected(const SDL_Event &event)
+	void InputManager::onDeviceConnected(InputDevice* device)
 	{
-		if(SDL_IsGameController(event.cdevice.which))
+		if(device != nullptr)
 		{
-			SDL_GameController* controller = SDL_GameControllerOpen(event.cdevice.which);
+			/*SDL_GameController* controller = SDL_GameControllerOpen(event.cdevice.which);
 			if(controller != nullptr)
 			{
 				auto inputDevice = YAGE_CREATE_NEW(_memory, InputDevice)(controller);
@@ -81,14 +82,8 @@ namespace Core
 				int				instanceID	= SDL_JoystickInstanceID( joy );
 
 				_controllerIdMap[instanceID] = inputDevice;
-			}
+			}*/
 		}
-	}
-
-	void InputManager::onDeviceRemapped(const SDL_Event &event)
-	{
-		Core::Logger::debug("Controller : Remapped '{}' of type '{}'.",
-							event.cdevice.which, event.cdevice.type);
 	}
 
 	void InputManager::onKey(InputDevice* device, std::int32_t scancode, std::int32_t state, Core::GameTime& time)
@@ -109,36 +104,23 @@ namespace Core
 		}
 	}
 
-	void InputManager::handleInputEvent(SDL_Event& event, Core::GameTime& time)
+	void InputManager::handleInputEvent(const Core::Event& event, Core::GameTime& time)
 	{
-		switch(event.type)
+		auto input  = event.inputData;
+		auto device = input.isKeyboardAndMouseEvent() ? &MouseAndKeyboard : getDeviceForId(input.getDeviceId());
+		switch(input.type)
 		{
-			case SDL_KEYDOWN:
-			case SDL_KEYUP:
-			case SDL_MOUSEBUTTONDOWN:
-			case SDL_MOUSEBUTTONUP:
-				onKey(&MouseAndKeyboard, event.key.keysym.scancode, event.key.state, time);
+			case Input::EventType::BUTTON:
+				onKey(device, input.button.scancode, input.button.status, time);
 				break;
-			case SDL_CONTROLLERBUTTONDOWN:
-			case SDL_CONTROLLERBUTTONUP:
-				onKey(getDeviceForId(event.cbutton.which), event.cbutton.button, event.cbutton.state, time);
+			case Input::EventType::AXIS:
+				onAxis(device, input.axis.axisId, input.axis.x, input.axis.y, time);
 				break;
-			case SDL_MOUSEMOTION:
-				Core::Logger::trace("Mouse : Motion Range X, Y : '{}' x '{}'.",
-									event.motion.x, event.motion.y);
+			case Input::EventType::CONNECTED:
+				onDeviceConnected(device);
 				break;
-			case SDL_MOUSEWHEEL:
-				Core::Logger::debug("Mouse : Wheel Range X, Y : '{}' x '{}'.",
-									event.wheel.x, event.wheel.y);
-				break;
-			case SDL_CONTROLLERDEVICEADDED:
-				onDeviceConnected(event);
-				break;
-			case SDL_CONTROLLERDEVICEREMAPPED:
-				onDeviceRemapped(event);
-				break;
-			case SDL_CONTROLLERDEVICEREMOVED:
-				onDeviceDisconnected(event);
+			case Input::EventType::DISCONNECTED:
+				onDeviceDisconnected(device);
 				break;
 		}
 	}

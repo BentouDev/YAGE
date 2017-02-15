@@ -6,14 +6,14 @@
 #define GAME_WINDOWMANAGER_H
 
 #include <map>
+#include <cstdint>
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
 #include "Core/Window.h"
 
-union SDL_Event;
-
 namespace Core
 {
+	struct Event;
 	class Engine;
 
 	class WindowManager
@@ -22,17 +22,15 @@ namespace Core
 		using handle_t = Utils::Handle<Core::Window>;
 
 	protected:
-		Core::Engine& _engine;
-		Memory::IMemoryBlock& _memory;
+		Core::Engine&			_engine;
+		Memory::IMemoryBlock&	_memory;
 
-		Utils::Container<Window::trait_t> _windowContainer;
+		Utils::Container<Window::trait_t>			_windowContainer;
+		std::map<std::uintptr_t, Window::handle_t>	_windowIdMapper;
 
-		std::map<std::uint32_t, Window::handle_t> _windowIdMapper;
+		Window* getWindowById(std::uintptr_t id);
 
-		Window* getWindowById(std::uint32_t id);
-
-		void onResizeWindow(std::uint32_t id, std::int32_t width, std::int32_t height);
-		void onCloseWindow (std::uint32_t id);
+		void handleWindowEvent(Window* window, const Event& event);
 
 	public:
 		explicit WindowManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
@@ -46,7 +44,8 @@ namespace Core
 		Window* tryGet(handle_t);
 
 		void closeAllWindows();
-		void handleWindowEvent(const SDL_Event& event);
+		void handleWindowEvent(const Event& event);
+		bool allWindowsClosed() const;
 	};
 }
 

@@ -12,14 +12,15 @@
 #include "Core/Gfx/Viewport.h"
 #include "Core/Gfx/RenderTarget.h"
 
-struct SDL_Window;
-typedef void* SDL_GLContext;
+struct GLFWwindow;
 
 namespace Core
 {
 	class Window
 	{
 		friend class WindowManager;
+
+		void OnResize(std::int32_t width, std::int32_t);
 
 	public:
 		using handle_t = Utils::Handle<Window>;
@@ -62,8 +63,7 @@ namespace Core
 
 		Gfx::Viewport*			DefaultViewport;
 
-		SDL_Window*				hWindow;
-		SDL_GLContext			hContext;
+		GLFWwindow*				hWindow;
 		handle_t				Handle;
 
 		auto operator==(const Window& other) -> bool

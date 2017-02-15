@@ -26,12 +26,12 @@ namespace Input
 
 	ControlAction* ControlScheme::bindActionByKeycode(ControlAction* action, std::uint32_t keycode)
 	{
-		return bindActionByScancode(action->actionName, SDL_GetScancodeFromKey(keycode));
+		return bindActionByScancode(action->actionName, keycode);
 	}
 
 	ControlAction* ControlScheme::bindActionByKeycode(std::string name, std::uint32_t keycode)
 	{
-		return bindActionByScancode(name, SDL_GetScancodeFromKey(keycode));
+		return bindActionByScancode(name, keycode);
 	}
 
 	ControlAction* ControlScheme::bindActionByScancode(ControlAction* action, std::uint32_t scancode)
@@ -80,7 +80,7 @@ namespace Input
 		ControlAction*		action		= _controlActions[index];
 		ButtonStateData&	stateData	= _buttonStateDatas[index];
 
-		bool button		= state != SDL_RELEASED;
+		bool button		= state != GLFW_RELEASE;
 		bool clean		= action->buttonState == None;
 		bool changed	= stateData.Value != state;
 		bool buffered	= stateData.Frames < FramesInBuffer;

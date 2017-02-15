@@ -13,7 +13,7 @@
 #define NOMINMAX
 #endif
 
-#include <SDL2/SDL.h>
+#include <GLFW/glfw3.h>
 
 #ifdef CREATE_NEW
 #undef CREATE_NEW

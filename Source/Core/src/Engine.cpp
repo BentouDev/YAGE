@@ -18,6 +18,7 @@
 #include "Core/Gfx/BufferManager.h"
 #include "Core/Gfx/Renderer.h"
 #include "Core/Logic/Scene.h"
+#include "Core/EventQueue.h"
 #include "Core/GameTime.h"
 #include "Core/Engine.h"
 #include "Core/Logger.h"
@@ -49,16 +50,23 @@ namespace Core
 
 	auto Engine::CreateWindow() const noexcept -> Window::handle_t
 	{
-		auto handle = WindowManager.get().createNew(((std::string)Config.get().WindowTitle).c_str(),
-													  Config.get().WindowWidth,
-													  Config.get().WindowHeight);
+		auto handle = WindowManager.get().createNew (
+			((std::string)Config.get().WindowTitle).c_str(),
+			 Config.get().WindowWidth,
+			 Config.get().WindowHeight
+		);
 
 		auto* window = WindowManager.get().tryGet(handle);
 		if(window != nullptr)
 		{
 			if(!OpenGL::registerWindow(*window))
 			{
-				Logger::error("Unable to register window in OpenGL!");
+				Logger::error("Engine : Unable to register window in OpenGL!");
+			}
+
+			if(!EventQueue::registerWindow(window))
+			{
+				Logger::error("Engine : Unable to register window in EventQueue!");
 			}
 		}
 		else
@@ -76,9 +84,10 @@ namespace Core
 
 	auto Engine::Initialize() -> bool
 	{
-		bool video = OpenGL::initialize();
-		if(video) SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER);
-		return video;
+		bool success = true;
+		success &= OpenGL::initialize();
+		success &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
+		return success;
 	}
 
 	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
@@ -108,32 +117,35 @@ namespace Core
 		if(ShouldClose())
 			return;
 
-		SDL_Event event;
-		while(SDL_PollEvent(&event))
+		Event event;
+		while(EventQueue::pollEvent(&event))
 		{
 			switch(event.type)
 			{
-				case SDL_QUIT:
-					Quit();
-					break;
-				case SDL_WINDOWEVENT:
+				case EventType::WINDOW:
 					WindowManager->handleWindowEvent(event);
 					break;
-				default:
+				case EventType::INPUT:
 					InputManager->handleInputEvent(event, time);
+					break;
+				case EventType::APP:
 					break;
 			}
 		}
 	}
 
-	void Engine::Update(GameTime &time)
+	void Engine::Update(GameTime& time)
 	{
-		if(activeScene) activeScene->Update(time);
+		if(activeScene)
+			activeScene->Update(time);
+
+		if(WindowManager->allWindowsClosed())
+			Quit();
 	}
 
 	double Engine::GetCurrentTime()
 	{
-		return SDL_GetTicks() / 1000.0;
+		return glfwGetTime();
 	}
 
 	auto Engine::Quit() -> void
@@ -149,6 +161,8 @@ namespace Core
 
 		Logger::info("Cleaning up...");
 
+		EventQueue::destroy();
+
 		Memory::Delete(MemoryModule->masterBlock(), InputManager);
 		Memory::Delete(MemoryModule->masterBlock(), WindowManager);
 		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
@@ -158,8 +172,7 @@ namespace Core
 		Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
 		Memory::Delete(MemoryModule->masterBlock(), Renderer);
 
-		SDL_QuitSubSystem( SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER);
-		SDL_Quit();
+		glfwTerminate();
 
 		Logger::info("Cleaned up!");
 		Memory::SafeDelete(Config);
