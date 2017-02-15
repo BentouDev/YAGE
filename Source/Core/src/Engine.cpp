@@ -46,6 +46,13 @@ namespace Core
 		ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
 		WindowManager	.reset(CreateManager<Core::WindowManager>       (Memory::KB(10)));
 		InputManager	.reset(CreateManager<Core::InputManager>        (Memory::KB(10)));
+
+		glfwSetErrorCallback(&Engine::ErrorCallback);
+	}
+
+	void Engine::ErrorCallback(int code, const char* description)
+	{
+		Logger::critical("GLFW : Error '{}' occured :\n\t{}", code, description);
 	}
 
 	auto Engine::CreateWindow() const noexcept -> Window::handle_t

@@ -47,7 +47,6 @@ namespace Core
 		get().initializeImpl(memory);
 
 		glfwSetJoystickCallback(&EventQueue::JoystickCallback);
-		glfwSetErrorCallback   (&EventQueue::ErrorCallback);
 		glfwSetMonitorCallback (&EventQueue::MonitorCallback);
 
 		Logger::debug("EventQueue : Event size = '{}'", sizeof(Event));
@@ -68,8 +67,6 @@ namespace Core
 		if(_eventQueue->empty())
 		{
 			glfwPollEvents();
-
-			// poll joystick state!
 		}
 
 		if(!_eventQueue->empty()
@@ -135,11 +132,6 @@ namespace Core
 		glfwSetFramebufferSizeCallback(window->hWindow, &EventQueue::FramebufferSizeCallback);
 
 		return true;
-	}
-
-	void EventQueue::ErrorCallback(int code, const char* description)
-	{
-		Logger::critical("GLFW : Error '{}' occured :\n\t{}", code, description);
 	}
 
 	void EventQueue::MonitorCallback(GLFWmonitor* monitor, int status)

@@ -72,7 +72,6 @@ namespace Core
 
 	private:
 		// Misc
-		static void ErrorCallback          (int code, const char* description);
 		static void MonitorCallback        (GLFWmonitor* monitor, int status);
 
 		// Joystick

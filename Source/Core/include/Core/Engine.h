@@ -68,6 +68,8 @@ namespace Core
 		bool _cleanedUp = false;
 		bool _isDone = false;
 
+		static void ErrorCallback(int code, const char* description);
+
 	public:
 
 		static void initializeReferences(Engine* engine);
