@@ -10,21 +10,21 @@
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
 #include "Core/Window.h"
+#include "Core/IManager.h"
 
 namespace Core
 {
 	struct Event;
 	class Engine;
 
-	class WindowManager
+	class WindowManager : public IManager
 	{
+		MANAGER(WindowManager);
+
 	public:
 		using handle_t = Utils::Handle<Core::Window>;
 
 	protected:
-		Core::Engine&			_engine;
-		Memory::IMemoryBlock&	_memory;
-
 		Utils::Container<Window::trait_t>			_windowContainer;
 		std::map<std::uintptr_t, Window::handle_t>	_windowIdMapper;
 

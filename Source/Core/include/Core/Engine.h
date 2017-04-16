@@ -128,7 +128,8 @@ namespace Core
 		template <typename T>
 		T* CreateManager(std::size_t memorySize)
 		{
-			Memory::IMemoryBlock& memoryBlock = MemoryModule.get().requestMemoryBlock(memorySize, TypeInfo<T>::cName());
+			static_assert(std::is_base_of<IManager, T>::value, "Engine : Cannot create manager that doesnt derive from IManager!");
+			Memory::IMemoryBlock& memoryBlock = MemoryModule.get().requestMemoryBlock(memorySize, T::GetStaticClassName());
 			T* manager = YAGE_CREATE_NEW(MemoryModule.get().masterBlock(), T)(*this, memoryBlock);
 
 			return manager;

@@ -43,6 +43,8 @@ namespace Resources
 
 	class MeshManager : public Core::IManager
 	{
+		MANAGER(MeshManager);
+
 		friend class MeshBuilder;
 
 	public:

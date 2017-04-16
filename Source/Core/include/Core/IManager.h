@@ -8,6 +8,13 @@
 #include <Utils/Handle.h>
 #include <Utils/MemoryBlock.h>
 
+#define MANAGER(Clazz) \
+private: \
+	static constexpr const char* ClazzName = #Clazz; \
+public: \
+	static inline constexpr const char* const GetStaticClassName() \
+	{ return ClazzName; }
+
 namespace Core
 {
 	class Engine;

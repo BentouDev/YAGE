@@ -7,6 +7,11 @@
 
 #include "Core/Engine.h"
 
+namespace Gfx
+{
+	class Camera;
+}
+
 namespace Yage
 {
 	/*
@@ -22,6 +27,8 @@ namespace Yage
 		float	fpsTime;
 		int		frames;
 
+		Gfx::Camera* defaultCamera;
+
 		Memory::IMemoryBlock* persistentBlock;
 		Memory::IMemoryBlock* frameBlock;
 
@@ -36,9 +43,13 @@ namespace Yage
 		virtual void OnInit();
 		virtual void OnCleanUp();
 		virtual void OnUpdate(Core::GameTime &gameTime);
+		virtual void OnPreDraw(Core::GameTime &gameTime);
+		virtual void OnPostDraw(Core::GameTime &gameTime);
 
-		Memory::IMemoryBlock& getPersistentBlock();
-		Memory::IMemoryBlock& getFrameBlock();
+		Memory::IMemoryBlock&	getPersistentBlock() const;
+		Memory::IMemoryBlock&	getFrameBlock() const;
+		Gfx::Camera&		 	getDefaultCamera() const;
+		Core::Window&		 	getWindow() const;
 
 	public:
 		         Game();

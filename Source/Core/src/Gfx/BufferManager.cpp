@@ -8,7 +8,7 @@
 namespace Gfx
 {
 	BufferManager::BufferManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _bufferContainer(_memory)
+		: IManager(engine, memory), _bufferContainer(_memory)
 	{
 
 	}

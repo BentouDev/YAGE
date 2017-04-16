@@ -9,7 +9,7 @@
 namespace Resources
 {
 	ShaderManager::ShaderManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-	 : _engine(engine), _memory(memory), _shadersContainer(_memory)
+	 : IManager(engine, memory), _shadersContainer(_memory)
 	{
 		Core::Logger::get()->info("Created shader manager with capacity {}", _shadersContainer.capacity());
 	}

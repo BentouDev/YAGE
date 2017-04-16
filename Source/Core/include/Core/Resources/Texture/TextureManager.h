@@ -15,6 +15,8 @@ namespace Resources
 
 	class TextureManager : public Core::IManager
 	{
+		MANAGER(TextureManager);
+
 	public:
 		using handle_t = Texture::handle_t;
 

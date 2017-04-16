@@ -8,8 +8,10 @@
 #include <map>
 #include <Utils/MemoryBlock.h>
 #include <Utils/String.h>
-#include <Core/GameTime.h>
-#include <Core/Input/DeviceType.h>
+
+#include "Core/GameTime.h"
+#include "Core/Input/DeviceType.h"
+#include "Core/IManager.h"
 
 struct _SDL_GameController;
 typedef struct _SDL_GameController SDL_GameController;
@@ -42,10 +44,9 @@ namespace Core
 		std::int32_t 			id;
 	};
 
-	class InputManager
+	class InputManager : public IManager
 	{
-		Memory::IMemoryBlock&	_memory;
-		Core::Engine&			_engine;
+		MANAGER(InputManager);
 
 		InputDevice				Mouse;
 		InputDevice				Keyboard;
@@ -65,7 +66,7 @@ namespace Core
 
 	public:
 		explicit InputManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
-			: _engine(engine), _memory(memory), _currentScheme(nullptr),
+			: IManager(engine, memory), _currentScheme(nullptr),
 			  Mouse   (_memory, "Mouse",    Input::DeviceType::MOUSE),
 			  Keyboard(_memory, "Keyboard", Input::DeviceType::KEYBOARD)
 		{ }
