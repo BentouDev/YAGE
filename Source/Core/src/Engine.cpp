@@ -66,7 +66,7 @@ namespace Core
 		auto* window = WindowManager.get().tryGet(handle);
 		if(window != nullptr)
 		{
-			if(!OpenGL::registerWindow(*window))
+			if(!Renderer->registerWindow(window))
 			{
 				Logger::error("Engine : Unable to register window in OpenGL!");
 			}
@@ -91,10 +91,10 @@ namespace Core
 
 	auto Engine::Initialize() -> bool
 	{
-		bool success = true;
-		success &= OpenGL::initialize();
-		success &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
-		return success;
+		bool result = true;
+		result &= OpenGL::initialize();
+		result &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
+		return result;
 	}
 
 	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
@@ -110,13 +110,17 @@ namespace Core
 	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window, Core::GameTime& time) -> void
 	{
-		OpenGL::beginDraw(window);
+		if(WindowManager->allWindowsClosed())
+			return;
+
+		// OpenGL::beginDraw(window);
 
 		if(activeScene) activeScene->Draw(time, Renderer.get());
 
 		Renderer->draw();
+		Renderer->drawSpriteBatches();
 
-		OpenGL::endDraw(window);
+		// OpenGL::endDraw(window);
 	}
 
 	auto Engine::ProcessEvents(Core::GameTime& time) -> void
@@ -157,7 +161,7 @@ namespace Core
 
 	auto Engine::Quit() -> void
 	{
-		WindowManager->closeAllWindows();
+		// WindowManager->closeAllWindows();
 		_isDone = true;
 	}
 

@@ -9,11 +9,17 @@
 #include "RenderTarget.h"
 #include "Rectangle.h"
 
+namespace Core
+{
+	class Window;
+}
+
 namespace Gfx
 {
 	class Viewport : public RenderTarget
 	{
-		Rectangle<int32_t> _rect;
+		Rectangle<int32_t>	_rect;
+		Core::Window&		_window;
 
 	public:
 		using trait_t	= Utils::DefaultTrait<Viewport>;
@@ -21,8 +27,8 @@ namespace Gfx
 
 		handle_t Handle;
 
-		explicit Viewport(const Rectangle<int32_t>& rect)
-			: _rect(rect)
+		explicit Viewport(const Rectangle<int32_t>& rect, Core::Window& window)
+			: _rect(rect), _window(window)
 		{ }
 
 		void	Clear(const Utils::Color& color) override;

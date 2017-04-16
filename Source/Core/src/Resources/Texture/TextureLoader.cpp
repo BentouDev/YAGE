@@ -118,19 +118,13 @@ namespace Resources
 		texture._height			= textureHeight;
 		texture._format			= format;
 		texture._pixelFormat	= pixelFormat;
-		texture._pixels			= reinterpret_cast<uint8_t*> (
-			_manager.getMemoryBlock().allocate(pixelsSize, alignof(uint8_t), DEBUG_SOURCE_INFO)
-		);
-
-		// TODO : copying of pixels should depend on something, its not necessary for each texture use case
-		memcpy(texture._pixels, pixels, pixelsSize);
 
 		gl::GenTextures(1, &texture._handle);
 		gl::BindTexture(gl::TEXTURE_2D, texture._handle);
 
 		if(OpenGL::checkError())
 		{
-			Core::Logger::get()->warn (
+			Core::Logger::warn (
 				"TextureLoader : Unable to bind texture '{}', due to openGl error!", texture._handle
 			);
 
@@ -154,13 +148,13 @@ namespace Resources
 			gl::TexImage2D (
 				gl::TEXTURE_2D, 0, texture._pixelFormat,
 				texture._width, texture._height, 0, texture._format,
-				gl::UNSIGNED_BYTE, &texture._pixels
+				gl::UNSIGNED_BYTE, pixels
 			);
 		}
 
 		if(OpenGL::checkError())
 		{
-			Core::Logger::get()->error (
+			Core::Logger::error (
 				"TextureLoader : Unable to create texture '{}' due to openGl error!", texture._handle
 			);
 
@@ -168,7 +162,7 @@ namespace Resources
 			return Texture::handle_t::invalid();
 		}
 
-		Core::Logger::get()->info("TextureLoader : Texture '{}' created successfully!", texture._handle);
+		Core::Logger::info("TextureLoader : Texture '{}' created successfully!", texture._handle);
 
 		gl::BindTexture(gl::TEXTURE_2D, 0);
 
@@ -184,7 +178,7 @@ namespace Resources
 			gl::TexParameteri(gl::TEXTURE_2D, pair.first, pair.second);
 			if(OpenGL::checkError())
 			{
-				Core::Logger::get()->warn (
+				Core::Logger::warn (
 					"TextureLoader : Unable to set parameter '{}' as '{}' due to openGL error!",
 					pair.first, pair.second
 				);

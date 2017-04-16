@@ -16,8 +16,6 @@ namespace Resources
 	{
 		friend class TextureLoader;
 
-		uint8_t* _pixels;
-
 		uint32_t _width;
 		uint32_t _height;
 
@@ -29,12 +27,11 @@ namespace Resources
 		using trait_t	= Utils::DefaultTrait<Texture>;
 
 		explicit Texture();
+		Texture(Texture&& other);
 
 		Texture(const Texture&) = delete;
 		Texture& operator=(Texture&&) = delete;
 		Texture& operator=(const Texture&) = delete;
-
-		Texture(Texture&& other);
 
 		virtual ~Texture();
 

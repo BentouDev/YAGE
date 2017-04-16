@@ -59,8 +59,10 @@ namespace OpenGL
 		}
 
 		gl::Enable(gl::DEPTH_TEST);
-		// gl::Enable(gl::TEXTURE_2D);
-
+		OpenGL::checkError();
+		gl::DepthFunc(gl::LEQUAL);
+		OpenGL::checkError();
+		gl::Enable(gl::BLEND);
 		OpenGL::checkError();
 
 		return didLoadFunctions;

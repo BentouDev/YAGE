@@ -13,31 +13,47 @@
 
 #include <Utils/PropertyMacro.h>
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
+#include "Core/Gfx/Rectangle.h"
 
 namespace Gfx
 {
+	class RenderTarget;
+
 	class Camera
 	{
 		friend class Renderer;
 
-		const GLfloat* projectionPtr();
-		const GLfloat* viewPtr();
+		RenderTarget* renderTarget;
+
+		const GLfloat* projectionPtr() const;
+		const GLfloat* viewPtr() const;
 
 		void recalculate(float aspect);
+		void recalculate();
 
 	public:
 		explicit Camera();
 		virtual ~Camera();
 
-		glm::mat4x4 viewMatrix;
-		glm::mat4x4 projectionMatrix;
-		glm::vec3	position;
-		glm::vec3	forward;
-		glm::vec3	up;
+		void bindUniforms();
 
-		float		FOV = 60;
-		float		nearCulling = 0.01f;
-		float		farCulling = 100.f;
+		void setRenderTarget(RenderTarget* target);
+		void setRenderTarget(RenderTarget& target);
+		auto getRenderTarget() -> RenderTarget*;
+		auto getRenderTarget() const -> const RenderTarget*;
+
+		bool 					enableScissors;
+		Gfx::Rectangle<float>	scissors;
+		glm::mat4x4 			viewMatrix;
+		glm::mat4x4 			projectionMatrix;
+		glm::vec3				position;
+		glm::vec3				forward;
+		glm::vec3				up;
+
+		float					FOV = 60;
+		float					nearCulling = 0.01f;
+		float					farCulling = 100.f;
+		std::uint16_t			sortIndex;
 	};
 }
 

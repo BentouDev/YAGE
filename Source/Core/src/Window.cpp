@@ -11,7 +11,7 @@ namespace Core
 {
 	Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
 		: _memory(memory), Title {title}, Width {width}, Height {height},
-		  DefaultViewport{nullptr}, hWindow {nullptr}
+		  DefaultViewport {nullptr}, hWindow {nullptr}
 	{
 		Create();
 	}
@@ -36,7 +36,8 @@ namespace Core
 		}
 
 		DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(
-			Gfx::Rectangle<int32_t>(0, 0, Width, Height)
+			Gfx::Rectangle<int32_t>(0, 0, Width, Height),
+			*this
 		);
 	}
 
@@ -58,7 +59,7 @@ namespace Core
 
 		DefaultViewport->setRect(Gfx::Rectangle<int32_t>(0, 0, Width, Height));
 
-		OpenGL::resizeWindow(*this);
+		// OpenGL::resizeWindow(*this);
 	}
 
 	auto Window::Resize(std::int32_t width, std::int32_t height) -> void

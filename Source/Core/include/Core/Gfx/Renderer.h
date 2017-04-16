@@ -7,6 +7,7 @@
 
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Gfx/CommandQueue.h"
+#include "Core/IManager.h"
 #include "Rectangle.h"
 
 #include <Utils/BorrowedPtr.h>
@@ -14,6 +15,9 @@
 #include <Utils/List.h>
 #include <Utils/Container.h>
 #include <Utils/Color.hpp>
+#include <Utils/Handle.h>
+
+#include <map>
 
 namespace Logic
 {
@@ -27,11 +31,15 @@ namespace Core
 	class Mesh;
 	class MeshData;
 	class Material;
+	class Window;
 }
 
 namespace Gfx
 {
 	class BaseApi;
+	class SpriteBatch;
+	class SpriteBuffer;
+	class SpriteBatchManager;
 
 	union RenderKey
 	{
@@ -50,15 +58,16 @@ namespace Gfx
 		Core::Material* material;
 	};
 
-	class Renderer
+	class Renderer : public Core::IManager
 	{
+		MANAGER(Renderer);
+
 	public:
 		using queue_t = CommandQueue<RenderKey, RenderData, Logic::RenderingComponent>;
 
 	protected:
-		Core::Engine& _engine;
-
-		Memory::IMemoryBlock& 	_memory;
+		SpriteBatchManager*	_spriteBatchManager;
+		SpriteBatch*		_debugBatch;
 
 		queue_t _queue;
 
@@ -67,18 +76,38 @@ namespace Gfx
 		GLuint lastVAO;
 		GLuint lastProgram;
 
+		GLuint cameraProjectionUniformLocation;
+		GLuint cameraViewUniformLocation;
+		GLuint cameraModelUniformLocation;
+
+		Core::Material*	_debugMaterial;
+		Gfx::Camera*	_debugCamera;
+
+		bool loadDebugMaterial();
+
+		bool initialize();
+
+		void drawSpriteBatch(const SpriteBatch& buffer);
+
 	public:
 		Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory);
+		virtual ~Renderer();
 
 		inline queue_t& getQueue()
 		{ return _queue; }
 
+		bool registerWindow(const Core::Window*);
+
 		void draw();
 		void drawCall(RenderData&);
 
-		// Will add quad to buffer
-		// And use default 2D shader for this
-	//	void drawRect(Rectangle rect, Utils::Color color);
+		Gfx::Camera& createCamera();
+		Gfx::Camera& getDebugCamera();
+		Core::Material& getDebugMaterial();
+		SpriteBatch& getDebugSpriteBatch(Core::Window& window);
+		SpriteBatch& getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, std::int32_t minimalSize = -1);
+
+		void drawSpriteBatches();
 
 		// Will draw quad, but in 3D!
 		// With proper rotation and shit
@@ -86,13 +115,11 @@ namespace Gfx
 
 	//	void drawLine(glm::vec3 start, glm::vec3 end, Utils::Color color);
 
-		// {
 		// SpriteDrawCall
-		// Rect - vertex data
-		// Texcoord* - two 2D vectors
-		// Matrix* - where the hell would I put that...
-		// Color* - can go to vertex data too
-		// Material* - ???, batching probably!
+		// {
+		//     Rect - vertex data
+		//     Texcoord* - two 2D vectors
+		//     Color* - can go to vertex data too
 		// }
 
 		// void drawRect(Rectangle rect, Utils::Color color, Texture* texture);
