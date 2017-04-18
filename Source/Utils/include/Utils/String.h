@@ -6,6 +6,7 @@
 #define GAME_STRING_H
 
 #include <type_traits>
+#include <vector>
 #include <cstring>
 #include <cstdio>
 #include <cctype>
@@ -145,6 +146,21 @@ namespace Utils
 	{
 		// pad with zeroes, minimum 1 character, hex
 		return str.stackSprintf("%01llx", i);
+	}
+
+	template <typename Str>
+	static void SplitString(const char* str, std::vector<Str>& list, const char* divider)
+	{
+		char* obj	= strdup(str);
+		char* temp	= strtok(obj, divider);
+		while(temp)
+		{
+			char* token = strdup(temp);
+			list.push_back(Str(token));
+			temp = strtok(NULL, divider);
+		}
+
+		free(obj);
 	}
 }
 
