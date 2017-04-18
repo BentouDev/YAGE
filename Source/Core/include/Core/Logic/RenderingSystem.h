@@ -6,8 +6,6 @@
 #define GAME_RENDERINGSYSTEM_H
 
 #include <Utils/Container.h>
-#include <Core/Gfx/Camera.h>
-#include <Core/Gfx/Viewport.h>
 
 #include "RenderingComponent.h"
 #include "Core/Logic/System.h"

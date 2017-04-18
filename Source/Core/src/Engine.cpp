@@ -12,6 +12,7 @@
 #include "Core/Input/InputManager.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Resources/Mesh/MeshManager.h"
+#include "Core/Resources/Font/FontManager.h"
 #include "Core/Resources/Shader/ShaderManager.h"
 #include "Core/Resources/Texture/TextureManager.h"
 #include "Core/Resources/Material/MaterialManager.h"
@@ -41,6 +42,7 @@ namespace Core
 		Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
 		BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
 		MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
+		FontManager		.reset(CreateManager<Resources::FontManager>    (Memory::KB(400)));
 		TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
 		ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
@@ -177,6 +179,7 @@ namespace Core
 		Memory::Delete(MemoryModule->masterBlock(), InputManager);
 		Memory::Delete(MemoryModule->masterBlock(), WindowManager);
 		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
+		Memory::Delete(MemoryModule->masterBlock(), FontManager);
 		Memory::Delete(MemoryModule->masterBlock(), MeshManager);
 		Memory::Delete(MemoryModule->masterBlock(), TextureManager);
 		Memory::Delete(MemoryModule->masterBlock(), MaterialManager);

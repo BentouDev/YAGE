@@ -29,6 +29,7 @@ namespace Gfx
 namespace Resources
 {
 	class MeshManager;
+	class FontManager;
 	class TextureManager;
 	class MaterialManager;
 	class ShaderManager;
@@ -81,6 +82,7 @@ namespace Core
 		borrowed_ptr<Gfx::Renderer>					Renderer;
 		borrowed_ptr<Gfx::BufferManager>			BufferManager;
 		borrowed_ptr<Resources::MeshManager>		MeshManager;
+		borrowed_ptr<Resources::FontManager>		FontManager;
 		borrowed_ptr<Resources::TextureManager>		TextureManager;
 		borrowed_ptr<Resources::MaterialManager>	MaterialManager;
 		borrowed_ptr<Resources::ShaderManager>		ShaderManager;

@@ -3,7 +3,7 @@
 //
 
 #include "Core/Gfx/Viewport.h"
-#include "Core/Gfx/OpenGL/OpenGLBase.h"
+#include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Window.h"
 #include "Core/Platform.h"
 

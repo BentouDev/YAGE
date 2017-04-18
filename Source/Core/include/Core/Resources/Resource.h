@@ -37,7 +37,7 @@ namespace Core
 		handle_t 	Handle;
 
 		// Todo : package reference
-		const char* Name;
+		std::string Name;
 	};
 }
 

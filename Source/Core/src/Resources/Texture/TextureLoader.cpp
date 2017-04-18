@@ -166,6 +166,9 @@ namespace Resources
 
 		gl::BindTexture(gl::TEXTURE_2D, 0);
 
+		textureHeight	= 0;
+		textureWidth	= 0;
+
 		return textureHandle;
 	}
 

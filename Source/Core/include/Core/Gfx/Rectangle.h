@@ -22,6 +22,13 @@ namespace Gfx
 			: _min(x, y), _max(x + width, y + height)
 		{ }
 
+		void setMinX(N value)	{ _min.x = value; }
+		void setMinY(N value)	{ _min.y = value; }
+		void setMaxX(N value)	{ _max.x = value; }
+		void setMaxY(N value)	{ _max.y = value; }
+		void setWidth(N value)	{ setMaxX(_min.x + value); }
+		void setHeight(N value)	{ setMaxY(_min.y + value); }
+
 		auto getWidth()			const noexcept -> N { return _max.x - _min.x; }
 		auto getHeight()		const noexcept -> N { return _max.y - _min.y; }
 
