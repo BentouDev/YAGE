@@ -12,6 +12,8 @@
 #include <Utils/SimpleMemoryBoundChecker.h>
 #include <Utils/SimpleMemoryTracker.h>
 #include <Utils/List.h>
+#include <Utils/ValgrindMemoryBoundChecker.h>
+#include <Utils/ValgrindMemoryTracker.h>
 
 namespace Core
 {
@@ -23,8 +25,8 @@ namespace Core
 												   Memory::SimpleMemoryTracker>;
 
 		using user_block_t = Memory::MemoryBlock<Memory::FreeListAllocator,
-												 Memory::NoMemoryBoundChecker,
-												 Memory::NoMemoryTracker>;
+												 Memory::SimpleMemoryBoundChecker,
+												 Memory::SimpleMemoryTracker>;
 
 	protected:
 		struct MemoryBlockNode

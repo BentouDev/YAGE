@@ -19,7 +19,7 @@ namespace Memory
 	{
 		_freeBlocks = new (memory) FreeListHeader(size);
 #if YAGE_VALGRIND
-	//	VALGRIND_MAKE_MEM_DEFINED(_freeBlocks, sizeof(FreeListHeader));
+		VALGRIND_MAKE_MEM_DEFINED(_freeBlocks, sizeof(FreeListHeader));
 #endif
 	}
 
@@ -84,7 +84,7 @@ namespace Memory
 		if(sizeLeft > minimalSize)
 		{
 #if YAGE_VALGRIND
-		//	VALGRIND_MAKE_MEM_DEFINED(pNew, sizeof(FreeListHeader));
+			VALGRIND_MAKE_MEM_DEFINED(pNew, sizeof(FreeListHeader));
 #endif
 			new (pNew) FreeListHeader(sizeLeft);
 		//	pNew->next			= nullptr;

@@ -34,7 +34,7 @@ typedef Memory::MemoryBlock <
 	class StringTest : public ::testing::Test
 	{
 	protected:
-		const std::size_t 	memorySize = 1024;
+		const std::size_t 	memorySize = 2048;
 		void* 				memory;
 		Memory::FreeListAllocator* allocator;
 
@@ -99,5 +99,34 @@ typedef Memory::MemoryBlock <
 
 		delete first;
 		delete second;
+	}
+
+	TEST_F(StringTest, CanTokenizeString)
+	{
+		const char* results[] = {
+			"Foo", "Bar", "Baz", "Q"
+		};
+
+		MockMemory block(*allocator, "CanTokenizeString");
+
+		{
+			Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
+			Utils::List<Utils::Slice<char> >tokens(block);
+			Utils::String::Tokenize(str, tokens, "\n\r");
+		}
+		{
+
+			Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
+			Utils::List<Utils::Slice<char> >tokens(block);
+			Utils::String::Tokenize(str, tokens, "\n\r");
+			EXPECT_EQ(4, tokens.size());
+
+			for (int i = 0; i < tokens.size() && i < 4; i++)
+			{
+				auto& slice = tokens[i];
+				Utils::String expected(block, slice);
+				EXPECT_STREQ(results[i], expected.c_str());
+			}
+		}
 	}
 }

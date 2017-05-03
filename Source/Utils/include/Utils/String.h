@@ -11,6 +11,7 @@
 #include <cstdio>
 #include <cctype>
 #include "List.h"
+#include "Slice.h"
 
 namespace Utils
 {
@@ -50,6 +51,12 @@ namespace Utils
 			append(string);
 		}
 
+		inline String(Memory::IMemoryBlock& memory, Utils::Slice<char>& slice)
+			: List(memory)
+		{
+			append(slice.begin(), slice.size());
+		}
+
 		inline String& append(const String& str)
 		{
 			addMany(str);
@@ -69,7 +76,8 @@ namespace Utils
 
 		inline String& append(const char* c_str)
 		{
-			return append(c_str, std::strlen(c_str));
+			std::size_t len = std::strlen(c_str);
+			return append(c_str, len > 0 ? len + 1 : 0);
 		}
 
 		const char* c_str() const
@@ -114,6 +122,8 @@ namespace Utils
 
 			return true;
 		}
+
+		static void Tokenize(const String& string, Utils::List<Utils::Slice<char>>& list, const char* divider);
 	};
 
 	inline static String& operator<<(String& str, char c)

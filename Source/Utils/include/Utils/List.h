@@ -61,7 +61,7 @@ namespace Utils
 
 				if(_elements != nullptr)
 				{
-					memcpy(newPtr, _elements, sizeof(T) * _capacity);
+					memcpy(newPtr, _elements, sizeof(T) * std::min(_size, _capacity));
 				}
 			}
 
@@ -199,10 +199,10 @@ namespace Utils
 
 		T& add(T&& other)
 		{
-			_size++;
-			if((int)_capacity - (int)_size < 0)
+			std::size_t newSize = _size + 1;
+			if((int)_capacity - (int)newSize < 0)
 			{
-				resize(_size);
+				resize(newSize);
 			}
 
 			auto result = &_elements[_size - 1];
