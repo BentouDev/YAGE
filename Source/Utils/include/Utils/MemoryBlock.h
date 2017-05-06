@@ -129,11 +129,11 @@ namespace Memory
 
 		void* allocate(std::size_t size, std::size_t alignment, const Utils::DebugSourceInfo& sourceInfo) override
 		{
-			const std::size_t 	fronOffset		= _boundChecker.getSizeFront();
+			const std::size_t 	frontOffset		= _boundChecker.getSizeFront();
 			const std::size_t 	backOffset		= _boundChecker.getSizeFront();
 			const std::size_t	originalSize	= size;
-			const std::size_t	newSize			= size + fronOffset + backOffset;
-			void*				allocationPtr	= _allocator.allocate(newSize, alignment, fronOffset);
+			const std::size_t	newSize			= size + frontOffset + backOffset; // add frontOffset to size
+			void*				allocationPtr	= _allocator.allocate(newSize, alignment, frontOffset);
 
 			std::uintptr_t allocationAddress = reinterpret_cast<std::uintptr_t>(allocationPtr);
 
@@ -147,10 +147,10 @@ namespace Memory
 				return nullptr;
 
 			_boundChecker.GuardFront(allocationPtr);
-			_boundChecker.GuardBack(reinterpret_cast<void*>(allocationAddress + fronOffset + originalSize));
-			_memoryTracker.OnAllocation(allocationPtr, size, alignment, fronOffset, sourceInfo);
+			_boundChecker.GuardBack(reinterpret_cast<void*>(allocationAddress + frontOffset + originalSize)); // original size doesnt have fronOffset
+			_memoryTracker.OnAllocation(allocationPtr, size, alignment, frontOffset, sourceInfo);
 
-			return reinterpret_cast<void*>(allocationAddress + fronOffset);
+			return reinterpret_cast<void*>(allocationAddress + frontOffset);
 		}
 
 		std::size_t getAllocationSize(void* ptr) override
@@ -159,7 +159,7 @@ namespace Memory
 			const std::size_t 		backOffset		= _boundChecker.getSizeBack();
 			const std::uintptr_t 	originalAddress	= reinterpret_cast<std::uintptr_t >(ptr) - frontOffset;
 			void* 					originalPtr		= reinterpret_cast<void*>(originalAddress);
-			return _allocator.getAllocationSize(originalPtr) - frontOffset - backOffset;
+			return _allocator.getAllocationSize(originalPtr) - frontOffset - backOffset; // remove frontOffset, its in size // NO ADJUSTMENT HAS OFFSET, ALREADY SUBSTRACTED
 		}
 
 		void deallocate(void* ptr) override
@@ -172,7 +172,7 @@ namespace Memory
 			const std::size_t allocationSize = _allocator.getAllocationSize(originalPtr);
 
 			_boundChecker.CheckFront(originalPtr);
-			_boundChecker.CheckBack(reinterpret_cast<void*>(originalAddress + allocationSize - backOffset));
+			_boundChecker.CheckBack(reinterpret_cast<void*>(originalAddress + allocationSize - backOffset)); // allocationSize has frontOffset
 			_memoryTracker.OnDeallocation(originalPtr, frontOffset);
 
 			_allocator.deallocate(originalPtr);

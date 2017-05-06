@@ -19,7 +19,7 @@ namespace Memory
 		void* _lastAllocation;
 
 	public:
-		 StackAllocator(void* memory, std::size_t);
+		 StackAllocator(void* memory, std::size_t size);
 		~StackAllocator();
 
 		void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) override;
