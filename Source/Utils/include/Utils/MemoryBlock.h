@@ -143,6 +143,9 @@ namespace Memory
 				getName(), sourceInfo.file, sourceInfo.line, newSize, getFreeSize()
 			);
 
+			if (allocationPtr == nullptr)
+				return nullptr;
+
 			_boundChecker.GuardFront(allocationPtr);
 			_boundChecker.GuardBack(reinterpret_cast<void*>(allocationAddress + fronOffset + originalSize));
 			_memoryTracker.OnAllocation(allocationPtr, size, alignment, fronOffset, sourceInfo);

@@ -79,16 +79,16 @@ namespace Memory
 					pNew);
 
 		const uint32_t minimalSize = sizeof(FreeListHeader);
-		const std::size_t sizeLeft = blockPtr->size - allocationSize;
+		std::size_t sizeDifference = blockPtr->size - allocationSize;
 
-		if(sizeLeft > minimalSize)
+		if (sizeDifference > minimalSize)
 		{
 #if YAGE_VALGRIND
 			VALGRIND_MAKE_MEM_DEFINED(pNew, sizeof(FreeListHeader));
 #endif
-			new (pNew) FreeListHeader(sizeLeft);
+			new (pNew) FreeListHeader(sizeDifference);
 		//	pNew->next			= nullptr;
-		//	pNew->size			= sizeLeft;
+		//	pNew->size			= sizeDifference;
 		//	pNew->adjustment	= (uint8_t)0;
 
 			if(blockPtr->next == nullptr)
@@ -96,6 +96,8 @@ namespace Memory
 
 		//	doRemoveFromList(_freeBlocks, blockPtr);
 			removeFromList(blockPtr);
+
+			sizeDifference = 0;
 		//	FreeListHeader* end = getListEnd(_freeBlocks);
 		//	end->next 			= pNew;
 		}
@@ -115,9 +117,10 @@ namespace Memory
 
 		FreeListHeader* userHeader = reinterpret_cast<FreeListHeader*>(alignedAddress - offset - sizeof(FreeListHeader));
 
-		userHeader->next		= nullptr;
-		userHeader->size		= allocationSize;
-		userHeader->adjustment	= (uint8_t)adjustment;
+		userHeader->next			= nullptr;
+		userHeader->size			= allocationSize;
+		userHeader->adjustment		= (uint8_t)adjustment;
+		userHeader->sizeDifference	= sizeDifference;
 
 		_usedSize += allocationSize;
 
@@ -144,7 +147,7 @@ namespace Memory
 	{
 		std::uintptr_t 	headerAddress	= reinterpret_cast<std::uintptr_t>(ptr) - sizeof(FreeListHeader);
 		FreeListHeader* header			= reinterpret_cast<FreeListHeader*>(headerAddress);
-		return header->size - header->adjustment;
+		return header->size - header->adjustment - header->sizeDifference;
 	}
 
 	FreeListAllocator::FreeListHeader* FreeListAllocator::getListEnd(FreeListHeader* list)

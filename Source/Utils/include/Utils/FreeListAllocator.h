@@ -21,6 +21,7 @@ namespace Memory
 			FreeListHeader* next;
 			std::size_t 	size;
 			uint8_t  		adjustment;
+			uint8_t 		sizeDifference;
 		};
 
 		FreeListAllocator(const FreeListAllocator&) = delete;

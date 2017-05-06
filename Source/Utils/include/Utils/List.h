@@ -61,7 +61,8 @@ namespace Utils
 
 				if(_elements != nullptr)
 				{
-					memcpy(newPtr, _elements, sizeof(T) * std::min(_size, _capacity));
+					std::size_t copied_size = std::min(newSize, std::min(_size, _capacity));
+					memcpy(newPtr, _elements, sizeof(T) * copied_size);
 				}
 			}
 
@@ -173,7 +174,8 @@ namespace Utils
 		{
 			resize(_size + 1);
 
-			T* result = &_elements[_size - 1];
+			int index = std::max(((int)_size) - 1, 0);
+			T* result = &_elements[index];
 			new (result) T(args ...);
 
 			onAddElement();
@@ -183,14 +185,11 @@ namespace Utils
 
 		T& add(const T& other)
 		{
-			_size++;
-			if((int)_capacity - (int)_size < 0)
-			{
-				resize(_size);
-			}
+			resize(_size + 1);
 
-			auto result = &_elements[_size - 1];
-			(*result) = other;
+			int index = std::max(((int)_size) - 1, 0);
+			T* result = &_elements[index];
+			(*result) = std::move(other);
 
 			onAddElement();
 
@@ -199,13 +198,10 @@ namespace Utils
 
 		T& add(T&& other)
 		{
-			std::size_t newSize = _size + 1;
-			if((int)_capacity - (int)newSize < 0)
-			{
-				resize(newSize);
-			}
+			resize(_size + 1);
 
-			auto result = &_elements[_size - 1];
+			int index = std::max(((int)_size) - 1, 0);
+			T* result = &_elements[index];
 			(*result) = std::move(other);
 
 			onAddElement();

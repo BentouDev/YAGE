@@ -108,12 +108,13 @@ typedef Memory::MemoryBlock <
 		};
 
 		MockMemory block(*allocator, "CanTokenizeString");
-
+		auto free = block.getFreeSize();
 		{
 			Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
 			Utils::List<Utils::Slice<char> >tokens(block);
 			Utils::String::Tokenize(str, tokens, "\n\r");
 		}
+		EXPECT_EQ(block.getFreeSize(), free);
 		{
 
 			Utils::String str(block, "Foo\nBar\n\rBaz\nQ");

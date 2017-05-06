@@ -66,8 +66,9 @@ namespace Utils
 		inline String& append(const char* c_str, std::size_t count)
 		{
 			std::size_t oldSize = size();
+			reserve(oldSize + count + 1);
 			resize(oldSize + count);
-			memcpy(begin() + oldSize, c_str, count * sizeof(char));
+			memcpy(&_elements[oldSize], c_str, count * sizeof(char));
 
 			ensureNullTerminator();
 
@@ -77,7 +78,7 @@ namespace Utils
 		inline String& append(const char* c_str)
 		{
 			std::size_t len = std::strlen(c_str);
-			return append(c_str, len > 0 ? len + 1 : 0);
+			return append(c_str, len);
 		}
 
 		const char* c_str() const

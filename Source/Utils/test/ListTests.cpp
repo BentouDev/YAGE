@@ -121,6 +121,20 @@ namespace ListTests
 		delete list;
 	}
 
+	TEST_F(ListTest, CanAddItemToListWithCapacity)
+	{
+		auto list = new Utils::List<FooMock>(getMemory());
+
+		list->reserve(1);
+		list->emplace();
+
+		EXPECT_EQ(1, list->size());
+		EXPECT_EQ(1, list->capacity());
+		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
+
+		delete list;
+	}
+
 	TEST_F(ListTest, CanRemoveItemFromList)
 	{
 		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
