@@ -52,6 +52,11 @@ include_directories(Dependencies/Spdlog/include)
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
 include_directories(Dependencies/Json/src)
 
+# Add Utf8
+include_directories(Dependencies/Utf8/source)
+add_library(utf8 Dependencies/Utf8/source/utf8.h Dependencies/Utf8/source/utf8/checked.h Dependencies/Utf8/source/utf8/core.h Dependencies/Utf8/source/utf8/unchecked.h)
+set_target_properties(utf8 PROPERTIES LINKER_LANGUAGE CXX)
+
 # Add CppLinq
 include_directories(Dependencies/CppLinq)
 

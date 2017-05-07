@@ -67,7 +67,6 @@ namespace Gfx
 
 	protected:
 		SpriteBatchManager*	_spriteBatchManager;
-		SpriteBatch*		_debugBatch;
 
 		queue_t _queue;
 

@@ -12,8 +12,11 @@
 #include <Utils/SimpleMemoryBoundChecker.h>
 #include <Utils/SimpleMemoryTracker.h>
 #include <Utils/List.h>
+
+#if YAGE_VALGRIND
 #include <Utils/ValgrindMemoryBoundChecker.h>
 #include <Utils/ValgrindMemoryTracker.h>
+#endif
 
 namespace Core
 {

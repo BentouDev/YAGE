@@ -35,9 +35,12 @@ namespace Gfx
 
 	SpriteBatch& SpriteBatch::ensureCapacity(std::int32_t minimalCapacity)
 	{
-		YAGE_ASSERT(_buffer.maximumSize - _buffer.currentSize >= minimalCapacity, "TODO : Batch resize");
+		YAGE_ASSERT(_buffer.maximumSize - _buffer.currentSize >= minimalCapacity,
+					"TODO : Batch resize, '%zu' was smaller than expected capacity '%zu'.",
+					_buffer.maximumSize - _buffer.currentSize, minimalCapacity);
 
 		_bufferSize += minimalCapacity;
+		_bufferOffset = _buffer.offset;
 
 		return *this;
 	}

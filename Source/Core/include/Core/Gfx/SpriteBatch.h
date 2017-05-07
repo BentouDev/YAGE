@@ -43,7 +43,6 @@ namespace Gfx
 		float				defaultRotation;
 		float				defaultScale;
 
-
 		void scaleAndRotateSpriteVertex(SpriteVertex (&data)[6], glm::vec2 pivot, float scale, float rotation);
 
 	public:

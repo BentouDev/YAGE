@@ -31,6 +31,7 @@ namespace Gfx
 
 	public:
 		static const std::int32_t DEFAULT_BUFFER_SIZE;
+		static const std::int32_t MAX_BUFFER_SIZE;
 
 	private:
 		void*			_mappedPtr;
@@ -61,7 +62,7 @@ namespace Gfx
 		friend class Renderer;
 
 		Memory::IMemoryBlock&		_memory;
-		Utils::List<SpriteBuffer>	_buffers;
+		Utils::List<SpriteBuffer*>	_buffers;
 
 		union BatchIndex
 		{
@@ -84,7 +85,7 @@ namespace Gfx
 		};
 
 		Utils::List<SpriteBatch>			_batches;
-		std::map<BatchIndex, std::uint32_t> _batchMap;
+		std::map<std::uint32_t, std::uint32_t> _batchMap;
 
 		std::uint32_t _currentBuffer;
 
@@ -101,10 +102,11 @@ namespace Gfx
 		void clear();
 		auto createNewBuffer(std::uint32_t size) -> SpriteBuffer&;
 
-		SpriteBatch& getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, std::int32_t minimalSize = -1);
+		SpriteBatch& getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera,
+									std::int32_t minimalSize = SpriteBuffer::DEFAULT_BUFFER_SIZE);
 
-		inline auto getBuffers() -> Utils::List<SpriteBuffer>& { return _buffers; }
-		inline auto getCurrentBuffer() -> SpriteBuffer& { return _buffers[_currentBuffer]; }
+		inline auto getBuffers() -> Utils::List<SpriteBuffer*>& { return _buffers; }
+	//	inline auto getCurrentBuffer() -> SpriteBuffer& { return *_buffers[_currentBuffer]; }
 	};
 }
 

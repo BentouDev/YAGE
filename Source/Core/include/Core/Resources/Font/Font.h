@@ -53,6 +53,15 @@ namespace Resources
 
 		Font(Font&& other);
 
+		CharData* lookupChar(wchar_t code);
+		Texture::handle_t getDefaultTexture()
+		{
+			return textures.size() > 0 ? textures[0] : Texture::handle_t::invalid();
+		}
+
+		unsigned short getWidth() const { return width; }
+		unsigned short getHeight() const { return height; }
+
 		Font(const Font&) = delete;
 		Font& operator=(Font&&) = delete;
 		Font& operator=(const Font&) = delete;

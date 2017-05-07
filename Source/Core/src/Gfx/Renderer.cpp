@@ -29,7 +29,7 @@ namespace Gfx
 	Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
 		: IManager(engine, memory),
 		  _spriteBatchManager(_engine.CreateManager<SpriteBatchManager>(Memory::KB(100))),
-		  _debugBatch(nullptr), _queue(_memory, *this),
+		  _queue(_memory, *this),
 		  lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0),
 		  cameraProjectionUniformLocation(1), cameraViewUniformLocation(2)
 	{ }
@@ -70,17 +70,12 @@ namespace Gfx
 		bool result = loadDebugMaterial();
 		result &= _spriteBatchManager->initialize();
 
-		if(_debugCamera == nullptr)
+		if (_debugCamera == nullptr)
 		{
-			_debugCamera = YAGE_CREATE_NEW(_memory, Camera)();
+			_debugCamera = &createCamera();
 		}
 
-		if(_debugBatch == nullptr)
-		{
-			_debugBatch = &_spriteBatchManager->getSpriteBatch(_debugMaterial->Handle, _debugCamera);
-		}
-
-		return result && _debugCamera != nullptr && _debugBatch != nullptr;
+		return result && _debugCamera != nullptr;
 	}
 
 	bool Renderer::registerWindow(const Core::Window* windowPtr)
@@ -99,9 +94,10 @@ namespace Gfx
 
 	SpriteBatch& Renderer::getDebugSpriteBatch(Core::Window& window)
 	{
-		YAGE_ASSERT(_debugBatch != nullptr, "Renderer : initialize() was not called!");
+		auto* batch = &_spriteBatchManager->getSpriteBatch(_debugMaterial->Handle, _debugCamera);
+		YAGE_ASSERT(batch != nullptr, "Renderer : initialize() was not called!");
 		_debugCamera->setRenderTarget(window.GetDefaultViewport());
-		return *_debugBatch;
+		return *batch;
 	}
 
 	SpriteBatch& Renderer::getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, int32_t minimalSize)
@@ -137,9 +133,9 @@ namespace Gfx
 		// For each camera
 		// For each material
 
-		for(auto& buffer : _spriteBatchManager->_buffers)
+		for(auto* buffer : _spriteBatchManager->_buffers)
 		{
-			buffer.unmapMemory();
+			buffer->unmapMemory();
 		}
 
 		for(auto itr : _spriteBatchManager->_batchMap)
@@ -231,7 +227,6 @@ namespace Gfx
 
 	void Renderer::draw()
 	{
-
 // Model matrix : an identity matrix (model will be at the origin)
 		glm::mat4 Model = glm::mat4(1.0f);
 

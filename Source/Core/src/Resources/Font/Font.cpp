@@ -25,4 +25,15 @@ namespace Resources
 	{
 
 	}
+
+	CharData* Font::lookupChar(wchar_t code)
+	{
+		auto itr = charLookup.find(code);
+		if (itr != charLookup.end())
+		{
+			return &charset[itr->second];
+		}
+
+		return nullptr;
+	}
 }

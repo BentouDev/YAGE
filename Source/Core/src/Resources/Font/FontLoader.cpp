@@ -142,7 +142,8 @@ namespace Resources
 					std::string filePath(loader.filepath);
 					std::string path = filePath.substr(0, filePath.find_last_of('/') + 1);
 								path += value.substr(1, value.size() - 2);
-					font.textures.add(loader.textureLoader->loadFromFile(path.c_str()).build());
+					auto texture_handle = loader.textureLoader->loadFromFile(path.c_str()).build();
+					font.textures.add(texture_handle);
 				}
 			}
 		}
@@ -182,7 +183,7 @@ namespace Resources
 		std::vector<std::string> tokens {std::istream_iterator<std::string>(stream),
 										 std::istream_iterator<std::string>()};
 
-		for(auto& token : tokens)
+		for (auto& token : tokens)
 		{
 			std::stringstream converter;
 
@@ -192,11 +193,11 @@ namespace Resources
 
 			converter << value;
 
-			if(font.charset.size() == 0)
-				font.charset.emplace();
+			//if(font.charset.size() == 0)
+			//	font.charset.emplace();
 
 			// Todo : refactor to std::map or something...
-			if(strcmp(key.c_str(), "id") == 0)
+			if (strcmp(key.c_str(), "id") == 0)
 			{
 				int charId = 0;
 				converter >> charId;
@@ -205,50 +206,52 @@ namespace Resources
 
 				if (font.charset.size() == 0)
 					font.firstChar = charId;
+
+				font.charset.emplace();
 			}
-			else if(strcmp(key.c_str(), "x") == 0)
+			else if (strcmp(key.c_str(), "x") == 0)
 			{
 				float x = 0;
 				converter >> x;
 				font.charset.back().textureRect.setMinX(x);
 			}
-			else if(strcmp(key.c_str(), "y") == 0)
+			else if (strcmp(key.c_str(), "y") == 0)
 			{
 				float y = 0;
 				converter >> y;
 				font.charset.back().textureRect.setMinY(y);
 			}
-			else if(strcmp(key.c_str(), "width") == 0)
+			else if (strcmp(key.c_str(), "width") == 0)
 			{
 				float w = 0;
 				converter >> w;
 				font.charset.back().textureRect.setWidth(w);
 			}
-			else if(strcmp(key.c_str(), "height") == 0)
+			else if (strcmp(key.c_str(), "height") == 0)
 			{
 				float h = 0;
 				converter >> h;
 				font.charset.back().textureRect.setHeight(h);
 			}
-			else if(strcmp(key.c_str(), "xoffset") == 0)
+			else if (strcmp(key.c_str(), "xoffset") == 0)
 			{
 				float x = 0;
 				converter >> x;
 				font.charset.back().offset.x = x;
 			}
-			else if(strcmp(key.c_str(), "yoffset") == 0)
+			else if (strcmp(key.c_str(), "yoffset") == 0)
 			{
 				float y = 0;
 				converter >> y;
 				font.charset.back().offset.y = y;
 			}
-			else if(strcmp(key.c_str(), "xadvance") == 0)
+			else if (strcmp(key.c_str(), "xadvance") == 0)
 			{
 				std::uint32_t x = 0;
 				converter >> x;
 				font.charset.back().advance = x;
 			}
-			else if(strcmp(key.c_str(), "page") == 0)
+			else if (strcmp(key.c_str(), "page") == 0)
 			{
 				std::uint32_t page = 0;
 				converter >> page;

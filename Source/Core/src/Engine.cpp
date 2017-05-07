@@ -115,14 +115,10 @@ namespace Core
 		if(WindowManager->allWindowsClosed())
 			return;
 
-		// OpenGL::beginDraw(window);
-
 		if(activeScene) activeScene->Draw(time, Renderer.get());
 
 		Renderer->draw();
 		Renderer->drawSpriteBatches();
-
-		// OpenGL::endDraw(window);
 	}
 
 	auto Engine::ProcessEvents(Core::GameTime& time) -> void
@@ -163,7 +159,6 @@ namespace Core
 
 	auto Engine::Quit() -> void
 	{
-		// WindowManager->closeAllWindows();
 		_isDone = true;
 	}
 

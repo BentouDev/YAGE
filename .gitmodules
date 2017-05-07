@@ -28,3 +28,6 @@
 [submodule "Modules/CMake-SDL2"]
 	path = Modules/CMake-SDL2
 	url = https://github.com/tcbrindle/sdl2-cmake-scripts.git
+[submodule "Dependencies/Utf8"]
+	path = Dependencies/Utf8
+	url = https://github.com/nemtrif/utfcpp.git

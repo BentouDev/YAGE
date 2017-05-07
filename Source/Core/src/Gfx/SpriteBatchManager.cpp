@@ -2,6 +2,7 @@
 // Created by Bentoo on 2017-04-13.
 //
 
+#include <Utils/MemoryBlock.h>
 #include "Core/Gfx/SpriteBatchManager.h"
 #include "Core/Gfx/SpriteBatch.h"
 #include "Core/Gfx/Sprite.h"
@@ -13,6 +14,7 @@
 namespace Gfx
 {
 	const std::int32_t SpriteBuffer::DEFAULT_BUFFER_SIZE = 1000;
+	const std::int32_t SpriteBuffer::MAX_BUFFER_SIZE = 64*1000;
 
 	SpriteBuffer::SpriteBuffer(Memory::IMemoryBlock& memory, std::int32_t size)
 		: _mappedPtr(nullptr), _vbo(nullptr), maximumSize(size), currentSize(0), offset(0)
@@ -54,6 +56,7 @@ namespace Gfx
 
 	void SpriteBuffer::clear()
 	{
+		offset = 0;
 		currentSize = 0;
 		unmapMemory();
 		mapMemory();
@@ -112,18 +115,16 @@ namespace Gfx
 
 	SpriteBatchManager::~SpriteBatchManager()
 	{
-		for(auto& buffer : _buffers)
+		for (auto& buffer : _buffers)
 		{
-			Memory::Delete(_memory, buffer._vao);
-			Memory::Delete(_memory, buffer._vbo);
+			Memory::Delete(_memory, buffer->_vao);
+			Memory::Delete(_memory, buffer->_vbo);
+			Memory::Delete(_memory, buffer);
 		}
 	}
 
 	bool SpriteBatchManager::initialize()
 	{
-		_buffers.emplace(_memory, SpriteBuffer::DEFAULT_BUFFER_SIZE);
-		_buffers.back().mapMemory();
-
 		return true;
 	}
 
@@ -134,17 +135,19 @@ namespace Gfx
 			batch.clear();
 		}
 
-		for(auto& buffer : _buffers)
+		for(auto* buffer : _buffers)
 		{
-			buffer.clear();
+			buffer->clear();
 		}
 	}
 
 	SpriteBuffer& SpriteBatchManager::createNewBuffer(std::uint32_t size)
 	{
-		_buffers.emplace(_memory, size);
-		_buffers.back().mapMemory();
+		_buffers.emplace(YAGE_CREATE_NEW(_memory, SpriteBuffer)(_memory, SpriteBuffer::DEFAULT_BUFFER_SIZE));
+		_buffers.back()->mapMemory();
 		_currentBuffer++;
+
+		return *_buffers.back();
 	}
 
 	SpriteBatch& SpriteBatchManager::getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, int32_t minimalSize)
@@ -156,16 +159,19 @@ namespace Gfx
 		BatchIndex index(camera->sortIndex, material.index);
 		SpriteBatch* batchPtr = nullptr;
 
-		auto batchItr = _batchMap.find(index);
+		auto batchItr = _batchMap.find(index.key);
 		if (batchItr == _batchMap.end())
 		{
-			_batchMap[index] = _batches.size();
+			_batchMap[index.key] = _batches.size();
 
 			// Todo : dynamically find buffer of best fitting size
-			if (getCurrentBuffer().getFreeSize() < minimalSize)
-				createNewBuffer(std::max(minimalSize, SpriteBuffer::DEFAULT_BUFFER_SIZE));
+			// if (getCurrentBuffer().getFreeSize() < minimalSize)
+			// 	createNewBuffer(std::max(minimalSize, SpriteBuffer::MAX_BUFFER_SIZE));
 
-			_batches.emplace(getCurrentBuffer());
+			if (minimalSize < 0)
+				minimalSize = SpriteBuffer::DEFAULT_BUFFER_SIZE;
+
+			_batches.emplace(createNewBuffer(std::min(minimalSize, SpriteBuffer::MAX_BUFFER_SIZE)));
 			batchPtr = &_batches.back();
 		}
 		else
