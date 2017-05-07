@@ -19,6 +19,11 @@
 
 #include <map>
 
+namespace Resources
+{
+	class Font;
+}
+
 namespace Logic
 {
 	class Scene;
@@ -79,10 +84,14 @@ namespace Gfx
 		GLuint cameraViewUniformLocation;
 		GLuint cameraModelUniformLocation;
 
-		Core::Material*	_debugMaterial;
-		Gfx::Camera*	_debugCamera;
+		Core::Material*	 _debugMaterial;
+		Core::Material*	 _debugFontMaterial;
+		Resources::Font* _debugFont;
+		Gfx::Camera*	 _debug2DCamera;
+		Gfx::Camera*	 _debug3DCamera;
 
-		bool loadDebugMaterial();
+		bool loadDebugAssets();
+		bool createDebugCameras();
 
 		bool initialize();
 
@@ -100,10 +109,13 @@ namespace Gfx
 		void draw();
 		void drawCall(RenderData&);
 
+		Gfx::Camera&     getDebug3DCamera();
+		Gfx::Camera&     getDebug2DCamera();
+		Core::Material&  getDebugMaterial();
+		Core::Material&  getDebugFontMaterial();
+		Resources::Font& getDebugFont();
+
 		Gfx::Camera& createCamera();
-		Gfx::Camera& getDebugCamera();
-		Core::Material& getDebugMaterial();
-		SpriteBatch& getDebugSpriteBatch(Core::Window& window);
 		SpriteBatch& getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, std::int32_t minimalSize = -1);
 
 		void drawSpriteBatches();

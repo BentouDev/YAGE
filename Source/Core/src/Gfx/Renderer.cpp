@@ -22,6 +22,11 @@
 #include "Core/Resources/Shader/Shader.h"
 #include "Core/Resources/Shader/ShaderBuilder.h"
 #include "Core/Resources/Shader/ShaderManager.h"
+#include "Core/Resources/Font/Font.h"
+#include "Core/Resources/Font/FontLoader.h"
+#include "Core/Resources/Font/FontManager.h"
+#include "Core/Resources/Texture/TextureLoader.h"
+#include "Core/Resources/Texture/TextureManager.h"
 #include "Core/Logic/RenderingSystem.h"
 
 namespace Gfx
@@ -30,6 +35,9 @@ namespace Gfx
 		: IManager(engine, memory),
 		  _spriteBatchManager(_engine.CreateManager<SpriteBatchManager>(Memory::KB(100))),
 		  _queue(_memory, *this),
+		  _debugMaterial(nullptr),
+		  _debugFontMaterial(nullptr), _debugFont(nullptr),
+		  _debug2DCamera(nullptr), _debug3DCamera(nullptr),
 		  lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0),
 		  cameraProjectionUniformLocation(1), cameraViewUniformLocation(2)
 	{ }
@@ -37,45 +45,114 @@ namespace Gfx
 	Renderer::~Renderer()
 	{
 		Memory::Delete(_engine.MemoryModule->masterBlock(), _spriteBatchManager);
-		Memory::Delete(_memory, _debugCamera);
+		Memory::Delete(_memory, _debug2DCamera);
+		Memory::Delete(_memory, _debug3DCamera);
 	}
 
-	bool Renderer::loadDebugMaterial()
+	bool Renderer::loadDebugAssets()
 	{
-		if(_debugMaterial != nullptr)
-			return true;
+		if (_debugMaterial == nullptr)
+		{
+			auto  matHandle = _engine.MaterialManager->createMaterial();
+			auto* material  = _engine.MaterialManager->tryGetMaterial(matHandle);
 
-		auto  matHandle = _engine.MaterialManager->createMaterial();
-		auto* material = _debugMaterial = _engine.MaterialManager->tryGetMaterial(matHandle);
+			Resources::ShaderBuilder builder(_engine, _memory);
+			auto debugShader = builder
+					.withVertexFromSource(Resources::DEBUG_MATERIAL_VERTEX_SOURCE)
+					.withFragmentFromSource(Resources::DEBUG_MATERIAL_FRAGMENT_SOURCE)
+					.withAttributeLocation(0, "position")
+					.withAttributeLocation(1, "texcoord")
+					.withAttributeLocation(2, "color")
+					.debugBuild("Renderer::DebugMaterial");
 
-		Resources::ShaderBuilder builder(_engine, _memory);
-		auto debugShader = builder.withFragmentFromSource(Resources::DEBUG_MATERIAL_FRAGMENT_SOURCE)
-								  .withVertexFromSource(Resources::DEBUG_MATERIAL_VERTEX_SOURCE)
-								  .withAttributeLocation(0, "position")
-								  .withAttributeLocation(1, "texcoord")
-								  .withAttributeLocation(2, "color")
-								  .debugBuild("Renderer::DebugMaterial");
+			if (material == nullptr || debugShader == ShaderProgram::handle_t::invalid())
+				return false;
 
-		if(material == nullptr || debugShader == ShaderProgram::handle_t::invalid())
-			return false;
+			_debugMaterial = material;
+			_debugMaterial->setShaderProgram(debugShader);
+		}
 
-		_debugMaterial = material;
-		_debugMaterial->setShaderProgram(debugShader);
+		if (_debugFontMaterial == nullptr)
+		{
+			auto  matHandle = _engine.MaterialManager->createMaterial();
+			auto* material  = _engine.MaterialManager->tryGetMaterial(matHandle);
 
-		return true;
+			Resources::ShaderBuilder builder(_engine, _memory);
+			auto fontShader = builder
+					.withVertexFromFile("../Data/Shaders/FontVertex.glsl")
+					.withFragmentFromFile("../Data/Shaders/FontFragment.glsl")
+					.withAttributeLocation(0, "position")
+					.withAttributeLocation(1, "texcoord")
+					.withAttributeLocation(2, "color")
+					.debugBuild("Renderer::FontShader");
+
+			if (material == nullptr || fontShader == ShaderProgram::handle_t::invalid())
+				return false;
+
+			_debugFontMaterial = material;
+			_debugFontMaterial->setShaderProgram(fontShader);
+		}
+
+		if (_debugFont == nullptr)
+		{
+			Resources::TextureLoader textureLoader(_engine.TextureManager.get());
+			textureLoader
+					.setParameter(gl::TEXTURE_MAG_FILTER, gl::LINEAR)
+					.setParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR)
+					.setParameter(gl::TEXTURE_WRAP_S, gl::REPEAT)
+					.setParameter(gl::TEXTURE_WRAP_T, gl::REPEAT);
+
+			Resources::FontLoader fontLoader(_engine.FontManager.get());
+			auto font_handle = fontLoader
+					.withTextureLoader(textureLoader)
+					.loadFromFile("../Data/Fonts/fantasque.fnt")
+					.build();
+
+			auto* font = _engine.FontManager->tryGetFont(font_handle);
+
+			if (font == nullptr || font_handle == Resources::Font::handle_t::invalid())
+				return false;
+
+			_debugFont = font;
+
+			_debugFontMaterial->addUniform<Resources::Texture *>("diffuseTex", _engine.ShaderManager.get());
+			_debugFontMaterial->setUniform (
+				"diffuseTex",
+				_engine.TextureManager->tryGetTexture (
+					_debugFont->getDefaultTexture()
+				)
+			);
+		}
+
+		return _debugMaterial != nullptr
+			&& _debugFontMaterial != nullptr
+			&& _debugFont != nullptr;
+	}
+
+	bool Renderer::createDebugCameras()
+	{
+		if (_debug2DCamera == nullptr)
+		{
+			_debug2DCamera = &createCamera();
+		}
+
+		if (_debug3DCamera == nullptr)
+		{
+			_debug3DCamera = &createCamera();
+		}
+
+		return _debug2DCamera != nullptr
+		    && _debug3DCamera != nullptr;
 	}
 
 	bool Renderer::initialize()
 	{
-		bool result = loadDebugMaterial();
+		bool result = true;
 		result &= _spriteBatchManager->initialize();
+		result &= loadDebugAssets();
+		result &= createDebugCameras();
 
-		if (_debugCamera == nullptr)
-		{
-			_debugCamera = &createCamera();
-		}
-
-		return result && _debugCamera != nullptr;
+		return result;
 	}
 
 	bool Renderer::registerWindow(const Core::Window* windowPtr)
@@ -83,6 +160,7 @@ namespace Gfx
 		bool result = true;
 		result &= OpenGL::registerWindow(*windowPtr);
 		result &= initialize();
+
 		return result;
 	}
 
@@ -92,27 +170,34 @@ namespace Gfx
 		return *camPtr;
 	}
 
-	SpriteBatch& Renderer::getDebugSpriteBatch(Core::Window& window)
-	{
-		auto* batch = &_spriteBatchManager->getSpriteBatch(_debugMaterial->Handle, _debugCamera);
-		YAGE_ASSERT(batch != nullptr, "Renderer : initialize() was not called!");
-		_debugCamera->setRenderTarget(window.GetDefaultViewport());
-		return *batch;
-	}
-
 	SpriteBatch& Renderer::getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, int32_t minimalSize)
 	{
 		return _spriteBatchManager->getSpriteBatch(material, camera, minimalSize);
 	}
 
-	Gfx::Camera& Renderer::getDebugCamera()
+	Gfx::Camera& Renderer::getDebug3DCamera()
 	{
-		return *_debugCamera;
+		return *_debug3DCamera;
+	}
+
+	Gfx::Camera& Renderer::getDebug2DCamera()
+	{
+		return *_debug2DCamera;
 	}
 
 	Core::Material& Renderer::getDebugMaterial()
 	{
 		return *_debugMaterial;
+	}
+
+	Core::Material& Renderer::getDebugFontMaterial()
+	{
+		return *_debugFontMaterial;
+	}
+
+	Resources::Font& Renderer::getDebugFont()
+	{
+		return *_debugFont;
 	}
 
 	void Renderer::drawSpriteBatch(const SpriteBatch& batch)
