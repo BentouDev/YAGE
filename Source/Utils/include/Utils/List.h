@@ -48,18 +48,18 @@ namespace Utils
 
 		void realloc(std::size_t newSize)
 		{
-			if(_capacity == newSize)
+			if (_capacity == newSize)
 				return;
 
 			if (newSize < _size)
 				resize(newSize);
 
 			T* newPtr = nullptr;
-			if(newSize > 0)
+			if (newSize > 0)
 			{
 				newPtr = reinterpret_cast<T*>(_memory->allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO));
 
-				if(_elements != nullptr)
+				if (_elements != nullptr)
 				{
 					std::size_t copied_size = std::min(newSize, std::min(_size, _capacity));
 					memcpy(newPtr, _elements, sizeof(T) * copied_size);
@@ -77,7 +77,7 @@ namespace Utils
 			// grow accoring to golden ration
 			std::size_t bestSize = static_cast<std::size_t>(_capacity * 1.5f);
 
-			if(bestSize < newSize)
+			if (bestSize < newSize)
 			{
 				bestSize = newSize;
 			}
@@ -117,7 +117,7 @@ namespace Utils
 
 		inline List<T>& operator=(const List<T>& other)
 		{
-			if(this != &other)
+			if (this != &other)
 			{
 				std::size_t otherSize = other._size;
 
@@ -135,7 +135,7 @@ namespace Utils
 
 		inline List<T>& operator=(List<T>&& other) noexcept
 		{
-			if(this != &other)
+			if (this != &other)
 			{
 				// we may have some data already
 				destructElements();
@@ -211,7 +211,7 @@ namespace Utils
 
 		void eraseAddress(T* ptr)
 		{
-			if(ptr >= begin() && ptr < end())
+			if (ptr >= begin() && ptr < end())
 			{
 				eraseAt(ptr - begin());
 			}
@@ -219,13 +219,13 @@ namespace Utils
 
 		void eraseAt(std::size_t index)
 		{
-			if(index >= _size)
+			if (index >= _size)
 				return;
 
 			_elements[index].~T();
 
 			std::size_t maxIndex = _size - 1;
-			if(index < maxIndex)
+			if (index < maxIndex)
 			{
 				memmove(&_elements[index], &_elements[index + 1], sizeof(T) * (maxIndex - index));
 			}
@@ -235,20 +235,20 @@ namespace Utils
 
 		void resize(std::size_t newSize)
 		{
-			if(newSize > _capacity)
+			if (newSize > _capacity)
 				geometricGrow(newSize);
 			_size = newSize;
 		}
 
 		void reserve(std::size_t newSize)
 		{
-			if(newSize > _capacity)
+			if (newSize > _capacity)
 				realloc(newSize);
 		}
 
 		void clear()
 		{
-			for(unsigned i = 0; i < _size; i++)
+			for (unsigned i = 0; i < _size; i++)
 			{
 				_elements->~T();
 			}
