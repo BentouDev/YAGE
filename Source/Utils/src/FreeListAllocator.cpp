@@ -104,19 +104,13 @@ namespace Memory
 			VALGRIND_MAKE_MEM_DEFINED(pNew, sizeof(FreeListHeader));
 #endif
 			new (pNew) FreeListHeader(sizeDifference);
-		//	pNew->next			= nullptr;
-		//	pNew->size			= sizeDifference;
-		//	pNew->adjustment	= (uint8_t)0;
 
-			if(blockPtr->next == nullptr)
-				blockPtr->next = pNew;
+			auto* end = getListEnd(_freeBlocks);
+			end->next = pNew;
 
-		//	doRemoveFromList(_freeBlocks, blockPtr);
 			removeFromList(blockPtr);
 
 			sizeDifference = 0;
-		//	FreeListHeader* end = getListEnd(_freeBlocks);
-		//	end->next 			= pNew;
 		}
 		else
 		{
@@ -284,15 +278,6 @@ namespace Memory
 			"FreeListAllocator : Deallocation failed to join adjacent blocks, '%p' is inside other block from '%p' to '%p'.",
 			header->next, header, header + header->size
 		);
-
-		/*if (header < header->next)
-		{
-			YAGE_ASSERT (
-				reinterpret_cast<char*>(header) + header->size < reinterpret_cast<char*>(header->next),
-				"FreeListAllocator : Block '%p' must end before '%p' starts! Size '%zu' is larger than offset '%zu'.",
-				header, header->next, header->size, reinterpret_cast<char*>(header->next) - reinterpret_cast<char*>(header)
-			);
-		}*/
 
 		_usedSize -= allocSize;
 	}
