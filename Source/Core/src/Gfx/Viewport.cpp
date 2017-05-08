@@ -25,21 +25,46 @@ namespace Gfx
 	{
 		glfwMakeContextCurrent(_window.hWindow);
 		gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
-		gl::Viewport(_rect.getLeft(), _rect.getBottom(), _rect.getWidth(), _rect.getHeight());
+		gl::Viewport(_pixelRect.getLeft(), _pixelRect.getBottom(),
+					 _pixelRect.getWidth(), _pixelRect.getHeight());
 	}
 
 	float Viewport::getAspect()
 	{
-		return (float)_rect.getWidth() / (float)_rect.getHeight();
+		return (float)_pixelRect.getWidth() / (float)_pixelRect.getHeight();
 	}
 
-	const Rectangle<int32_t>& Viewport::getRect()
+	Rectangle<float> Viewport::calcUnitRect()
 	{
-		return _rect;
+		if (_pixelRect.getWidth() > _pixelRect.getHeight())
+		{
+			return Rectangle<float> (
+				-getAspect(), -1,
+				2 * getAspect(), 2
+			);
+		}
+		else
+		{
+			return Rectangle<float> (
+				-1, -getAspect(),
+				2, 2 * getAspect()
+			);
+		}
+	}
+
+	const Rectangle<int32_t>& Viewport::getPixelRect()
+	{
+		return _pixelRect;
+	}
+
+	const Rectangle<float>& Viewport::getUnitRect()
+	{
+		return _unitRect;
 	}
 
 	void Viewport::setRect(const Rectangle<int32_t>& rect)
 	{
-		_rect = rect;
+		_pixelRect = rect;
+		_unitRect  = calcUnitRect();
 	}
 }

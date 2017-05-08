@@ -77,7 +77,7 @@ namespace OpenGL
 		// for(auto& view : window.getViewports())
 		auto& view = window.GetDefaultViewport();
 		{
-			const auto& rect = view.getRect();
+			const auto& rect = view.getPixelRect();
 			gl::Viewport(rect.getLeft(), rect.getBottom(), rect.getWidth(), rect.getHeight());
 		}
 	}

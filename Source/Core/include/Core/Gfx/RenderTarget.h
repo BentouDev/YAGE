@@ -21,7 +21,8 @@ namespace Gfx
 		static void Reset();
 
 		virtual float getAspect() = 0;
-		virtual const Rectangle<int32_t>& getRect() = 0;
+		virtual const Rectangle<int32_t>& getPixelRect() = 0;
+		virtual const Rectangle<float>& getUnitRect() = 0;
 	};
 }
 

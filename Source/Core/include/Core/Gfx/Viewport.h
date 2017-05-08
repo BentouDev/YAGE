@@ -18,8 +18,11 @@ namespace Gfx
 {
 	class Viewport : public RenderTarget
 	{
-		Rectangle<int32_t>	_rect;
+		Rectangle<int32_t>	_pixelRect;
+		Rectangle<float>	_unitRect;
 		Core::Window&		_window;
+
+		Rectangle<float> calcUnitRect();
 
 	public:
 		using trait_t	= Utils::DefaultTrait<Viewport>;
@@ -28,7 +31,7 @@ namespace Gfx
 		handle_t Handle;
 
 		explicit Viewport(const Rectangle<int32_t>& rect, Core::Window& window)
-			: _rect(rect), _window(window)
+			: _pixelRect(rect), _unitRect(calcUnitRect()), _window(window)
 		{ }
 
 		void	Clear(const Utils::Color& color) override;
@@ -36,7 +39,8 @@ namespace Gfx
 		void	Submit() override;
 
 		float	getAspect() override;
-		auto	getRect() -> const Rectangle<int32_t>& override;
+		auto	getPixelRect() -> const Rectangle<int32_t>& override;
+		auto 	getUnitRect() -> const Rectangle<float>& override;
 		void	setRect(const Rectangle<int32_t>& rect);
 	};
 }
