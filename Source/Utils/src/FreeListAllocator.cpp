@@ -80,6 +80,15 @@ namespace Memory
 			allocationSize, blockPtr->size, size
 		);
 
+		if (blockPtr->next != nullptr)
+		{
+			YAGE_ASSERT (
+				!(blockPtr->next >= blockPtr && reinterpret_cast<char*>(blockPtr->next) <= reinterpret_cast<char*>(blockPtr) + blockPtr->size),
+				"FreeListAllocator : Memory blocks are damaged, block '%p' exists inside other from '%p' to '%p'.",
+				pNew, blockPtr, blockPtr + blockPtr->size
+			);
+		}
+
 		YAGE_ASSERT (
 			blockPtr->next != pNew,
 			"FreeListAllocator : Deallocation has failed to join adjacent blocks for address '%p'!",
@@ -198,8 +207,17 @@ namespace Memory
 		void* 		freeBeforeStart		= findRawPreviousInFreeList(rawBegin);
 		void* 		freeAfterEnd		= findInFreeList(rawEnd);
 
+		// Copy header data
+		FreeListHeader freeHeader(*header);
+
 		// Set address as free
-		header->adjustment = (uint8_t)0;
+		freeHeader.adjustment = (uint8_t)0;
+
+		// Set data to begin of block
+		*reinterpret_cast<FreeListHeader*>(rawBegin) = freeHeader;
+
+		// Set new header ptr back to header variable
+		header = reinterpret_cast<FreeListHeader*>(rawBegin);
 
 		if (freeAfterEnd == nullptr && freeBeforeStart == nullptr)
 		{
@@ -260,6 +278,12 @@ namespace Memory
 			header->size = 0;
 			header->next = nullptr;
 		}
+
+		YAGE_ASSERT (
+			!(header->next >= header && reinterpret_cast<char*>(header->next) <= reinterpret_cast<char*>(header) + header->size),
+			"FreeListAllocator : Deallocation failed to join adjacent blocks, '%p' is inside other block from '%p' to '%p'.",
+			header->next, header, header + header->size
+		);
 
 		/*if (header < header->next)
 		{
