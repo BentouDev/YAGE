@@ -9,6 +9,7 @@ namespace Gfx
 {
 	Camera::Camera()
 		: renderTarget(nullptr),
+		  mode(CameraMode::Perspective),
 		  enableScissors(false), scissors(0,0,1,1),
 		  position(0,0,0), forward(0,0,1), up(0,1,0)
 	{
@@ -50,10 +51,11 @@ namespace Gfx
 		return &viewMatrix[0][0];
 	}
 
-	void Camera::recalculate(float aspect)
+	void Camera::forceAspect(bool force, float value)
 	{
-		viewMatrix			= glm::lookAt(position, position + forward, up);
-		projectionMatrix	= glm::perspective(FOV, aspect, nearCulling, farCulling);
+		hasForcedAspect = force;
+		if (hasForcedAspect)
+			forcedAspect = value;
 	}
 
 	void Camera::recalculate()
@@ -61,8 +63,22 @@ namespace Gfx
 		if(renderTarget == nullptr)
 			return;
 
-		viewMatrix			= glm::lookAt(position, position + forward, up);
-		projectionMatrix	= glm::perspective(FOV, renderTarget->getAspect(), nearCulling, farCulling);
+		float aspect = hasForcedAspect ? forcedAspect : renderTarget->getAspect();
+		viewMatrix   = glm::lookAt(position, position + forward, up);
+
+		switch (mode)
+		{
+			case CameraMode::Perspective:
+				projectionMatrix = glm::perspective(FOV, aspect, nearCulling, farCulling);
+				break;
+
+			case CameraMode::Orthographic:
+				auto& rect = renderTarget->getUnitRect();
+				projectionMatrix = glm::ortho(-rect.getLeft(), -rect.getRight(),
+											  -rect.getBottom(), -rect.getTop(),
+											  nearCulling, farCulling);
+				break;
+		}
 	}
 
 	void Camera::bindUniforms()

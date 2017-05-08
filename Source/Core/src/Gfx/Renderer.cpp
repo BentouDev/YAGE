@@ -325,7 +325,8 @@ namespace Gfx
 		//_queue.sort();
 		//_queue.issueCommands();
 
-		_queue._camera->recalculate(_queue._renderTarget->getAspect());
+		// XDD ???
+		// _queue._camera->recalculate(_queue._renderTarget->getAspect());
 
 		gl::UniformMatrix4fv(1, 1, gl::FALSE_, _queue._camera->projectionPtr());
 		gl::UniformMatrix4fv(2, 1, gl::FALSE_, _queue._camera->viewPtr());

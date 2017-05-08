@@ -19,6 +19,15 @@ namespace Gfx
 {
 	class RenderTarget;
 
+	namespace CameraMode
+	{
+		enum Type
+		{
+			Perspective,
+			Orthographic
+		};
+	}
+
 	class Camera
 	{
 		friend class Renderer;
@@ -28,8 +37,10 @@ namespace Gfx
 		const GLfloat* projectionPtr() const;
 		const GLfloat* viewPtr() const;
 
-		void recalculate(float aspect);
 		void recalculate();
+
+		bool  hasForcedAspect;
+		float forcedAspect;
 
 	public:
 		explicit Camera();
@@ -37,11 +48,13 @@ namespace Gfx
 
 		void bindUniforms();
 
+		void forceAspect(bool force, float value);
 		void setRenderTarget(RenderTarget* target);
 		void setRenderTarget(RenderTarget& target);
 		auto getRenderTarget() -> RenderTarget*;
 		auto getRenderTarget() const -> const RenderTarget*;
 
+		CameraMode::Type		mode;
 		bool 					enableScissors;
 		Gfx::Rectangle<float>	scissors;
 		glm::mat4x4 			viewMatrix;
