@@ -22,7 +22,7 @@ namespace Core
 
 	WindowManager::handle_t WindowManager::createNew(const char* name, unsigned width, unsigned height)
 	{
-		handle_t	handle	= _windowContainer.create(_memory, name, width, height);
+		handle_t handle = _windowContainer.create(_memory, name, width, height);
 
 		_windowIdMapper[reinterpret_cast<std::uintptr_t>(get(handle).hWindow)] = handle;
 

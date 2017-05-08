@@ -26,6 +26,26 @@ namespace Gfx
 	class Renderer;
 	class SpriteBatch;
 
+	namespace VerticalAlign
+	{
+		enum Type
+		{
+			Top,
+			Center,
+			Bottom
+		};
+	}
+
+	namespace HorizontalAlign
+	{
+		enum Type
+		{
+			Left,
+			Center,
+			Right
+		};
+	}
+
 	class TextBuilder
 	{
 		Memory::IMemoryBlock&			_memory;
@@ -33,8 +53,11 @@ namespace Gfx
 		Resources::Font*				font;
 		Utils::Color					color;
 		Utils::Handle<Core::Material>	material;
+		glm::vec2						posOffset;
+		HorizontalAlign::Type 			horizontal;
+		VerticalAlign::Type 			vertical;
 
-		void drawTextInternal(Utils::Slice<char> line, Gfx::SpriteBatch& batch);
+		void drawTextInternal(Utils::Slice<char> line, Gfx::SpriteBatch& batch, glm::vec2 offset);
 		int lineLength(Utils::Slice<char> line);
 
 	public:
@@ -46,6 +69,9 @@ namespace Gfx
 		TextBuilder& appendText(const char* string);
 		TextBuilder& withFont(Resources::Font& font);
 		TextBuilder& withMaterial(Utils::Handle<Core::Material> material);
+		TextBuilder& withOffset(glm::vec2 offset);
+		TextBuilder& horizontalAlign(HorizontalAlign::Type align);
+		TextBuilder& verticalAlign(VerticalAlign::Type align);
 		void 		 drawAsSpriteBatch(Renderer& renderer, Gfx::Camera& camera);
 	};
 

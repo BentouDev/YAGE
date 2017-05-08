@@ -61,6 +61,7 @@ namespace Resources
 
 		unsigned short getWidth() const { return width; }
 		unsigned short getHeight() const { return height; }
+		unsigned short getLineHeight() const { return lineHeight; }
 
 		Font(const Font&) = delete;
 		Font& operator=(Font&&) = delete;

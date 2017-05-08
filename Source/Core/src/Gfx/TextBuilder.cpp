@@ -51,16 +51,47 @@ namespace Gfx
 		return *this;
 	}
 
+	TextBuilder& TextBuilder::horizontalAlign(HorizontalAlign::Type align)
+	{
+		horizontal = align;
+		return *this;
+	}
+
+	TextBuilder& TextBuilder::verticalAlign(VerticalAlign::Type align)
+	{
+		vertical = align;
+		return *this;
+	}
+
+	TextBuilder& TextBuilder::withOffset(glm::vec2 offset)
+	{
+		posOffset = offset;
+		return *this;
+	}
+
 	void TextBuilder::drawAsSpriteBatch(Renderer& renderer, Gfx::Camera& camera)
 	{
 		auto& batch = renderer.getSpriteBatch(material, &camera);
 
-		Utils::List<Utils::Slice<char>> tokens(_memory);
-		Utils::String::Tokenize(text, tokens, "\n\r");
+		Utils::List<Utils::Slice<char>> lines(_memory);
+		Utils::String::Tokenize(text, lines, "\n\r");
 
-		for (auto& line : tokens)
+		glm::vec2 offset = posOffset;
+		glm::vec2 lineHeight(0, font->getLineHeight() / (float)font->getHeight());
+
+		switch (vertical)
 		{
-			drawTextInternal(line, batch);
+			case VerticalAlign::Bottom :
+				offset -= lineHeight * (float) lines.size();
+			break;
+			case VerticalAlign::Center :
+				offset -= lineHeight * (float) lines.size() * 0.5f;
+			break;
+		}
+
+		for (std::size_t i = 0; i < lines.size(); i++)
+		{
+			drawTextInternal(lines[i], batch, (lineHeight * (float)i) + offset);
 		}
 	}
 
@@ -71,18 +102,19 @@ namespace Gfx
 
 		int length = 0;
 		auto itr = line.begin();
-		do {
+		do
+		{
 			auto  code     = utf8::next(itr, line.end());
 			auto* charData = font->lookupChar(code);
 
 			length += charData != nullptr ? charData->advance : 0;
 
-		} while(itr != line.end());
+		} while (itr != line.end());
 
 		return length;
 	}
 
-	void TextBuilder::drawTextInternal(Utils::Slice<char> line, Gfx::SpriteBatch &batch)
+	void TextBuilder::drawTextInternal(Utils::Slice<char> line, Gfx::SpriteBatch &batch, glm::vec2 offset)
 	{
 		if (!utf8::is_valid(line.begin(), line.end()))
 			return;
@@ -91,10 +123,21 @@ namespace Gfx
 		auto length = lineLength(line);
 		auto itr    = line.begin();
 
-		float currentX = 0;
-		float currentY = 0;
+		float currentX = offset.x;
+		float currentY = offset.y;
 
-		do {
+		switch (horizontal)
+		{
+			case HorizontalAlign::Right:
+				currentX -= length / (float) font->getWidth();
+				break;
+			case HorizontalAlign::Center:
+				currentX -= 0.5f * length / (float) font->getWidth();
+				break;
+		}
+
+		do
+		{
 			auto* charData = font->lookupChar(utf8::next(itr, line.end()));
 
 			if (charData == nullptr)
@@ -117,6 +160,6 @@ namespace Gfx
 			currentX += charData->advance / (float) font->getWidth();
 
 			batch.drawSprite(position, texcoord, 1, 0, color);
-		} while(itr != line.end());
+		} while (itr != line.end());
 	}
 }

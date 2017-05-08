@@ -24,7 +24,7 @@ namespace Yage
 
 	Game::~Game()
 	{
-		if(engine != nullptr && !engine->WasCleanedUp())
+		if (engine != nullptr && !engine->WasCleanedUp())
 		{
 			Core::Logger::warn("Game : Cleanup was not called until Game destructor!");
 			CleanUp();
@@ -84,7 +84,7 @@ namespace Yage
 	{
 		Core::Logger::setLogLevel(Core::LogLevel::debug);
 
-		if(engineInstance == nullptr)
+		if (engineInstance == nullptr)
 		{
 			Core::Logger::critical("Game : cannot start without engine! Did you forget to create it?");
 			return;
@@ -118,7 +118,7 @@ namespace Yage
 		lagAccumulator	= 0.0;
 		lastTime		= engine->GetCurrentTime();
 
-		while(!engine->ShouldClose())
+		while (!engine->ShouldClose())
 		{
 			Update(time);
 		}
@@ -154,7 +154,7 @@ namespace Yage
 		engine->Draw(*window, time);
 		OnPostDraw(time);
 
-		if(fpsTime >= 1.0f)
+		if (fpsTime >= 1.0f)
 		{
 			time.Fps	= frames / fpsTime;
 			frames		= 0;
