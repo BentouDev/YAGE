@@ -49,7 +49,7 @@ include_directories(Dependencies/Assimp/include)
 if(WIN32)
     set(ASSIMP_TARGETS assimp zlibstatic)
 else()
-    set(ASSIMP_TARGETS assimp IrrXML)
+    set(ASSIMP_TARGETS assimp)
 endif()
 
 # Add Spdlog
