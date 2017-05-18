@@ -57,13 +57,15 @@ namespace Utils
 			T* newPtr = nullptr;
 			if (newSize > 0)
 			{
-				newPtr = reinterpret_cast<T*>(_memory->allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO));
+				void* mallocedPtr = reinterpret_cast<T*>(_memory->allocate(sizeof(T) * newSize, alignof(T), DEBUG_SOURCE_INFO));
 
 				if (_elements != nullptr)
 				{
 					std::size_t copied_size = std::min(newSize, std::min(_size, _capacity));
-					memcpy(newPtr, _elements, sizeof(T) * copied_size);
+					memcpy(mallocedPtr, _elements, sizeof(T) * copied_size);
 				}
+
+				newPtr = reinterpret_cast<T*>(mallocedPtr);
 			}
 
 			cleanUp();

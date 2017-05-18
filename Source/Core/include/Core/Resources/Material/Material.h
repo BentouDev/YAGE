@@ -58,6 +58,7 @@ namespace Core
 
 	public:
 		explicit IAutoUniform(const char*, Core::Material&, const Resources::ShaderManager&);
+		virtual ~IAutoUniform() = default;
 
 		virtual void set() = 0;
 	};

@@ -35,6 +35,8 @@ namespace Gfx
 	{
 		_bufferOffset = 0;
 		_bufferSize = 0;
+
+		return *this;
 	}
 
 	SpriteBatch& SpriteBatch::ensureCapacity(std::int32_t minimalCapacity)

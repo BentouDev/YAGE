@@ -94,10 +94,12 @@ namespace Gfx
 		{
 			case VerticalAlign::Bottom :
 				offset -= lineHeight * (float) lines.size();
-			break;
+				break;
 			case VerticalAlign::Center :
 				offset -= lineHeight * (float) lines.size() * 0.5f;
-			break;
+				break;
+			default:
+				break;
 		}
 
 		for (std::size_t i = 0; i < lines.size(); i++)
@@ -130,7 +132,6 @@ namespace Gfx
 		if (!utf8::is_valid(line.begin(), line.end()))
 			return;
 
-		auto count  = utf8::distance(line.begin(), line.end());
 		auto length = lineLength(line);
 		auto itr    = line.begin();
 
@@ -144,6 +145,8 @@ namespace Gfx
 				break;
 			case HorizontalAlign::Center:
 				currentX -= 0.5f * length / (float) font->getWidth();
+				break;
+			default:
 				break;
 		}
 

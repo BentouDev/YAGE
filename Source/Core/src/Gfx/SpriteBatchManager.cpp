@@ -2,6 +2,7 @@
 // Created by Bentoo on 2017-04-13.
 //
 
+#include <cstring>
 #include <Utils/MemoryBlock.h>
 #include "Core/Gfx/SpriteBatchManager.h"
 #include "Core/Gfx/SpriteBatch.h"

@@ -90,6 +90,8 @@ namespace Resources
 			if(strcmp(key.c_str(), "face") == 0)
 				converter >> font.Name;
 		}
+
+		return true;
 	}
 
 	bool FontLoader::parseCommon(std::string line, FontLoader &loader, Font &font)
@@ -124,6 +126,8 @@ namespace Resources
 				loader.textures.reserve(pageCount);
 			}
 		}
+
+		return true;
 	}
 
 	bool FontLoader::parsePage(std::string line, FontLoader &loader, Font &font)
@@ -154,6 +158,8 @@ namespace Resources
 				}
 			}
 		}
+
+		return true;
 	}
 
 	bool FontLoader::parseChars(std::string line, FontLoader &loader, Font &font)
@@ -180,6 +186,8 @@ namespace Resources
 				font.charset.reserve(count);
 			}
 		}
+
+		return true;
 	}
 
 	bool FontLoader::parseChar(std::string line, FontLoader &loader, Font &font)
@@ -265,5 +273,7 @@ namespace Resources
 				font.charset.back().page = page;
 			}
 		}
+
+		return true;
 	}
 }
