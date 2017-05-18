@@ -14,6 +14,14 @@ option(YAGE_VALGRIND "Build with valgrind headers" ON)
 # emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
+# enforce warnings
+if ( CMAKE_COMPILER_IS_GNUCC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
+endif ( CMAKE_COMPILER_IS_GNUCC )
+if ( MSVC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+endif ( MSVC )
+
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
 
@@ -41,7 +49,7 @@ include_directories(Dependencies/Assimp/include)
 if(WIN32)
     set(ASSIMP_TARGETS assimp zlibstatic)
 else()
-    set(ASSIMP_TARGETS assimp)
+    set(ASSIMP_TARGETS assimp IrrXML)
 endif()
 
 # Add Spdlog
