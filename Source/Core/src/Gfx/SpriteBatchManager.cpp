@@ -2,7 +2,6 @@
 // Created by Bentoo on 2017-04-13.
 //
 
-#include <cstring>
 #include <Utils/MemoryBlock.h>
 #include "Core/Gfx/SpriteBatchManager.h"
 #include "Core/Gfx/SpriteBatch.h"
@@ -100,7 +99,7 @@ namespace Gfx
 	void SpriteBuffer::copyData(SpriteVertex (&array)[6])
 	{
 		SpriteVertex* buffer = static_cast<SpriteVertex*>(_mappedPtr);
-		mempcpy(buffer, array, sizeof(SpriteVertex) * 6);
+		memcpy(buffer, array, sizeof(SpriteVertex) * 6);
 
 		buffer		+= 6;
 		currentSize	+= 6;
