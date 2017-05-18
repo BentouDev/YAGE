@@ -40,14 +40,20 @@ namespace Gfx
 		Rectangle<float>	defaultTexRect;
 		Utils::Color		defaultColor;
 		glm::vec2			defaultPivot;
+		std::uint8_t 		defaultLayer;
+		float 				defaultZOrder;
 		float				defaultRotation;
 		float				defaultScale;
 
 		void scaleAndRotateSpriteVertex(SpriteVertex (&data)[6], glm::vec2 pivot, float scale, float rotation);
 
 	public:
+		float 				batchZOrder;
+		bool 				blendEnabled;
+		bool 				depthEnabled;
 		GLenum				blendSfactor;
 		GLenum				blendDfactor;
+		GLenum				depthFunc;
 
 		explicit SpriteBatch(SpriteBuffer& buffer);
 
@@ -57,6 +63,9 @@ namespace Gfx
 			  _bufferSize(other._bufferSize),
 			  _materialPtr(other._materialPtr),
 			  _cameraPtr(other._cameraPtr),
+			  defaultZOrder(other.defaultZOrder),
+			  defaultLayer(other.defaultLayer),
+			  batchZOrder(other.batchZOrder),
 			  defaultTexRect(other.defaultTexRect),
 			  defaultColor(other.defaultColor),
 			  defaultRotation(other.defaultRotation),
@@ -69,6 +78,9 @@ namespace Gfx
 			  _bufferSize(other._bufferSize),
 			  _materialPtr(other._materialPtr),
 			  _cameraPtr(other._cameraPtr),
+			  defaultZOrder(other.defaultZOrder),
+			  defaultLayer(other.defaultLayer),
+			  batchZOrder(other.batchZOrder),
 			  defaultTexRect(other.defaultTexRect),
 			  defaultColor(other.defaultColor),
 			  defaultRotation(other.defaultRotation),
@@ -80,12 +92,17 @@ namespace Gfx
 
 		SpriteBatch& clear();
 		SpriteBatch& ensureCapacity(std::int32_t minimalCapacity);
+
 		SpriteBatch& drawSprite(const Sprite& sprite);
+
 		SpriteBatch& drawSprite(Rectangle<float> rect, Utils::Color color);
+
 		SpriteBatch& drawSprite(Rectangle<float> rect, Rectangle<float> texRect,
 								float scale, float rotation, Utils::Color color);
-		SpriteBatch& drawSprite(Rectangle<float> rect, glm::vec2 pivot, Rectangle<float> texRect,
-								float scale, float rotation, Utils::Color color);
+
+		SpriteBatch& drawSprite(Rectangle<float> rect, glm::vec2 pivot,
+								Rectangle<float> texRect, std::uint8_t texLayer,
+								float scale, float rotation, float zOrder, Utils::Color color);
 
 		inline Gfx::Camera* getCamera() const { return _cameraPtr; }
 		inline Core::Material* getMaterial() const { return _materialPtr; }

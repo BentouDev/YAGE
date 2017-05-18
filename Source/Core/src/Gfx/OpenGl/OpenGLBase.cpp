@@ -14,7 +14,7 @@ namespace OpenGL
 
 	auto initialize() -> bool
 	{
-		if(!glfwInit())
+		if (!glfwInit())
 		{
 			Core::Logger::error("GLFW : unable to initialize!");
 			return false;
@@ -31,7 +31,7 @@ namespace OpenGL
 
 	void beginDraw(const Core::Window& window)
 	{
-		if(!window.IsAlive())
+		if (!window.IsAlive())
 			return;
 
 		glfwMakeContextCurrent(window.hWindow);
@@ -49,28 +49,21 @@ namespace OpenGL
 
     bool registerWindow(const Core::Window& window)
     {
-		if(!window.IsAlive())
+		if (!window.IsAlive())
 			return false;
 
 		glfwMakeContextCurrent(window.hWindow);
-		if(!didLoadFunctions)
+		if (!didLoadFunctions)
 		{
 			didLoadFunctions = gl::sys::LoadFunctions();
 		}
 
-		gl::Enable(gl::DEPTH_TEST);
-		OpenGL::checkError();
-		gl::DepthFunc(gl::LEQUAL);
-		OpenGL::checkError();
-		gl::Enable(gl::BLEND);
-		OpenGL::checkError();
-
-		return didLoadFunctions;
+		return (bool) didLoadFunctions;
 	}
 
 	void resizeWindow(const Core::Window& window)
 	{
-		if(!window.IsAlive())
+		if (!window.IsAlive())
 			return;
 
 		glfwMakeContextCurrent(window.hWindow);
@@ -85,9 +78,9 @@ namespace OpenGL
 	bool checkError()
 	{
 		GLenum errorCode = gl::GetError();
-		if(errorCode != gl::NO_ERROR_)
+		if (errorCode != gl::NO_ERROR_)
 		{
-			switch(errorCode)
+			switch (errorCode)
 			{
 				case gl::INVALID_ENUM:
 					Core::Logger::error("An unacceptable value is specified for an enumerated argument. The offending command is ignored and has no other side effect than to set the error flag.");
@@ -139,7 +132,7 @@ namespace OpenGL
 		};
 
 		auto itr = dispatcher.find(type);
-		if(itr != dispatcher.end())
+		if (itr != dispatcher.end())
 		{
 			return itr->second;
 		}

@@ -25,14 +25,14 @@ namespace Resources
 		Gfx::Rectangle<float>	textureRect;
 		glm::vec2				offset;
 		std::uint32_t			advance;
-		std::uint32_t			page;
+		std::uint8_t			page;
 	};
 
 	DECL_RESOURCE(Font)
 	{
 		friend class FontLoader;
 
-		Utils::List<Texture::handle_t>		textures;
+		Texture::handle_t					textureAtlas;
 		Utils::List<CharData>				charset;
 		std::map<wchar_t, std::uint32_t>	charLookup;
 
@@ -54,9 +54,9 @@ namespace Resources
 		Font(Font&& other);
 
 		CharData* lookupChar(wchar_t code);
-		Texture::handle_t getDefaultTexture()
+		Texture::handle_t getTextureAtlas()
 		{
-			return textures.size() > 0 ? textures[0] : Texture::handle_t::invalid();
+			return textureAtlas;
 		}
 
 		unsigned short getWidth() const { return width; }

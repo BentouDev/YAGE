@@ -54,6 +54,7 @@ namespace Gfx
 		Utils::Color					color;
 		Utils::Handle<Core::Material>	material;
 		glm::vec2						posOffset;
+		float 							zOrder;
 		HorizontalAlign::Type 			horizontal;
 		VerticalAlign::Type 			vertical;
 
@@ -64,12 +65,15 @@ namespace Gfx
 		explicit TextBuilder(Memory::IMemoryBlock& memory);
 		virtual ~TextBuilder();
 
-		Utils::String& getString();
+		Utils::String&		getString();
+		Gfx::SpriteBatch&	getBatch(Renderer& renderer, Gfx::Camera& camera);
+
 		TextBuilder& clearText();
 		TextBuilder& appendText(const char* string);
 		TextBuilder& withFont(Resources::Font& font);
 		TextBuilder& withMaterial(Utils::Handle<Core::Material> material);
 		TextBuilder& withOffset(glm::vec2 offset);
+		TextBuilder& withZOrder(float zOrder);
 		TextBuilder& horizontalAlign(HorizontalAlign::Type align);
 		TextBuilder& verticalAlign(VerticalAlign::Type align);
 		void 		 drawAsSpriteBatch(Renderer& renderer, Gfx::Camera& camera);

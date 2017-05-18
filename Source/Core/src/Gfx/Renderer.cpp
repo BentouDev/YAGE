@@ -95,14 +95,14 @@ namespace Gfx
 
 		if (_debugFont == nullptr)
 		{
-			Resources::TextureLoader textureLoader(_engine.TextureManager.get());
+			Resources::TextureLoader textureLoader(_engine.TextureManager.get(), _memory);
 			textureLoader
 					.setParameter(gl::TEXTURE_MAG_FILTER, gl::LINEAR)
 					.setParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR)
-					.setParameter(gl::TEXTURE_WRAP_S, gl::REPEAT)
-					.setParameter(gl::TEXTURE_WRAP_T, gl::REPEAT);
+					.setParameter(gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE)
+					.setParameter(gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 
-			Resources::FontLoader fontLoader(_engine.FontManager.get());
+			Resources::FontLoader fontLoader(_engine.FontManager.get(), _memory);
 			auto font_handle = fontLoader
 					.withTextureLoader(textureLoader)
 					.loadFromFile("../Data/Fonts/fantasque.fnt")
@@ -119,7 +119,7 @@ namespace Gfx
 			_debugFontMaterial->setUniform (
 				"diffuseTex",
 				_engine.TextureManager->tryGetTexture (
-					_debugFont->getDefaultTexture()
+					_debugFont->getTextureAtlas()
 				)
 			);
 		}
@@ -218,12 +218,21 @@ namespace Gfx
 		// For each camera
 		// For each material
 
-		for(auto* buffer : _spriteBatchManager->_buffers)
+		for (auto* buffer : _spriteBatchManager->_buffers)
 		{
 			buffer->unmapMemory();
 		}
 
-		for(auto itr : _spriteBatchManager->_batchMap)
+		/*using batchIndex = std::pair<std::uint32_t, std::uint32_t>;
+		std::sort(_spriteBatchManager->_batchMap.begin(), _spriteBatchManager->_batchMap.end(),
+		 [this](batchIndex const& a, batchIndex const& b) -> bool
+		 {
+			 const auto& first  = _spriteBatchManager->_batches[a.second];
+			 const auto& second = _spriteBatchManager->_batches[b.second];
+			 return first.batchZOrder > second.batchZOrder;
+		 });*/
+
+		for (auto itr : _spriteBatchManager->_batchMap)
 		{
 			const glm::mat4	modelMatrix	= glm::mat4(1.0f);
 			const auto&		batch		= _spriteBatchManager->_batches[itr.second];
@@ -237,7 +246,25 @@ namespace Gfx
 			// Bind cameras render target
 			camera->getRenderTarget()->Bind();
 
-			gl::BlendFunc(batch.blendSfactor, batch.blendDfactor);
+			if (batch.depthEnabled)
+			{
+				gl::Enable(gl::DEPTH_TEST);
+				gl::DepthFunc(batch.depthFunc);
+			}
+			else
+			{
+				gl::Disable(gl::DEPTH_TEST);
+			}
+
+			if (batch.blendEnabled)
+			{
+				gl::Enable(gl::BLEND);
+				gl::BlendFunc(batch.blendSfactor, batch.blendDfactor);
+			}
+			else
+			{
+				gl::Disable(gl::BLEND);
+			}
 
 			// Bind material uniforms
 			auto program_handle = batch.getMaterial()->getShaderProgram();

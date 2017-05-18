@@ -35,17 +35,19 @@ namespace Gfx
 
 		gl::EnableVertexAttribArray(0);
 		OpenGL::checkError();
-		gl::VertexAttribPointer(0, 2, gl::FLOAT, gl::FALSE_, sizeof(SpriteVertex), reinterpret_cast<void*>(0));
+		gl::VertexAttribPointer(0, 3, gl::FLOAT, gl::FALSE_, sizeof(SpriteVertex), reinterpret_cast<void*>(0));
 		OpenGL::checkError();
 
 		gl::EnableVertexAttribArray(1);
 		OpenGL::checkError();
-		gl::VertexAttribPointer(1, 2, gl::FLOAT, gl::FALSE_, sizeof(SpriteVertex), reinterpret_cast<void*>(sizeof(glm::vec2)));
+		auto textureOffset = sizeof(glm::vec3);
+		gl::VertexAttribPointer(1, 3, gl::FLOAT, gl::FALSE_, sizeof(SpriteVertex), reinterpret_cast<void*>(textureOffset));
 		OpenGL::checkError();
 
 		gl::EnableVertexAttribArray(2);
 		OpenGL::checkError();
-		gl::VertexAttribPointer(2, 4, gl::UNSIGNED_BYTE, gl::TRUE_, sizeof(SpriteVertex), reinterpret_cast<void*>(2 * sizeof(glm::vec2)));
+		auto colorOffset = sizeof(glm::vec3) * 2;
+		gl::VertexAttribPointer(2, 4, gl::UNSIGNED_BYTE, gl::TRUE_, sizeof(SpriteVertex), reinterpret_cast<void*>(colorOffset));
 		OpenGL::checkError();
 
 		Core::Logger::info("SpriteBatchManager : Created sprite VAO!");

@@ -7,7 +7,7 @@
 namespace Resources
 {
 	Font::Font(Memory::IMemoryBlock& memory)
-		: charset(memory), textures(memory),
+		: charset(memory),
 		  size(1,1), lineHeight(0), base(0),
 		  width(0), height(0),
 		  firstChar(0), lastChar(0)
@@ -15,7 +15,7 @@ namespace Resources
 
 	Font::Font(Font &&other)
 		: charset(std::move(other.charset)),
-		  textures(std::move(other.textures)),
+		  textureAtlas(other.textureAtlas),
 		  size(other.size), lineHeight(other.lineHeight), base(other.base),
 		  width(other.width), height(other.height),
 		  firstChar(other.firstChar), lastChar(other.lastChar)

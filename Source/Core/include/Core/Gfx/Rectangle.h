@@ -22,6 +22,10 @@ namespace Gfx
 			: _min(x, y), _max(x + width, y + height)
 		{ }
 
+		explicit Rectangle(glm::vec2 min, glm::vec2 size)
+			: _min(min), _max(min.x + size.x, min.y + size.y)
+		{ }
+
 		void setMinX(N value)	{ _min.x = value; }
 		void setMinY(N value)	{ _min.y = value; }
 		void setMaxX(N value)	{ _max.x = value; }
@@ -80,6 +84,9 @@ namespace Gfx
 			array[7] = _min.y;
 		}
 	};
+
+	using rect_t  = Rectangle<float>;
+	using recti_t = Rectangle<std::int32_t>;
 }
 
 #endif //YAGE_RECTANGLE_H

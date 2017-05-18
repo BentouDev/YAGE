@@ -12,7 +12,7 @@
 namespace Gfx
 {
 	TextBuilder::TextBuilder(Memory::IMemoryBlock &memory)
-		: _memory(memory), text(memory)
+		: _memory(memory), text(memory), posOffset(0, 0), zOrder(0)
 	{
 
 	}
@@ -25,6 +25,11 @@ namespace Gfx
 	Utils::String& TextBuilder::getString()
 	{
 		return text;
+	}
+
+	Gfx::SpriteBatch& TextBuilder::getBatch(Renderer& renderer, Gfx::Camera& camera)
+	{
+		return renderer.getSpriteBatch(material, &camera);
 	}
 
 	TextBuilder& TextBuilder::clearText()
@@ -66,6 +71,12 @@ namespace Gfx
 	TextBuilder& TextBuilder::withOffset(glm::vec2 offset)
 	{
 		posOffset = offset;
+		return *this;
+	}
+
+	TextBuilder& TextBuilder::withZOrder(float zOrder)
+	{
+		this->zOrder = zOrder;
 		return *this;
 	}
 
@@ -159,7 +170,7 @@ namespace Gfx
 
 			currentX += charData->advance / (float) font->getWidth();
 
-			batch.drawSprite(position, texcoord, 1, 0, color);
+			batch.drawSprite(position, glm::vec2(0.5f, 0.5f), texcoord, charData->page, 1, 0, zOrder, color);
 		} while (itr != line.end());
 	}
 }

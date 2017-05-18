@@ -21,10 +21,14 @@ namespace Gfx
 		  defaultPivot(0.5f, 0.5f),
 		  defaultColor(255,255, 255, 255),
 		  defaultRotation(0), defaultScale(1),
+		  defaultZOrder(0),
+		  defaultLayer(0),
+		  batchZOrder(0),
+		  blendEnabled(true),
 		  blendSfactor(gl::SRC_ALPHA),
-		  blendDfactor(gl::ONE_MINUS_SRC_ALPHA)
-		//  blendSfactor(gl::SRC_ALPHA),
-		//  blendDfactor(gl::ONE_MINUS_SRC_ALPHA)
+		  blendDfactor(gl::ONE_MINUS_SRC_ALPHA),
+		  depthEnabled(true),
+		  depthFunc(gl::LEQUAL)
 	{ }
 
 	SpriteBatch& SpriteBatch::clear()
@@ -53,15 +57,15 @@ namespace Gfx
 	SpriteBatch& SpriteBatch::drawSprite(Rectangle<float> rect, Rectangle<float> texRect,
 										 float scale, float rotation, Utils::Color color)
 	{
-		return drawSprite(rect, defaultPivot, texRect, scale, rotation, color);
+		return drawSprite(rect, defaultPivot, texRect, defaultLayer, scale, rotation, defaultZOrder, color);
 	}
 
 	SpriteBatch& SpriteBatch::drawSprite(Rectangle<float> rect, glm::vec2 pivot, Rectangle<float> texRect,
-										 float scale, float rotation, Utils::Color color)
+										 std::uint8_t texLayer, float scale, float rotation, float zOrder, Utils::Color color)
 	{
 		ensureCapacity(6);
 		SpriteVertex data[6];
-		Sprite::fillVertexData(data, rect, texRect, color);
+		Sprite::fillVertexData(data, rect, texRect, texLayer, zOrder, color);
 		scaleAndRotateSpriteVertex(data, rect.localToWorld(pivot), scale, rotation);
 		_buffer.copyData(data);
 
@@ -92,7 +96,7 @@ namespace Gfx
 				data[i].position.x	-= pivot.x;
 				data[i].position.y	-= pivot.y;
 
-				const glm::vec2 oldPos = data[i].position;
+				const glm::vec3 oldPos = data[i].position;
 				data[i].position.x	 = cosine * oldPos.x - sine * oldPos.y;
 				data[i].position.y	 = sine * oldPos.x + cosine * oldPos.y;
 

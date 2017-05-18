@@ -13,8 +13,8 @@
 
 namespace Resources
 {
-	FontLoader::FontLoader(Resources::FontManager& manager)
-		: _manager(manager), textureLoader(nullptr), filepath(nullptr)
+	FontLoader::FontLoader(Resources::FontManager& manager, Memory::IMemoryBlock& memory)
+		: _manager(manager), _memory(memory), textureLoader(nullptr), filepath(nullptr), textures(memory)
 	{
 		lookupMap["info"]	= &parseInfo;
 		lookupMap["common"]	= &parseCommon;
@@ -50,10 +50,18 @@ namespace Resources
 		handle_t	handle	= _manager.createFont();
 		Font&		font	= _manager.getFont(handle);
 
-		while(std::getline(file, line))
+		while (std::getline(file, line))
 		{
 			ProcessLine(line, *this, font);
 		}
+
+		// Process loaded textures and merge them into texture array
+		for (auto& texturePaths : textures)
+		{
+			textureLoader->loadFromFile(texturePaths.c_str());
+		}
+
+		font.textureAtlas = textureLoader->buildAsMulti(MultiTextureType::Texture2DArray);
 
 		return handle;
 	}
@@ -113,7 +121,7 @@ namespace Resources
 			{
 				int pageCount = 0;
 				converter >> pageCount;
-				font.textures.reserve(pageCount);
+				loader.textures.reserve(pageCount);
 			}
 		}
 	}
@@ -142,8 +150,7 @@ namespace Resources
 					std::string filePath(loader.filepath);
 					std::string path = filePath.substr(0, filePath.find_last_of('/') + 1);
 								path += value.substr(1, value.size() - 2);
-					auto texture_handle = loader.textureLoader->loadFromFile(path.c_str()).build();
-					font.textures.add(texture_handle);
+					loader.textures.emplace(loader._memory, path.c_str());
 				}
 			}
 		}

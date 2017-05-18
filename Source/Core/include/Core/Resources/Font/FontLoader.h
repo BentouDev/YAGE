@@ -7,6 +7,8 @@
 
 #include "Core/Resources/ObjParser/ObjParser.h"
 #include <Utils/MemoryBlock.h>
+#include <Utils/List.h>
+#include <Utils/String.h>
 #include <Utils/Handle.h>
 
 namespace Core
@@ -22,8 +24,10 @@ namespace Resources
 
 	class FontLoader : protected ObjParser<Font, FontLoader>
 	{
-		Resources::TextureLoader* textureLoader;
-		Resources::FontManager&	 _manager;
+		Resources::TextureLoader*	textureLoader;
+		Resources::FontManager&	 	_manager;
+		Memory::IMemoryBlock&		_memory;
+		Utils::List<Utils::String>	textures;
 
 		const char* filepath;
 
@@ -36,7 +40,7 @@ namespace Resources
 	public:
 		using handle_t = Utils::Handle<Font>;
 
-		explicit FontLoader(Resources::FontManager& manager);
+		explicit FontLoader(Resources::FontManager& manager, Memory::IMemoryBlock& memory);
 		virtual ~FontLoader();
 
 		FontLoader& withTextureLoader(Resources::TextureLoader& loader);

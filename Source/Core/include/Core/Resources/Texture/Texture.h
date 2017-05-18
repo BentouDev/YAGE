@@ -20,6 +20,7 @@ namespace Resources
 		uint32_t _height;
 
 		GLuint _handle;
+		GLenum _mode;
 		GLenum _format;
 		GLenum _pixelFormat;
 
@@ -34,6 +35,9 @@ namespace Resources
 		Texture& operator=(const Texture&) = delete;
 
 		virtual ~Texture();
+
+		GLenum getMode() const
+		{ return _mode; }
 
 		inline operator GLuint() const
 		{ return _handle; }
