@@ -13,7 +13,12 @@
 namespace Resources
 {
 	ShaderBuilder::ShaderBuilder(Core::Engine& engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _shaders(_memory), _temporaryShaders(_memory), _existing(nullptr)
+		: _engine(engine),
+		  _memory(memory),
+		  _shaders(_memory),
+		  _temporaryShaders(_memory),
+		  _forcedAttributeLocation(memory),
+		  _existing(nullptr)
 	{
 
 	}
@@ -58,6 +63,12 @@ namespace Resources
 
 		program->init(gl::CreateProgram());
 
+		// enforce attrib location
+		for(auto& attrib : _forcedAttributeLocation)
+		{
+			gl::BindAttribLocation(*program, attrib.location, attrib.name);
+		}
+
 		for(Gfx::Shader* shader : _shaders)
 		{
 			gl::AttachShader(*program, *shader);
@@ -89,6 +100,12 @@ namespace Resources
 	ShaderBuilder& ShaderBuilder::with(Gfx::Shader& shader)
 	{
 		_shaders.emplace(&shader);
+		return *this;
+	}
+
+	ShaderBuilder& ShaderBuilder::withAttributeLocation(std::uint32_t location, const char* attribute)
+	{
+		_forcedAttributeLocation.emplace(location, attribute);
 		return *this;
 	}
 

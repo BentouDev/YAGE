@@ -10,6 +10,7 @@
 #include <Utils/Container.h>
 
 #include "Shader.h"
+#include "Core/IManager.h"
 
 namespace Core
 {
@@ -18,15 +19,14 @@ namespace Core
 
 namespace Resources
 {
-	class ShaderManager
+	class ShaderManager : public Core::IManager
 	{
+		MANAGER(ShaderManager);
+
 	public:
 		using handle_t = Utils::Handle<Gfx::ShaderProgram>;
 
 	protected:
-		Core::Engine&			_engine;
-		Memory::IMemoryBlock&	_memory;
-
 		Utils::Container<Gfx::ShaderProgTrait> _shadersContainer;
 
 		void dispose(Gfx::ShaderProgram&);

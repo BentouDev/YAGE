@@ -12,6 +12,7 @@
 #include "Core/Input/InputManager.h"
 #include "Core/Resources/ResourceManager.h"
 #include "Core/Resources/Mesh/MeshManager.h"
+#include "Core/Resources/Font/FontManager.h"
 #include "Core/Resources/Shader/ShaderManager.h"
 #include "Core/Resources/Texture/TextureManager.h"
 #include "Core/Resources/Material/MaterialManager.h"
@@ -41,6 +42,7 @@ namespace Core
 		Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
 		BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
 		MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
+		FontManager		.reset(CreateManager<Resources::FontManager>    (Memory::KB(400)));
 		TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
 		MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
 		ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
@@ -66,7 +68,7 @@ namespace Core
 		auto* window = WindowManager.get().tryGet(handle);
 		if(window != nullptr)
 		{
-			if(!OpenGL::registerWindow(*window))
+			if(!Renderer->registerWindow(window))
 			{
 				Logger::error("Engine : Unable to register window in OpenGL!");
 			}
@@ -91,10 +93,10 @@ namespace Core
 
 	auto Engine::Initialize() -> bool
 	{
-		bool success = true;
-		success &= OpenGL::initialize();
-		success &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
-		return success;
+		bool result = true;
+		result &= OpenGL::initialize();
+		result &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
+		return result;
 	}
 
 	auto Engine::SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void
@@ -110,13 +112,13 @@ namespace Core
 	// todo: remove window from here
 	auto Engine::Draw(const Core::Window& window, Core::GameTime& time) -> void
 	{
-		OpenGL::beginDraw(window);
+		if(WindowManager->allWindowsClosed())
+			return;
 
 		if(activeScene) activeScene->Draw(time, Renderer.get());
 
 		Renderer->draw();
-
-		OpenGL::endDraw(window);
+		Renderer->drawSpriteBatches();
 	}
 
 	auto Engine::ProcessEvents(Core::GameTime& time) -> void
@@ -157,7 +159,6 @@ namespace Core
 
 	auto Engine::Quit() -> void
 	{
-		WindowManager->closeAllWindows();
 		_isDone = true;
 	}
 
@@ -173,6 +174,7 @@ namespace Core
 		Memory::Delete(MemoryModule->masterBlock(), InputManager);
 		Memory::Delete(MemoryModule->masterBlock(), WindowManager);
 		Memory::Delete(MemoryModule->masterBlock(), BufferManager);
+		Memory::Delete(MemoryModule->masterBlock(), FontManager);
 		Memory::Delete(MemoryModule->masterBlock(), MeshManager);
 		Memory::Delete(MemoryModule->masterBlock(), TextureManager);
 		Memory::Delete(MemoryModule->masterBlock(), MaterialManager);

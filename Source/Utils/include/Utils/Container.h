@@ -114,7 +114,8 @@ namespace Utils
 
 		inline virtual ~Container()
 		{
-			removeAllElements();
+			// removeAllElements();
+			destructElements();
 
 			_memory.deallocate(elements);
 			_indices.clear();

@@ -6,10 +6,12 @@
 #define GAME_STRING_H
 
 #include <type_traits>
+#include <vector>
 #include <cstring>
 #include <cstdio>
 #include <cctype>
 #include "List.h"
+#include "Slice.h"
 
 namespace Utils
 {
@@ -49,6 +51,12 @@ namespace Utils
 			append(string);
 		}
 
+		inline String(Memory::IMemoryBlock& memory, Utils::Slice<char>& slice)
+			: List(memory)
+		{
+			append(slice.begin(), slice.size());
+		}
+
 		inline String& append(const String& str)
 		{
 			addMany(str);
@@ -58,8 +66,9 @@ namespace Utils
 		inline String& append(const char* c_str, std::size_t count)
 		{
 			std::size_t oldSize = size();
+			reserve(oldSize + count + 1);
 			resize(oldSize + count);
-			memcpy(begin() + oldSize, c_str, count * sizeof(char));
+			memcpy(&_elements[oldSize], c_str, count * sizeof(char));
 
 			ensureNullTerminator();
 
@@ -68,7 +77,8 @@ namespace Utils
 
 		inline String& append(const char* c_str)
 		{
-			return append(c_str, std::strlen(c_str));
+			std::size_t len = std::strlen(c_str);
+			return append(c_str, len);
 		}
 
 		const char* c_str() const
@@ -113,6 +123,8 @@ namespace Utils
 
 			return true;
 		}
+
+		static void Tokenize(const String& string, Utils::List<Utils::Slice<char>>& list, const char* divider);
 	};
 
 	inline static String& operator<<(String& str, char c)
@@ -145,6 +157,21 @@ namespace Utils
 	{
 		// pad with zeroes, minimum 1 character, hex
 		return str.stackSprintf("%01llx", i);
+	}
+
+	template <typename Str>
+	static void SplitString(const char* str, std::vector<Str>& list, const char* divider)
+	{
+		char* obj	= strdup(str);
+		char* temp	= strtok(obj, divider);
+		while(temp)
+		{
+			char* token = strdup(temp);
+			list.push_back(Str(token));
+			temp = strtok(NULL, divider);
+		}
+
+		free(obj);
 	}
 }
 

@@ -27,10 +27,21 @@ namespace Resources
 		using handle_t = Utils::Handle<Gfx::ShaderProgram>;
 
 	protected:
+		struct AttribInfo
+		{
+			AttribInfo(std::uint32_t loc, const char* attrib)
+				: location(loc), name(attrib)
+			{ }
+
+			std::uint32_t	location;
+			const char*		name;
+		};
+
 		Core::Engine&				_engine;
 		Memory::IMemoryBlock& 		_memory;
 		Utils::List<Gfx::Shader*>	_shaders;
 		Utils::List<Gfx::Shader>	_temporaryShaders;
+		Utils::List<AttribInfo>		_forcedAttributeLocation;
 		Gfx::ShaderProgram*			_existing;
 
 		void compileShader(Gfx::Shader& shader, const char* source, const GLint length);
@@ -44,6 +55,8 @@ namespace Resources
 		ShaderBuilder&	onExisting(handle_t existing);
 
 		ShaderBuilder&	with(Gfx::Shader& shader);
+
+		ShaderBuilder&	withAttributeLocation(std::uint32_t location, const char* attribute);
 
 		ShaderBuilder&	withVertexFromFile(const char* path);
 		ShaderBuilder&	withVertexFromSource(const char* source);

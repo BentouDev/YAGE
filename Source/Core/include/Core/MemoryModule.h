@@ -13,6 +13,11 @@
 #include <Utils/SimpleMemoryTracker.h>
 #include <Utils/List.h>
 
+#if YAGE_VALGRIND
+#include <Utils/ValgrindMemoryBoundChecker.h>
+#include <Utils/ValgrindMemoryTracker.h>
+#endif
+
 namespace Core
 {
 	class MemoryModule final
@@ -23,8 +28,8 @@ namespace Core
 												   Memory::SimpleMemoryTracker>;
 
 		using user_block_t = Memory::MemoryBlock<Memory::FreeListAllocator,
-												 Memory::NoMemoryBoundChecker,
-												 Memory::NoMemoryTracker>;
+												 Memory::SimpleMemoryBoundChecker,
+												 Memory::SimpleMemoryTracker>;
 
 	protected:
 		struct MemoryBlockNode

@@ -7,6 +7,7 @@
 
 #include <Utils/Container.h>
 #include "StaticBuffer.h"
+#include "Core/IManager.h"
 
 namespace Core
 {
@@ -15,14 +16,14 @@ namespace Core
 
 namespace Gfx
 {
-	class BufferManager
+	class BufferManager : public Core::IManager
 	{
+		MANAGER(BufferManager);
+
 	public:
 		using handle_t = StaticBuffer::handle_t;
 
 	protected:
-		Core::Engine&						_engine;
-		Memory::IMemoryBlock&				_memory;
 		Utils::Container<StaticBufferTrait>	_bufferContainer;
 
 	public:

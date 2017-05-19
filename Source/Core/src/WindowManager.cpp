@@ -10,7 +10,7 @@
 namespace Core
 {
 	WindowManager::WindowManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: _engine(engine), _memory(memory), _windowContainer(memory, 1)
+		: IManager(engine, memory), _windowContainer(memory, 1)
 	{
 		Core::Logger::get()->info("Created window manager with capacity '{}'", _windowContainer.capacity());
 	}
@@ -22,7 +22,7 @@ namespace Core
 
 	WindowManager::handle_t WindowManager::createNew(const char* name, unsigned width, unsigned height)
 	{
-		handle_t	handle	= _windowContainer.create(_memory, name, width, height);
+		handle_t handle = _windowContainer.create(_memory, name, width, height);
 
 		_windowIdMapper[reinterpret_cast<std::uintptr_t>(get(handle).hWindow)] = handle;
 

@@ -14,6 +14,14 @@ option(YAGE_VALGRIND "Build with valgrind headers" ON)
 # emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
+# enforce warnings
+if ( CMAKE_COMPILER_IS_GNUCC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
+endif ( CMAKE_COMPILER_IS_GNUCC )
+if ( MSVC )
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+endif ( MSVC )
+
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
 
@@ -51,6 +59,11 @@ include_directories(Dependencies/Spdlog/include)
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
 include_directories(Dependencies/Json/src)
+
+# Add Utf8
+include_directories(Dependencies/Utf8/source)
+add_library(utf8 Dependencies/Utf8/source/utf8.h Dependencies/Utf8/source/utf8/checked.h Dependencies/Utf8/source/utf8/core.h Dependencies/Utf8/source/utf8/unchecked.h)
+set_target_properties(utf8 PROPERTIES LINKER_LANGUAGE CXX)
 
 # Add CppLinq
 include_directories(Dependencies/CppLinq)

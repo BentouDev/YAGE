@@ -63,7 +63,7 @@ namespace Core
 
 	private:
 		static constexpr char const* defaultSinkName = "console";
-		Logger() : Default(spdlog::stdout_logger_mt(defaultSinkName, true)) { };
+		Logger() : Default(spdlog::stdout_logger_mt(defaultSinkName)) { };
 
 	public:
 		virtual ~Logger() { destroy(); }

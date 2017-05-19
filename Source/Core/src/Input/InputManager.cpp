@@ -57,6 +57,9 @@ namespace Core
 			case Input::DeviceType::CONTROLLER:
 				result = getDeviceForId(event.deviceId);
 				break;
+			default:
+				Logger::warn("InputManager : Unknown device '%zu'", event.deviceType);
+				break;
 		}
 
 		return result;

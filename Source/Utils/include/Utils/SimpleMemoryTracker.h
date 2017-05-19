@@ -39,9 +39,18 @@ namespace Memory
 
 		~SimpleMemoryTracker()
 		{
-			for(auto& info : _currentlyAllocatedAddresses)
+			for (auto& info : _currentlyAllocatedAddresses)
 			{
 				std::fprintf(stderr, "%s : Address '%p' possibly leaked '%zu' bytes, allocated in file '%s' at line '%lu'\n",
+							 getName(), info.ptr, info.size, info.file, info.line);
+			}
+		}
+
+		inline void PrintCurrentAllocations()
+		{
+			for (auto& info : _currentlyAllocatedAddresses)
+			{
+				std::fprintf(stderr, "%s : Address '%p' allocated '%zu' bytes in file '%s' at line '%lu'\n",
 							 getName(), info.ptr, info.size, info.file, info.line);
 			}
 		}
@@ -56,7 +65,7 @@ namespace Memory
 		{
 			bool freed  = false;
 			PointerInfo* info = nullptr;
-			for(std::size_t i = 0; i < _currentlyAllocatedAddresses.size(); i++)
+			for (std::size_t i = 0; i < _currentlyAllocatedAddresses.size(); i++)
 			{
 				info = &_currentlyAllocatedAddresses[i];
 				if(info->ptr == ptr)
@@ -67,7 +76,7 @@ namespace Memory
 				}
 			}
 
-			if(!freed)
+			if (!freed)
 			{
 				for(std::size_t i = 0; i < _currentlyAllocatedAddresses.size(); i++)
 				{

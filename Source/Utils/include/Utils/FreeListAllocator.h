@@ -15,12 +15,21 @@ namespace Memory
 		struct FreeListHeader
 		{
 			explicit FreeListHeader(std::size_t size)
-				: next(nullptr), size(size), adjustment(0)
+				: next(nullptr)
+				, size(size)
+				, adjustment(0)
+			{ }
+
+			explicit FreeListHeader(const FreeListHeader& other)
+				: next(other.next)
+				, size(other.size)
+				, adjustment(other.adjustment)
 			{ }
 
 			FreeListHeader* next;
 			std::size_t 	size;
 			uint8_t  		adjustment;
+			uint8_t 		sizeDifference;
 		};
 
 		FreeListAllocator(const FreeListAllocator&) = delete;

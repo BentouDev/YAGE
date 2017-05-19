@@ -29,6 +29,7 @@ namespace Gfx
 namespace Resources
 {
 	class MeshManager;
+	class FontManager;
 	class TextureManager;
 	class MaterialManager;
 	class ShaderManager;
@@ -81,6 +82,7 @@ namespace Core
 		borrowed_ptr<Gfx::Renderer>					Renderer;
 		borrowed_ptr<Gfx::BufferManager>			BufferManager;
 		borrowed_ptr<Resources::MeshManager>		MeshManager;
+		borrowed_ptr<Resources::FontManager>		FontManager;
 		borrowed_ptr<Resources::TextureManager>		TextureManager;
 		borrowed_ptr<Resources::MaterialManager>	MaterialManager;
 		borrowed_ptr<Resources::ShaderManager>		ShaderManager;
@@ -128,7 +130,8 @@ namespace Core
 		template <typename T>
 		T* CreateManager(std::size_t memorySize)
 		{
-			Memory::IMemoryBlock& memoryBlock = MemoryModule.get().requestMemoryBlock(memorySize, TypeInfo<T>::cName());
+			static_assert(std::is_base_of<IManager, T>::value, "Engine : Cannot create manager that doesnt derive from IManager!");
+			Memory::IMemoryBlock& memoryBlock = MemoryModule.get().requestMemoryBlock(memorySize, T::GetStaticClassName());
 			T* manager = YAGE_CREATE_NEW(MemoryModule.get().masterBlock(), T)(*this, memoryBlock);
 
 			return manager;

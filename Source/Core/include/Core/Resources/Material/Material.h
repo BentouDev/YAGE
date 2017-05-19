@@ -5,6 +5,8 @@
 #ifndef GAME_MATERIAL_H
 #define GAME_MATERIAL_H
 
+#include <map>
+
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
@@ -56,6 +58,7 @@ namespace Core
 
 	public:
 		explicit IAutoUniform(const char*, Core::Material&, const Resources::ShaderManager&);
+		virtual ~IAutoUniform() = default;
 
 		virtual void set() = 0;
 	};
@@ -67,6 +70,8 @@ namespace Core
 
 		// Shader only has program ID
 		// this is where uniform buffers are stored
+
+		std::map<std::string, uint32_t> _uniformMap;
 
 		Memory::IMemoryBlock& _memory;
 
@@ -106,7 +111,7 @@ namespace Core
 
 		virtual ~Material()
 		{
-			for(IAutoUniform* uniform : _uniforms)
+			for (IAutoUniform* uniform : _uniforms)
 			{
 				Memory::Delete(_memory, uniform);
 			}
@@ -187,6 +192,7 @@ namespace Core
 	Core::Material& Material::addUniform(const char* name, const Resources::ShaderManager& manager)
 	{
 		IAutoUniform* uniform = YAGE_CREATE_NEW(_memory, AutoUniform<T>)(name, *this, manager);
+		_uniformMap.emplace(name, _uniforms.size());
 		_uniforms.add(uniform);
 		return *this;
 	}
@@ -194,9 +200,22 @@ namespace Core
 	template <typename T>
 	void Material::setUniform(const char* name, T value)
 	{
-		for(IAutoUniform* property : _uniforms)
+		auto itr = _uniformMap.find(name);
+		if (itr != _uniformMap.end())
 		{
-			static_cast<AutoUniform<T>*>(property)->setValue(value);
+			auto* prop     = _uniforms[itr->second];
+			auto* autoProp = dynamic_cast<AutoUniform<T>*>(prop);
+
+			YAGE_ASSERT (
+				autoProp != nullptr,
+				"Material : attemp to set uniform '%s' value of different type!",
+				name
+			);
+
+			if (autoProp != nullptr)
+			{
+				autoProp->setValue(value);
+			}
 		}
 	}
 }

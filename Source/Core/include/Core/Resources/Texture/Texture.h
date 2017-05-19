@@ -16,12 +16,11 @@ namespace Resources
 	{
 		friend class TextureLoader;
 
-		uint8_t* _pixels;
-
 		uint32_t _width;
 		uint32_t _height;
 
 		GLuint _handle;
+		GLenum _mode;
 		GLenum _format;
 		GLenum _pixelFormat;
 
@@ -29,14 +28,16 @@ namespace Resources
 		using trait_t	= Utils::DefaultTrait<Texture>;
 
 		explicit Texture();
+		Texture(Texture&& other);
 
 		Texture(const Texture&) = delete;
 		Texture& operator=(Texture&&) = delete;
 		Texture& operator=(const Texture&) = delete;
 
-		Texture(Texture&& other);
-
 		virtual ~Texture();
+
+		GLenum getMode() const
+		{ return _mode; }
 
 		inline operator GLuint() const
 		{ return _handle; }

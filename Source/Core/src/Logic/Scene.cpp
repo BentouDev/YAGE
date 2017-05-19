@@ -4,6 +4,7 @@
 
 #include "Core/Logic/Scene.h"
 #include "Core/Engine.h"
+#include "Core/Gfx/Camera.h"
 #include "Core/Logic/RenderingSystem.h"
 
 namespace Logic

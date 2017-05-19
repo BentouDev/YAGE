@@ -2,7 +2,6 @@
 // Created by bentoo on 10/14/16.
 //
 
-#include <Core/Gfx/Camera.h>
 #include <Core/Gfx/Viewport.h>
 #include <Core/Logic/Scene.h>
 #include "Core/Logic/RenderingSystem.h"
@@ -74,7 +73,7 @@ namespace Logic
 				if(location == -1)
 				{
 					// todo: Report error: there is no such attribute or its reserved for driver
-					Core::Logger::get()->error (
+					Core::Logger::error (
 						"createVAO : theres no attribute named '{}' or its driver reserved.", info.Name
 					);
 				}
@@ -173,7 +172,7 @@ namespace Logic
 			for(Entity::handle_t handle : info.entities)
 			{
 				Gfx::Renderer::queue_t& queue = _engine.Renderer->getQueue();
-				queue.setCamera(info.scene->defaultCamera);
+			//	queue.setCamera(info.scene->defaultCamera);
 				queue.setRenderTarget(info.scene->defaultViewport);
 
 				// TODO: we are using handle to get entity, and World internaly extracts handle to pass it to manager, so getting this instance is useless

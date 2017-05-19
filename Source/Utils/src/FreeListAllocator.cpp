@@ -19,7 +19,7 @@ namespace Memory
 	{
 		_freeBlocks = new (memory) FreeListHeader(size);
 #if YAGE_VALGRIND
-	//	VALGRIND_MAKE_MEM_DEFINED(_freeBlocks, sizeof(FreeListHeader));
+		VALGRIND_MAKE_MEM_DEFINED(_freeBlocks, sizeof(FreeListHeader));
 #endif
 	}
 
@@ -30,14 +30,14 @@ namespace Memory
 		FreeListHeader* ptr			= _freeBlocks;
 		FreeListHeader* smallest	= nullptr;
 
-		while(ptr != nullptr)
+		while (ptr != nullptr)
 		{
 			std::size_t  adjustment	= Internal::calcForwardAlignmentAdjustment(ptr, alignment, headerSize);
 			std::size_t  ptrSize	= ptr->size;
-			std::size_t  totalSize	= size + adjustment;
+			std::size_t  totalSize	= size + adjustment - offset; // adjustment already has frontOffset! size does not!
 			std::int64_t sizeDiff	= (int64_t)(ptrSize - totalSize);
 
-			if(sizeDiff > 0 && ((size_t) sizeDiff) <= smallestSize)
+			if (sizeDiff >= 0 && ((size_t) sizeDiff) <= smallestSize)
 			{
 				smallestSize = (size_t) sizeDiff;
 				smallest = ptr;
@@ -60,12 +60,12 @@ namespace Memory
 		std::size_t headerSize		= sizeof(FreeListHeader) + offset;
 		FreeListHeader* blockPtr 	= findBestFitBlock(size, alignment, offset);
 
-		if(blockPtr == nullptr)
+		if (blockPtr == nullptr)
 			return nullptr;
 
 		// Calculate forward adjustment
 		std::size_t adjustment		= Internal::calcForwardAlignmentAdjustment(blockPtr, alignment, headerSize);
-		std::size_t allocationSize	= size + adjustment;
+		std::size_t allocationSize	= size + adjustment - offset; // (adjustment has fronOffset)
 
 		std::uintptr_t 	blockAddress		= reinterpret_cast<std::uintptr_t>(blockPtr);
 		std::uintptr_t 	alignedAddress		= blockAddress + adjustment;
@@ -74,30 +74,43 @@ namespace Memory
 		void* 			newPtr	= reinterpret_cast<void*>(endAddress);
 		FreeListHeader* pNew	= reinterpret_cast<FreeListHeader*>(newPtr);
 
-		YAGE_ASSERT(blockPtr->next != pNew,
-					"FreeListAllocator : Deallocation has failed to join adjacent blocks for address '%p'!",
-					pNew);
+		YAGE_ASSERT (
+			blockPtr->size >= allocationSize,
+			"FreeListAllocator : Attempt to allocate '%zu' bytes in block of size '%zu'! Original alloc size '%zu'.",
+			allocationSize, blockPtr->size, size
+		);
+
+		if (blockPtr->next != nullptr)
+		{
+			YAGE_ASSERT (
+				!(blockPtr->next >= blockPtr && reinterpret_cast<char*>(blockPtr->next) <= reinterpret_cast<char*>(blockPtr) + blockPtr->size),
+				"FreeListAllocator : Memory blocks are damaged, block '%p' exists inside other from '%p' to '%p'.",
+				pNew, blockPtr, blockPtr + blockPtr->size
+			);
+		}
+
+		YAGE_ASSERT (
+			blockPtr->next != pNew,
+			"FreeListAllocator : Deallocation has failed to join adjacent blocks for address '%p'!",
+			pNew
+		);
 
 		const uint32_t minimalSize = sizeof(FreeListHeader);
-		const std::size_t sizeLeft = blockPtr->size - allocationSize;
+		std::size_t sizeDifference = blockPtr->size - allocationSize;
 
-		if(sizeLeft > minimalSize)
+		if (sizeDifference > minimalSize)
 		{
 #if YAGE_VALGRIND
-		//	VALGRIND_MAKE_MEM_DEFINED(pNew, sizeof(FreeListHeader));
+			VALGRIND_MAKE_MEM_DEFINED(pNew, sizeof(FreeListHeader));
 #endif
-			new (pNew) FreeListHeader(sizeLeft);
-		//	pNew->next			= nullptr;
-		//	pNew->size			= sizeLeft;
-		//	pNew->adjustment	= (uint8_t)0;
+			new (pNew) FreeListHeader(sizeDifference);
 
-			if(blockPtr->next == nullptr)
-				blockPtr->next = pNew;
+			auto* end = getListEnd(_freeBlocks);
+			end->next = pNew;
 
-		//	doRemoveFromList(_freeBlocks, blockPtr);
 			removeFromList(blockPtr);
-		//	FreeListHeader* end = getListEnd(_freeBlocks);
-		//	end->next 			= pNew;
+
+			sizeDifference = 0;
 		}
 		else
 		{
@@ -115,9 +128,10 @@ namespace Memory
 
 		FreeListHeader* userHeader = reinterpret_cast<FreeListHeader*>(alignedAddress - offset - sizeof(FreeListHeader));
 
-		userHeader->next		= nullptr;
-		userHeader->size		= allocationSize;
-		userHeader->adjustment	= (uint8_t)adjustment;
+		userHeader->next			= nullptr;
+		userHeader->size			= allocationSize; // ?? adjustment has this offset, with padding and header size
+		userHeader->adjustment		= (uint8_t)adjustment - offset;
+		userHeader->sizeDifference	= sizeDifference;
 
 		_usedSize += allocationSize;
 
@@ -129,12 +143,12 @@ namespace Memory
 	{
 		FreeListHeader** ptr = &_freeBlocks;
 
-		while((*ptr) != nullptr && (*ptr) != element)
+		while ((*ptr) != nullptr && (*ptr) != element)
 		{
 			ptr = &(*ptr)->next;
 		}
 
-		if((*ptr) != nullptr)
+		if ((*ptr) != nullptr)
 		{
 			(*ptr) = element->next;
 		}
@@ -144,13 +158,13 @@ namespace Memory
 	{
 		std::uintptr_t 	headerAddress	= reinterpret_cast<std::uintptr_t>(ptr) - sizeof(FreeListHeader);
 		FreeListHeader* header			= reinterpret_cast<FreeListHeader*>(headerAddress);
-		return header->size - header->adjustment;
+		return header->size - header->adjustment - header->sizeDifference;
 	}
 
 	FreeListAllocator::FreeListHeader* FreeListAllocator::getListEnd(FreeListHeader* list)
 	{
 		FreeListHeader* ptr = list;
-		while(ptr->next != nullptr)
+		while (ptr->next != nullptr)
 		{
 			ptr = ptr->next;
 		}
@@ -161,7 +175,7 @@ namespace Memory
 	void FreeListAllocator::doRemoveFromList(FreeListHeader*, FreeListHeader* ptr)
 	{
 		FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(findPreviousInFreeList(ptr));
-		if(previous != nullptr)
+		if (previous != nullptr)
 		{
 			previous->next = ptr->next;
 		}
@@ -169,33 +183,49 @@ namespace Memory
 
 	void FreeListAllocator::deallocate(void *ptr)
 	{
+		char*			freedPtr		= reinterpret_cast<char*>(ptr);
 		std::size_t 	headerSize		= sizeof(FreeListHeader);
 		std::uintptr_t  ptrAddress		= reinterpret_cast<std::uintptr_t>(ptr);
 		std::uintptr_t 	headerAddress	= ptrAddress - headerSize;
-		void* 			rawBegin		= reinterpret_cast<void*>(headerAddress);
-		FreeListHeader* header			= reinterpret_cast<FreeListHeader*>(rawBegin);
+		FreeListHeader* header			= reinterpret_cast<FreeListHeader*>(headerAddress);
+		void* 			rawBegin		= reinterpret_cast<void*>(freedPtr - header->adjustment);
 
-		YAGE_ASSERT(header->adjustment != 0,
-					"FreeListAllocator : Cannot deallocate address '%p', its already free!",
-					header);
+		YAGE_ASSERT (
+			header->adjustment != 0,
+			"FreeListAllocator : Cannot deallocate address '%p', its already free!",
+			header
+		);
 
 		std::size_t allocSize 			= header->size;
-		void* 		rawEnd 				= reinterpret_cast<void*>(headerAddress + allocSize);
+		void* 		rawEnd 				= reinterpret_cast<void*>(reinterpret_cast<char*>(rawBegin) + allocSize);
 		void* 		freeBeforeStart		= findRawPreviousInFreeList(rawBegin);
 		void* 		freeAfterEnd		= findInFreeList(rawEnd);
 
-		// Set address as free
-		header->adjustment = (uint8_t)0;
+		// Copy header data
+		FreeListHeader freeHeader(*header);
 
-		if(freeAfterEnd == nullptr && freeBeforeStart == nullptr)
+		// Set address as free
+		freeHeader.adjustment = (uint8_t)0;
+
+		// Set data to begin of block
+		*reinterpret_cast<FreeListHeader*>(rawBegin) = freeHeader;
+
+		// Set new header ptr back to header variable
+		header = reinterpret_cast<FreeListHeader*>(rawBegin);
+
+		if (freeAfterEnd == nullptr && freeBeforeStart == nullptr)
 		{
+			// Just a new block
+
 			header->next = _freeBlocks;
-			_freeBlocks = header;
+			_freeBlocks  = header;
 		//	FreeListHeader* end = getListEnd(_freeBlocks);
 		//	end->next = header;
 		}
-		else if(freeAfterEnd != nullptr && freeBeforeStart != nullptr)
+		else if (freeAfterEnd != nullptr && freeBeforeStart != nullptr)
 		{
+			// Can be merged with both following and previous blocks
+
 			FreeListHeader* headerAfter	 = reinterpret_cast<FreeListHeader*>(freeAfterEnd);
 			FreeListHeader* beforeHeader = reinterpret_cast<FreeListHeader *>(freeBeforeStart);
 			beforeHeader->size += header->size + headerAfter->size;
@@ -204,7 +234,7 @@ namespace Memory
 			removeFromList(headerAfter);
 
 			FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(findPreviousInFreeList(headerAfter));
-			if(previous != nullptr && previous != beforeHeader)
+			if (previous != nullptr && previous != beforeHeader)
 			{
 				previous->next = beforeHeader;
 			}
@@ -214,6 +244,8 @@ namespace Memory
 		}
 		else if(freeAfterEnd != nullptr)
 		{
+			// Can be merged with following block
+
 			FreeListHeader* headerAfter = reinterpret_cast<FreeListHeader*>(freeAfterEnd);
 			header->size += headerAfter->size;
 			header->next  = headerAfter->next;
@@ -221,16 +253,18 @@ namespace Memory
 		//	removeFromList(headerAfter);
 
 			FreeListHeader* previous = reinterpret_cast<FreeListHeader*>(findPreviousInFreeList(headerAfter));
-			if(previous != nullptr)
+			if (previous != nullptr)
 			{
 				previous->next = header;
 			}
 
-			if(headerAfter == _freeBlocks)
+			if (headerAfter == _freeBlocks)
 				_freeBlocks = header;
 		}
-		else if(freeBeforeStart != nullptr)
+		else if (freeBeforeStart != nullptr)
 		{
+			// Can be merged to previous free block
+
 			FreeListHeader *beforeHeader = reinterpret_cast<FreeListHeader *>(freeBeforeStart);
 
 			beforeHeader->size += header->size;
@@ -238,6 +272,12 @@ namespace Memory
 			header->size = 0;
 			header->next = nullptr;
 		}
+
+		YAGE_ASSERT (
+			!(header->next >= header && reinterpret_cast<char*>(header->next) <= reinterpret_cast<char*>(header) + header->size),
+			"FreeListAllocator : Deallocation failed to join adjacent blocks, '%p' is inside other block from '%p' to '%p'.",
+			header->next, header, header + header->size
+		);
 
 		_usedSize -= allocSize;
 	}
@@ -251,7 +291,7 @@ namespace Memory
 	{
 		// Check if ptr end is in free list
 		FreeListHeader* current = _freeBlocks;
-		while(current != nullptr && current->next != ptr)
+		while (current != nullptr && current->next != ptr)
 		{
 			current = current->next;
 		}
@@ -263,7 +303,7 @@ namespace Memory
 	{
 		// Check if ptr is in free list
 		FreeListHeader* current = _freeBlocks;
-		while(current != nullptr && current != ptr)
+		while (current != nullptr && current != ptr)
 		{
 			current = current->next;
 		}
@@ -277,7 +317,7 @@ namespace Memory
 		FreeListHeader* current 		= _freeBlocks;
 		std::uintptr_t  ptrAddress 		= reinterpret_cast<std::uintptr_t>(ptr);
 		std::uintptr_t 	currentAddress 	= reinterpret_cast<std::uintptr_t>(current);
-		while(current != nullptr && (currentAddress + current->size) != ptrAddress)
+		while (current != nullptr && (currentAddress + current->size) != ptrAddress)
 		{
 			current = current->next;
 			currentAddress = reinterpret_cast<std::uintptr_t>(current);

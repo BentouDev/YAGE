@@ -9,7 +9,7 @@
 namespace Resources
 {
 	MaterialManager::MaterialManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
-		: _engine(engine), _memory(memory), _materialContainer(_memory)
+		: IManager(engine, memory), _materialContainer(_memory)
 	{
 		Core::Logger::get()->info("Created material manager with capacity {}", _materialContainer.capacity());
 	}

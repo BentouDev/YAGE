@@ -8,6 +8,7 @@
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
 #include "Material.h"
+#include "Core/IManager.h"
 
 namespace Core
 {
@@ -16,12 +17,11 @@ namespace Core
 
 namespace Resources
 {
-	class MaterialManager
+	class MaterialManager : public Core::IManager
 	{
-		using handle_t = Core::Material::handle_t;
+		MANAGER(MaterialManager);
 
-		Core::Engine&			_engine;
-		Memory::IMemoryBlock&	_memory;
+		using handle_t = Core::Material::handle_t;
 
 		Utils::Container<Core::MaterialTrait> _materialContainer;
 

@@ -48,9 +48,15 @@ namespace Core
 
 	void Material::setUniform(GLint location, Resources::Texture* texture)
 	{
+		if (texture == nullptr)
+			return;
+
 		gl::ActiveTexture(gl::TEXTURE0 + _textureIndex);
-		gl::BindTexture(gl::TEXTURE_2D, *texture);
-		gl::Uniform1ui(location, _textureIndex);
+		OpenGL::checkError();
+		gl::BindTexture(texture->getMode(), *texture);
+		OpenGL::checkError();
+		gl::Uniform1i(location, _textureIndex);
+		OpenGL::checkError();
 		_textureIndex++;
 	}
 
