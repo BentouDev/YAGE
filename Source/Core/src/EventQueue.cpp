@@ -126,7 +126,6 @@ namespace Core
 		glfwSetWindowRefreshCallback  (window->hWindow, &EventQueue::WindowRefreshCallback);
 		glfwSetWindowFocusCallback    (window->hWindow, &EventQueue::WindowFocusCallback);
 		glfwSetWindowIconifyCallback  (window->hWindow, &EventQueue::WindowIconifyCallback);
-		glfwSetWindowMaximizeCallback (window->hWindow, &EventQueue::WindowMaximizeCallback);
 		glfwSetWindowPosCallback      (window->hWindow, &EventQueue::WindowPosCallback);
 		glfwSetWindowSizeCallback     (window->hWindow, &EventQueue::WindowSizeCallback);
 		glfwSetFramebufferSizeCallback(window->hWindow, &EventQueue::FramebufferSizeCallback);
@@ -280,17 +279,6 @@ namespace Core
 		get().enqueueWindowEvent(data, window);
 
 		// Logger::trace("WindowIconifyEvent : window '{}'", window);
-	}
-
-	void EventQueue::WindowMaximizeCallback(GLFWwindow* window, int maximized)
-	{
-		Core::WindowEvent data;
-
-		data.type = WindowEventType::MAXIMIZE;
-
-		get().enqueueWindowEvent(data, window);
-
-		// Logger::trace("WindowMaximizeEvent : window '{}'", window);
 	}
 
 	void EventQueue::WindowPosCallback(GLFWwindow* window, int xpos, int ypos)
