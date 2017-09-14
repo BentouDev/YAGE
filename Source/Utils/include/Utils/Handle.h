@@ -44,14 +44,6 @@ namespace Utils
 	template <typename Resource>
 	union Handle
 	{
-	private:
-		auto release() -> uint32_t
-		{
-			auto oldVal = key;
-			key = invalid().key;
-			return oldVal;
-		}
-
 	public:
 		uint32_t key;
 
@@ -61,6 +53,15 @@ namespace Utils
 			type_t typeId;
 			uint16_t index;
 		};
+
+	private:
+		auto release() -> uint32_t
+		{
+			auto oldVal = key;
+			key = invalid().key;
+			return oldVal;
+		}
+	public:
 
 		Handle() : key(0) { typeId = TypeInfo<Resource>::id(); }
 		Handle(Handle&& other) : key(other.release()) { }

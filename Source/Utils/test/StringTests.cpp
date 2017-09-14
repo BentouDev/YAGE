@@ -34,7 +34,7 @@ typedef Memory::MemoryBlock <
 	class StringTest : public ::testing::Test
 	{
 	protected:
-		const std::size_t 	memorySize = 2048;
+		const std::size_t 	memorySize = 48;
 		void* 				memory;
 		Memory::FreeListAllocator* allocator;
 

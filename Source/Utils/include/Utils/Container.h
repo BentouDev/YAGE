@@ -142,7 +142,7 @@ namespace Utils
 		inline void remove(handle_t handle)
 		{
 			YAGE_ASSERT(contains(handle),
-				   "Container : Cannot remove element by invalid handle!");
+				   "Colony : Cannot remove element by invalid handle!");
 
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
