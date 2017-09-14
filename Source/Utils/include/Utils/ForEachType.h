@@ -19,7 +19,7 @@ namespace Utils
 		};
 
 		template <typename T>
-		static constexpr bool checkBaseOf(int count = 0)
+		static constexpr bool checkBaseOf(uint count = 0)
 		{
 			return  count < sizeof...(Types) ? (
 				valueHome<T>::value[count] ? checkBaseOf<T>(count + 1) : false
