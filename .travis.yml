@@ -6,59 +6,60 @@ notifications:
 sudo: required
 dist: trusty
 
-cache: Dependencies
+services:
+  - docker
 
-addons:
-  apt:
-    sources:
-      - sudo add-apt-repository ppa:george-edison55/cmake-3.x --yes
-      - llvm-toolchain-precise-3.7
-      - ubuntu-toolchain-r-test
-      - zoogie/sdl2-snapshots
-    packages:
-      - cmake
-      - cmake-data
-      - gcc-6
-      - g++-6
-      - clang-3.7
-      - xorg-dev
-      - libxxf86vm-dev
-      - libglu1-mesa-dev
-      - libsdl2-dev
-      - qt5-default
-      - qttools5-dev-tools
+#addons:
+#  apt:
+#    sources:
+#      - sudo add-apt-repository ppa:george-edison55/cmake-3.x --yes
+#      - llvm-toolchain-precise-3.7
+#      - ubuntu-toolchain-r-test
+#      - zoogie/sdl2-snapshots
+#    packages:
+#      - cmake
+#      - cmake-data
+#      - gcc-6
+#      - g++-6
+#      - clang-3.7
+#      - xorg-dev
+#      - libxxf86vm-dev
+#      - libglu1-mesa-dev
+#      - libsdl2-dev
+#      - qt5-default
+#      - qttools5-dev-tools
 
 matrix:
   include:
     - os: linux
-      compiler: clang-3.7
+      compiler: clang-5
       before_script:
-        - export CXX=clang++-3.7
-        - export CC=clang-3.7
-        - cmake --target all .
+        - docker pull bentou/ubuntuartfuldev
+        - docker ps -a
+      script:
+        - docker run bentou/ubuntuartfuldev -v ${pwd}/bin /bin build_clang.sh
 
-    - os: linux
-      compiler: gcc-6
-      before_script:
-        - export CXX=g++-6
-        - export CC=gcc-6
-        - cmake -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage " -DENABLE_COVERAGE=On --target all .
-      after_success:
-        - make test
-        - make gcov
-        - bash <(curl -s https://codecov.io/bash) -X gcov
+#    - os: linux
+#      compiler: gcc-6
+#      before_script:
+#        - export CXX=g++-6
+#        - export CC=gcc-6
+#        - cmake -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage " -DENABLE_COVERAGE=On --target all .
+#      script:
+#        - make
+#      after_success:
+#        - make test
+#        - make gcov
+#        - bash <(curl -s https://codecov.io/bash) -X gcov
 
 before_install:
-  - wget https://s3-us-west-2.amazonaws.com/prod.lunarx/sdk/1457744859783_vulkansdk-linux-x86_64-1.0.5.0.run?AWSAccessKeyId=AKIAJ2OMJY5KDUYV55GA&Expires=1458999290&Signature=mU%2BOkmFcbx5ryz3HwgZ%2F7of%2Fkw8%3D
-  - git submodule update --init --recursive
+#  - wget https://s3-us-west-2.amazonaws.com/prod.lunarx/sdk/1457744859783_vulkansdk-linux-x86_64-1.0.5.0.run?AWSAccessKeyId=AKIAJ2OMJY5KDUYV55GA&Expires=1458999290&Signature=mU%2BOkmFcbx5ryz3HwgZ%2F7of%2Fkw8%3D
+#  - git submodule update --init --recursive
 
 install:
-  - $CXX --version
+#  - $CXX --version
   - cmake --version
 
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start" # X virtual framebuffer
-
-script:
-  - make
