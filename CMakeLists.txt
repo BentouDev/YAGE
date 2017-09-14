@@ -33,28 +33,24 @@ find_package(Vulkan)
 # Add OpenGl
 find_package(OpenGL)
 
+# Add pThreads
+find_package (Threads)
+
 # Add GLFW
-yage_setup_dependency(GLFW SOURCE Dependencies/GLFW Dependencies/GLFW/include glfw)
-include_directories(${GLFW_INCLUDE_DIR})
+find_package(GLFW)
+include_directories(${GLFW_INCLUDE}})
 
 # Add GLM
-add_subdirectory(Dependencies/GLM EXCLUDE_FROM_ALL)
-include_directories(${GLM_INCLUDE_DIRS})
+find_package(GLM)
+include_directories(${GLM_INCLUDE}})
 
 # Add Assimp
-add_subdirectory(Dependencies/Assimp EXCLUDE_FROM_ALL)
-include_directories(Dependencies/Assimp/include)
-
-# windows needs zlibstatic in assimp export target
-if(WIN32)
-    set(ASSIMP_TARGETS assimp zlibstatic)
-else()
-    set(ASSIMP_TARGETS assimp)
-endif()
+find_package(Assimp)
+include_directories(${ASSIMP_INCLUDE}})
 
 # Add Spdlog
-add_subdirectory(Dependencies/Spdlog EXCLUDE_FROM_ALL)
-include_directories(Dependencies/Spdlog/include)
+find_package(Spdlog)
+include_directories(${SPDLOG_INCLUDE}})
 
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
@@ -79,9 +75,8 @@ if(YAGE_BUILD_TESTS)
 
     # Add GoogleTest
     set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
-    add_subdirectory(Dependencies/GoogleTest EXCLUDE_FROM_ALL)
-    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-    include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+    find_package(GoogleTest)
+    find_package(GoogleMock)
 endif()
 
 # Add QT5 when building Editor
@@ -110,7 +105,7 @@ if(YAGE_BUILD_EDITOR)
 endif(YAGE_BUILD_EDITOR)
 
 add_library(YAGE INTERFACE)
-target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Core YAGE::Script)
+target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
 

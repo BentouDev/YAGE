@@ -21,7 +21,7 @@ target_compile_features(Core
         PRIVATE cxx_variadic_templates
         cxx_nullptr)
 
-target_link_libraries(Core YAGE::Utils ${GLFW_LIBRARIES} glm assimp lodepng)
+target_link_libraries(Core YAGE::Utils lodepng ${ASSIMP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GLFW_LIBRARIES})
 
 if(OPENGL_FOUND)
     target_compile_definitions(Core PRIVATE YAGE_OPENGL=1)
@@ -37,7 +37,7 @@ install(TARGETS Core
 install(DIRECTORY include/ DESTINATION include)
 
 # This makes the project importable from the build directory
-export(TARGETS ${ASSIMP_TARGETS} ${GLFW_TARGET} lodepng Core FILE CoreConfig.cmake)
+export(TARGETS lodepng Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course
@@ -45,7 +45,7 @@ if(YAGE_BUILD_TESTS)
             tests/CoreTests.cpp tests/MemoryModuleTests.cpp tests/WorldTests.cpp)
 
     target_link_libraries(CoreTests
-            Core ${GLFW_LIBRARIES} gtest gtest_main gmock)
+            Core ${CMAKE_THREAD_LIBS_INIT} ${GLFW_LIBRARIES} ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES})
 
     add_test(CoreTests CoreTests)
     add_coverage(Core)
