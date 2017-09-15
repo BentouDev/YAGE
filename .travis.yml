@@ -38,7 +38,7 @@ matrix:
         - docker ps -a
         - mkdir bin
       script:
-        - docker run -it -v ${pwd}/bin:/bin bentou/ubuntuartfuldev sh ./build_clang.sh
+        - docker run -it -v ${pwd}/:/src --workdir /src bentou/ubuntuartfuldev sh ./build_clang.sh
 
 #    - os: linux
 #      compiler: gcc-6
