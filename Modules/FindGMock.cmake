@@ -16,7 +16,7 @@ find_library(GMOCK_LIBRARY NAMES libgmock.so libgmock.so.0 libgmock.so.0.0 gmock
 # Handle the QUIETLY and REQUIRED arguments and set GTEST_FOUND to TRUE if
 # all listed variables are TRUE.
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(GMOCK DEFAULT_MSG GMOCK_LIBRARY GMOCK_INCLUDE_DIR)
+find_package_handle_standard_args(GMock DEFAULT_MSG GMOCK_LIBRARY GMOCK_INCLUDE_DIR)
 
 if(GMOCK_FOUND)
     set(GMOCK_LIBRARIES ${GMOCK_LIBRARY})

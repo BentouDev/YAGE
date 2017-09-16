@@ -25,8 +25,6 @@ endif ( MSVC )
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
 
-include ("${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake")
-
 # Add Vulkan
 find_package(Vulkan)
 
@@ -75,8 +73,8 @@ if(YAGE_BUILD_TESTS)
 
     # Add GoogleTest
     set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
-    find_package(GoogleTest)
-    find_package(GoogleMock)
+    find_package(GTest)
+    find_package(GMock)
 endif()
 
 # Add QT5 when building Editor

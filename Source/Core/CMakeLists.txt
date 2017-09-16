@@ -45,7 +45,7 @@ if(YAGE_BUILD_TESTS)
             tests/CoreTests.cpp tests/MemoryModuleTests.cpp tests/WorldTests.cpp)
 
     target_link_libraries(CoreTests
-            Core ${CMAKE_THREAD_LIBS_INIT} ${GLFW_LIBRARIES} ${GTEST_LIBRARIES} ${GMOCK_LIBRARIES})
+            Core GTest::GTest GTest::Main ${GMOCK_LIBRARIES} ${GLFW_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
     add_test(CoreTests CoreTests)
     add_coverage(Core)
