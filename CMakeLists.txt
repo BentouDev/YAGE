@@ -97,8 +97,16 @@ if(YAGE_BUILD_TESTS)
 
     # Add GoogleTest
     set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
-    find_package(GTest)
+
+    yage_setup_dependency(GTest
+            TARGET gtest
+            VAR_NAME GTEST
+            SOURCE Dependencies/GoogleTest)
+
     find_package(GMock)
+
+    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+    include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
 endif()
 
 # Add QT5 when building Editor
