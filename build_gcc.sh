@@ -1,6 +1,6 @@
 #!/bin/bash
-export CXX=g++-6
-export CC=gcc-6
+export CXX=g++
+export CC=gcc
 $CXX --version
 cmake --version
 mkdir bin
