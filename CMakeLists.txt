@@ -59,9 +59,9 @@ yage_setup_dependency(Assimp
 
 include_directories(${ASSIMP_INCLUDE}})
 
-# windows needs zlibstatic in assimp export target
+# Windows needs zlibstatic and IrrXml in assimp export target
 if(WIN32)
-    set(ASSIMP_TARGETS assimp zlibstatic)
+    set(ASSIMP_TARGETS assimp zlibstatic IrrXml)
 else()
     set(ASSIMP_TARGETS ${ASSIMP_TARGET})
 endif()
