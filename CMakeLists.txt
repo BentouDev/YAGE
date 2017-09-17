@@ -11,19 +11,20 @@ option(YAGE_BUILD_TESTS "Build Tests" ON)
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
 
-# emit additional metadata for debug builds
+# Add modules
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
+
+# Emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
-# enforce warnings
+# Enforce warnings
 if ( CMAKE_COMPILER_IS_GNUCC )
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
 endif ( CMAKE_COMPILER_IS_GNUCC )
 if ( MSVC )
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
 endif ( MSVC )
-
-# Add modules
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
 
 # Add Vulkan
 find_package(Vulkan)
@@ -35,19 +36,42 @@ find_package(OpenGL)
 find_package (Threads)
 
 # Add GLFW
-find_package(GLFW)
+yage_setup_dependency(GLFW
+        TARGET glfw
+        SOURCE Dependencies/GLFW
+        INCLUDE Dependencies/GLFW/include)
+
 include_directories(${GLFW_INCLUDE}})
 
 # Add GLM
-find_package(GLM)
+yage_setup_dependency(GLM
+        SOURCE Dependencies/GLM
+        INCLUDE Dependencies/GLM)
+
 include_directories(${GLM_INCLUDE}})
 
 # Add Assimp
-find_package(Assimp)
+yage_setup_dependency(Assimp
+        VAR_NAME ASSIMP
+        TARGET assimp
+        SOURCE Dependencies/Assimp
+        INCLUDE Dependencies/Assimp/include)
+
 include_directories(${ASSIMP_INCLUDE}})
 
+# windows needs zlibstatic in assimp export target
+if(WIN32)
+    set(ASSIMP_TARGETS assimp zlibstatic)
+else()
+    set(ASSIMP_TARGETS ${ASSIMP_TARGET})
+endif()
+
 # Add Spdlog
-find_package(Spdlog)
+yage_setup_dependency(Spdlog
+        VAR_NAME SPDLOG
+        SOURCE Dependencies/Spdlog
+        INCLUDE Dependencies/Spdlog/include)
+
 include_directories(${SPDLOG_INCLUDE}})
 
 # Add Json
@@ -80,7 +104,11 @@ endif()
 # Add QT5 when building Editor
 if(YAGE_BUILD_EDITOR)
     find_package(Qt5Widgets REQUIRED)
-    find_package(Qt5WinExtras)
+
+    # Additional windows specific features
+    if(WIN32)
+        find_package(Qt5WinExtras)
+    endif(WIN32)
 endif(YAGE_BUILD_EDITOR)
 
 # Add Valgrind support for memory debugging
