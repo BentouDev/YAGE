@@ -19,12 +19,12 @@ include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
 include(CMakeToolsHelpers OPTIONAL)
 
 # Enforce warnings
-if ( CMAKE_COMPILER_IS_GNUCC )
+if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
-endif ( CMAKE_COMPILER_IS_GNUCC )
-if ( MSVC )
+endif(CMAKE_COMPILER_IS_GNUCC)
+if(MSVC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
-endif ( MSVC )
+endif(MSVC)
 
 # Add Vulkan
 find_package(Vulkan)
@@ -61,7 +61,7 @@ include_directories(${ASSIMP_INCLUDE}})
 
 # Windows needs zlibstatic and IrrXml in assimp export target
 if(WIN32)
-    set(ASSIMP_TARGETS assimp zlibstatic IrrXml)
+    set(ASSIMP_TARGETS assimp zlibstatic)
 else()
     set(ASSIMP_TARGETS ${ASSIMP_TARGET})
 endif()
@@ -95,15 +95,25 @@ if(YAGE_BUILD_TESTS)
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
     find_package(codecov REQUIRED)
 
-    # Add GoogleTest
-    set( gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll" )
+    # Fix MinGW link errors
+    set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
 
-    yage_setup_dependency(GTest
-            TARGET gtest
-            VAR_NAME GTEST
+    # Add GoogleMock, which source has implicit GoogleTest dependency
+    yage_setup_dependency(GMock
+            TARGET gmock
+            VAR_NAME GMOCK
             SOURCE Dependencies/GoogleTest)
 
-    find_package(GMock)
+    message("TEST " ${GMOCK_FOUND} " s " ${GMock_FOUND} " d " ${gmock_FOUND})
+
+    if(GMOCK_FOUND)
+        # If GMock was found in OS, search for GTest too
+        find_package(GTest)
+    endif()
+
+    if(NOT GTEST_LIBRARIES)
+        set(GTEST_LIBRARIES ${GTEST_LIBRARY})
+    endif()
 
     include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
     include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
