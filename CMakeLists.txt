@@ -61,7 +61,11 @@ include_directories(${ASSIMP_INCLUDE}})
 
 # Windows needs zlibstatic and IrrXml in assimp export target
 if(WIN32)
-    set(ASSIMP_TARGETS assimp zlibstatic)
+    if(MINGW)
+        set(ASSIMP_TARGETS assimp zlibstatic)
+    else()
+        set(ASSIMP_TARGETS assimp zlibstatic IrrXML)
+    endif()
 else()
     set(ASSIMP_TARGETS ${ASSIMP_TARGET})
 endif()
