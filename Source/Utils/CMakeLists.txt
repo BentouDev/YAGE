@@ -13,14 +13,16 @@ target_include_directories(Utils PUBLIC
         $<INSTALL_INTERFACE:include>
         PRIVATE src)
 
-target_compile_features(Utils PUBLIC
-        cxx_nullptr
-        cxx_auto_type
-        cxx_variadic_templates
-        cxx_trailing_return_types
-        cxx_return_type_deduction
-        cxx_right_angle_brackets
-        cxx_constexpr)
+set_target_properties(Utils PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
+#target_compile_features(Utils PUBLIC
+#        cxx_nullptr
+#        cxx_auto_type
+#        cxx_variadic_templates
+#        cxx_trailing_return_types
+#        cxx_return_type_deduction
+#        cxx_right_angle_brackets
+#        cxx_constexpr)
+#        cxx_attributes)
 #        cxx_relaxed_constexpr)
 
 if(VALGRIND_FOUND)
@@ -43,7 +45,7 @@ if(YAGE_BUILD_TESTS)
     add_executable(UtilsTests test/UtilsTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp test/HandleTests.cpp test/UsingTests.cpp test/TypeInfoTests.cpp test/LinearAllocatorTest.cpp test/StackAllocatorTest.cpp test/PoolAllocatorTest.cpp test/FreeListAllocatorTest.cpp test/ListTests.cpp test/StringTests.cpp test/DictionaryTests.cpp test/TypeIndexListTests.cpp test/ForEachTypeTests.cpp test/HandleContainerTests.cpp)
 
     target_link_libraries(UtilsTests
-            Utils ${GMOCK_LIBRARY} ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+            Utils ${CMAKE_THREAD_LIBS_INIT})
 
     add_test(UtilsTests UtilsTests)
     add_coverage(Utils)

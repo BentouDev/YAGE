@@ -31,3 +31,9 @@
 [submodule "Dependencies/Utf8"]
 	path = Dependencies/Utf8
 	url = https://github.com/nemtrif/utfcpp.git
+[submodule "Dependencies/Catch2"]
+	path = Dependencies/Catch2
+	url = https://github.com/catchorg/Catch2.git
+[submodule "Dependencies/Trompeloeil"]
+	path = Dependencies/Trompeloeil
+	url = https://github.com/rollbear/trompeloeil.git

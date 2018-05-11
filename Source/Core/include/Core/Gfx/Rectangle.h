@@ -5,7 +5,7 @@
 #ifndef YAGE_RECTANGLE_H
 #define YAGE_RECTANGLE_H
 
-#include "glm/vec2.hpp"
+#include <glm/vec2.hpp>
 
 namespace Gfx
 {

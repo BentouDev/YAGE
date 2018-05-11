@@ -1,5 +1,12 @@
 ## Yet Another Game Engine
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+
+# detect if YAGE is being bundled,
+# disable testsuite in that case
+if(NOT DEFINED PROJECT_NAME)
+  set(NOT_SUBPROJECT ON)
+endif()
+
 project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
 # Supress warning for dependencies with old Cmake files
@@ -7,7 +14,7 @@ cmake_policy(PUSH)
 cmake_policy(SET CMP0011 OLD)
 cmake_policy(SET CMP0048 OLD)
 
-option(YAGE_BUILD_TESTS "Build Tests" ON)
+option(YAGE_BUILD_TESTS "Build Tests" ${NOT_SUBPROJECT})
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
 
@@ -33,7 +40,7 @@ find_package(Vulkan)
 find_package(OpenGL)
 
 # Add pThreads
-find_package (Threads)
+find_package(Threads)
 
 # Add GLFW
 yage_setup_dependency(GLFW
@@ -100,27 +107,43 @@ if(YAGE_BUILD_TESTS)
     find_package(codecov REQUIRED)
 
     # Fix MinGW link errors
-    set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
+    # set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
+
+    # Add Catch2
+    yage_setup_dependency(Catch2 
+        TARGET Catch2 
+        VAR_NAME CATCH2
+        SOURCE Dependencies/Catch2
+        INCLUDE Dependencies/Catch2/single_include)
+
+    # Add FakeIt
+    yage_setup_dependency(Trompeloeil 
+        TARGET Trompeloeil
+        VAR_NAME TROMP
+        SOURCE Dependencies/Trompeloeil
+        INCLUDE Dependencies/Trompeloeil/include)
 
     # Add GoogleMock, which source has implicit GoogleTest dependency
-    yage_setup_dependency(GMock
-            TARGET gmock
-            VAR_NAME GMOCK
-            SOURCE Dependencies/GoogleTest)
+    # yage_setup_dependency(GMock
+    #        TARGET gmock
+    #        VAR_NAME GMOCK
+    #        SOURCE Dependencies/GoogleTest)
 
-    message("TEST " ${GMOCK_FOUND} " s " ${GMock_FOUND} " d " ${gmock_FOUND})
+    # message("TEST " ${GMOCK_FOUND} " s " ${GMock_FOUND} " d " ${gmock_FOUND})
 
-    if(GMOCK_FOUND)
-        # If GMock was found in OS, search for GTest too
-        find_package(GTest)
-    endif()
+    # message("TEST " ${CATCH_FOUND} " s " ${CATCH2_FOUND})
 
-    if(NOT GTEST_LIBRARIES)
-        set(GTEST_LIBRARIES ${GTEST_LIBRARY})
-    endif()
+    #if(CATCH2_FOUND)
+    #    # If GMock was found in OS, search for GTest too
+    #    find_package(GTest)
+    #endif()
 
-    include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
-    include_directories(${gmock_SOURCE_DIR}/include ${gmock_SOURCE_DIR})
+    #if(NOT GTEST_LIBRARIES)
+    #    set(GTEST_LIBRARIES ${GTEST_LIBRARY})
+    #endif()
+
+    include_directories(${CATCH2_INCLUDE_DIR})
+    include_directories(${TROMP_INCLUDE_DIR})
 endif()
 
 # Add QT5 when building Editor

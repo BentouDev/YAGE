@@ -2,12 +2,12 @@
 // Created by bentoo on 10/2/16.
 //
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
 #include <malloc.h>
 #include "Utils/MemoryBlock.h"
 #include "Utils/FreeListAllocator.h"
 #include "Utils/String.h"
+#include "Utils/ScopeGuard.h"
 
 #if YAGE_VALGRIND
 #include "Utils/ValgrindMemoryBoundChecker.h"
@@ -31,103 +31,98 @@ typedef Memory::MemoryBlock <
 		Memory::SimpleMemoryTracker> MockMemory;
 #endif
 
-	class StringTest : public ::testing::Test
+    TEST_CASE ("StringTest")
 	{
-	protected:
 		const std::size_t 	memorySize = 1024;
 		void* 				memory;
 		Memory::FreeListAllocator* allocator;
 
-	public:
-		void SetUp()
-		{
-			memory = malloc(memorySize);
-			allocator = new Memory::FreeListAllocator(memory, memorySize);
-		}
+		memory = malloc(memorySize);
+		allocator = new Memory::FreeListAllocator(memory, memorySize);
 
-		void TearDown()
+		YAGE_DISPOSE
 		{
 			delete allocator;
 			free(memory);
-		}
-	};
+        };
 
-	TEST_F(StringTest, CanCreateString)
-	{
-		MockMemory block(*allocator, "CanCreateString");
+        SECTION("CanCreateString")
+        {
+            MockMemory block(*allocator, "CanCreateString");
 
-		Utils::String* s = new Utils::String(block);
+            Utils::String* s = new Utils::String(block);
 
-		EXPECT_NE(nullptr, s);
+            REQUIRE(nullptr != s);
 
-		delete s;
-	}
+            delete s;
+        }
 
-	TEST_F(StringTest, CanInitializeString)
-	{
-		MockMemory block(*allocator, "CanInitializeString");
+        SECTION("CanInitializeString")
+        {
+            MockMemory block(*allocator, "CanInitializeString");
 
-		Utils::String* s = new Utils::String(block, "Some sample string");
+            Utils::String* s = new Utils::String(block, "Some sample string");
 
-		EXPECT_NE(nullptr, s);
+            REQUIRE(nullptr != s);
 
-		delete s;
-	}
+            delete s;
+        }
 
-	TEST_F(StringTest, CanAppendString)
-	{
-		MockMemory block(*allocator, "CanAppendString");
+        SECTION("CanAppendString")
+        {
+            MockMemory block(*allocator, "CanAppendString");
 
-		Utils::String* s = new Utils::String(block);
-		s->append("Some sample string");
+            Utils::String* s = new Utils::String(block);
+            s->append("Some sample string");
 
-		EXPECT_NE(nullptr, s);
+            REQUIRE(nullptr != s);
 
-		delete s;
-	}
+            delete s;
+        }
 
-	TEST_F(StringTest, CanCreateMultipleStrings)
-	{
-		MockMemory block(*allocator, "CanCreateMultipleStrings");
+        SECTION("CanCreateMultipleStrings")
+        {
+            MockMemory block(*allocator, "CanCreateMultipleStrings");
 
-		Utils::String* first = new Utils::String(block, "Some sample string");
-		Utils::String* second = new Utils::String(block, "Other");
-		first->append(" and stuff.");
+            Utils::String* first = new Utils::String(block, "Some sample string");
+            Utils::String* second = new Utils::String(block, "Other");
+            first->append(" and stuff.");
 
-		EXPECT_NE(nullptr, first);
-		EXPECT_NE(nullptr, second);
+            REQUIRE(nullptr != first);
+            REQUIRE(nullptr != second);
 
-		delete first;
-		delete second;
-	}
+            delete first;
+            delete second;
+        }
 
-	TEST_F(StringTest, CanTokenizeString)
-	{
-		const char* results[] = {
-			"Foo", "Bar", "Baz", "Q"
-		};
+        SECTION("CanTokenizeString")
+        {
+            const char* results[] = {
+                "Foo", "Bar", "Baz", "Q"
+            };
 
-		MockMemory block(*allocator, "CanTokenizeString");
-		auto free = block.getFreeSize();
-		{
-			Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
-			Utils::List<Utils::Slice<char> >tokens(block);
-			Utils::String::Tokenize(str, tokens, "\n\r");
-		}
-		EXPECT_EQ(block.getFreeSize(), free);
-		{
+            MockMemory block(*allocator, "CanTokenizeString");
+            auto free = block.getFreeSize();
+            {
+                Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
+                Utils::List<Utils::Slice<char> >tokens(block);
+                Utils::String::Tokenize(str, tokens, "\n\r");
+            }
+            REQUIRE(block.getFreeSize() == free);
+            {
 
-			Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
-			Utils::List<Utils::Slice<char> >tokens(block);
-			Utils::String::Tokenize(str, tokens, "\n\r");
-			EXPECT_EQ(4, tokens.size());
+                Utils::String str(block, "Foo\nBar\n\rBaz\nQ");
+                Utils::List<Utils::Slice<char> >tokens(block);
+                Utils::String::Tokenize(str, tokens, "\n\r");
+                REQUIRE(4 == tokens.size());
 
-			for (int i = 0; i < tokens.size() && i < 4; i++)
-			{
-				auto& slice = tokens[i];
-				Utils::String expected(block, slice);
-				EXPECT_STREQ(results[i], expected.c_str());
-			}
-		}
-	}
+                for (int i = 0; i < tokens.size() && i < 4; i++)
+                {
+                    auto& slice = tokens[i];
+                    Utils::String expected(block, slice);
+                    REQUIRE(strcmp(results[i], expected.c_str()) == 0);
+                }
+            }
+        }
+    }
 }

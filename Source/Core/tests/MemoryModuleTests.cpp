@@ -2,78 +2,65 @@
 // Created by bentoo on 18.11.16.
 //
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
 
 #include <Core/MemoryModule.h>
 #include <Utils/MemorySizes.h>
 
 namespace MemoryModuleTests
 {
-	class MemoryModuleTest : public ::testing::Test
-	{
-	protected:
-		const std::size_t MemorySize = Memory::MB(1);
+    TEST_CASE("MemoryModuleTest")
+    {
+        const std::size_t MemorySize = Memory::MB(1);
 
-	public:
-		void SetUp()
-		{
+        SECTION("CanCreateModule")
+        {
+            auto* module = new Core::MemoryModule(MemorySize);
 
-		}
+            REQUIRE(module != nullptr);
+            REQUIRE(!module->releaseAll());
 
-		void TearDown()
-		{
+            delete module;
+        }
 
-		}
-	};
+        SECTION("CanCreateAndFreeMemoryBlock")
+        {
+            auto* module = new Core::MemoryModule(MemorySize);
 
-	TEST_F(MemoryModuleTest, CanCreateModule)
-	{
-		auto* module = new Core::MemoryModule(MemorySize);
+            auto& block = module->requestMemoryBlock(Memory::KB(1), "CanCreateAndFreeMemoryBlock");
 
-		EXPECT_NE(module, nullptr);
-		EXPECT_FALSE(module->releaseAll());
+            char* blockPtr = reinterpret_cast<char*>(&block);
+            char* allocPtr = reinterpret_cast<char*>(&block.getAllocator());
 
-		delete module;
-	}
+            REQUIRE(blockPtr > allocPtr);
+            REQUIRE(allocPtr + sizeof(decltype(block.getAllocator())) < blockPtr);
 
-	TEST_F(MemoryModuleTest, CanCreateAndFreeMemoryBlock)
-	{
-		auto* module = new Core::MemoryModule(MemorySize);
+            module->freeMemoryBlock(&block);
 
-		auto& block = module->requestMemoryBlock(Memory::KB(1), "CanCreateAndFreeMemoryBlock");
+            REQUIRE(!module->releaseAll());
 
-		char* blockPtr = reinterpret_cast<char*>(&block);
-		char* allocPtr = reinterpret_cast<char*>(&block.getAllocator());
+            delete module;
+        }
 
-		EXPECT_FALSE(blockPtr <= allocPtr);
-		EXPECT_TRUE(allocPtr + sizeof(decltype(block.getAllocator())) < blockPtr);
+        SECTION("CanCreateMemoryBlockOfSize")
+        {
+            auto* module = new Core::MemoryModule(MemorySize);
+            auto& block = module->requestMemoryBlock(Memory::KB(1), "CanCreateMemoryBlockOfSize");
 
-		module->freeMemoryBlock(&block);
+            REQUIRE(block.getFreeSize() == Memory::KB(1));
 
-		EXPECT_FALSE(module->releaseAll());
+            delete module;
+        }
 
-		delete module;
-	}
+        SECTION("DoesReportWhenLeaked")
+        {
+            auto* module = new Core::MemoryModule(MemorySize);
+            auto& block = module->requestMemoryBlock(Memory::KB(1), "Leaked Block");
+            auto* leakedMem = block.allocate(12, 2, DEBUG_SOURCE_INFO);
 
-	TEST_F(MemoryModuleTest, CanCreateMemoryBlockOfSize)
-	{
-		auto* module = new Core::MemoryModule(MemorySize);
-		auto& block = module->requestMemoryBlock(Memory::KB(1), "CanCreateMemoryBlockOfSize");
+            REQUIRE(module->releaseAll());
 
-		EXPECT_EQ(block.getFreeSize(), Memory::KB(1));
-
-		delete module;
-	}
-
-	TEST_F(MemoryModuleTest, DoesReportWhenLeaked)
-	{
-		auto* module = new Core::MemoryModule(MemorySize);
-		auto& block = module->requestMemoryBlock(Memory::KB(1), "Leaked Block");
-		auto* leakedMem = block.allocate(12, 2, DEBUG_SOURCE_INFO);
-
-		EXPECT_TRUE(module->releaseAll());
-
-		delete module;
-	}
+            delete module;
+        }
+    }
 }

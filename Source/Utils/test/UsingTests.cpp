@@ -3,21 +3,23 @@
 //
 
 #include <exception>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
+#include <trompeloeil.hpp>
 #include "Utils/Handle.h"
 #include "Utils/Using.h"
 
 namespace orgMem = Memory;
 
+extern template struct trompeloeil::reporter<trompeloeil::specialized>;
+
 namespace UsingTests
 {
-	class FooMock
+	class IFooMock
 	{
 	public:
-		MOCK_METHOD0(Die, void());
+        MAKE_MOCK0(Die, void());
 
-		~FooMock()
+		~IFooMock()
 		{
 			Die();
 		}
@@ -37,32 +39,31 @@ namespace UsingTests
 		}
 	}
 
-	class UsingTest : public ::testing::Test
-	{
+    TEST_CASE("UsingTest")
+    {
+        SECTION("IsSafeDeleteCalled")
+        {
+            IFooMock** ref;
+            USING(IFooMock, cos)
+            {
+                ref = &cos;
+            }
 
-	};
+            REQUIRE(*ref == nullptr);
+        }
 
-	TEST_F(UsingTest, IsSafeDeleteCalled)
-	{
-		FooMock** ref;
-		USING(FooMock, cos)
-		{
-			ref = &cos;
-		}
+        SECTION("IsSafeDeleteCalledOnThrow")
+        {
+            IFooMock** someRef;
+            TRY_USING(IFooMock(), cos,
+            {
+                someRef = &cos;
+                // fakeit::Verify(Method((*cos), Die)).Exactly(1);
+                REQUIRE_CALL(*cos, Die()).TIMES(1);
+                cos->throwException();
+            })
 
-		EXPECT_EQ(*ref, nullptr);
-	}
-
-	TEST_F(UsingTest, IsSafeDeleteCalledOnThrow)
-	{
-		FooMock** someRef;
-		TRY_USING(FooMock(), cos,
-		{
-			someRef = &cos;
-			EXPECT_CALL(*cos, Die()).Times(1);
-			cos->throwException();
-		})
-
-		EXPECT_EQ(*someRef, nullptr);
-	}
+            REQUIRE(*someRef == nullptr);
+        }
+    }
 }
