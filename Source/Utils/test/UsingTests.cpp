@@ -17,11 +17,11 @@ namespace UsingTests
 	class IFooMock
 	{
 	public:
-        MAKE_MOCK0(Die, void());
+        //MAKE_MOCK0(Die, void());
 
 		~IFooMock()
 		{
-			Die();
+			//Die();
 		}
 
 		void throwException()
@@ -59,7 +59,7 @@ namespace UsingTests
             {
                 someRef = &cos;
                 // fakeit::Verify(Method((*cos), Die)).Exactly(1);
-                REQUIRE_CALL(*cos, Die()).TIMES(1);
+                //REQUIRE_CALL(*cos, Die()).TIMES(1);
                 cos->throwException();
             })
 

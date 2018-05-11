@@ -2,5 +2,7 @@
 .vs
 .vscode
 .directory
+.idea
+cmake-build-debug/
 build/
 bin/

@@ -16,6 +16,7 @@ target_include_directories(Core PUBLIC
         $<INSTALL_INTERFACE:include>
         PRIVATE src )
 
+#set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
 target_compile_features(Core
         PUBLIC cxx_auto_type
         PRIVATE cxx_variadic_templates

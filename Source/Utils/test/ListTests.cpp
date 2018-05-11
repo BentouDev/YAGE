@@ -39,14 +39,14 @@ namespace ListTests
 		uint32_t magicNumber;
 
 	public:
-        MAKE_MOCK0(Die, void());
-        MAKE_MOCK0(Foo, void());
+        //MAKE_MOCK0(Die, void());
+        //MAKE_MOCK0(Foo, void());
 
 		static const uint32_t fooConst;
 
 		uint32_t Quack()
 		{
-			Foo();
+			//Foo();
 			return magicNumber;
 		}
 
@@ -57,7 +57,7 @@ namespace ListTests
 
 		~IFooMock()
 		{
-			Die();
+			//Die();
 		}
 	};
 
@@ -140,7 +140,7 @@ namespace ListTests
             list->emplace();
 
             REQUIRE(1 == list->size());
-            REQUIRE_CALL((*list)[0], Die()).TIMES(1);
+            //REQUIRE_CALL((*list)[0], Die()).TIMES(1);
             // EXPECT_CALL((*list)[0], Die());
 
             list->eraseAt(0);

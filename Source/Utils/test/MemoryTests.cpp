@@ -18,11 +18,11 @@ namespace MemoryTests
 	class IFooMock
 	{
 	public:
-        MAKE_MOCK0(Die, void());
+        //MAKE_MOCK0(Die, void());
 
 		~IFooMock()
 		{
-			Die();
+			//Die();
 		}
 	};
 
@@ -33,7 +33,7 @@ namespace MemoryTests
             auto foo = new IFooMock();
 
             // EXPECT_CALL(*foo, Die());
-            REQUIRE_CALL((*foo), Die()).TIMES(1);
+            //REQUIRE_CALL((*foo), Die()).TIMES(1);
 
             Memory::SafeDelete(foo);
 
@@ -47,7 +47,7 @@ namespace MemoryTests
             auto foo = new IFooMock();
 
             // EXPECT_CALL(*foo, Die()).Times(1);
-            REQUIRE_CALL((*foo), Die()).TIMES(1);
+            //REQUIRE_CALL((*foo), Die()).TIMES(1);
 
             Memory::SafeDelete(foo);
             Memory::SafeDelete(foo);
@@ -65,8 +65,8 @@ namespace MemoryTests
             //for(auto i = 0; i < size; i++)
             //	auto obj = new (&foos[i]) FooMock();
 
-            for (auto i = 0; i < count; i++)
-                REQUIRE_CALL(foos[i], Die()).TIMES(1);
+            //for (auto i = 0; i < count; i++)
+                //REQUIRE_CALL(foos[i], Die()).TIMES(1);
                 // EXPECT_CALL(foos[i], Die()).Times(1);
                 // fakeit::Verify(Method(foos[i], Die)).Exactly(1);
 
@@ -83,8 +83,8 @@ namespace MemoryTests
             //for(auto i = 0; i < size; i++)
             //	auto = new (foos[i]) FooMock();
 
-            for (auto i = 0; i < count; i++)
-                REQUIRE_CALL(foos[i], Die()).TIMES(1);
+            //for (auto i = 0; i < count; i++)
+                //REQUIRE_CALL(foos[i], Die()).TIMES(1);
                 // EXPECT_CALL(foos[i], Die()).Times(1);
                 // fakeit::Verify(Method(foos[i], Die)).Exactly(1);
 
@@ -100,7 +100,7 @@ namespace MemoryTests
             auto foo = new(memory) IFooMock();
 
             // EXPECT_CALL(*foo, Die());
-            REQUIRE_CALL((*foo), Die()).TIMES(1);
+            //REQUIRE_CALL((*foo), Die()).TIMES(1);
 
             // fakeit::Verify(Method((*foo), Die)).Exactly(1);
 
@@ -115,7 +115,7 @@ namespace MemoryTests
             auto foo = new(memory) IFooMock();
 
             // EXPECT_CALL(*foo, Die());
-            REQUIRE_CALL((*foo), Die()).TIMES(1);
+            //REQUIRE_CALL((*foo), Die()).TIMES(1);
 
             // fakeit::Verify(Method((*foo), Die)).Exactly(1);
 
@@ -133,8 +133,8 @@ namespace MemoryTests
             for (auto i = 0; i < count; i++)
                 new (&memory[i]) IFooMock();
 
-            for (auto i = 0; i < count; i++)
-                REQUIRE_CALL(memory[i], Die()).TIMES(1);
+            //for (auto i = 0; i < count; i++)
+              //  REQUIRE_CALL(memory[i], Die()).TIMES(1);
                 // EXPECT_CALL(memory[i], Die()).Times(1);
                 // fakeit::Verify(Method(memory[i], Die)).Exactly(1);
 
@@ -151,8 +151,8 @@ namespace MemoryTests
             for (auto i = 0; i < count; i++)
                 new (&memory[i]) IFooMock();
 
-            for (auto i = 0; i < count; i++)
-                REQUIRE_CALL(memory[i], Die()).TIMES(1);
+            //for (auto i = 0; i < count; i++)
+              //  REQUIRE_CALL(memory[i], Die()).TIMES(1);
                 // EXPECT_CALL(memory[i], Die()).Times(1);
                 // fakeit::Verify(Method(memory[i], Die)).Exactly(1);
 
@@ -188,7 +188,7 @@ namespace MemoryTests
             MockMemory block(*allocator, "CanAllocateAndFreeMemoryFromBlock");
             foo = YAGE_CREATE_NEW(block, IFooMock)();
 
-            REQUIRE_CALL(*foo, Die()).TIMES(1);
+            //REQUIRE_CALL(*foo, Die()).TIMES(1);
             // EXPECT_CALL(*foo, Die());
             // fakeit::Verify(Method((*foo), Die)).Exactly(1);
 

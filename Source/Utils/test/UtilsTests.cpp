@@ -5,31 +5,54 @@
 #define CATCH_CONFIG_MAIN
 #include <catch.hpp>
 #include <trompeloeil.hpp>
-
 namespace trompeloeil
 {
     template <>
     void reporter<specialized>::send(
-        severity s,
-        const char* file,
-        unsigned long line,
-        const char* msg)
+            severity s,
+            const char* file,
+            unsigned long line,
+            const char* msg)
     {
-        std::ostringstream os;
+        /*std::ostringstream os;
         if (line) os << file << ':' << line << '\n';
         os << msg;
         auto failure = os.str();
-        if (s == severity::fatal)
-        {
-            FAIL(failure);
-        }
-        else
-        {
-            CAPTURE(failure);
-            CHECK(failure.empty());
-        }
+        Catch::AssertionHandler catchAssertionHandler("REQUIRED_CALL", Catch::SourceLineInfo(file, line), failure, Catch::ResultDisposition::Normal );
+        INTERNAL_CATCH_TRY {
+            CATCH_INTERNAL_SUPPRESS_PARENTHESES_WARNINGS
+            catchAssertionHandler.handleMessage(s == severity::fatal ? Catch::ResultWas::OfType::FatalErrorCondition : Catch::ResultWas::OfType::ExpressionFailed, failure);
+            CATCH_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS
+        } INTERNAL_CATCH_CATCH(catchAssertionHandler) {
+            INTERNAL_CATCH_REACT(catchAssertionHandler)
+        }*/
     }
 }
+
+//namespace trompeloeil
+//{
+//    template <>
+//    void reporter<specialized>::send(
+//        severity s,
+//        const char* file,
+//        unsigned long line,
+//        const char* msg)
+//    {
+//        std::ostringstream os;
+//        if (line) os << file << ':' << line << '\n';
+//        os << msg;
+//        auto failure = os.str();
+//        if (s == severity::fatal)
+//        {
+//            FAIL(failure);
+//        }
+//        else
+//        {
+//            CAPTURE(failure);
+//            CHECK(failure.empty());
+//        }
+//    }
+//}
 
 //int main(int argc, char **argv)
 //{
