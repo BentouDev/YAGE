@@ -20,8 +20,8 @@ target_compile_features(Utils PUBLIC
         cxx_trailing_return_types
         cxx_return_type_deduction
         cxx_right_angle_brackets
-        cxx_constexpr
-        cxx_relaxed_constexpr)
+        cxx_constexpr)
+#        cxx_relaxed_constexpr)
 
 if(VALGRIND_FOUND)
     target_compile_definitions(Utils PRIVATE YAGE_VALGRIND=1)
