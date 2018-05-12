@@ -48,14 +48,14 @@ yage_setup_dependency(GLFW
         SOURCE Dependencies/GLFW
         INCLUDE Dependencies/GLFW/include)
 
-include_directories(${GLFW_INCLUDE}})
+include_directories(${GLFW_INCLUDE_DIR}})
 
 # Add GLM
 yage_setup_dependency(GLM
         SOURCE Dependencies/GLM
         INCLUDE Dependencies/GLM)
 
-include_directories(${GLM_INCLUDE}})
+include_directories(${GLM_INCLUDE_DIR}})
 
 # Add Assimp
 yage_setup_dependency(Assimp
@@ -64,7 +64,7 @@ yage_setup_dependency(Assimp
         SOURCE Dependencies/Assimp
         INCLUDE Dependencies/Assimp/include)
 
-include_directories(${ASSIMP_INCLUDE}})
+include_directories(${ASSIMP_INCLUDE_DIR}})
 
 # Windows needs zlibstatic and IrrXml in assimp export target
 if(WIN32)
@@ -83,7 +83,7 @@ yage_setup_dependency(Spdlog
         SOURCE Dependencies/Spdlog
         INCLUDE Dependencies/Spdlog/include)
 
-include_directories(${SPDLOG_INCLUDE}})
+include_directories(${SPDLOG_INCLUDE_DIR}})
 
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
