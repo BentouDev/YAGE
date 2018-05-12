@@ -43,19 +43,23 @@ find_package(OpenGL)
 find_package(Threads)
 
 # Add GLFW
+set (GLFW_BUILD_DOCS OFF CACHE BOOL "")
+set (GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
+set (GLFW_BUILD_TESTS OFF CACHE BOOL "")
+
 yage_setup_dependency(GLFW
         TARGET glfw
         SOURCE Dependencies/GLFW
         INCLUDE Dependencies/GLFW/include)
 
-include_directories(${GLFW_INCLUDE_DIR}})
+include_directories(${GLFW_INCLUDE_DIR})
 
 # Add GLM
 yage_setup_dependency(GLM
         SOURCE Dependencies/GLM
         INCLUDE Dependencies/GLM)
 
-include_directories(${GLM_INCLUDE_DIR}})
+include_directories(${GLM_INCLUDE_DIR})
 
 # Add Assimp
 yage_setup_dependency(Assimp
@@ -64,7 +68,7 @@ yage_setup_dependency(Assimp
         SOURCE Dependencies/Assimp
         INCLUDE Dependencies/Assimp/include)
 
-include_directories(${ASSIMP_INCLUDE_DIR}})
+include_directories(${ASSIMP_INCLUDE_DIR})
 
 # Windows needs zlibstatic and IrrXml in assimp export target
 if(WIN32)
@@ -83,7 +87,7 @@ yage_setup_dependency(Spdlog
         SOURCE Dependencies/Spdlog
         INCLUDE Dependencies/Spdlog/include)
 
-include_directories(${SPDLOG_INCLUDE_DIR}})
+include_directories(${SPDLOG_INCLUDE_DIR})
 
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
@@ -106,9 +110,6 @@ if(YAGE_BUILD_TESTS)
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
     find_package(codecov REQUIRED)
 
-    # Fix MinGW link errors
-    # set(gtest_force_shared_crt ON CACHE BOOL "Always use msvcrt.dll")
-
     # Add Catch2
     yage_setup_dependency(Catch2 
         TARGET Catch2 
@@ -122,25 +123,6 @@ if(YAGE_BUILD_TESTS)
         VAR_NAME TROMP
         SOURCE Dependencies/Trompeloeil
         INCLUDE Dependencies/Trompeloeil/include)
-
-    # Add GoogleMock, which source has implicit GoogleTest dependency
-    # yage_setup_dependency(GMock
-    #        TARGET gmock
-    #        VAR_NAME GMOCK
-    #        SOURCE Dependencies/GoogleTest)
-
-    # message("TEST " ${GMOCK_FOUND} " s " ${GMock_FOUND} " d " ${gmock_FOUND})
-
-    # message("TEST " ${CATCH_FOUND} " s " ${CATCH2_FOUND})
-
-    #if(CATCH2_FOUND)
-    #    # If GMock was found in OS, search for GTest too
-    #    find_package(GTest)
-    #endif()
-
-    #if(NOT GTEST_LIBRARIES)
-    #    set(GTEST_LIBRARIES ${GTEST_LIBRARY})
-    #endif()
 
     include_directories(${CATCH2_INCLUDE_DIR})
     include_directories(${TROMP_INCLUDE_DIR})

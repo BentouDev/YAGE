@@ -32,7 +32,7 @@ namespace Resources
 
 	bool ModelLoader::buildRecurrent(const aiNode *node)
 	{
-
+		return false;
 	}
 
 	void ModelLoader::buildFromScene(const aiScene *scene, const char* meshName)
