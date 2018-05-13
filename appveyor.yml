@@ -12,13 +12,13 @@ configuration:
 
 environment:
   PYTHON: "C:\\Python27"
-  QTDIR: "C:\\Qt\\5.10.1\\msvc2017_64"
+  QTDIR: "C:\\Qt\\5.10.1\\msvc2017_64\\"
 
 install:
   - cmd: git submodule update --init --recursive
-  - cmd: set PATH=%PATH%;%QTDIR%;%QTDIR%/bin;%PYTHON%/Scripts/
+  - cmd: set PATH=%PATH%;%QTDIR%;%QTDIR%\\bin;%PYTHON%/Scripts/
   - cmd: dir %QTDIR%
-  - cmd: dir %QTDIR%\\lib\\cmake
+  - cmd: dir %QTDIR%\lib\\cmake
   # Conan
   - cmd: pip.exe install conan --upgrade
   - cmd: pip.exe install conan_package_tools
@@ -41,7 +41,7 @@ before_build:
   - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - msbuild /version
   - mkdir Build && cd Build
-  - cmake -DSDL2_PATH=%SDL2_PATH% ..
+  - cmake -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
 
 build:
   project: C:\projects\yage\Build\ALL_BUILD.vcxproj
