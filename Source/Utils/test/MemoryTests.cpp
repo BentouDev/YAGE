@@ -2,192 +2,194 @@
 // Created by mrjaqbq on 05.03.16.
 //
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
+#include <trompeloeil.hpp>
 #include <malloc.h>
 #include "Utils/StackAllocator.h"
 #include "Utils/SafeDelete.h"
 #include "Utils/MemoryBlock.h"
+#include "MockHelper.h"
+
+extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace MemoryTests
 {
 	typedef Memory::MemoryBlock<Memory::StackAllocator> MockMemory;
 
-	class FooMock
+	class IFooMock
 	{
 	public:
-		MOCK_METHOD0(Die,  void());
-
-		~FooMock()
-		{
-			Die();
-		}
+		virtual ~IFooMock() { }
 	};
 
-	class MemoryTest : public ::testing::Test
-	{
-	public:
+	using FooMock = trompeloeil::deathwatched<IFooMock>;
 
-		void SetUp()
-		{
-			// code here will execute just before the test ensues
-		}
+    TEST_CASE("MemoryTest")
+    {
+        SECTION("CanSafeDelete")
+        {
+            auto foo = new FooMock();
 
-		void TearDown()
-		{
-			// code here will be called just after the test completes
-			// ok to through exceptions from here if need be
-		}
-	};
+            REQUIRE_DESTRUCTION((*foo));
 
-	TEST_F(MemoryTest, CanSafeDelete)
-	{
-		auto foo = new FooMock();
+            Memory::SafeDelete(foo);
 
-		EXPECT_CALL(*foo, Die());
+            REQUIRE(nullptr == foo);
+        }
 
-		Memory::SafeDelete(foo);
+        SECTION("CanSafeDeleteTwice")
+        {
+            auto foo = new FooMock();
 
-		EXPECT_EQ(nullptr, foo);
-	}
+            REQUIRE_DESTRUCTION((*foo));
 
-	TEST_F(MemoryTest, CanSafeDeleteTwice)
-	{
-		auto foo = new FooMock();
+            Memory::SafeDelete(foo);
+            Memory::SafeDelete(foo);
 
-		EXPECT_CALL(*foo, Die()).Times(1);
+            REQUIRE(nullptr == foo);
+        }
 
-		Memory::SafeDelete(foo);
-		Memory::SafeDelete(foo);
+        SECTION("CanSafeDeleteArrayOfObjects")
+        {
+            int count = 6;
+            auto foos = new FooMock[count];
 
-		EXPECT_EQ(nullptr, foo);
-	}
+            //for(auto i = 0; i < size; i++)
+            //	auto obj = new (&foos[i]) FooMock();
 
-	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjects)
-	{
-		int count = 6;
-		auto foos = new FooMock[count];
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(foos[i]));
 
-		//for(auto i = 0; i < size; i++)
-		//	auto obj = new (&foos[i]) FooMock();
+            Memory::SafeDeleteArray(foos);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(foos[i], Die()).Times(1);
+            REQUIRE(nullptr == foos);
 
-		Memory::SafeDeleteArray(foos);
+            vec.clear();
+        }
 
-		EXPECT_EQ(nullptr, foos);
-	}
+        SECTION("CanSafeDeleteArrayOfObjectsTwice")
+        {
+            int count = 6;
+            auto foos = new FooMock[count];
 
-	TEST_F(MemoryTest, CanSafeDeleteArrayOfObjectsTwice)
-	{
-		int count = 6;
-		auto foos = new FooMock[count];
+            //for(auto i = 0; i < size; i++)
+            //	auto = new (foos[i]) FooMock();
 
-		//for(auto i = 0; i < size; i++)
-		//	auto = new (foos[i]) FooMock();
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(foos[i]));
+                //REQUIRE_CALL(foos[i], Die()).TIMES(1);
+                // EXPECT_CALL(foos[i], Die()).Times(1);
+                // fakeit::Verify(Method(foos[i], Die)).Exactly(1);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(foos[i], Die()).Times(1);
+            Memory::SafeDeleteArray(foos);
+            Memory::SafeDeleteArray(foos);
 
-		Memory::SafeDeleteArray(foos);
-		Memory::SafeDeleteArray(foos);
+            REQUIRE(nullptr == foos);
 
-		EXPECT_EQ(nullptr, foos);
-	}
+            vec.clear();
+        }
 
-	TEST_F(MemoryTest, CanSafeFree)
-	{
-		auto memory = (FooMock*)malloc(sizeof(FooMock));
-		auto foo = new(memory) FooMock();
+        SECTION("CanSafeFree")
+        {
+            auto memory = (FooMock*)malloc(sizeof(FooMock));
+            auto foo = new(memory) FooMock();
 
-		EXPECT_CALL(*foo, Die());
+            REQUIRE_DESTRUCTION((*foo));
 
-		Memory::SafeFree(foo);
+            Memory::SafeFree(foo);
 
-		EXPECT_EQ(nullptr, foo);
-	}
+            REQUIRE(nullptr == foo);
+        }
 
-	TEST_F(MemoryTest, CanSafeFreeTwice)
-	{
-		auto memory = (FooMock*)malloc(sizeof(FooMock));
-		auto foo = new(memory) FooMock();
+        SECTION("CanSafeFreeTwice")
+        {
+            auto memory = (FooMock*)malloc(sizeof(FooMock));
+            auto foo = new(memory) FooMock();
 
-		EXPECT_CALL(*foo, Die());
+            REQUIRE_DESTRUCTION((*foo));
 
-		Memory::SafeFree(foo);
-		Memory::SafeFree(foo);
+            Memory::SafeFree(foo);
+            Memory::SafeFree(foo);
 
-		EXPECT_EQ(nullptr, foo);
-	}
+            REQUIRE(nullptr == foo);
+        }
 
-	TEST_F(MemoryTest, CanSafeFreeArray)
-	{
-		int count = 4;
-		FooMock* memory = (FooMock*)malloc(sizeof(FooMock) * count);
+        SECTION("CanSafeFreeArray")
+        {
+            int count = 4;
+            auto* memory = (FooMock*)malloc(sizeof(FooMock) * count);
 
-		for(auto i = 0; i < count; i++)
-			new (&memory[i]) FooMock();
+            for (auto i = 0; i < count; i++)
+                new (&memory[i]) FooMock();
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(memory[i], Die()).Times(1);
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(memory[i]));
 
-		Memory::SafeFreeArray(memory, count);
+            Memory::SafeFreeArray(memory, count);
 
-		EXPECT_EQ(nullptr, memory);
-	}
+            REQUIRE(nullptr == memory);
 
-	TEST_F(MemoryTest, CanSafeFreeArrayTwice)
-	{
-		int count = 4;
-		FooMock* memory = (FooMock*)malloc(sizeof(FooMock) * count);
+            vec.clear();
+        }
 
-		for(auto i = 0; i < count; i++)
-			new (&memory[i]) FooMock();
+        SECTION("CanSafeFreeArrayTwice")
+        {
+            int count = 4;
+            auto* memory = (FooMock*)malloc(sizeof(FooMock) * count);
 
-		for(auto i = 0; i < count; i++)
-			EXPECT_CALL(memory[i], Die()).Times(1);
+            for (auto i = 0; i < count; i++)
+                new (&memory[i]) FooMock();
 
-		Memory::SafeFreeArray(memory, count);
-		Memory::SafeFreeArray(memory, count);
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(memory[i]));
 
-		EXPECT_EQ(nullptr, memory);
-	}
+            Memory::SafeFreeArray(memory, count);
+            Memory::SafeFreeArray(memory, count);
 
-	TEST_F(MemoryTest, CanAllocateMemoryFromBlock)
-	{
-		const std::size_t memorySize = 1024;
-		void*			  memoryPtr  = malloc(memorySize);
-		auto*			  allocator  = new Memory::StackAllocator(memoryPtr, memorySize);
+            REQUIRE(nullptr == memory);
 
-		MockMemory block(*allocator, "");
-		FooMock* foo = YAGE_CREATE_NEW(block, FooMock)();
+            vec.clear();
+        }
 
-		EXPECT_NE(nullptr, foo);
+        SECTION("CanAllocateMemoryFromBlock")
+        {
+            const std::size_t memorySize = 1024;
+            void*			  memoryPtr = malloc(memorySize);
+            auto*			  allocator = new Memory::StackAllocator(memoryPtr, memorySize);
 
-		delete(allocator);
+            MockMemory block(*allocator, "");
+            FooMock* foo = YAGE_CREATE_NEW(block, FooMock)();
 
-		free(memoryPtr);
-	}
+            REQUIRE(nullptr != foo);
 
-	TEST_F(MemoryTest, CanAllocateAndFreeMemoryFromBlock)
-	{
-		const std::size_t memorySize = 1024;
-		void*			  memoryPtr  = malloc(memorySize);
-		FooMock* 		  foo 		 = nullptr;
-		auto*			  allocator  = new Memory::StackAllocator(memoryPtr, memorySize);
+            delete(allocator);
 
-		MockMemory block(*allocator, "CanAllocateAndFreeMemoryFromBlock");
-		foo = YAGE_CREATE_NEW(block, FooMock)();
+            free(memoryPtr);
+        }
 
-		EXPECT_CALL(*foo, Die());
+        SECTION("CanAllocateAndFreeMemoryFromBlock")
+        {
+            const std::size_t memorySize = 1024;
+            void*			  memoryPtr = malloc(memorySize);
+            FooMock* 		  foo = nullptr;
+            auto*			  allocator = new Memory::StackAllocator(memoryPtr, memorySize);
 
-		Memory::Delete(block, foo);
+            MockMemory block(*allocator, "CanAllocateAndFreeMemoryFromBlock");
+            foo = YAGE_CREATE_NEW(block, FooMock)();
 
-		EXPECT_EQ(nullptr, foo);
+            REQUIRE_DESTRUCTION((*foo));
 
-		delete allocator;
+            Memory::Delete(block, foo);
 
-		free(memoryPtr);
-	}
+            REQUIRE(nullptr == foo);
+
+            delete allocator;
+
+            free(memoryPtr);
+        }
+    }
 }

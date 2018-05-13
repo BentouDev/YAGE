@@ -2,59 +2,47 @@
 // Created by bentoo on 22.11.16.
 //
 
-#include <gtest/gtest.h>
+#include <catch.hpp>
 #include <Utils/ForEachType.h>
 
 namespace ForEachTypeTests
 {
-	class ForEachTypeTest : public ::testing::Test
-	{
-	protected:
-		template <typename>
-		struct crtp {};
+    template <typename T>
+    struct crtp {};
 
-		struct kwas : public crtp<kwas> {};
+    struct kwas : public crtp<kwas> {};
 
-		struct base {};
+    struct base {};
 
-		struct derive : public base {};
+    struct derive : public base {};
 
-		struct koza : public base {};
+    struct koza : public base {};
 
-		struct foo {};
+    struct foo {};
 
-		using matching = Utils::ForEachType<derive, koza>;
-		using notMatching1 = Utils::ForEachType<derive, foo>;
-		using notMatching2 = Utils::ForEachType<foo, derive>;
-		using notMatching3 = Utils::ForEachType<derive, derive, int>;
+    using matching = Utils::ForEachType<derive, koza>;
+    using notMatching1 = Utils::ForEachType<derive, foo>;
+    using notMatching2 = Utils::ForEachType<foo, derive>;
+    using notMatching3 = Utils::ForEachType<derive, derive, int>;
 
-	public:
-		void SetUp()
-		{
+    TEST_CASE("ForEachTypeTest")
+    {
+        SECTION("AreDerivedHandled")
+        {
+            bool first = matching::are_base_of<base>();
 
-		}
+            REQUIRE(first);
+        }
 
-		void TearDown()
-		{
+        SECTION("AreNotDerivedHandled")
+        {
+            bool first  = notMatching1::are_base_of<base>();
+            bool second = notMatching2::are_base_of<base>();
+            bool third  = notMatching3::are_base_of<base>();
 
-		}
-	};
-
-	TEST_F(ForEachTypeTest, AreDerivedHandled)
-	{
-		bool first = matching::are_base_of<base>();
-
-		EXPECT_TRUE(first);
-	}
-
-	TEST_F(ForEachTypeTest, AreNotDerivedHandled)
-	{
-		bool first	= notMatching1::are_base_of<base>();
-		bool second	= notMatching2::are_base_of<base>();
-		bool third	= notMatching3::are_base_of<base>();
-
-		EXPECT_FALSE(first);
-		EXPECT_FALSE(second);
-		EXPECT_FALSE(third);
-	}
+            REQUIRE(!first);
+            REQUIRE(!second);
+            REQUIRE(!third);
+        }
+    }
 }

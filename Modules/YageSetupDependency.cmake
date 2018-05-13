@@ -1,42 +1,126 @@
+# Include
+#
+# Includes directories both in current scope and for target
+function(yage_include NAME)
+	target_include_directories(${NAME} INTERFACE ${ARGN})
+	include_directories(${ARGN})
+endfunction()
+
 # Setup Dependency
 #
 # Provides procedure to easily setup dependency that can both be build from source or get from environment
+function(yage_setup_dependency NAME)
+    set(options TEST)
+    set(oneArg PREFER TARGET SOURCE VAR_NAME CONAN)
+    set(multiArg INCLUDE)
+    cmake_parse_arguments(DEP "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
 
-function(yage_setup_dependency NAME MODE) # Source Directory, Include Directory, Target name
-    if(MODE STREQUAL "SOURCE")
-        # provide option to build from source or get from os
-        option(YAGE_USE_BUNDLED_${NAME} "Build ${NAME} from source" ON)
+    if (NOT DEP_TARGET)
+        set (DEP_TARGET ${NAME})
     endif()
 
-    if((NOT YAGE_USE_BUNDLED_${NAME}) OR (MODE STREQUAL "OS"))
-        # use find_package to get this target from OS
-        message("-- Get " ${NAME} " from OS")
-        find_package(${NAME})
+    if (NOT DEP_VAR_NAME)
+        set (DEP_VAR_NAME ${NAME})
+    endif()
 
-    elseif(YAGE_USE_BUNDLED_${NAME})
-            # build this target from bundled source
-            message("-- Build " ${NAME} " from source")
+    if (NOT NAME)
+        message(FATAL_ERROR "yage_setup_dependency called without specyfing name!\n")
+    else()
+        if (NOT DEP_PREFER STREQUAL "BUILD")
+            find_package(${NAME})
+            message("-- yage: Search for " ${NAME} " in OS")
+            if (${DEP_VAR_NAME}_FOUND)
+                message("--   " ${NAME} " found!")
+            else()
+                message("--   " ${NAME} " not found!")
+            endif()
+        endif()
 
-            if(ARGC GREATER 4)
+        if ((NOT DEP_PREFER STREQUAL "BUILD") AND (NOT ${${DEP_VAR_NAME}_FOUND}) AND (DEP_CONAN))
+			message ("-- yage: Search for " ${NAME} " in conan repositories")
 
-                message("--   " ${NAME} " source dir " ${ARGV2}
-                        "\n--   " ${NAME} " include dir " ${ARGV3}
-                        "\n--   " ${NAME} " target name " ${ARGV4})
+            conan_cmake_run(REQUIRES ${DEP_CONAN}
+                BASIC_SETUP)
 
-                add_subdirectory(${ARGV2} EXCLUDE_FROM_ALL)
-                set(${NAME}_TARGET ${ARGV4} PARENT_SCOPE)
-                set(${NAME}_INCLUDE_DIR ${ARGV3} PARENT_SCOPE)
+			set(${DEP_VAR_NAME}_CONAN_FOUND TRUE)
+            set(${DEP_VAR_NAME}_CONAN_FOUND TRUE PARENT_SCOPE)
 
-                set(${NAME}_LIBRARY ${ARGV4} PARENT_SCOPE)
-                set(${NAME}_LIBRARIES ${ARGV4} PARENT_SCOPE)
+			if (CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE )
 
-            # source dir is specified
-            elseif(ARGC GREATER 2)
-                message("--   " ${NAME} " source dir " ${ARGV2})
-                add_subdirectory(${ARGV2} EXCLUDE_FROM_ALL)
+				foreach(CMAKE_BUILD_TYPE "RELEASE" "DEBUG")	
+					set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES})
+					set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
+					set(CONAN_${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR})
+				endforeach()
+
+				#set(${DEP_VAR_NAME}_LIBRARIES  PARENT_SCOPE)
+				#set(${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR} PARENT_SCOPE)
+				set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR} PARENT_SCOPE)
+
+				set(CMAKE_BUILD_TYPE)
+
+			else()
+				#set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} )
+				#set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
+				
+				set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} )
+				set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
+
+				set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} )
+				set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+
+				set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} )
+				set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+			endif()
+
+			set(${DEP_VAR_NAME}_LIBRARIES)
+			set(${DEP_VAR_NAME}_LIBRARIES PARENT_SCOPE)
+
+			message("-- yage: Conan package library search dir " ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
+			foreach(_LIB_NAME ${CONAN_${DEP_VAR_NAME}_LIBRARIES})				
+				find_library(YAGE_FOUND_LIBRARY NAMES ${_LIB_NAME} PATHS ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR}
+					NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+				
+				if (YAGE_FOUND_LIBRARY)
+					message ("--   Found packaged library " ${_LIB_NAME})
+					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} )
+					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} PARENT_SCOPE)
+				else()
+					message ("--   Will attempt to use OS library " ${_LIB_NAME})
+					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} )
+					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} PARENT_SCOPE)
+				endif()
+
+				unset(YAGE_FOUND_LIBRARY CACHE)
+			endforeach()
+
+        endif()
+
+        if ((DEP_PREFER STREQUAL "BUILD") OR ((NOT ${DEP_VAR_NAME}_FOUND) AND (NOT ${DEP_VAR_NAME}_CONAN_FOUND)))
+            if (DEP_TARGET STREQUAL NAME)
+                message ("-- yage: Building " ${NAME} " from source!")
+            else()
+                message ("-- yage: Building " ${NAME} " from source as target " ${DEP_TARGET} "!")
             endif()
 
-    elseif(NOT (MODE STREQUAL "BUNDLE"))
-        message(FATAL_ERROR "yage_setup_dependency called with unknown argument(s):\n  " ${MODE})
+            if (DEP_INCLUDE)
+                foreach (incl IN ITEMS ${DEP_INCLUDE})
+                    message("--   " ${NAME} " include dir " ${incl})
+                endforeach()
+            endif()
+
+            if (DEP_SOURCE)
+                message("--   " ${NAME} " source dir " ${DEP_SOURCE})
+
+                add_subdirectory(${DEP_SOURCE} EXCLUDE_FROM_ALL)
+            endif()
+
+            set(${DEP_VAR_NAME}_TARGET ${DEP_TARGET} PARENT_SCOPE)
+            set(${DEP_VAR_NAME}_INCLUDE_DIR ${DEP_INCLUDE} PARENT_SCOPE)
+
+            set(${DEP_VAR_NAME}_LIBRARY ${DEP_TARGET} PARENT_SCOPE)
+            set(${DEP_VAR_NAME}_LIBRARIES ${DEP_TARGET} PARENT_SCOPE)
+
+        endif()
     endif()
 endfunction()

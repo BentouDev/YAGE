@@ -11,12 +11,12 @@
 
 namespace Utils
 {
-	template <typename T>
+	template <typename T, typename THandle = Utils::Handle<T>>
 	class DefaultTrait
 	{
 	public:
 		using object_t = T;
-		using handle_t = Utils::Handle<T>;
+		using handle_t = THandle;
 
 		inline static void cleanUp(object_t& first) { first.cleanUp(); }
 

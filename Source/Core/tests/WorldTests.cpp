@@ -5,11 +5,13 @@
 #ifndef GAME_WORLDTESTS_H
 #define GAME_WORLDTESTS_H
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
+#include <trompeloeil.hpp>
+
 #include <Core/Logic/World.h>
 #include <Utils/FreeListAllocator.h>
 #include <Utils/MemorySizes.h>
+#include <Utils/ScopeGuard.h>
 #include <Core/Logic/System.h>
 #include <Core/Logger.h>
 
@@ -20,11 +22,13 @@ using MemoryBlock = Memory::MemoryBlock
 	Memory::NoMemoryTracker
 >;
 
+extern template struct trompeloeil::reporter<trompeloeil::specialized>;
+
 namespace WorldTests
 {
 	struct MockCallback
 	{
-		MOCK_METHOD0(Call, void());
+		MAKE_MOCK0(Call, void());
 	};
 
 	class MockComponent : public Logic::Component<MockComponent>
@@ -44,8 +48,8 @@ namespace WorldTests
 
 		virtual ~MockComponent()
 		{
-			if(dieCallback != nullptr)
-				dieCallback->Call();
+			//if(dieCallback != nullptr)
+			//	dieCallback->Call();
 		}
 	};
 
@@ -66,8 +70,8 @@ namespace WorldTests
 
 		virtual ~MockSystem()
 		{
-			if(dieCallback != nullptr)
-				dieCallback->Call();
+			//if(dieCallback != nullptr)
+			//	dieCallback->Call();
 		}
 
 		void update(const Core::GameTime& time) override
@@ -90,181 +94,176 @@ namespace WorldTests
 		}
 	};
 
-	class WorldTest : public ::testing::Test
-	{
-	protected:
-		static const std::size_t memorySize = Memory::MB(10);
+    TEST_CASE("WorldTest")
+    {
+        static const std::size_t memorySize = Memory::MB(10);
 
-		void* masterMemory = nullptr;
-		Memory::FreeListAllocator* allocator = nullptr;
+        void* masterMemory = nullptr;
+        Memory::FreeListAllocator* allocator = nullptr;
 
-	public:
-		void SetUp()
-		{
-			masterMemory	= malloc(memorySize);
-			allocator		= new Memory::FreeListAllocator(masterMemory, memorySize);
-			Core::Logger::get()->set_level(spdlog::level::critical);
-		}
+        masterMemory = malloc(memorySize);
+        allocator = new Memory::FreeListAllocator(masterMemory, memorySize);
+        Core::Logger::get()->set_level(spdlog::level::critical);
 
-		void TearDown()
-		{
-			delete allocator;
-			free(masterMemory);
-		}
-	};
+        YAGE_DISPOSE
+        {
+            delete allocator;
+            free(masterMemory);
+        };
 
-	TEST_F(WorldTest, CanCreateWorld)
-	{
-		MemoryBlock memory(*allocator, "CanCreateWorld");
-		Logic::World* world = new Logic::World(memory);
+        SECTION("CanCreateWorld")
+        {
+            MemoryBlock memory(*allocator, "CanCreateWorld");
+            Logic::World* world = new Logic::World(memory);
 
-		EXPECT_NE(world, nullptr);
+            REQUIRE(world != nullptr);
 
-		delete world;
-	}
+            delete world;
+        }
 
-	TEST_F(WorldTest, CanCreateEntity)
-	{
-		MemoryBlock memory(*allocator, "CanCreateEntity");
-		Logic::World world(memory);
+        SECTION("CanCreateEntity")
+        {
+            MemoryBlock memory(*allocator, "CanCreateEntity");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
+            auto handle = world.createEntity(nullptr);
 
-		EXPECT_NE(Utils::Handle<Logic::Entity>::invalid(), handle);
-		EXPECT_TRUE(world.isAlive(handle));
-	}
+            REQUIRE(Utils::Handle<Logic::Entity>::invalid() != handle);
+            REQUIRE(world.isAlive(handle));
+        }
 
-	TEST_F(WorldTest, CanRemoveEntity)
-	{
-		MemoryBlock memory(*allocator, "CanRemoveEntity");
-		Logic::World world(memory);
+        SECTION("CanRemoveEntity")
+        {
+            MemoryBlock memory(*allocator, "CanRemoveEntity");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
-		world.removeEntity(handle);
+            auto handle = world.createEntity(nullptr);
+            world.removeEntity(handle);
 
-		EXPECT_FALSE(world.isAlive(handle));
-		EXPECT_TRUE(world.isAliveInCurrentFrame(handle));
+            REQUIRE(!world.isAlive(handle));
+            REQUIRE(world.isAliveInCurrentFrame(handle));
 
-		world.refresh();
+            world.refresh();
 
-		EXPECT_FALSE(world.isAlive(handle));
-		EXPECT_FALSE(world.isAliveInCurrentFrame(handle));
-	}
+            REQUIRE(!world.isAlive(handle));
+            REQUIRE(!world.isAliveInCurrentFrame(handle));
+        }
 
-	TEST_F(WorldTest, CanCreateAndRegisterSystem)
-	{
-		MemoryBlock memory(*allocator, "CanCreateAndRegisterSystem");
-		Logic::World world(memory);
+        SECTION("CanCreateAndRegisterSystem")
+        {
+            MemoryBlock memory(*allocator, "CanCreateAndRegisterSystem");
+            Logic::World world(memory);
 
-		EXPECT_FALSE(world.hasSystem<MockSystem>());
+            REQUIRE(!world.hasSystem<MockSystem>());
 
-		world.createAndRegisterSystem<MockSystem>(memory);
+            world.createAndRegisterSystem<MockSystem>(memory);
 
-		EXPECT_TRUE(world.hasSystem<MockSystem>());
-	}
+            REQUIRE(world.hasSystem<MockSystem>());
+        }
 
-	TEST_F(WorldTest, IsSystemProperlyDestructed)
-	{
-		MockCallback onDie;
+        SECTION("IsSystemProperlyDestructed")
+        {
+            MockCallback onDie;
 
-		EXPECT_CALL(onDie, Call());
-		{
-			MemoryBlock memory(*allocator, "IsSystemProperlyDestructed");
-			Logic::World world(memory);
-			world.createAndRegisterSystem<MockSystem>(memory, &onDie);
-		}
-	}
+            // REQUIRE_CALL(onDie, Call()).TIMES(1);
+            {
+                MemoryBlock memory(*allocator, "IsSystemProperlyDestructed");
+                Logic::World world(memory);
+                world.createAndRegisterSystem<MockSystem>(memory, &onDie);
+            }
+        }
 
-	TEST_F(WorldTest, CanCreateComponent)
-	{
-		MemoryBlock memory(*allocator, "CanCreateComponent");
-		Logic::World world(memory);
+        SECTION("CanCreateComponent")
+        {
+            MemoryBlock memory(*allocator, "CanCreateComponent");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
-		world.createAndRegisterSystem<MockSystem>(memory);
-		world.addComponent<MockComponent>(world.getEntity(handle));
+            auto handle = world.createEntity(nullptr);
+            world.createAndRegisterSystem<MockSystem>(memory);
+            world.addComponent<MockComponent>(world.getEntity(handle));
 
-		EXPECT_TRUE(world.hasComponent<MockComponent>(handle));
-	}
+            REQUIRE(world.hasComponent<MockComponent>(handle));
+        }
 
-	TEST_F(WorldTest, CanRemoveComponent)
-	{
-		MemoryBlock memory(*allocator, "CanRemoveComponent");
-		Logic::World world(memory);
+        SECTION("CanRemoveComponent")
+        {
+            MemoryBlock memory(*allocator, "CanRemoveComponent");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
-		world.createAndRegisterSystem<MockSystem>(memory);
-		world.addComponent<MockComponent>(world.getEntity(handle));
-		world.removeComponent<MockComponent>(world.getEntity(handle));
+            auto handle = world.createEntity(nullptr);
+            world.createAndRegisterSystem<MockSystem>(memory);
+            world.addComponent<MockComponent>(world.getEntity(handle));
+            world.removeComponent<MockComponent>(world.getEntity(handle));
 
-		EXPECT_FALSE(world.hasComponent<MockComponent>(handle));
-	}
+            REQUIRE(!world.hasComponent<MockComponent>(handle));
+        }
 
-	TEST_F(WorldTest, AreComponentsProperlyDestructed)
-	{
-		MockCallback onDie;
+        SECTION("AreComponentsProperlyDestructed")
+        {
+            MockCallback onDie;
 
-		EXPECT_CALL(onDie, Call());
-		{
-			MemoryBlock memory(*allocator, "AreComponentsProperlyDestructed");
-			Logic::World world(memory);
+            //REQUIRE_CALL(onDie, Call()).TIMES(1);
+            {
+                MemoryBlock memory(*allocator, "AreComponentsProperlyDestructed");
+                Logic::World world(memory);
 
-			auto handle = world.createEntity(nullptr);
-			world.createAndRegisterSystem<MockSystem>(memory);
-			world.addComponent<MockComponent>(world.getEntity(handle), &onDie);
-		}
-	}
+                auto handle = world.createEntity(nullptr);
+                world.createAndRegisterSystem<MockSystem>(memory);
+                world.addComponent<MockComponent>(world.getEntity(handle), &onDie);
+            }
+        }
 
-	TEST_F(WorldTest, AreMatchingEntitiesAddedToSystem)
-	{
-		MockCallback onAddEntity;
+        SECTION("AreMatchingEntitiesAddedToSystem")
+        {
+            MockCallback onAddEntity;
 
-		EXPECT_CALL(onAddEntity, Call());
+            REQUIRE_CALL(onAddEntity, Call()).TIMES(1);
 
-		MemoryBlock memory(*allocator, "AreMatchingEntitiesAddedToSystem");
-		Logic::World world(memory);
+            MemoryBlock memory(*allocator, "AreMatchingEntitiesAddedToSystem");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
-		world.createAndRegisterSystem<MockSystem>(memory, nullptr, &onAddEntity);
-		world.addComponent<MockComponent>(world.getEntity(handle));
-		world.refresh();
-	}
+            auto handle = world.createEntity(nullptr);
+            world.createAndRegisterSystem<MockSystem>(memory, nullptr, &onAddEntity);
+            world.addComponent<MockComponent>(world.getEntity(handle));
+            world.refresh();
+        }
 
-	TEST_F(WorldTest, AreUnmatchedEntititesRemovedFromSystem)
-	{
-		MockCallback onRemoveEntity;
+        SECTION("AreUnmatchedEntititesRemovedFromSystem")
+        {
+            MockCallback onRemoveEntity;
 
-		EXPECT_CALL(onRemoveEntity, Call());
+            REQUIRE_CALL(onRemoveEntity, Call()).TIMES(1);
 
-		MemoryBlock memory(*allocator, "AreUnmatchedEntititesRemovedFromSystem");
-		Logic::World world(memory);
+            MemoryBlock memory(*allocator, "AreUnmatchedEntititesRemovedFromSystem");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
-		world.createAndRegisterSystem<MockSystem>(memory, nullptr, nullptr, &onRemoveEntity);
-		world.addComponent<MockComponent>(world.getEntity(handle));
-		world.refresh();
+            auto handle = world.createEntity(nullptr);
+            world.createAndRegisterSystem<MockSystem>(memory, nullptr, nullptr, &onRemoveEntity);
+            world.addComponent<MockComponent>(world.getEntity(handle));
+            world.refresh();
 
-		world.removeComponent<MockComponent>(world.getEntity(handle));
-		world.refresh();
-	}
+            world.removeComponent<MockComponent>(world.getEntity(handle));
+            world.refresh();
+        }
 
-	TEST_F(WorldTest, AreRemovedEntititesRemovedFromSystem)
-	{
-		MockCallback onRemoveEntity;
+        SECTION("AreRemovedEntititesRemovedFromSystem")
+        {
+            MockCallback onRemoveEntity;
 
-		EXPECT_CALL(onRemoveEntity, Call());
+            REQUIRE_CALL(onRemoveEntity, Call()).TIMES(1);
 
-		MemoryBlock memory(*allocator, "AreRemovedEntititesRemovedFromSystem");
-		Logic::World world(memory);
+            MemoryBlock memory(*allocator, "AreRemovedEntititesRemovedFromSystem");
+            Logic::World world(memory);
 
-		auto handle = world.createEntity(nullptr);
-		world.createAndRegisterSystem<MockSystem>(memory, nullptr, nullptr, &onRemoveEntity);
-		world.addComponent<MockComponent>(world.getEntity(handle));
-		world.refresh();
+            auto handle = world.createEntity(nullptr);
+            world.createAndRegisterSystem<MockSystem>(memory, nullptr, nullptr, &onRemoveEntity);
+            world.addComponent<MockComponent>(world.getEntity(handle));
+            world.refresh();
 
-		world.removeEntity(handle);
-		world.refresh();
-	}
+            world.removeEntity(handle);
+            world.refresh();
+        }
+    }
 }
 
 #endif //GAME_WORLDTESTS_H

@@ -130,8 +130,8 @@ namespace Memory
 
 		userHeader->next			= nullptr;
 		userHeader->size			= allocationSize; // ?? adjustment has this offset, with padding and header size
-		userHeader->adjustment		= (uint8_t)adjustment - offset;
-		userHeader->sizeDifference	= sizeDifference;
+		userHeader->adjustment		= (uint8_t)(adjustment - offset);
+		userHeader->sizeDifference	= (uint8_t)(sizeDifference);
 
 		_usedSize += allocationSize;
 

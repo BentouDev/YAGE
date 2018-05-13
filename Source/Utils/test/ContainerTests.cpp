@@ -2,53 +2,56 @@
 // Created by mrjaqbq on 06.03.16.
 //
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
+#include <trompeloeil.hpp>
 
 #include "Utils/FreeListAllocator.h"
 #include "Utils/Handle.h"
 #include "Utils/Container.h"
+#include "Utils/ScopeGuard.h"
+
+extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace MemoryTests
 {
 	typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
 
-	class MyFooMock
+    constexpr uint32_t fooConst = 0xF00BACEC;
+
+	template <typename TMock>
+	class IFooMock
 	{
 	public:
-		MOCK_METHOD0(Die, void());
-		MOCK_METHOD0(Foo, void());
+		virtual ~IFooMock() { test = 0; /*Die();*/ }
+        IFooMock() : Handle(), test(fooConst) {}
+		explicit IFooMock(unsigned t) : Handle(), test(t) {}
 
-		virtual ~MyFooMock() { test = 0; Die(); }
-		MyFooMock() : Handle(), test(fooConst) {}
-		explicit MyFooMock(unsigned t) : Handle(), test(t) {}
+        IFooMock(IFooMock&& other) : Handle(), test(other.test) { }
 
-		MyFooMock(MyFooMock&& other) : Handle(), test(other.test) { }
+        IFooMock(const IFooMock&) = delete;
+        IFooMock& operator=(const IFooMock&) = delete;
+        IFooMock& operator=(IFooMock&&) = delete;
 
-		MyFooMock(const MyFooMock&) = delete;
-		MyFooMock& operator=(const MyFooMock&) = delete;
-		MyFooMock& operator=(MyFooMock&&) = delete;
-
-		Utils::Handle<MyFooMock> Handle;
+		Utils::Handle<TMock> Handle;
 		unsigned test;
 
-		static const uint32_t fooConst;
-
 		uint32_t Quack()
-		{
-			Foo();
-			return test;
-		}
-
+		{ return test; }
 	};
 
-	const uint32_t MyFooMock::fooConst = 0xF00BACEC;
+	class FooMock : public trompeloeil::deathwatched<IFooMock<FooMock>>
+    {
+    public:
+        explicit FooMock(unsigned t = fooConst)
+            : trompeloeil::deathwatched<IFooMock<FooMock>>(t)
+        { }
+    };
 
 	class FooTrait
 	{
 	public:
-		using object_t = MyFooMock;
-		using handle_t = Utils::Handle<MyFooMock>;
+		using object_t = FooMock;
+		using handle_t = Utils::Handle<FooMock>;
 
 		inline static void cleanUp(object_t& first)
 		{
@@ -91,125 +94,147 @@ namespace MemoryTests
 		}
 	};
 
-	class ContainerTest : public ::testing::Test
-	{
-	public:
-		MockMemory* memoryBlock;
-		unsigned memorySize = 4096 * 2;
-		unsigned count = 32;
-		void* memory;
+    TEST_CASE("ContainerTest")
+    {
+        MockMemory* memoryBlock;
+        unsigned memorySize = 4096 * 2;
+        unsigned count = 32;
+        void* memory;
 
-		MockMemory& getMemory() const
-		{
-			return *memoryBlock;
-		}
+        auto getMemory = [&]() -> MockMemory&
+        {
+            return *memoryBlock;
+        };
 
-		void SetUp()
-		{
-			memory = malloc(memorySize);
-			memoryBlock = new MockMemory(* new Memory::FreeListAllocator(memory, memorySize), "ContainerBlock");
-		}
+        memory = malloc(memorySize);
+        memoryBlock = new MockMemory(*new Memory::FreeListAllocator(memory, memorySize), "ContainerBlock");
 
-		void TearDown()
-		{
-			free(memory);
-		}
-	};
+        YAGE_DISPOSE
+        {
+            free(memory);
+        };
 
-	TEST_F(ContainerTest, CanCreateContainer)
-	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+        SECTION("CanCreateContainer")
+        {
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
 
-		ASSERT_NE(container, nullptr);
+            REQUIRE(container != nullptr);
 
-		delete container;
-	}
+            delete container;
+        }
 
-	TEST_F(ContainerTest, CanCreateObject)
-	{
-		Utils::Container<FooTrait> container(getMemory(), count);
-		FooTrait::handle_t handle = container.create(13);
+        SECTION("CanCreateObject")
+        {
+            Utils::Container<FooTrait> container(getMemory(), count);
+            FooTrait::handle_t handle = container.create(13);
 
-		ASSERT_NE(handle, FooTrait::handle_t::invalid());
-		ASSERT_NE(handle.key, 0);
-		ASSERT_NE(handle.liveId, 0);
-		ASSERT_EQ(handle.typeId, TypeInfo<MyFooMock>::id());
-		ASSERT_EQ(container[handle].test, 13);
-		ASSERT_TRUE(container.contains(handle));
-	}
+            auto& obj = container.get(handle);
 
-	TEST_F(ContainerTest, CanRemoveObject)
-	{
-		Utils::Container<FooTrait> container(getMemory(), count);
-		auto handle = container.create();
-		container.remove(handle);
+            REQUIRE(handle != FooTrait::handle_t::invalid());
+            REQUIRE(handle.key != 0);
+            REQUIRE(handle.liveId != 0);
+            REQUIRE(handle.typeId == TypeInfo<FooMock>::id());
+            REQUIRE(container[handle].test == 13);
+            REQUIRE(container.contains(handle));
 
-		ASSERT_FALSE(container.contains(handle));
-	}
+            REQUIRE_DESTRUCTION(obj);
 
-	TEST_F(ContainerTest, CanReuseObject)
-	{
-		Utils::Container<FooTrait> container(getMemory(), count);
+            container.clear();
+        }
 
-		auto oldHandle = container.create();
-		container.remove(oldHandle);
-		auto newHandle = container.create();
+        SECTION("CanRemoveObject")
+        {
+            Utils::Container<FooTrait> container(getMemory(), count);
+            auto handle = container.create();
 
-		ASSERT_TRUE(container.contains(newHandle));
-		ASSERT_FALSE(container.contains(oldHandle));
-		ASSERT_NE(oldHandle.key, newHandle.key);
-	}
+            REQUIRE_DESTRUCTION(container.get(handle));
 
-	TEST_F(ContainerTest, CanFreeContainer)
-	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
-		auto handle = container->create();
-		auto& obj = container->get(handle);
+            container.remove(handle);
 
-		EXPECT_CALL(obj, Die()).Times(1);
+            REQUIRE(!container.contains(handle));
+        }
 
-		delete container;
-	}
+        SECTION("CanReuseObject")
+        {
+            Utils::Container<FooTrait> container(getMemory(), count);
 
-	TEST_F(ContainerTest, CanCreateManyItemsFromContainer)
-	{
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+            auto oldHandle = container.create();
 
-		for(int i = 0; i < count; i++)
-			container->create(i);
+            REQUIRE_DESTRUCTION(container.get(oldHandle));
 
-		EXPECT_EQ(container->size(), count);
-	}
+            container.remove(oldHandle);
+            auto newHandle = container.create();
 
-	TEST_F(ContainerTest, CanRemoveItemFromMiddleOfContainer)
-	{
-		const int elementCount = 5;
-		const int elementToDelete = 2;
-		Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+            REQUIRE(container.contains(newHandle));
+            REQUIRE(!container.contains(oldHandle));
+            REQUIRE(oldHandle.key != newHandle.key);
 
-		std::vector<FooTrait::handle_t> handles;
+            REQUIRE_DESTRUCTION(container.get(newHandle));
 
-		for(auto i = 0; i < elementCount; i++)
-			handles.push_back(container->create());
+            container.clear();
+        }
 
-		MyFooMock& deletedItem = container->get(handles[elementToDelete]);
+        SECTION("CanFreeContainer")
+        {
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+            auto handle = container->create();
+            auto& obj = container->get(handle);
 
-		EXPECT_EQ(elementCount, container->size());
-		EXPECT_CALL(deletedItem, Die());
+            REQUIRE_DESTRUCTION(obj);
 
-		container->remove(handles[elementToDelete]);
+            delete container;
+        }
 
-		for(auto i = 0; i < elementCount; i++)
-		{
-			if(i != elementToDelete)
-			{
-				MyFooMock& element = container->get(handles[i]);
-				EXPECT_EQ(MyFooMock::fooConst, element.test);
-				uint32_t number = element.Quack();
-				EXPECT_EQ(MyFooMock::fooConst, number);
-			}
-		}
+        SECTION("CanCreateManyItemsFromContainer")
+        {
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
 
-		EXPECT_EQ(elementCount - 1, container->size());
-	}
+            for (int i = 0; i < count; i++)
+                container->create();
+
+            REQUIRE(container->size() == count);
+
+            //for (int i = 0; i < count; i++)
+            //    REQUIRE_DESTRUCTION(container->at(i));
+
+            //container->clear();
+        }
+
+        SECTION("CanRemoveItemFromMiddleOfContainer")
+        {
+            const int elementCount = 5;
+            const int elementToDelete = 2;
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+
+            std::vector<FooTrait::handle_t> handles;
+
+            for (auto i = 0; i < elementCount; i++)
+                handles.push_back(container->create());
+
+            FooMock& deletedItem = container->get(handles[elementToDelete]);
+
+            REQUIRE(elementCount == container->size());
+            REQUIRE_DESTRUCTION(deletedItem);
+
+            container->remove(handles[elementToDelete]);
+
+            for (auto i = 0; i < elementCount; i++)
+            {
+                if (i != elementToDelete)
+                {
+                    FooMock& element = container->get(handles[i]);
+                    REQUIRE(fooConst == element.test);
+                    uint32_t number = element.Quack();
+                    REQUIRE(fooConst == number);
+                }
+            }
+
+            REQUIRE(elementCount - 1 == container->size());
+
+            //for (int i = 0; i < container->size(); i++)
+            //    REQUIRE_DESTRUCTION(container->at(i));
+
+            //container->clear();
+        }
+    }
 }

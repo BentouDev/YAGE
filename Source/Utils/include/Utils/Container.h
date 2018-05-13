@@ -51,16 +51,16 @@ namespace Utils
 
 		void removeAllElements()
 		{
-			for(int i = 0; i < elementCount; i++)
+			for (int i = 0; i < elementCount; i++)
 			{
 				object_t& o = elements[i];
 				remove(Trait::getHandle(o));
 			}
 		}
 
-		void destructElements()
+		/*void destructElements()
 		{
-			for(uint32_t i = 0; i < maxSize; i++)
+			for (uint32_t i = 0; i < maxSize; i++)
 			{
 				unsigned char* current, result = 0;
 				object_t* start = &elements[i];
@@ -74,13 +74,13 @@ namespace Utils
 				}
 
 				bool isZeroed = !result;
-				if(!isZeroed)
+				if (!isZeroed)
 				{
 					elements[i].~object_t();
 					memset(&elements[i], 0, sizeof(object_t));
 				}
 			}
-		}
+		}*/
 
 		static auto initialize(Container* container) -> void
 		{
@@ -114,8 +114,8 @@ namespace Utils
 
 		inline virtual ~Container()
 		{
-			// removeAllElements();
-			destructElements();
+			removeAllElements();
+			// destructElements();
 
 			_memory.deallocate(elements);
 			_indices.clear();
@@ -142,7 +142,7 @@ namespace Utils
 		inline void remove(handle_t handle)
 		{
 			YAGE_ASSERT(contains(handle),
-				   "Container : Cannot remove element by invalid handle!");
+				   "Colony : Cannot remove element by invalid handle!");
 
 			Index<handle_t> &in = _indices[Trait::getIndex(handle)];
 			object_t &o = elements[in.index];
@@ -204,14 +204,19 @@ namespace Utils
 			return get(handle);
 		}
 
-		inline auto operator[](uint32_t index) -> object_t&
+		inline auto at(uint32_t index) -> object_t&
 		{
 			return elements[index];
 		}
 
+		inline auto operator[](uint32_t index) -> object_t&
+		{
+			return at(index);
+		}
+
 		inline auto operator[](uint32_t index) const -> const object_t&
 		{
-			return elements[index];
+			return at(index);
 		}
 
 		auto front() -> object_t&

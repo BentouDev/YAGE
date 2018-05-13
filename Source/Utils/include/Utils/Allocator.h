@@ -24,6 +24,8 @@ namespace Memory
 		IAllocator(void* memory, std::size_t size) : _startPtr(memory), _size(size), _usedSize(0) { }
 
 	public:
+		virtual ~IAllocator() = default;
+
 		virtual void* 		allocate(std::size_t size, std::size_t alignment, std::size_t offset) = 0;
 		virtual void 		deallocate(void* ptr) = 0;
 		virtual std::size_t getAllocationSize(const void* ptr) const = 0;

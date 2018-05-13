@@ -19,7 +19,7 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(GLFW DEFAULT_MSG GLFW_LIBRARY GLFW_INCLUDE_DIR)
 
 if(GLFW_FOUND)
-    set(GLFW_LIBRARIES ${GLFW_LIBRARY})
+    set(GLFW_LIBRARIES ${GLFW_LIBRARY} CACHE FILEPATH "Path to a library.")
 else()
     set(GLFW_LIBRARIES)
 endif()

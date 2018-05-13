@@ -1,16 +1,32 @@
 version: 1.0.{build}
 
+image:
+  - Visual Studio 2017
+
 cache:
   - C:\sdl_root
-#  - Dependencies
+  - '%LOCALAPPDATA%\pip\Cache'
 
 configuration:
   - Release
 
+platform:
+  - x64
+
+environment:
+  PYTHON: "C:\\Python27"
+  QTDIR: "C:\\Qt\\5.10.1\\msvc2017_64\\"
+
 install:
-  - git submodule update --init --recursive
-  - set QTDIR=C:\Qt\5.7\msvc2015
-  - set PATH=%PATH%;%QTDIR%\bin
+  - cmd: git submodule update --init --recursive
+  - cmd: set PATH=%PATH%;%QTDIR%;%QTDIR%\\bin;%PYTHON%/Scripts/
+  - cmd: dir %QTDIR%
+  - cmd: dir %QTDIR%\lib\\cmake
+  # Conan
+  - cmd: pip.exe install conan --upgrade
+  - cmd: pip.exe install conan_package_tools
+  - cmd: refreshenv
+  - cmd: conan user # It creates the conan data directory
   # SDL2
   - ps: |
       $SDL_VERSION = "2.0.4"
@@ -24,9 +40,11 @@ install:
       $env:SDL2_PATH = "$SDL_PREFIX"
 
 before_build:
+  - cmd: conan remote add yage https://api.bintray.com/conan/bentoudev/yage
+  - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - msbuild /version
   - mkdir Build && cd Build
-  - cmake -DSDL2_PATH=%SDL2_PATH% ..
+  - cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
 
 build:
   project: C:\projects\yage\Build\ALL_BUILD.vcxproj
@@ -34,8 +52,8 @@ build:
   parallel: true
 
 test_script:
-  - cmd: C:\projects\yage\Build\Source\Core\Release\CoreTests.exe --gtest_output=xml:CoreTests.xml
-  - cmd: C:\projects\yage\Build\Source\Utils\Release\UtilsTests.exe --gtest_output=xml:UtilsTests.xml
+  - cmd: C:\projects\yage\Build\Source\Core\Release\CoreTests.exe -r junit > CoreTests.xml
+  - cmd: C:\projects\yage\Build\Source\Utils\Release\UtilsTests.exe -r junit > UtilsTests.xml
 on_success:
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
   - ps: (new-object net.webclient).UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\UtilsTests.xml))

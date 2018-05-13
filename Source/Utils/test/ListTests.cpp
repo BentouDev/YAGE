@@ -2,12 +2,13 @@
 // Created by bentoo on 10/1/16.
 //
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include <catch.hpp>
+#include <trompeloeil.hpp>
 #include <malloc.h>
 
 #include "Utils/FreeListAllocator.h"
 #include "Utils/List.h"
+#include "Utils/ScopeGuard.h"
 
 #ifdef YAGE_VALGRIND
 #include "Utils/ValgrindMemoryBoundChecker.h"
@@ -16,6 +17,8 @@
 #include "Utils/SimpleMemoryBoundChecker.h"
 #include "Utils/SimpleMemoryTracker.h"
 #endif
+
+extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace ListTests
 {
@@ -31,165 +34,152 @@ namespace ListTests
 			Memory::SimpleMemoryTracker> MockMemory;
 #endif
 
-	class FooMock
+	class IFooMock
 	{
 		uint32_t magicNumber;
 
 	public:
-		MOCK_METHOD0(Die, void());
-		MOCK_METHOD0(Foo, void());
+        static const uint32_t fooConst;
 
-		static const uint32_t fooConst;
+        IFooMock()
+		{ magicNumber = fooConst; }
 
-		uint32_t Quack()
-		{
-			Foo();
-			return magicNumber;
-		}
+		virtual ~IFooMock() { }
 
-		FooMock()
-		{
-			magicNumber = fooConst;
-		}
+        uint32_t Quack()
+        { return magicNumber; }
+    };
 
-		~FooMock()
-		{
-			Die();
-		}
-	};
+	const uint32_t IFooMock::fooConst = 0xF00BACEC;
 
-	const uint32_t FooMock::fooConst = 0xF00BACEC;
+	using DestructedMock = trompeloeil::deathwatched<IFooMock>;
 
-	class ListTest : public ::testing::Test
-	{
-	public:
-		const std::size_t listCapacity = 4;
-		const std::size_t memorySize = 4096;
-		void*			  memoryPtr;
+    TEST_CASE("ListTest")
+    {
+        const std::size_t listCapacity = 4;
+        const std::size_t memorySize = 4096;
+        void*			  memoryPtr;
 
-		Memory::FreeListAllocator* allocator;
+        Memory::FreeListAllocator* allocator;
 
-		MockMemory* block;
+        MockMemory* block;
 
-		MockMemory& getMemory() const
-		{
-			return *block;
-		}
+        auto getMemory = [&]() -> MockMemory&
+        {
+            return *block;
+        };
 
-		void SetUp()
-		{
-			memoryPtr = malloc(memorySize);
-			allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
-			block = new MockMemory(*allocator, "ListTests");
-		}
+        memoryPtr = malloc(memorySize);
+        allocator = new Memory::FreeListAllocator(memoryPtr, memorySize);
+        block = new MockMemory(*allocator, "ListTests");
 
-		void TearDown()
-		{
-			free(memoryPtr);
-		}
-	};
+        YAGE_DISPOSE
+        {
+            free(memoryPtr);
+        };
 
-	TEST_F(ListTest, CanCreateList)
-	{
-		auto list = new Utils::List<FooMock>(getMemory());
+        SECTION("CanCreateList")
+        {
+            auto list = new Utils::List<IFooMock>(getMemory());
 
-		EXPECT_NE(nullptr, list);
+            REQUIRE(nullptr != list);
 
-		delete list;
-	}
+            delete list;
+        }
 
-	TEST_F(ListTest, CanCreateListWithCapacity)
-	{
-		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
+        SECTION("CanCreateListWithCapacity")
+        {
+            auto list = new Utils::List<IFooMock>(getMemory(), listCapacity);
 
-		EXPECT_NE(nullptr, list);
-		EXPECT_EQ(list->capacity(), listCapacity);
-		EXPECT_EQ(sizeof(FooMock) * listCapacity, getMemory().getAllocationSize(list->begin()));
+            REQUIRE(nullptr != list);
+            REQUIRE(list->capacity() == listCapacity);
+            REQUIRE(sizeof(IFooMock) * listCapacity == getMemory().getAllocationSize(list->begin()));
 
-		delete list;
-	}
+            delete list;
+        }
 
-	TEST_F(ListTest, CanAddItemToList)
-	{
-		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
+        SECTION("CanAddItemToList")
+        {
+            auto list = new Utils::List<IFooMock>(getMemory(), listCapacity);
 
-		list->emplace();
+            list->emplace();
 
-		EXPECT_EQ(1, list->size());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
+            REQUIRE(1 == list->size());
+            REQUIRE(sizeof(IFooMock) * list->capacity() == getMemory().getAllocationSize(list->begin()));
 
-		delete list;
-	}
+            delete list;
+        }
 
-	TEST_F(ListTest, CanAddItemToListWithCapacity)
-	{
-		auto list = new Utils::List<FooMock>(getMemory());
+        SECTION("CanAddItemToListWithCapacity")
+        {
+            auto list = new Utils::List<IFooMock>(getMemory());
 
-		list->reserve(1);
-		list->emplace();
+            list->reserve(1);
+            list->emplace();
 
-		EXPECT_EQ(1, list->size());
-		EXPECT_EQ(1, list->capacity());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
+            REQUIRE(1 == list->size());
+            REQUIRE(1 == list->capacity());
+            REQUIRE(sizeof(IFooMock) * list->capacity() == getMemory().getAllocationSize(list->begin()));
 
-		delete list;
-	}
+            delete list;
+        }
 
-	TEST_F(ListTest, CanRemoveItemFromList)
-	{
-		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
+        SECTION("CanRemoveItemFromList")
+        {
+            auto list = new Utils::List<DestructedMock>(getMemory(), listCapacity);
 
-		list->emplace();
+            list->emplace();
 
-		EXPECT_EQ(1, list->size());
-		EXPECT_CALL((*list)[0], Die());
+            REQUIRE(1 == list->size());
+            REQUIRE_DESTRUCTION((*list)[0]);
 
-		list->eraseAt(0);
+            list->eraseAt(0);
 
-		EXPECT_EQ(0, list->size());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
+            REQUIRE(0 == list->size());
+            REQUIRE(sizeof(DestructedMock) * list->capacity() == getMemory().getAllocationSize(list->begin()));
 
-		delete list;
-	}
+            delete list;
+        }
 
-	TEST_F(ListTest, CanAddManyItemsToList)
-	{
-		auto list = new Utils::List<int>(getMemory());
+        SECTION("CanAddManyItemsToList")
+        {
+            auto list = new Utils::List<int>(getMemory());
 
-		for(int i = 0; i < listCapacity; i++)
-			list->add(i);
+            for (int i = 0; i < listCapacity; i++)
+                list->add(i);
 
-		EXPECT_EQ(list->size(), listCapacity);
-		EXPECT_LE(list->size(), list->capacity());
+            REQUIRE(list->size() == listCapacity);
+            REQUIRE(list->size() <= list->capacity());
 
-		delete list;
-	}
+            delete list;
+        }
 
-	TEST_F(ListTest, CanRemoveItemFromMiddleOfList)
-	{
-		auto list = new Utils::List<FooMock>(getMemory(), listCapacity);
+        SECTION("CanRemoveItemFromMiddleOfList")
+        {
+            auto list = new Utils::List<IFooMock>(getMemory(), listCapacity);
 
-		list->emplace();
-		list->emplace();
-		FooMock& deletedItem = list->emplace();
-		list->emplace();
-		list->emplace();
+            list->emplace();
+            list->emplace();
+            IFooMock& deletedItem = list->emplace();
+            list->emplace();
+            list->emplace();
 
-		EXPECT_EQ(5, list->size());
+            REQUIRE(5 == list->size());
 
-		list->eraseAt(2);
+            list->eraseAt(2);
 
-		for(auto i = 0; i < list->size(); i++)
-		{
-			uint32_t number = (*list)[i].Quack();
-			EXPECT_EQ(FooMock::fooConst, number);
-		}
+            for (auto i = 0; i < list->size(); i++)
+            {
+                uint32_t number = (*list)[i].Quack();
+                REQUIRE(IFooMock::fooConst == number);
+            }
 
-		EXPECT_EQ(4, list->size());
-		EXPECT_EQ(sizeof(FooMock) * list->capacity(), getMemory().getAllocationSize(list->begin()));
+            REQUIRE(4 == list->size());
+            REQUIRE(sizeof(IFooMock) * list->capacity() == getMemory().getAllocationSize(list->begin()));
 
-		::testing::Mock::VerifyAndClearExpectations(&deletedItem);
+            // ::testing::Mock::VerifyAndClearExpectations(&deletedItem);
 
-		delete list;
-	}
+            delete list;
+        }
+    }
 }

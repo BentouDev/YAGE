@@ -24,11 +24,11 @@ install(DIRECTORY include/ DESTINATION include)
 export(TARGETS Script FILE ScriptConfig.cmake)
 
 # Every library has unit tests, of course
-add_executable(ScriptTests
-        Tests/BindingTest.cpp)
+#add_executable(ScriptTests
+        #Tests/BindingTest.cpp)
 
-target_link_libraries(ScriptTests
-        Script gtest gtest_main)
+#target_link_libraries(ScriptTests
+        #Script gtest gtest_main)
 
-add_test(ScriptTests ScriptTests)
-add_coverage(Script)
+#add_test(ScriptTests ScriptTests)
+#add_coverage(Script)
