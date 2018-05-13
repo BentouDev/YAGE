@@ -44,7 +44,7 @@ before_build:
   - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - msbuild /version
   - mkdir Build && cd Build
-  - cmake -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
+  - cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
 
 build:
   project: C:\projects\yage\Build\ALL_BUILD.vcxproj
