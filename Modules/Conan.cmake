@@ -376,7 +376,7 @@ macro(conan_load_buildinfo)
     # important that it is macro, so variables defined at parent scope
     if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/${_CONANBUILDINFO}")
       message(STATUS "Conan: Loading ${_CONANBUILDINFO}")
-      include(${CMAKE_CURRENT_BINARY_DIR}/${_CONANBUILDINFO})
+      include(${CMAKE_CURRENT_BINARY_DIR}/${_CONANBUILDINFO} PARENT_SCOPE)
     else()
       message(FATAL_ERROR "${_CONANBUILDINFO} doesn't exist in ${CMAKE_CURRENT_BINARY_DIR}")
     endif()

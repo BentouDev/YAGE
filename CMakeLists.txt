@@ -32,6 +32,19 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
 endif(MSVC)
 
+#============================#
+#   _  _   __    ___  ____   #
+#  ( \/ ) /__\  / __)( ___)  #
+#   \  / /(__)\( (_-. )__)   #
+#   (__)(__)(__)\___/(____)  #
+#                            #
+#   Yet Another Game Engine  #
+#                            #
+#=============================
+
+# Define engine library
+add_library(YAGE INTERFACE)
+
 # Add Vulkan
 find_package(Vulkan)
 
@@ -52,14 +65,14 @@ yage_setup_dependency(GLFW
         SOURCE Dependencies/GLFW
         INCLUDE Dependencies/GLFW/include)
 
-include_directories(${GLFW_INCLUDE_DIR})
+yage_include(YAGE ${GLFW_INCLUDE_DIR})
 
 # Add GLM
 yage_setup_dependency(GLM
         SOURCE Dependencies/GLM
         INCLUDE Dependencies/GLM)
 
-include_directories(${GLM_INCLUDE_DIR})
+yage_include(YAGE ${GLM_INCLUDE_DIR})
 
 # Add Assimp
 yage_setup_dependency(Assimp
@@ -69,7 +82,7 @@ yage_setup_dependency(Assimp
         SOURCE Dependencies/Assimp
         INCLUDE Dependencies/Assimp/include)
 
-include_directories(${ASSIMP_INCLUDE_DIR})
+yage_include(YAGE ${ASSIMP_INCLUDE_DIR})
 
 # Windows needs zlibstatic and IrrXml in assimp export target
 if((NOT ${ASSIMP_FOUND}) AND (WIN32))
@@ -88,22 +101,22 @@ yage_setup_dependency(Spdlog
         SOURCE Dependencies/Spdlog
         INCLUDE Dependencies/Spdlog/include)
 
-include_directories(${SPDLOG_INCLUDE_DIR})
+yage_include(YAGE ${SPDLOG_INCLUDE_DIR})
 
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
-include_directories(Dependencies/Json/src)
+yage_include(YAGE Dependencies/Json/src)
 
 # Add Utf8
-include_directories(Dependencies/Utf8/source)
-add_library(utf8 Dependencies/Utf8/source/utf8.h Dependencies/Utf8/source/utf8/checked.h Dependencies/Utf8/source/utf8/core.h Dependencies/Utf8/source/utf8/unchecked.h)
+yage_include(YAGE Dependencies/Utf8/source)
+add_library(utf8 STATIC Dependencies/Utf8/source/utf8.h Dependencies/Utf8/source/utf8/checked.h Dependencies/Utf8/source/utf8/core.h Dependencies/Utf8/source/utf8/unchecked.h)
 set_target_properties(utf8 PROPERTIES LINKER_LANGUAGE CXX)
 
 # Add CppLinq
-include_directories(Dependencies/CppLinq)
+yage_include(YAGE Dependencies/CppLinq)
 
 # Add LodePng
-include_directories(Dependencies/Lodepng)
+yage_include(YAGE Dependencies/Lodepng)
 add_library(lodepng STATIC Dependencies/Lodepng/lodepng.cpp Dependencies/Lodepng/lodepng.h)
 
 if(YAGE_BUILD_TESTS)
@@ -144,7 +157,6 @@ if(YAGE_BUILD_EDITOR)
     add_subdirectory(Source/Editor)
 endif(YAGE_BUILD_EDITOR)
 
-add_library(YAGE INTERFACE)
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
 
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
