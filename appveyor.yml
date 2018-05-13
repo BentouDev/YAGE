@@ -12,14 +12,12 @@ configuration:
 
 environment:
   PYTHON: "C:\\Python27"
+  QTDIR: "C:\\Qt\\5.10.1\\msvc2017_64"
 
 install:
   - cmd: git submodule update --init --recursive
-  # Qt
-  - cmd: set QTDIR=C:\Qt\5.10.1\msvc2017_64
-  - cmd: set PATH=%PATH%;%QTDIR%\bin
+  - cmd: set PATH=%PATH%;%QTDIR%/bin;%PYTHON%/Scripts/
   # Conan
-  - cmd: set PATH=%PATH%;%PYTHON%/Scripts/
   - cmd: pip.exe install conan --upgrade
   - cmd: pip.exe install conan_package_tools
   - cmd: refreshenv
