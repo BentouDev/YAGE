@@ -11,8 +11,6 @@ project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
 # Supress warning for dependencies with old Cmake files
 cmake_policy(PUSH)
-cmake_policy(SET CMP0011 OLD)
-cmake_policy(SET CMP0048 OLD)
 
 option(YAGE_BUILD_TESTS "Build Tests" ${NOT_SUBPROJECT})
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
@@ -20,6 +18,7 @@ option(YAGE_VALGRIND "Build with valgrind headers" ON)
 
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/Conan.cmake)
 include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
 
 # Emit additional metadata for debug builds
@@ -48,6 +47,7 @@ set (GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
 set (GLFW_BUILD_TESTS OFF CACHE BOOL "")
 
 yage_setup_dependency(GLFW
+        CONAN glfw/3.2.1.20180327@bincrafters/stable
         TARGET glfw
         SOURCE Dependencies/GLFW
         INCLUDE Dependencies/GLFW/include)
@@ -63,6 +63,7 @@ include_directories(${GLM_INCLUDE_DIR})
 
 # Add Assimp
 yage_setup_dependency(Assimp
+        CONAN Assimp/0.1@bentoudev/yage
         VAR_NAME ASSIMP
         TARGET assimp
         SOURCE Dependencies/Assimp
@@ -71,7 +72,7 @@ yage_setup_dependency(Assimp
 include_directories(${ASSIMP_INCLUDE_DIR})
 
 # Windows needs zlibstatic and IrrXml in assimp export target
-if(WIN32)
+if((NOT ${ASSIMP_FOUND}) AND (WIN32))
     if(MINGW)
         set(ASSIMP_TARGETS assimp zlibstatic)
     else()
@@ -103,29 +104,15 @@ include_directories(Dependencies/CppLinq)
 
 # Add LodePng
 include_directories(Dependencies/Lodepng)
-add_library(lodepng Dependencies/Lodepng/lodepng.cpp Dependencies/Lodepng/lodepng.h)
+add_library(lodepng STATIC Dependencies/Lodepng/lodepng.cpp Dependencies/Lodepng/lodepng.h)
 
 if(YAGE_BUILD_TESTS)
     # Add codecov scripts module to cmake
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
     find_package(codecov REQUIRED)
 
-    # Add Catch2
-    yage_setup_dependency(Catch2 
-        TARGET Catch2 
-        VAR_NAME CATCH2
-        SOURCE Dependencies/Catch2
-        INCLUDE Dependencies/Catch2/single_include)
-
-    # Add FakeIt
-    yage_setup_dependency(Trompeloeil 
-        TARGET Trompeloeil
-        VAR_NAME TROMP
-        SOURCE Dependencies/Trompeloeil
-        INCLUDE Dependencies/Trompeloeil/include)
-
-    include_directories(${CATCH2_INCLUDE_DIR})
-    include_directories(${TROMP_INCLUDE_DIR})
+    include_directories(Dependencies/Catch2/single_include)
+    include_directories(Dependencies/Trompeloeil/include)
 endif()
 
 # Add QT5 when building Editor

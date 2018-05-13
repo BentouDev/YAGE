@@ -3,7 +3,7 @@
 # Provides procedure to easily setup dependency that can both be build from source or get from environment
 function(yage_setup_dependency NAME)
     set(options TEST)
-    set(oneArg PREFER TARGET SOURCE VAR_NAME)
+    set(oneArg PREFER TARGET SOURCE VAR_NAME CONAN)
     set(multiArg INCLUDE)
     cmake_parse_arguments(DEP "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
 
@@ -18,7 +18,7 @@ function(yage_setup_dependency NAME)
     if (NOT NAME)
         message(FATAL_ERROR "yage_setup_dependency called without specyfing name!\n")
     else()
-        if (NOT DEP_PREFER STREQUAL "SOURCE")
+        if (NOT DEP_PREFER STREQUAL "BUILD")
             find_package(${NAME})
             message("-- Search for " ${NAME} " in OS")
             if (${DEP_VAR_NAME}_FOUND)
@@ -28,7 +28,25 @@ function(yage_setup_dependency NAME)
             endif()
         endif()
 
-        if ((DEP_PREFER STREQUAL "BUILD") OR (NOT ${DEP_VAR_NAME}_FOUND))
+        if ((NOT DEP_PREFER STREQUAL "BUILD") AND (NOT ${${DEP_VAR_NAME}_FOUND}) AND (DEP_CONAN))
+			message ("-- Search for " ${NAME} " in conan repositories")
+
+            conan_cmake_run(REQUIRES ${DEP_CONAN}
+                BASIC_SETUP)
+
+			set(${DEP_VAR_NAME}_CONAN_FOUND TRUE)
+            set(${DEP_VAR_NAME}_CONAN_FOUND TRUE PARENT_SCOPE)
+
+			set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} )
+			set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+			set(${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} )
+            set(${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+
+			set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} )
+			set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+        endif()
+
+        if ((DEP_PREFER STREQUAL "BUILD") OR ((NOT ${DEP_VAR_NAME}_FOUND) AND (NOT ${DEP_VAR_NAME}_CONAN_FOUND)))
             if (DEP_TARGET STREQUAL NAME)
                 message ("-- building " ${NAME} " from source!")
             else()

@@ -39,29 +39,20 @@ namespace ListTests
 		uint32_t magicNumber;
 
 	public:
-        //MAKE_MOCK0(Die, void());
-        //MAKE_MOCK0(Foo, void());
-
-		static const uint32_t fooConst;
-
-		uint32_t Quack()
-		{
-			//Foo();
-			return magicNumber;
-		}
+        static const uint32_t fooConst;
 
         IFooMock()
-		{
-			magicNumber = fooConst;
-		}
+		{ magicNumber = fooConst; }
 
-		~IFooMock()
-		{
-			//Die();
-		}
-	};
+		virtual ~IFooMock() { }
+
+        uint32_t Quack()
+        { return magicNumber; }
+    };
 
 	const uint32_t IFooMock::fooConst = 0xF00BACEC;
+
+	using DestructedMock = trompeloeil::deathwatched<IFooMock>;
 
     TEST_CASE("ListTest")
     {
@@ -135,20 +126,17 @@ namespace ListTests
 
         SECTION("CanRemoveItemFromList")
         {
-            auto list = new Utils::List<IFooMock>(getMemory(), listCapacity);
+            auto list = new Utils::List<DestructedMock>(getMemory(), listCapacity);
 
             list->emplace();
 
             REQUIRE(1 == list->size());
-            //REQUIRE_CALL((*list)[0], Die()).TIMES(1);
-            // EXPECT_CALL((*list)[0], Die());
+            REQUIRE_DESTRUCTION((*list)[0]);
 
             list->eraseAt(0);
 
-            // fakeit::Verify(Method((*list)[0], Die));
-
             REQUIRE(0 == list->size());
-            REQUIRE(sizeof(IFooMock) * list->capacity() == getMemory().getAllocationSize(list->begin()));
+            REQUIRE(sizeof(DestructedMock) * list->capacity() == getMemory().getAllocationSize(list->begin()));
 
             delete list;
         }

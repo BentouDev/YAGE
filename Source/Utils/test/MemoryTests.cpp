@@ -8,6 +8,7 @@
 #include "Utils/StackAllocator.h"
 #include "Utils/SafeDelete.h"
 #include "Utils/MemoryBlock.h"
+#include "MockHelper.h"
 
 extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
@@ -18,41 +19,32 @@ namespace MemoryTests
 	class IFooMock
 	{
 	public:
-        //MAKE_MOCK0(Die, void());
-
-		~IFooMock()
-		{
-			//Die();
-		}
+		virtual ~IFooMock() { }
 	};
+
+	using FooMock = trompeloeil::deathwatched<IFooMock>;
 
     TEST_CASE("MemoryTest")
     {
         SECTION("CanSafeDelete")
         {
-            auto foo = new IFooMock();
+            auto foo = new FooMock();
 
-            // EXPECT_CALL(*foo, Die());
-            //REQUIRE_CALL((*foo), Die()).TIMES(1);
+            REQUIRE_DESTRUCTION((*foo));
 
             Memory::SafeDelete(foo);
-
-            // fakeit::Verify(Method((*foo), Die));
 
             REQUIRE(nullptr == foo);
         }
 
         SECTION("CanSafeDeleteTwice")
         {
-            auto foo = new IFooMock();
+            auto foo = new FooMock();
 
-            // EXPECT_CALL(*foo, Die()).Times(1);
-            //REQUIRE_CALL((*foo), Die()).TIMES(1);
+            REQUIRE_DESTRUCTION((*foo));
 
             Memory::SafeDelete(foo);
             Memory::SafeDelete(foo);
-
-            // fakeit::Verify(Method((*foo), Die)).Exactly(1);
 
             REQUIRE(nullptr == foo);
         }
@@ -60,30 +52,33 @@ namespace MemoryTests
         SECTION("CanSafeDeleteArrayOfObjects")
         {
             int count = 6;
-            auto foos = new IFooMock[count];
+            auto foos = new FooMock[count];
 
             //for(auto i = 0; i < size; i++)
             //	auto obj = new (&foos[i]) FooMock();
 
-            //for (auto i = 0; i < count; i++)
-                //REQUIRE_CALL(foos[i], Die()).TIMES(1);
-                // EXPECT_CALL(foos[i], Die()).Times(1);
-                // fakeit::Verify(Method(foos[i], Die)).Exactly(1);
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(foos[i]));
 
             Memory::SafeDeleteArray(foos);
 
             REQUIRE(nullptr == foos);
+
+            vec.clear();
         }
 
         SECTION("CanSafeDeleteArrayOfObjectsTwice")
         {
             int count = 6;
-            auto foos = new IFooMock[count];
+            auto foos = new FooMock[count];
 
             //for(auto i = 0; i < size; i++)
             //	auto = new (foos[i]) FooMock();
 
-            //for (auto i = 0; i < count; i++)
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(foos[i]));
                 //REQUIRE_CALL(foos[i], Die()).TIMES(1);
                 // EXPECT_CALL(foos[i], Die()).Times(1);
                 // fakeit::Verify(Method(foos[i], Die)).Exactly(1);
@@ -92,17 +87,16 @@ namespace MemoryTests
             Memory::SafeDeleteArray(foos);
 
             REQUIRE(nullptr == foos);
+
+            vec.clear();
         }
 
         SECTION("CanSafeFree")
         {
-            auto memory = (IFooMock*)malloc(sizeof(IFooMock));
-            auto foo = new(memory) IFooMock();
+            auto memory = (FooMock*)malloc(sizeof(FooMock));
+            auto foo = new(memory) FooMock();
 
-            // EXPECT_CALL(*foo, Die());
-            //REQUIRE_CALL((*foo), Die()).TIMES(1);
-
-            // fakeit::Verify(Method((*foo), Die)).Exactly(1);
+            REQUIRE_DESTRUCTION((*foo));
 
             Memory::SafeFree(foo);
 
@@ -111,13 +105,10 @@ namespace MemoryTests
 
         SECTION("CanSafeFreeTwice")
         {
-            auto memory = (IFooMock*)malloc(sizeof(IFooMock));
-            auto foo = new(memory) IFooMock();
+            auto memory = (FooMock*)malloc(sizeof(FooMock));
+            auto foo = new(memory) FooMock();
 
-            // EXPECT_CALL(*foo, Die());
-            //REQUIRE_CALL((*foo), Die()).TIMES(1);
-
-            // fakeit::Verify(Method((*foo), Die)).Exactly(1);
+            REQUIRE_DESTRUCTION((*foo));
 
             Memory::SafeFree(foo);
             Memory::SafeFree(foo);
@@ -128,38 +119,40 @@ namespace MemoryTests
         SECTION("CanSafeFreeArray")
         {
             int count = 4;
-            IFooMock* memory = (IFooMock*)malloc(sizeof(IFooMock) * count);
+            auto* memory = (FooMock*)malloc(sizeof(FooMock) * count);
 
             for (auto i = 0; i < count; i++)
-                new (&memory[i]) IFooMock();
+                new (&memory[i]) FooMock();
 
-            //for (auto i = 0; i < count; i++)
-              //  REQUIRE_CALL(memory[i], Die()).TIMES(1);
-                // EXPECT_CALL(memory[i], Die()).Times(1);
-                // fakeit::Verify(Method(memory[i], Die)).Exactly(1);
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(memory[i]));
 
             Memory::SafeFreeArray(memory, count);
 
             REQUIRE(nullptr == memory);
+
+            vec.clear();
         }
 
         SECTION("CanSafeFreeArrayTwice")
         {
             int count = 4;
-            IFooMock* memory = (IFooMock*)malloc(sizeof(IFooMock) * count);
+            auto* memory = (FooMock*)malloc(sizeof(FooMock) * count);
 
             for (auto i = 0; i < count; i++)
-                new (&memory[i]) IFooMock();
+                new (&memory[i]) FooMock();
 
-            //for (auto i = 0; i < count; i++)
-              //  REQUIRE_CALL(memory[i], Die()).TIMES(1);
-                // EXPECT_CALL(memory[i], Die()).Times(1);
-                // fakeit::Verify(Method(memory[i], Die)).Exactly(1);
+            TDestructionReqVec vec;
+            for (auto i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(memory[i]));
 
             Memory::SafeFreeArray(memory, count);
             Memory::SafeFreeArray(memory, count);
 
             REQUIRE(nullptr == memory);
+
+            vec.clear();
         }
 
         SECTION("CanAllocateMemoryFromBlock")
@@ -169,7 +162,7 @@ namespace MemoryTests
             auto*			  allocator = new Memory::StackAllocator(memoryPtr, memorySize);
 
             MockMemory block(*allocator, "");
-            IFooMock* foo = YAGE_CREATE_NEW(block, IFooMock)();
+            FooMock* foo = YAGE_CREATE_NEW(block, FooMock)();
 
             REQUIRE(nullptr != foo);
 
@@ -182,15 +175,13 @@ namespace MemoryTests
         {
             const std::size_t memorySize = 1024;
             void*			  memoryPtr = malloc(memorySize);
-            IFooMock* 		  foo = nullptr;
+            FooMock* 		  foo = nullptr;
             auto*			  allocator = new Memory::StackAllocator(memoryPtr, memorySize);
 
             MockMemory block(*allocator, "CanAllocateAndFreeMemoryFromBlock");
-            foo = YAGE_CREATE_NEW(block, IFooMock)();
+            foo = YAGE_CREATE_NEW(block, FooMock)();
 
-            //REQUIRE_CALL(*foo, Die()).TIMES(1);
-            // EXPECT_CALL(*foo, Die());
-            // fakeit::Verify(Method((*foo), Die)).Exactly(1);
+            REQUIRE_DESTRUCTION((*foo));
 
             Memory::Delete(block, foo);
 

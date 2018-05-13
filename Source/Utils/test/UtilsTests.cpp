@@ -14,7 +14,7 @@ namespace trompeloeil
             unsigned long line,
             const char* msg)
     {
-        /*std::ostringstream os;
+        std::ostringstream os;
         if (line) os << file << ':' << line << '\n';
         os << msg;
         auto failure = os.str();
@@ -25,7 +25,7 @@ namespace trompeloeil
             CATCH_INTERNAL_UNSUPPRESS_PARENTHESES_WARNINGS
         } INTERNAL_CATCH_CATCH(catchAssertionHandler) {
             INTERNAL_CATCH_REACT(catchAssertionHandler)
-        }*/
+        }
     }
 }
 
