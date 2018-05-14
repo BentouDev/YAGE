@@ -23,8 +23,8 @@ install:
   - cmd: dir %QTDIR%
   - cmd: dir %QTDIR%\lib\\cmake
   # Conan
-  - cmd: pip.exe install conan --upgrade
-  - cmd: pip.exe install conan_package_tools
+  - cmd: pip.exe install conan --upgrade --upgrade-strategy only-if-needed
+  - cmd: pip.exe install conan_package_tools --upgrade --upgrade-strategy only-if-needed
   - cmd: refreshenv
   - cmd: conan user # It creates the conan data directory
   # SDL2
@@ -54,6 +54,8 @@ build:
 test_script:
   - cmd: C:\projects\yage\Build\Source\Core\Release\CoreTests.exe -r junit > CoreTests.xml
   - cmd: C:\projects\yage\Build\Source\Utils\Release\UtilsTests.exe -r junit > UtilsTests.xml
+  - cmd: dir
+
 on_success:
   - ps: |
       $wc = New-Object 'System.Net.WebClient'
