@@ -21,8 +21,8 @@ install:
   - cmd: git submodule update --init --recursive
   - cmd: set PATH=%PATH%;%QTDIR%;%QTDIR%\\bin;%PYTHON%/Scripts/
   # Conan
-  - cmd: pip.exe install conan --upgrade --upgrade-strategy only-if-needed
-  - cmd: pip.exe install conan_package_tools --upgrade --upgrade-strategy only-if-needed
+  - cmd: pip.exe install conan --quiet --upgrade --upgrade-strategy only-if-needed
+  - cmd: pip.exe install conan_package_tools --quiet --upgrade --upgrade-strategy only-if-needed
   - cmd: refreshenv
   - cmd: conan user # It creates the conan data directory
   # SDL2
@@ -40,9 +40,9 @@ install:
 before_build:
   - cmd: conan remote add yage https://api.bintray.com/conan/bentoudev/yage
   - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
-  - msbuild /version
-  - mkdir Build && cd Build
-  - cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
+  - cmd: msbuild /version
+  - cmd: mkdir Build && cd Build
+  - cmd: cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
 
 build:
   project: C:\projects\yage\Build\ALL_BUILD.vcxproj
