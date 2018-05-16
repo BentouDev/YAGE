@@ -6,7 +6,7 @@
 #define YAGE_CONFIG_H
 
 #include <string>
-#include <json.hpp>
+#include <nlohmann/json.hpp>
 #include <Utils/Handle.h>
 #include <Utils/BorrowedPtr.h>
 #include <Utils/List.h>

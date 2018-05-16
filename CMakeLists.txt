@@ -105,7 +105,7 @@ yage_include(YAGE ${SPDLOG_INCLUDE_DIR})
 
 # Add Json
 add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
-yage_include(YAGE Dependencies/Json/src)
+yage_include(YAGE Dependencies/Json/single_include)
 
 # Add Utf8
 yage_include(YAGE Dependencies/Utf8/source)
@@ -159,7 +159,7 @@ endif(YAGE_BUILD_EDITOR)
 
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
 
-configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPY_ONLY)
+configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPYONLY)
 
 # Evaluate test coverage when testing is enabled
 if(YAGE_BUILD_TESTS)
