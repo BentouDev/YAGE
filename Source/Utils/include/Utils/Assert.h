@@ -9,6 +9,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <utility>
+#include <spdlog/fmt/fmt.h>
 
 #include "DebugSourceInfo.h"
 
@@ -30,18 +31,17 @@
 
 namespace Utils
 {
-	struct Assert
-	{
-		static char buffer[256];
+    struct Assert
+    {
+        static char buffer[256];
 
-		template <typename ... Args>
-		Assert(Utils::DebugSourceInfo info, const char* message, Args&& ... args)
-		{
-			std::snprintf(buffer, sizeof(buffer), message, std::forward<Args>(args)...);
-			std::fprintf(stderr, "Assert failed!\n\tfile %s, line %zu,\nreason : %s",
-						 info.file, info.line, buffer);
-		}
-	};
+        template <typename ... Args>
+        Assert(Utils::DebugSourceInfo info, const char* message, Args&& ... args)
+        {
+            fmt::print(stderr, "Assert failed!\n\tfile {0}, line {1},\nreason : {2}",
+                       info.file, info.line, fmt::format(message, std::forward<Args>(args)...));
+        }
+    };
 }
 
 #endif //GAME_ASSERT_H

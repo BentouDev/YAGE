@@ -7,14 +7,14 @@
 
 namespace Gfx
 {
-	BufferManager::BufferManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: IManager(engine, memory), _bufferContainer(_memory)
-	{
+    BufferManager::BufferManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
+        : IManager(engine, memory), _bufferContainer(_memory)
+    {
 
-	}
+    }
 
-	BufferManager::~BufferManager()
-	{
+    BufferManager::~BufferManager() noexcept
+    {
 
-	}
+    }
 }

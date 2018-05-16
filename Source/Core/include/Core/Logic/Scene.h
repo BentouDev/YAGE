@@ -10,64 +10,64 @@
 
 namespace Core
 {
-	class Engine;
-	struct GameTime;
+    class Engine;
+    struct GameTime;
 }
 
 namespace Gfx
 {
-	class Renderer;
-	class Camera;
-	class Viewport;
+    class Renderer;
+    class Camera;
+    class Viewport;
 }
 
 namespace Logic
 {
-	class World;
-	class RenderingSystem;
+    class World;
+    class RenderingSystem;
 
-	class Scene
-	{
-	protected:
+    class Scene
+    {
+    protected:
 
-		Memory::IMemoryBlock& _memory;
+        Memory::IMemoryBlock& _memory;
 
-		const char* Name;
+        const char* Name;
 
-		Core::Engine& engine;
+        Core::Engine& engine;
 
-		Logic::World* world;
+        Logic::World* world;
 
-		// Scene may have list of Entities
-		// So when its unloaded from Game/World it may try to free all of them :)
+        // Scene may have list of Entities
+        // So when its unloaded from Game/World it may try to free all of them :)
 
-	public:
-		explicit Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);
+    public:
+        explicit Scene(Core::Engine& engine, Memory::IMemoryBlock& memory, const char* name);
 
-		virtual ~Scene();
+        virtual ~Scene();
 
-		virtual void Update(const Core::GameTime& time);
+        virtual void Update(const Core::GameTime& time);
 
-		virtual void Draw(const Core::GameTime& time, Gfx::Renderer& renderer);
+        virtual void Draw(const Core::GameTime& time, Gfx::Renderer& renderer);
 
-		virtual void Start();
+        virtual void Start();
 
-		virtual void End();
+        virtual void End();
 
-		inline void setViewport(Gfx::Viewport* viewport)
-		{ defaultViewport = viewport; }
+        inline void setViewport(Gfx::Viewport* viewport)
+        { defaultViewport = viewport; }
 
-		void setWorld(World* newWorld);
+        void setWorld(World* newWorld);
 
-		inline World& getWorld() const
-		{
-			YAGE_ASSERT(world != nullptr, "Scene '%s' : World in scene cannot be nullptr!", Name);
-			return *world;
-		}
+        inline World& getWorld() const
+        {
+            YAGE_ASSERT(world != nullptr, "Scene '{}' : World in scene cannot be nullptr!", Name);
+            return *world;
+        }
 
-		Gfx::Viewport*	defaultViewport;
-		Gfx::Camera*	defaultCamera;
-	};
+        Gfx::Viewport*	defaultViewport;
+        Gfx::Camera*	defaultCamera;
+    };
 }
 
 #endif //GAME_SCENE_H

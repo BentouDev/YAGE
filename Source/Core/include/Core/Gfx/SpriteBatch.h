@@ -13,103 +13,113 @@
 
 namespace Core
 {
-	class Material;
+    class Material;
 }
 
 namespace Gfx
 {
-	class Sprite;
-	class Camera;
-	struct SpriteVertex;
-	class SpriteBatch;
-	class SpriteBatchManager;
+    class Sprite;
+    class Camera;
+    struct SpriteVertex;
+    class SpriteBatch;
+    class SpriteBatchManager;
 
-	class SpriteBatch
-	{
-		friend class SpriteBatchManager;
+    class SpriteBatch
+    {
+        friend class SpriteBatchManager;
 
-	private:
-		Gfx::SpriteBuffer&		_buffer;
+    private:
+        Gfx::SpriteBuffer&		_buffer;
 
-		std::uint32_t			_bufferOffset;
-		std::uint32_t			_bufferSize;
+        std::uint32_t			_bufferOffset;
+        std::uint32_t			_bufferSize;
 
-		Core::Material*	 		_materialPtr;
-		Gfx::Camera*			_cameraPtr;
+        Core::Material*	 		_materialPtr;
+        Gfx::Camera*			_cameraPtr;
 
-		Rectangle<float>	defaultTexRect;
-		Utils::Color		defaultColor;
-		glm::vec2			defaultPivot;
-		std::uint8_t 		defaultLayer;
-		float 				defaultZOrder;
-		float				defaultRotation;
-		float				defaultScale;
+        Rectangle<float>	defaultTexRect;
+        Utils::Color		defaultColor;
+        glm::vec2			defaultPivot;
+        std::uint8_t 		defaultLayer;
+        float 				defaultZOrder;
+        float				defaultRotation;
+        float				defaultScale;
 
-		void scaleAndRotateSpriteVertex(SpriteVertex (&data)[6], glm::vec2 pivot, float scale, float rotation);
+        void scaleAndRotateSpriteVertex(SpriteVertex (&data)[6], glm::vec2 pivot, float scale, float rotation);
 
-	public:
-		float 				batchZOrder;
-		bool 				blendEnabled;
-		bool 				depthEnabled;
-		GLenum				blendSfactor;
-		GLenum				blendDfactor;
-		GLenum				depthFunc;
+    public:
+        float 				batchZOrder;
+        bool 				blendEnabled;
+        bool 				depthEnabled;
+        GLenum				blendSfactor;
+        GLenum				blendDfactor;
+        GLenum				depthFunc;
 
-		explicit SpriteBatch(SpriteBuffer& buffer);
+        explicit SpriteBatch(SpriteBuffer& buffer);
 
-		SpriteBatch(const SpriteBatch& other)
-			: _buffer(other._buffer),
-			  _bufferOffset(other._bufferOffset),
-			  _bufferSize(other._bufferSize),
-			  _materialPtr(other._materialPtr),
-			  _cameraPtr(other._cameraPtr),
-			  defaultZOrder(other.defaultZOrder),
-			  defaultLayer(other.defaultLayer),
-			  batchZOrder(other.batchZOrder),
-			  defaultTexRect(other.defaultTexRect),
-			  defaultColor(other.defaultColor),
-			  defaultRotation(other.defaultRotation),
-			  defaultScale(other.defaultScale)
-		{ }
+        SpriteBatch(const SpriteBatch& other)
+            : _buffer(other._buffer),
+              _bufferOffset(other._bufferOffset),
+              _bufferSize(other._bufferSize),
+              _materialPtr(other._materialPtr),
+              _cameraPtr(other._cameraPtr),
+              defaultZOrder(other.defaultZOrder),
+              defaultLayer(other.defaultLayer),
+              batchZOrder(other.batchZOrder),
+              defaultTexRect(other.defaultTexRect),
+              defaultColor(other.defaultColor),
+              defaultRotation(other.defaultRotation),
+              defaultScale(other.defaultScale),
+              blendEnabled(other.blendEnabled),
+              depthEnabled(other.depthEnabled),
+              blendSfactor(other.blendSfactor),
+              blendDfactor(other.blendDfactor),
+              depthFunc(other.depthFunc)
+        { }
 
-		SpriteBatch(SpriteBatch&& other)
-			: _buffer(other._buffer),
-			  _bufferOffset(other._bufferOffset),
-			  _bufferSize(other._bufferSize),
-			  _materialPtr(other._materialPtr),
-			  _cameraPtr(other._cameraPtr),
-			  defaultZOrder(other.defaultZOrder),
-			  defaultLayer(other.defaultLayer),
-			  batchZOrder(other.batchZOrder),
-			  defaultTexRect(other.defaultTexRect),
-			  defaultColor(other.defaultColor),
-			  defaultRotation(other.defaultRotation),
-			  defaultScale(other.defaultScale)
-		{
-			other._materialPtr = nullptr;
-			other._cameraPtr = nullptr;
-		}
+        SpriteBatch(SpriteBatch&& other)
+            : _buffer(other._buffer),
+              _bufferOffset(other._bufferOffset),
+              _bufferSize(other._bufferSize),
+              _materialPtr(other._materialPtr),
+              _cameraPtr(other._cameraPtr),
+              defaultZOrder(other.defaultZOrder),
+              defaultLayer(other.defaultLayer),
+              batchZOrder(other.batchZOrder),
+              defaultTexRect(other.defaultTexRect),
+              defaultColor(other.defaultColor),
+              defaultRotation(other.defaultRotation),
+              defaultScale(other.defaultScale),
+              blendEnabled(other.blendEnabled),
+              depthEnabled(other.depthEnabled),
+              blendSfactor(other.blendSfactor),
+              blendDfactor(other.blendDfactor),
+              depthFunc(other.depthFunc)
+        {
+            other._materialPtr = nullptr;
+            other._cameraPtr = nullptr;
+        }
 
-		SpriteBatch& clear();
-		SpriteBatch& ensureCapacity(std::int32_t minimalCapacity);
+        SpriteBatch& clear();
+        SpriteBatch& ensureCapacity(std::int32_t minimalCapacity);
 
-		SpriteBatch& drawSprite(const Sprite& sprite);
+        SpriteBatch& drawSprite(const Sprite& sprite);
 
-		SpriteBatch& drawSprite(Rectangle<float> rect, Utils::Color color);
+        SpriteBatch& drawSprite(Rectangle<float> rect, Utils::Color color);
 
-		SpriteBatch& drawSprite(Rectangle<float> rect, Rectangle<float> texRect,
-								float scale, float rotation, Utils::Color color);
+        SpriteBatch& drawSprite(Rectangle<float> rect, Rectangle<float> texRect,
+                                float scale, float rotation, Utils::Color color);
 
-		SpriteBatch& drawSprite(Rectangle<float> rect, glm::vec2 pivot,
-								Rectangle<float> texRect, std::uint8_t texLayer,
-								float scale, float rotation, float zOrder, Utils::Color color);
+        SpriteBatch& drawSprite(Rectangle<float> rect, glm::vec2 pivot,
+                                Rectangle<float> texRect, std::uint8_t texLayer,
+                                float scale, float rotation, float zOrder, Utils::Color color);
 
-		inline Gfx::Camera* getCamera() const { return _cameraPtr; }
-		inline Core::Material* getMaterial() const { return _materialPtr; }
-		inline Gfx::SpriteBuffer& getBuffer() const { return _buffer; }
-		inline std::uint32_t getOffset() const { return _bufferOffset; }
-		inline std::uint32_t getSize() const { return _bufferSize; }
-	};
+        inline Gfx::Camera* getCamera() const { return _cameraPtr; }
+        inline Core::Material* getMaterial() const { return _materialPtr; }
+        inline Gfx::SpriteBuffer& getBuffer() const { return _buffer; }
+        inline std::uint32_t getOffset() const { return _bufferOffset; }
+        inline std::uint32_t getSize() const { return _bufferSize; }
+    };
 }
 
 #endif //YAGE_SPRITEBATCH_H

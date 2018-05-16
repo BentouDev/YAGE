@@ -19,7 +19,7 @@ namespace Utils
         void internal_assign(std::int64_t diff) {
             if (diff > std::numeric_limits<TPtr>::max() || diff < std::numeric_limits<TPtr>::min())
             {
-                YAGE_ASSERT(false, "Numerical overflow on relative ptr %p of diff %zu", this, diff);
+                YAGE_ASSERT(false, "Numerical overflow on relative ptr {} of diff {}", (void*)this, diff);
                 value = 0;
             }
             else
