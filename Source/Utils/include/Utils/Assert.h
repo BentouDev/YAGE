@@ -5,7 +5,7 @@
 #ifndef GAME_ASSERT_H
 #define GAME_ASSERT_H
 
-#include <assert.h>
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <utility>
@@ -17,7 +17,7 @@
 #elif __MINGW32__
 #define YAGE_BREAK __builtin_trap()
 #else
-#include <signal.h>
+#include <csignal>
 #define YAGE_BREAK raise(SIGTRAP)
 #endif
 
