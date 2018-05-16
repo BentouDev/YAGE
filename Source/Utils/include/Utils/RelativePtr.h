@@ -32,7 +32,7 @@ namespace Utils
         { }
 
         explicit relative_ptr(TClass* ptr) {
-            value = reinterpret_cast<char*>(ptr) - reinterpret_cast<char*>(this);
+            internal_assign(reinterpret_cast<char*>(ptr) - reinterpret_cast<char*>(this));
         }
 
         relative_ptr(const relative_ptr& copy) {

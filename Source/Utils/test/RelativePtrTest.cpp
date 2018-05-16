@@ -48,5 +48,18 @@ namespace RelativePtrTest
             REQUIRE(ptr == raw_ptr);
             REQUIRE(ptr == &ptr);
         }
+
+        SECTION("CanPointAnywhere")
+        {
+            Utils::relative_ptr<Node, std::int64_t> ptr;
+            ptr = new Node();
+            ptr->next = new Node();
+
+            REQUIRE(ptr);
+            REQUIRE(ptr != nullptr);
+            REQUIRE(ptr->next);
+            REQUIRE(ptr->next != nullptr);
+            // REQUIRE(ptr->next != ptr);
+        }
     }
 }
