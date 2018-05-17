@@ -40,7 +40,7 @@ namespace Resources
 
         if (result != 0 || size == 0)
         {
-            Core::Logger::get()->warn (
+            Core::Logger::warn (
                 "TextureLoader : unable to load texture from file '{}', error code '{}', reason '{}'.",
                 path, result, lodepng_error_text(result)
             );
@@ -53,7 +53,7 @@ namespace Resources
         lodepng_inspect(&imageWidth, &imageHeight, &state, &data[0], size);
         LodePNGColorMode& color = state.info_png.color;
 
-        Core::Logger::get()->info (
+        Core::Logger::info (
             "TextureLoader : BitDepth: '{}', width: '{}', height: '{}'.",
             lodepng_get_bpp(&color), imageWidth, imageHeight
         );
@@ -79,7 +79,7 @@ namespace Resources
                 texture.pixelFormat = gl::RGBA32F;
                 break;
             default:
-                Core::Logger::get()->error("TextureLoader : bitdepth '{}' is not supported!", state.info_png.color.bitdepth);
+                Core::Logger::error("TextureLoader : bitdepth '{}' is not supported!", state.info_png.color.bitdepth);
                 return *this;
         }
 
@@ -91,7 +91,9 @@ namespace Resources
         texture.pixelsSize = lodepng_get_raw_size(texture.textureWidth, texture.textureHeight, &state.info_raw);
         lodepng_decode(&texture.pixels, &texture.textureWidth, &texture.textureHeight, &state, data, size);
 
-        Core::Logger::get()->info("TextureLoader : successfully loaded '{}'!", path);
+        Memory::SafeFree(data);
+
+        Core::Logger::info("TextureLoader : successfully loaded '{}'!", path);
 
         return *this;
     }

@@ -6,20 +6,21 @@
 #define GAME_MEMORYSIZES_H
 
 #include <cstddef>
+#include <cstdint>
 
 namespace Memory
 {
-	template <typename T>
-	constexpr std::size_t KB(T x)
-	{
-		return ((std::size_t)(x) << 10);
-	}
+    template <typename T>
+    constexpr std::size_t KB(T x)
+    {
+        return (((std::size_t) x) << 10);
+    }
 
-	template <typename T>
-	constexpr std::size_t MB(T x)
-	{
-		return ((std::size_t)(x) << 20);
-	}
+    template <typename T>
+    constexpr std::size_t MB(T x)
+    {
+        return (((std::size_t) x) << 20);
+    }
 }
 
 #endif //GAME_MEMORYSIZES_H

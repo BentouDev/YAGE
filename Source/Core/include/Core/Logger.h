@@ -2,114 +2,129 @@
 // Created by mrjaqbq on 31.03.16.
 //
 
-#ifndef GAME_LOGGER_H
-#define GAME_LOGGER_H
+#ifndef YAGE_LOGGER_H
+#define YAGE_LOGGER_H
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
-#include <spdlog/spdlog.h>
-#include <Utils/Handle.h>
-
-#ifdef CREATE_NEW
-#undef CREATE_NEW
-#endif
-
-#ifdef CreateWindow
-#undef CreateWindow
-#endif
-
-#ifdef GetCurrentTime
-#undef GetCurrentTime
-#endif
+#include <spdlog/fmt/fmt.h>
+#include <Utils/String.h>
+#include <Utils/FreeListAllocator.h>
+#include <Utils/MemorySizes.h>
 
 namespace Core
 {
-	class Engine;
+    class Engine;
 
-	class Config;
+    class Config;
 
-	namespace LogLevel
-	{
-		enum LogLevelEnum
-		{
-			trace = 0,
-			debug = 1,
-			info = 2,
-			warn = 3,
-			err = 4,
-			critical = 5,
-			off = 6
-		};
-	}
+    namespace LogLevel
+    {
+        enum TYPE
+        {
+            trace    = 0,
+            debug    = 1,
+            info     = 2,
+            warn     = 3,
+            error    = 4,
+            critical = 5,
+            off      = 6
+        };
+    }
 
-	class Logger
-	{
-		friend class Engine;
+    class ILoggerOutput
+    {
+    public:
+        virtual ~ILoggerOutput()
+        { }
 
-	public:
-		static Logger& get()
-		{
-			static Logger instance;
-			return instance;
-		}
+        virtual void PrintMessage(LogLevel::TYPE level, const char* message) = 0;
+    };
 
-		std::shared_ptr<spdlog::logger> Default;
+    class Logger
+    {
+        friend class Engine;
 
-	private:
-		static constexpr char const* defaultSinkName = "console";
-		Logger() : Default(spdlog::stdout_logger_mt(defaultSinkName)) { };
+        using TLoggerAllocator = Memory::FreeListAllocator;
+        using TLoggerMemory    = Memory::MemoryBlock<TLoggerAllocator>;
 
-	public:
-		virtual ~Logger() { destroy(); }
+        static constexpr size_t _raw_size = Memory::KB(10);
+        static char _raw_memory[_raw_size];
 
-		Logger(Logger const&) = delete;
-		Logger(Logger&&) = delete;
-		void operator=(Logger const&) = delete;
-		void operator=(Logger&&) = delete;
+    public:
+        static Logger& get()
+        {
+            static Logger instance;
+            return instance;
+        }
 
-		static void setLogLevel(LogLevel::LogLevelEnum level)
-		{ spdlog::set_level((spdlog::level::level_enum)((int)level)); }
+        LogLevel::TYPE              _log_level;
+        TLoggerMemory               _memory;
+        TLoggerAllocator            _allocator;
+        Utils::List<ILoggerOutput*> _outputs;
 
-		template <typename... Args> static void log(LogLevel::LogLevelEnum lvl, const char* fmt, const Args&... args)
-		{ get().Default->log((spdlog::level::level_enum)((int)lvl), fmt, args...); }
+    private:
+        Logger();
 
-		template <typename... Args> static void log(LogLevel::LogLevelEnum lvl, const char* msg)
-		{ get().Default->log((spdlog::level::level_enum)((int)lvl), msg); }
+    public:
+        virtual ~Logger()
+        { destroy(); }
 
-		template <typename... Args> static void trace(const char* fmt, const Args&... args)
-		{ get().Default->trace(fmt, args...); }
+        Logger(Logger const&)         = delete;
+        Logger(Logger&&)              = delete;
+        void operator=(Logger const&) = delete;
+        void operator=(Logger&&)      = delete;
 
-		template <typename... Args> static void debug(const char* fmt, const Args&... args)
-		{ get().Default->debug(fmt, args...); }
+        void destroy();
 
-		template <typename... Args> static void info(const char* fmt, const Args&... args)
-		{ get().Default->info(fmt, args...); }
+        template <typename T, typename ... Args>
+        void createOutput(Args&&... args)
+        {
+            _outputs.add(YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...));
+        }
 
-		template <typename... Args> static void warn(const char* fmt, const Args&... args)
-		{ get().Default->warn(fmt, args...); }
+        static void setLogLevel(LogLevel::TYPE level)
+        { get()._log_level = level; }
 
-		template <typename... Args> static void error(const char* fmt, const Args&... args)
-		{ get().Default->error(fmt, args...); }
+        template <typename... Args> static void log(LogLevel::TYPE lvl, const char* fmt, const Args&... args)
+        {
+            if (lvl < get()._log_level) return;
 
-		template <typename... Args> static void critical(const char* fmt, const Args&... args)
-		{ get().Default->critical(fmt, args...); }
+            fmt::MemoryWriter raw;
+            raw.write(fmt, args...);
 
-		spdlog::logger* operator->()
-		{
-			return Default.get();
-		}
+            for (auto* output : get()._outputs)
+            {
+                output->PrintMessage(lvl, raw.c_str());
+            }
+        }
 
-		inline void destroy()
-		{
-			spdlog::drop(defaultSinkName);
-		}
-	};
+        template <typename... Args> static void log(LogLevel::TYPE lvl, const char* msg)
+        {
+            if (lvl < get()._log_level) return;
+
+            for (auto* output : get()._outputs)
+            {
+                output->PrintMessage(lvl, msg);
+            }
+        }
+
+        template <typename... Args> static void trace(const char* fmt, const Args&... args)
+        { log(LogLevel::trace, fmt, args...); }
+
+        template <typename... Args> static void debug(const char* fmt, const Args&... args)
+        { log(LogLevel::debug, fmt, args...); }
+
+        template <typename... Args> static void info(const char* fmt, const Args&... args)
+        { log(LogLevel::info, fmt, args...); }
+
+        template <typename... Args> static void warn(const char* fmt, const Args&... args)
+        { log(LogLevel::warn, fmt, args...); }
+
+        template <typename... Args> static void error(const char* fmt, const Args&... args)
+        { log(LogLevel::error, fmt, args...); }
+
+        template <typename... Args> static void critical(const char* fmt, const Args&... args)
+        { log(LogLevel::critical, fmt, args...); }
+    };
 }
 
-#endif //GAME_LOGGER_H
+#endif //YAGE_LOGGER_H

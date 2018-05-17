@@ -13,60 +13,60 @@
 
 namespace Resources
 {
-	MeshLoader::MeshLoader(Memory::IMemoryBlock& memory, MeshManager& manager)
-		: _memory(memory), _manager(manager)
-	{
+    MeshLoader::MeshLoader(Memory::IMemoryBlock& memory, MeshManager& manager)
+        : _memory(memory), _manager(manager)
+    {
 
-	}
+    }
 
-	MeshLoader::~MeshLoader()
-	{
+    MeshLoader::~MeshLoader()
+    {
 
-	}
+    }
 
-	MeshLoader& MeshLoader::fromPath(const char *path)
-	{
-		filePath = path;
-		return *this;
-	}
+    MeshLoader& MeshLoader::fromPath(const char *path)
+    {
+        filePath = path;
+        return *this;
+    }
 
-	Core::Mesh::handle_t MeshLoader::buildFromScene(const aiScene *scene, const char* meshName) const
-	{
-		MeshBuilder builder(_memory, _manager);
+    Core::Mesh::handle_t MeshLoader::buildFromScene(const aiScene *scene, const char* meshName) const
+    {
+        MeshBuilder builder(_memory, _manager);
 
-		builder.withIndexType<std::uint32_t>();
+        builder.withIndexType<std::uint32_t>();
 
-		for(auto i = 0; i < scene->mNumMeshes; i++)
-		{
+        for(auto i = 0; i < scene->mNumMeshes; i++)
+        {
 
-		}
+        }
 
-		return builder.build(meshName);
-	}
+        return builder.build(meshName);
+    }
 
-	Core::Mesh::handle_t MeshLoader::build(const char* meshName) const
-	{
-		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile (
-			filePath,
-			aiProcess_Triangulate |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_SortByPType
-		);
+    Core::Mesh::handle_t MeshLoader::build(const char* meshName) const
+    {
+        Assimp::Importer importer;
+        const aiScene* scene = importer.ReadFile (
+            filePath,
+            aiProcess_Triangulate |
+            aiProcess_JoinIdenticalVertices |
+            aiProcess_SortByPType
+        );
 
-		if(!scene)
-		{
-			const char* errMessage = importer.GetErrorString();
-			Core::Logger::get()->error (
-				"MeshLoader : Unable to load mesh!\t\nfile : '{}',\nreason : {}",
-				filePath, errMessage
-			);
+        if(!scene)
+        {
+            const char* errMessage = importer.GetErrorString();
+            Core::Logger::error (
+                "MeshLoader : Unable to load mesh!\t\nfile : '{}',\nreason : {}",
+                filePath, errMessage
+            );
 
-			return Core::Mesh::handle_t::invalid();
-		}
-		else
-		{
-			return buildFromScene(scene, meshName);
-		}
-	}
+            return Core::Mesh::handle_t::invalid();
+        }
+        else
+        {
+            return buildFromScene(scene, meshName);
+        }
+    }
 }

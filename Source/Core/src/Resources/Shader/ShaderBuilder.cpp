@@ -31,7 +31,7 @@ namespace Resources
         }
     }
 
-    ShaderBuilder::handle_t ShaderBuilder::debugBuild(const char *programName)
+    ShaderBuilder::handle_t ShaderBuilder::debugBuild(const std::string& programName)
     {
         Gfx::ShaderProgram* program = nullptr;
 
@@ -55,7 +55,7 @@ namespace Resources
         {
             if (!shader->isCompiled())
             {
-                Core::Logger::get()->error("Unable to create shader program '{}', cause 'sub shader not compiled'", programName);
+                Core::Logger::error("Unable to create shader program '{}', cause 'sub shader not compiled'", programName);
                 return handle_t::invalid();
             }
         }
@@ -64,7 +64,7 @@ namespace Resources
         {
             if (!shader->isCompiled())
             {
-                Core::Logger::get()->error("Unable to create shader program '{}', cause 'sub shader not compiled'", programName);
+                Core::Logger::error("Unable to create shader program '{}', cause 'sub shader not compiled'", programName);
                 return handle_t::invalid();
             }
         }
@@ -207,7 +207,7 @@ namespace Resources
 
             gl::GetShaderInfoLog(shader, bufferSize, &bufferSize, string.begin());
 
-            Core::Logger::get()->error("Unable to compile shader '{}', cause :\n{}", shader._type, string.c_str());
+            Core::Logger::error("Unable to compile shader '{}', cause :\n{}", shader._type, string.c_str());
 
             shader._isCompiled = false;
         }
@@ -233,7 +233,7 @@ namespace Resources
 
             gl::GetProgramInfoLog(program, bufferSize, &bufferSize, string.begin());
 
-            Core::Logger::get()->error("Unable to link shader program '{}', cause :\n{}", program.Name, string.c_str());
+            Core::Logger::error("Unable to link shader program '{}', cause :\n{}", program.Name, string.c_str());
         }
     }
 }

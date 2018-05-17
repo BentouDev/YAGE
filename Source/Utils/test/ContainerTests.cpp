@@ -9,22 +9,23 @@
 #include "Utils/Handle.h"
 #include "Utils/Container.h"
 #include "Utils/ScopeGuard.h"
+#include "MockHelper.h"
 
 extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace MemoryTests
 {
-	typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
+    typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
 
     constexpr uint32_t fooConst = 0xF00BACEC;
 
-	template <typename TMock>
-	class IFooMock
-	{
-	public:
-		virtual ~IFooMock() { test = 0; /*Die();*/ }
+    template <typename TMock>
+    class IFooMock
+    {
+    public:
+        virtual ~IFooMock() { test = 0; /*Die();*/ }
         IFooMock() : Handle(), test(fooConst) {}
-		explicit IFooMock(unsigned t) : Handle(), test(t) {}
+        explicit IFooMock(unsigned t) : Handle(), test(t) {}
 
         IFooMock(IFooMock&& other) : Handle(), test(other.test) { }
 
@@ -32,14 +33,14 @@ namespace MemoryTests
         IFooMock& operator=(const IFooMock&) = delete;
         IFooMock& operator=(IFooMock&&) = delete;
 
-		Utils::Handle<TMock> Handle;
-		unsigned test;
+        Utils::Handle<TMock> Handle;
+        unsigned test;
 
-		uint32_t Quack()
-		{ return test; }
-	};
+        uint32_t Quack()
+        { return test; }
+    };
 
-	class FooMock : public trompeloeil::deathwatched<IFooMock<FooMock>>
+    class FooMock : public trompeloeil::deathwatched<IFooMock<FooMock>>
     {
     public:
         explicit FooMock(unsigned t = fooConst)
@@ -47,52 +48,52 @@ namespace MemoryTests
         { }
     };
 
-	class FooTrait
-	{
-	public:
-		using object_t = FooMock;
-		using handle_t = Utils::Handle<FooMock>;
+    class FooTrait
+    {
+    public:
+        using object_t = FooMock;
+        using handle_t = Utils::Handle<FooMock>;
 
-		inline static void cleanUp(object_t& first)
-		{
+        inline static void cleanUp(object_t& first)
+        {
 
-		}
+        }
 
-		inline static void swap(object_t& first, object_t& second) noexcept
-		{
+        inline static void swap(object_t& first, object_t& second) noexcept
+        {
 
-		}
+        }
 
-		inline static void incrementLiveId(Utils::Index<handle_t>& index) noexcept
-		{
-			index.handle.liveId++;
-		}
+        inline static void incrementLiveId(Utils::Index<handle_t>& index) noexcept
+        {
+            index.handle.liveId++;
+        }
 
-		inline static void setIndex(Utils::Index<handle_t>& index, uint16_t i) noexcept
-		{
-			index.handle.index = i;
-		}
+        inline static void setIndex(Utils::Index<handle_t>& index, uint16_t i) noexcept
+        {
+            index.handle.index = i;
+        }
 
-		inline static uint16_t getIndex(Utils::Index<handle_t>& index) noexcept
-		{
-			return index.handle.index;
-		}
+        inline static uint16_t getIndex(Utils::Index<handle_t>& index) noexcept
+        {
+            return index.handle.index;
+        }
 
-		inline static uint16_t getIndex(handle_t _handle) noexcept
-		{
-			return _handle.index;
-		}
+        inline static uint16_t getIndex(handle_t _handle) noexcept
+        {
+            return _handle.index;
+        }
 
-		inline static void setHandle(object_t& obj, handle_t& _handle) noexcept
-		{
-			obj.Handle = _handle;
-		}
+        inline static void setHandle(object_t& obj, handle_t& _handle) noexcept
+        {
+            obj.Handle = _handle;
+        }
 
-		inline static handle_t& getHandle(object_t& obj) noexcept
-		{
-			return obj.Handle;
-		}
-	};
+        inline static handle_t& getHandle(object_t& obj) noexcept
+        {
+            return obj.Handle;
+        }
+    };
 
     TEST_CASE("ContainerTest")
     {
@@ -194,10 +195,11 @@ namespace MemoryTests
 
             REQUIRE(container->size() == count);
 
-            //for (int i = 0; i < count; i++)
-            //    REQUIRE_DESTRUCTION(container->at(i));
+            TDestructionReqVec vec;
+            for (int i = 0; i < count; i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(container->at(i)));
 
-            //container->clear();
+            container->clear();
         }
 
         SECTION("CanRemoveItemFromMiddleOfContainer")

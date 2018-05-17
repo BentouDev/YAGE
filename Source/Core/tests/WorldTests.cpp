@@ -17,82 +17,82 @@
 
 using MemoryBlock = Memory::MemoryBlock
 <
-	Memory::FreeListAllocator,
-	Memory::NoMemoryBoundChecker,
-	Memory::NoMemoryTracker
+    Memory::FreeListAllocator,
+    Memory::NoMemoryBoundChecker,
+    Memory::NoMemoryTracker
 >;
 
 extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace WorldTests
 {
-	struct MockCallback
-	{
-		MAKE_MOCK0(Call, void());
-	};
+    struct MockCallback
+    {
+        MAKE_MOCK0(Call, void());
+    };
 
-	class MockComponent : public Logic::Component<MockComponent>
-	{
-		MockCallback* dieCallback;
+    class MockComponent : public Logic::Component<MockComponent>
+    {
+        MockCallback* dieCallback;
 
-	public:
-		explicit MockComponent(MockCallback* callback = nullptr)
-			: dieCallback(callback)
-		{ };
+    public:
+        explicit MockComponent(MockCallback* callback = nullptr)
+            : dieCallback(callback)
+        { };
 
-		MockComponent(MockComponent&& other)
-			: dieCallback(other.dieCallback)
-		{
-			other.dieCallback = nullptr;
-		}
+        MockComponent(MockComponent&& other)
+            : dieCallback(other.dieCallback)
+        {
+            other.dieCallback = nullptr;
+        }
 
-		virtual ~MockComponent()
-		{
-			//if(dieCallback != nullptr)
-			//	dieCallback->Call();
-		}
-	};
+        virtual ~MockComponent()
+        {
+            //if(dieCallback != nullptr)
+            //	dieCallback->Call();
+        }
+    };
 
-	class MockSystem : public Logic::System<MockSystem, Logic::Requires<MockComponent>>
-	{
-		MockCallback* dieCallback;
-		MockCallback* addCallback;
-		MockCallback* removeCallback;
+    class MockSystem : public Logic::System<MockSystem, Logic::Requires<MockComponent>>
+    {
+        MockCallback* dieCallback;
+        MockCallback* addCallback;
+        MockCallback* removeCallback;
 
-	public:
-		explicit MockSystem(Memory::IMemoryBlock &memory,
-							MockCallback* destruct = nullptr,
-							MockCallback* addEntity = nullptr,
-							MockCallback* removeEntity = nullptr)
-			: System(memory), dieCallback(destruct),
-			  addCallback(addEntity), removeCallback(removeEntity)
-		{ }
+    public:
+        explicit MockSystem(Memory::IMemoryBlock &memory,
+                            MockCallback* destruct = nullptr,
+                            MockCallback* addEntity = nullptr,
+                            MockCallback* removeEntity = nullptr)
+            : System(memory), dieCallback(destruct),
+              addCallback(addEntity), removeCallback(removeEntity)
+        { }
 
-		virtual ~MockSystem()
-		{
-			//if(dieCallback != nullptr)
-			//	dieCallback->Call();
-		}
+        virtual ~MockSystem()
+        {
+            //if(dieCallback != nullptr)
+            //	dieCallback->Call();
+        }
 
-		void update(const Core::GameTime& time) override
-		{ }
+        void update(const Core::GameTime& time) override
+        { }
 
-		void addEntity(Utils::Handle<Logic::Entity> handle) override
-		{
-			if(addCallback != nullptr)
-				addCallback->Call();
+        void addEntity(Utils::Handle<Logic::Entity> handle) override
+        {
+            if(addCallback != nullptr)
+                addCallback->Call();
 
-			Logic::ISystem::addEntity(handle);
-		}
+            Logic::ISystem::addEntity(handle);
+        }
 
-		void removeEntity(Utils::Handle<Logic::Entity> handle) override
-		{
-			if(removeCallback != nullptr)
-				removeCallback->Call();
+        void removeEntity(Utils::Handle<Logic::Entity> handle) override
+        {
+            if(removeCallback != nullptr)
+                removeCallback->Call();
 
-			Logic::ISystem::removeEntity(handle);
-		}
-	};
+            Logic::ISystem::removeEntity(handle);
+        }
+    };
 
     TEST_CASE("WorldTest")
     {
@@ -103,7 +103,7 @@ namespace WorldTests
 
         masterMemory = malloc(memorySize);
         allocator = new Memory::FreeListAllocator(masterMemory, memorySize);
-        Core::Logger::get()->set_level(spdlog::level::critical);
+        Core::Logger::setLogLevel(Core::LogLevel::critical);
 
         YAGE_DISPOSE
         {
