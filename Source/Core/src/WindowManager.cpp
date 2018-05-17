@@ -32,7 +32,7 @@ namespace Core
     Window* WindowManager::tryGet(handle_t handle)
     {
         Window* result = nullptr;
-        if(_windowContainer.contains(handle))
+        if (_windowContainer.contains(handle))
         {
             result = &_windowContainer.get(handle);
         }
@@ -42,7 +42,7 @@ namespace Core
 
     void WindowManager::closeAllWindows()
     {
-        for(auto& window : _windowContainer)
+        for (auto& window : _windowContainer)
         {
             window.Destroy();
         }
@@ -62,10 +62,10 @@ namespace Core
 
     void WindowManager::handleWindowEvent(Window* window, const Event& event)
     {
-        if(window == nullptr)
+        if (window == nullptr)
             return;
 
-        switch(event.windowData.type)
+        switch (event.windowData.type)
         {
             case WindowEventType::FOCUS:
                 break;
@@ -96,7 +96,7 @@ namespace Core
     void WindowManager::handleWindowEvent(const Event& event)
     {
         auto* window = getWindowById(reinterpret_cast<std::uintptr_t>(event.window));
-        if(window != nullptr)
+        if (window != nullptr)
         {
             handleWindowEvent(window, event);
         }
@@ -106,9 +106,9 @@ namespace Core
     {
         bool result = true;
 
-        for(auto& window : _windowContainer)
+        for (auto& window : _windowContainer)
         {
-            if(window.IsAlive() && !window.ShouldClose())
+            if (window.IsAlive() && !window.ShouldClose())
             {
                 result = false;
                 break;

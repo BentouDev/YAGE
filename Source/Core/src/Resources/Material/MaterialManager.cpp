@@ -8,60 +8,55 @@
 
 namespace Resources
 {
-	MaterialManager::MaterialManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
-		: IManager(engine, memory), _materialContainer(_memory)
-	{
-		Core::Logger::get()->info("Created material manager with capacity {}", _materialContainer.capacity());
-	}
+    MaterialManager::MaterialManager(Core::Engine& engine, Memory::IMemoryBlock& memory)
+        : IManager(engine, memory), _materialContainer(_memory)
+    {
+        Core::Logger::info("Created material manager with capacity {}", _materialContainer.capacity());
+    }
 
-	MaterialManager::~MaterialManager() noexcept
-	{
-		disposeAll();
-	}
+    MaterialManager::~MaterialManager() noexcept
+    {
+        disposeAll();
+    }
 
-	void MaterialManager::disposeAll()
-	{
-		Core::Logger::get()->info("Releasing all materials...");
+    void MaterialManager::disposeAll()
+    {
+        Core::Logger::info("Releasing all materials...");
 
-		for(Core::Material& material : _materialContainer)
-		{
-			disposeMaterial(material);
-		}
+        _materialContainer.clear();
 
-		_materialContainer.clear();
+        Core::Logger::info("Released all materials");
+    }
 
-		Core::Logger::get()->info("Released all materials");
-	}
+    Core::Material* MaterialManager::tryGetMaterial(handle_t handle)
+    {
+        Core::Material* ptr = nullptr;
+        if(_materialContainer.contains(handle))
+        {
+            ptr = &getMaterial(handle);
+        }
+        return ptr;
+    }
 
-	Core::Material* MaterialManager::tryGetMaterial(handle_t handle)
-	{
-		Core::Material* ptr = nullptr;
-		if(_materialContainer.contains(handle))
-		{
-			ptr = &getMaterial(handle);
-		}
-		return ptr;
-	}
+    void MaterialManager::disposeMaterial(Core::Material &material)
+    {
+        disposeMaterial(material.Handle);
+    }
 
-	void MaterialManager::disposeMaterial(Core::Material &material)
-	{
-		disposeMaterial(material.Handle);
-	}
+    void MaterialManager::disposeMaterial(handle_t handle)
+    {
+        // TODO: ADDITIONAL THINGS, LIKE STATIC BUFFER INVALIDATION
 
-	void MaterialManager::disposeMaterial(handle_t handle)
-	{
-		// TODO: ADDITIONAL THINGS, LIKE STATIC BUFFER INVALIDATION
+        _materialContainer.remove(handle);
+    }
 
-		_materialContainer.remove(handle);
-	}
+    void MaterialManager::uploadToBuffer(handle_t handle)
+    {
+        Core::Material* material = tryGetMaterial(handle);
 
-	void MaterialManager::uploadToBuffer(handle_t handle)
-	{
-		Core::Material* material = tryGetMaterial(handle);
-
-		if(material == nullptr)
-			return;
+        if(material == nullptr)
+            return;
 
 
-	}
+    }
 }

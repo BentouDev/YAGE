@@ -12,169 +12,169 @@
 
 namespace Yage
 {
-	Game::Game()
-		: engine(nullptr),
-		  persistentBlock    (nullptr),
-		  frameBlock         (nullptr),
-		  persistentBlockSize(Memory::KB(100)),
-		  frameBlockSize     (Memory::KB(100))
-	{
-		Core::Logger::info("Game : instance created!");
-	}
+    Game::Game()
+        : engine(nullptr),
+          persistentBlock    (nullptr),
+          frameBlock         (nullptr),
+          persistentBlockSize(Memory::KB(100)),
+          frameBlockSize     (Memory::KB(100))
+    {
+        Core::Logger::info("Game : instance created!");
+    }
 
-	Game::~Game()
-	{
-		if (engine != nullptr && !engine->WasCleanedUp())
-		{
-			Core::Logger::warn("Game : Cleanup was not called until Game destructor!");
-			CleanUp();
-		}
-	}
+    Game::~Game()
+    {
+        if (engine != nullptr && !engine->WasCleanedUp())
+        {
+            Core::Logger::warn("Game : Cleanup was not called until Game destructor!");
+            CleanUp();
+        }
+    }
 
-	Memory::IMemoryBlock& Game::getFrameBlock() const
-	{
-		YAGE_ASSERT(frameBlock != nullptr, "Game : Cannot use frameBlock before initialization!");
-		return *frameBlock;
-	}
+    Memory::IMemoryBlock& Game::getFrameBlock() const
+    {
+        YAGE_ASSERT(frameBlock != nullptr, "Game : Cannot use frameBlock before initialization!");
+        return *frameBlock;
+    }
 
-	Memory::IMemoryBlock& Game::getPersistentBlock() const
-	{
-		YAGE_ASSERT(persistentBlock != nullptr, "Game : Cannot use persistentBlock before initialization!");
-		return *persistentBlock;
-	}
+    Memory::IMemoryBlock& Game::getPersistentBlock() const
+    {
+        YAGE_ASSERT(persistentBlock != nullptr, "Game : Cannot use persistentBlock before initialization!");
+        return *persistentBlock;
+    }
 
-	Gfx::Camera& Game::getDefaultCamera() const
-	{
-		YAGE_ASSERT(defaultCamera != nullptr, "Game : Cannot use defaultCamera before initialization!");
-		return *defaultCamera;
-	}
+    Gfx::Camera& Game::getDefaultCamera() const
+    {
+        YAGE_ASSERT(defaultCamera != nullptr, "Game : Cannot use defaultCamera before initialization!");
+        return *defaultCamera;
+    }
 
-	Core::Window& Game::getWindow() const
-	{
-		YAGE_ASSERT(window != nullptr, "Game : Cannot use window before initialization!");
-		return *window;
-	}
+    Core::Window& Game::getWindow() const
+    {
+        YAGE_ASSERT(window != nullptr, "Game : Cannot use window before initialization!");
+        return *window;
+    }
 
-	void Game::Run(const char* name)
-	{
-		Core::Engine engine(name, Memory::MB(20));
-		{
-			Init   (&engine);
-			Loop   ();
-			CleanUp();
-		}
-	}
+    void Game::Run(const char* name)
+    {
+        Core::Engine engine(name, Memory::MB(20));
+        {
+            Init   (&engine);
+            Loop   ();
+            CleanUp();
+        }
+    }
 
-	void Game::OnInit()
-	{ }
+    void Game::OnInit()
+    { }
 
-	void Game::OnCleanUp()
-	{ }
+    void Game::OnCleanUp()
+    { }
 
-	void Game::OnUpdate(Core::GameTime &gameTime)
-	{ }
+    void Game::OnUpdate(Core::GameTime &gameTime)
+    { }
 
-	void Game::OnPreDraw(Core::GameTime &gameTime)
-	{ }
+    void Game::OnPreDraw(Core::GameTime &gameTime)
+    { }
 
-	void Game::OnPostDraw(Core::GameTime &gameTime)
-	{ }
+    void Game::OnPostDraw(Core::GameTime &gameTime)
+    { }
 
-	void Game::Init(Core::Engine* engineInstance)
-	{
-		Core::Logger::setLogLevel(Core::LogLevel::debug);
+    void Game::Init(Core::Engine* engineInstance)
+    {
+        Core::Logger::setLogLevel(Core::LogLevel::debug);
 
-		if (engineInstance == nullptr)
-		{
-			Core::Logger::critical("Game : cannot start without engine! Did you forget to create it?");
-			return;
-		}
+        if (engineInstance == nullptr)
+        {
+            Core::Logger::critical("Game : cannot start without engine! Did you forget to create it?");
+            return;
+        }
 
-		engine = engineInstance;
+        engine = engineInstance;
 
-		engine->LoadConfig();
-		engine->Initialize();
+        engine->LoadConfig();
+        engine->Initialize();
 
-		persistentBlock	= &engine->MemoryModule->requestMemoryBlock(persistentBlockSize, "GamePersistentBlock");
-		frameBlock		= &engine->MemoryModule->requestMemoryBlock(frameBlockSize,      "GameFrameBlock");
-		defaultCamera	= &engine->Renderer->createCamera();
+        persistentBlock	= &engine->MemoryModule->requestMemoryBlock(persistentBlockSize, "GamePersistentBlock");
+        frameBlock		= &engine->MemoryModule->requestMemoryBlock(frameBlockSize,      "GameFrameBlock");
+        defaultCamera	= &engine->Renderer->createCamera();
 
-		auto windowHandle = engine->CreateWindow();
+        auto windowHandle = engine->CreateWindow();
 
-		window = &engine->WindowManager->get(windowHandle);
-		window->Show();
+        window = &engine->WindowManager->get(windowHandle);
+        window->Show();
 
-		getDefaultCamera().setRenderTarget(window->GetDefaultViewport());
+        getDefaultCamera().setRenderTarget(window->GetDefaultViewport());
 
-		this->OnInit();
-	}
+        this->OnInit();
+    }
 
-	void Game::Loop()
-	{
-		Core::GameTime time;
+    void Game::Loop()
+    {
+        Core::GameTime time;
 
-		frames 			= 0;
-		fpsTime			= 0.0;
-		lagAccumulator	= 0.0;
-		lastTime		= engine->GetCurrentTime();
+        frames 			= 0;
+        fpsTime			= 0.0;
+        lagAccumulator	= 0.0;
+        lastTime		= engine->GetCurrentTime();
 
-		while (!engine->ShouldClose())
-		{
-			Update(time);
-		}
-	}
+        while (!engine->ShouldClose())
+        {
+            Update(time);
+        }
+    }
 
-	void Game::Update(Core::GameTime& time)
-	{
-		double current	= engine->GetCurrentTime();
-		double elapsed	= current - lastTime;
-		lastTime		= current;
-		lagAccumulator += elapsed;
+    void Game::Update(Core::GameTime& time)
+    {
+        double current	= engine->GetCurrentTime();
+        double elapsed	= current - lastTime;
+        lastTime		= current;
+        lagAccumulator += elapsed;
 
-		time.Time 	  += elapsed;
-		time.FrameTime = elapsed;
+        time.Time 	  += elapsed;
+        time.FrameTime = elapsed;
 
-		engine->ProcessEvents(time);
+        engine->ProcessEvents(time);
 
-		while (lagAccumulator >= time.FixedDeltaTime)
-		{
-			engine->Update(time);
+        while (lagAccumulator >= time.FixedDeltaTime)
+        {
+            engine->Update(time);
 
-			time.DeltaTime = time.FixedDeltaTime * time.Speed;
-			OnUpdate(time);
+            time.DeltaTime = time.FixedDeltaTime * time.Speed;
+            OnUpdate(time);
 
-			lagAccumulator -= time.FixedDeltaTime;
+            lagAccumulator -= time.FixedDeltaTime;
 
-			frames++;
-			fpsTime += time.FixedDeltaTime;
-		}
+            frames++;
+            fpsTime += time.FixedDeltaTime;
+        }
 
-		time.DeltaTime = elapsed;//lagAccumulator / time.FixedDeltaTime;
-		OnPreDraw(time);
-		engine->Draw(*window, time);
-		OnPostDraw(time);
+        time.DeltaTime = elapsed;//lagAccumulator / time.FixedDeltaTime;
+        OnPreDraw(time);
+        engine->Draw(*window, time);
+        OnPostDraw(time);
 
-		if (fpsTime >= 1.0f)
-		{
-			time.Fps	= frames / fpsTime;
-			frames		= 0;
-			fpsTime		= 0.0f;
-		}
-	}
+        if (fpsTime >= 1.0f)
+        {
+            time.Fps	= frames / fpsTime;
+            frames		= 0;
+            fpsTime		= 0.0f;
+        }
+    }
 
-	void Game::CleanUp()
-	{
-		this->OnCleanUp();
+    void Game::CleanUp()
+    {
+        this->OnCleanUp();
 
-		Memory::Delete(engine->Renderer->getMemoryBlock(), defaultCamera);
+        Memory::Delete(engine->Renderer->getMemoryBlock(), defaultCamera);
 
-		engine->MemoryModule->freeMemoryBlock(persistentBlock);
-		engine->MemoryModule->freeMemoryBlock(frameBlock);
+        // engine->MemoryModule->freeMemoryBlock(persistentBlock);
+        // engine->MemoryModule->freeMemoryBlock(frameBlock);
 
-		window->Destroy();
-		engine->CleanUp();
+        window->Destroy();
+        engine->CleanUp();
 
-		window = nullptr;
-		engine = nullptr;
-	}
+        window = nullptr;
+        engine = nullptr;
+    }
 }

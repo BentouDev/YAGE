@@ -13,103 +13,103 @@
 
 namespace Resources
 {
-	class ShaderBuilder;
+    class ShaderBuilder;
 }
 
 namespace Gfx
 {
-	enum ShaderType : GLenum
-	{
-		VERTEX 	 = gl::VERTEX_SHADER,
-		GEOMETRY = gl::GEOMETRY_SHADER,
-		FRAGMENT = gl::FRAGMENT_SHADER
-	};
+    enum ShaderType : GLenum
+    {
+        VERTEX 	 = gl::VERTEX_SHADER,
+        GEOMETRY = gl::GEOMETRY_SHADER,
+        FRAGMENT = gl::FRAGMENT_SHADER
+    };
 
-	class Shader
-	{
-	friend class Resources::ShaderBuilder;
+    class Shader
+    {
+    friend class Resources::ShaderBuilder;
 
-		ShaderType	_type;
-		GLuint 		_handle;
-		bool 		_isCompiled;
+        ShaderType	_type;
+        GLuint 		_handle;
+        bool 		_isCompiled;
 
-	public:
-		explicit inline Shader(ShaderType type) : _type(type), _handle(0), _isCompiled(false)
-		{
-			_handle = gl::CreateShader(type);
-		}
+    public:
+        explicit inline Shader(ShaderType type) : _type(type), _handle(0), _isCompiled(false)
+        {
+            _handle = gl::CreateShader(type);
+        }
 
-		~Shader() noexcept
-		{
-			gl::DeleteShader(_handle);
-		}
+        ~Shader() noexcept
+        {
+            gl::DeleteShader(_handle);
+        }
 
-		Shader(const Shader& shader)
-			: _type(shader._type), _handle(shader._handle), _isCompiled(shader._isCompiled)
-		{ }
+        Shader(const Shader& shader)
+            : _type(shader._type), _handle(shader._handle), _isCompiled(shader._isCompiled)
+        { }
 
-		Shader(Shader&& shader)
-			: _type(shader._type), _handle(shader._handle), _isCompiled(shader._isCompiled)
-		{ }
+        Shader(Shader&& shader)
+            : _type(shader._type), _handle(shader._handle), _isCompiled(shader._isCompiled)
+        { }
 
-		Shader& operator= (const Shader& shader)
-		{
-			Shader tmp(shader);
-			*this = std::move(tmp);
-			return *this;
-		}
+        Shader& operator= (const Shader& shader)
+        {
+            Shader tmp(shader);
+            *this = std::move(tmp);
+            return *this;
+        }
 
-		Shader& operator= (Shader&& other) noexcept
-		{
-			gl::DeleteShader(_handle);
-			_handle = other._handle;
-			_type = other._type;
-			_isCompiled = other._isCompiled;
-			other._handle = 0;
-			return *this;
-		}
+        Shader& operator= (Shader&& other) noexcept
+        {
+            gl::DeleteShader(_handle);
+            _handle = other._handle;
+            _type = other._type;
+            _isCompiled = other._isCompiled;
+            other._handle = 0;
+            return *this;
+        }
 
-		inline operator GLuint() const noexcept
-		{ return _handle; }
+        inline operator GLuint() const noexcept
+        { return _handle; }
 
-		inline bool isCompiled() const noexcept
-		{ return _isCompiled; }
-	};
+        inline bool isCompiled() const noexcept
+        { return _isCompiled; }
+    };
 
-	DECL_RESOURCE(ShaderProgram)
-	{
-		GLuint _handle;
+    DECL_RESOURCE(ShaderProgram)
+    {
+        GLuint _handle;
 
-	public:
-		ShaderProgram() : _handle(0) { }
+    public:
+        ShaderProgram() : _handle(0) { }
 
-		ShaderProgram(const ShaderProgram&) = delete;
-		ShaderProgram& operator=(const ShaderProgram&) = delete;
-		ShaderProgram& operator=(ShaderProgram&&) = delete;
+        ShaderProgram(const ShaderProgram&) = delete;
+        ShaderProgram& operator=(const ShaderProgram&) = delete;
+        ShaderProgram& operator=(ShaderProgram&&) = delete;
 
-		ShaderProgram(ShaderProgram&& other)
-			: _handle(other._handle)
-		{
-			other._handle = 0;
-		}
+        ShaderProgram(ShaderProgram&& other) noexcept
+            : _handle(other._handle)
+        {
+            other._handle = 0;
+        }
 
-		virtual ~ShaderProgram()
-		{
-			if(_handle > 0)
-			{
-				gl::DeleteProgram(_handle);
-			}
-		}
+        ~ShaderProgram()
+        {
+            if (_handle > 0)
+            {
+                gl::DeleteProgram(_handle);
+            }
+        }
 
-		void init(GLuint handle);
+        void init(GLuint handle);
 
-		inline operator GLuint() const noexcept
-		{ return _handle; }
+        inline operator GLuint() const noexcept
+        { return _handle; }
 
-		inline void bind() const noexcept;
-	};
+        inline void bind() const noexcept;
+    };
 
-	class ShaderProgTrait : public Utils::DefaultTrait<ShaderProgram> {};
+    class ShaderProgTrait : public Utils::DefaultTrait<ShaderProgram> {};
 }
 
 #endif //GAME_SHADER_H

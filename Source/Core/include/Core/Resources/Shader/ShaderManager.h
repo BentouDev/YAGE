@@ -14,40 +14,41 @@
 
 namespace Core
 {
-	class Engine;
+    class Engine;
 }
 
 namespace Resources
 {
-	class ShaderManager : public Core::IManager
-	{
-		MANAGER(ShaderManager);
+    class ShaderManager : public Core::IManager
+    {
+        MANAGER(ShaderManager);
 
-	public:
-		using handle_t = Utils::Handle<Gfx::ShaderProgram>;
+    public:
+        using handle_t = Utils::Handle<Gfx::ShaderProgram>;
 
-	protected:
-		Utils::Container<Gfx::ShaderProgTrait> _shadersContainer;
+    protected:
+        Utils::Container<Gfx::ShaderProgTrait> _shadersContainer;
 
-		void dispose(Gfx::ShaderProgram&);
+        void dispose(Gfx::ShaderProgram&);
 
-	public:
-		explicit ShaderManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
-		virtual ~ShaderManager();
+    public:
+        explicit ShaderManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
+        virtual ~ShaderManager();
 
-		void dispose(handle_t);
+        void disposeAll();
+        void dispose(handle_t);
 
-		inline handle_t createNew()
-		{ return _shadersContainer.create(); }
+        inline handle_t createNew()
+        { return _shadersContainer.create(); }
 
-		inline Gfx::ShaderProgram& get(handle_t handle) const
-		{ return _shadersContainer.get(handle); }
+        inline Gfx::ShaderProgram& get(handle_t handle) const
+        { return _shadersContainer.get(handle); }
 
-		Gfx::ShaderProgram* tryGet(handle_t) const;
+        Gfx::ShaderProgram* tryGet(handle_t) const;
 
-		inline bool contains(handle_t handle) const
-		{ return _shadersContainer.contains(handle); }
-	};
+        inline bool contains(handle_t handle) const
+        { return _shadersContainer.contains(handle); }
+    };
 }
 
 #endif //GAME_SHADERMANAGER_H

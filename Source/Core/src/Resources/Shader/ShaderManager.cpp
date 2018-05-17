@@ -8,35 +8,43 @@
 
 namespace Resources
 {
-	ShaderManager::ShaderManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-	 : IManager(engine, memory), _shadersContainer(_memory)
-	{
-		Core::Logger::get()->info("Created shader manager with capacity {}", _shadersContainer.capacity());
-	}
+    ShaderManager::ShaderManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
+     : IManager(engine, memory), _shadersContainer(_memory)
+    {
+        Core::Logger::info("Created shader manager with capacity {}", _shadersContainer.capacity());
+    }
 
-	ShaderManager::~ShaderManager()
-	{
+    ShaderManager::~ShaderManager()
+    {
+        disposeAll();
+    }
 
-	}
+    void ShaderManager::disposeAll()
+    {
+        Core::Logger::info("Releasing all shaders...");
 
-	void ShaderManager::dispose(handle_t handle)
-	{
-		if(_shadersContainer.contains(handle))
-			dispose(_shadersContainer.get(handle));
-	}
+        _shadersContainer.clear();
 
-	void ShaderManager::dispose(Gfx::ShaderProgram&)
-	{
+        Core::Logger::info("Released all shaders");
+    }
 
-	}
+    void ShaderManager::dispose(handle_t handle)
+    {
+        _shadersContainer.remove(handle);
+    }
 
-	Gfx::ShaderProgram* ShaderManager::tryGet(handle_t handle) const
-	{
-		Gfx::ShaderProgram* ptr = nullptr;
-		if(_shadersContainer.contains(handle))
-		{
-			ptr = &get(handle);
-		}
-		return ptr;
-	}
+    void ShaderManager::dispose(Gfx::ShaderProgram& program)
+    {
+        dispose(program.Handle);
+    }
+
+    Gfx::ShaderProgram* ShaderManager::tryGet(handle_t handle) const
+    {
+        Gfx::ShaderProgram* ptr = nullptr;
+        if(_shadersContainer.contains(handle))
+        {
+            ptr = &get(handle);
+        }
+        return ptr;
+    }
 }

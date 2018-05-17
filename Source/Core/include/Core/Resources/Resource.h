@@ -14,31 +14,31 @@
 
 namespace Core
 {
-	template<typename Res>
-	class Resource
-	{
-	public:
-		using handle_t = Utils::Handle<Res>;
+    template<typename Res>
+    class Resource
+    {
+    public:
+        using handle_t = Utils::Handle<Res>;
 
-	protected:
-		explicit Resource() : Handle(), Name("none") { }
-		Resource(Resource&&) : Handle(), Name("none") { }
+    protected:
+        explicit Resource() : Handle(), Name("none") { }
+        Resource(Resource&&) noexcept : Handle(), Name("none") { }
 
-	public:
-		explicit Resource(const Resource&) = delete;
-		Resource& operator=(const Resource&) = delete;
-		Resource& operator=(Resource&&) = delete;
+    public:
+        explicit Resource(const Resource&) = delete;
+        Resource& operator=(const Resource&) = delete;
+        Resource& operator=(Resource&&) = delete;
 
-		virtual ~Resource(){ }
+        virtual ~Resource() = default;
 
-	//	virtual auto swap(Res& other) noexcept -> void = 0;
-	//	virtual auto cleanUp() noexcept -> void = 0;
+        //	virtual auto swap(Res& other) noexcept -> void = 0;
+    //	virtual auto cleanUp() noexcept -> void = 0;
 
-		handle_t 	Handle;
+        handle_t 	Handle;
 
-		// Todo : package reference
-		std::string Name;
-	};
+        // Todo : package reference
+        std::string Name;
+    };
 }
 
 #endif //YAGE_RESOURCE_H

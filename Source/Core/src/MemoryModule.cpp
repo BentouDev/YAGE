@@ -5,6 +5,7 @@
 #include <malloc.h>
 #include <Utils/SafeDelete.h>
 #include <Utils/LinearAllocator.h>
+#include <Core/Logger.h>
 #include "Core/MemoryModule.h"
 
 namespace Core
@@ -29,11 +30,14 @@ namespace Core
         MemoryBlockNode* node = _userBlocks;
         MemoryBlockNode* next = nullptr;
 
-        while(node != nullptr)
+        while (node != nullptr)
         {
-            result |= freeMemoryBlock(node->Ptr);
+            Core::Logger::trace("All : Free mem block {} at {}", node->Block->getName(), (void*)node);
+
+            result |= freeMemoryBlock(node->Block);
 
             next = node->Next;
+
             Memory::SafeDelete(node);
             node = next;
         }
@@ -51,7 +55,7 @@ namespace Core
             return false;
 
         Memory::IAllocator& allocator = block->getAllocator();
-        if(allocator.getUsedSize() != 0)
+        if (allocator.getUsedSize() != 0)
         {
             std::fprintf(stderr, "Block '%s' leaked '%zu' bytes\n", block->getName(), allocator.getUsedSize());
             return true;
@@ -62,17 +66,19 @@ namespace Core
 
     bool MemoryModule::freeMemoryBlock(Memory::IMemoryBlock* block)
     {
-        if(block == nullptr)
+        if (block == nullptr)
             return false;
 
-        MemoryBlockNode** ptr = &_userBlocks;
-        while(*ptr != nullptr && (*ptr)->Ptr != block)
-            ptr = &(*ptr)->Next;
+        MemoryBlockNode** ptr_to_node = &_userBlocks;
+        while (*ptr_to_node != nullptr && (*ptr_to_node)->Block != block)
+            ptr_to_node = &((*ptr_to_node)->Next);
 
-        if(*ptr != nullptr)
+        if (*ptr_to_node != nullptr && (*ptr_to_node)->Block != nullptr)
         {
-            void* memory = (*ptr)->Memory;
-            *ptr = (*ptr)->Next;
+            void* memory = (*ptr_to_node)->Memory;
+            (*ptr_to_node) = (*ptr_to_node)->Next;
+
+            Core::Logger::trace("Free mem block {} at {}", block->getName(), (void*)(*ptr_to_node));
 
             bool leaked = checkForLeak(block);
 
@@ -92,6 +98,8 @@ namespace Core
     {
         MemoryBlockNode* node = new MemoryBlockNode(block, _userBlocks, memoryStart);
         _userBlocks = node;
+
+        Core::Logger::trace("New mem block {} node at {}", block->getName(), (void*)node);
     }
 
     Memory::IMemoryBlock& MemoryModule::requestMemoryBlock(std::size_t blockSize, const char* name)

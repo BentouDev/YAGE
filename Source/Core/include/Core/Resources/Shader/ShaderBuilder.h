@@ -8,6 +8,8 @@
 #include <Utils/MemoryBlock.h>
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 
+#include <string>
+
 namespace Gfx
 {
     class Shader;
@@ -65,7 +67,7 @@ namespace Resources
         ShaderBuilder&	withFragmentFromFile(const char* path);
         ShaderBuilder&	withFragmentFromSource(const char* source);
 
-        handle_t		debugBuild(const char* programName);
+        handle_t		debugBuild(const std::string& programName);
     };
 }
 

@@ -11,234 +11,229 @@
 
 namespace Resources
 {
-	MeshManager::MeshManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: IManager(engine, memory), _schemeManager(_memory), _meshContainer(_memory), _schemeBuffers(_memory)
-	{
-		Core::Logger::get()->info("Created mesh manager with capacity {}", _meshContainer.capacity());
-	}
+    MeshManager::MeshManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
+        : IManager(engine, memory), _schemeManager(_memory), _meshContainer(_memory), _schemeBuffers(_memory)
+    {
+        Core::Logger::info("Created mesh manager with capacity {}", _meshContainer.capacity());
+    }
 
-	MeshManager::~MeshManager() noexcept
-	{
-		disposeAll();
-	}
+    MeshManager::~MeshManager() noexcept
+    {
+        disposeAll();
+    }
 
-	void MeshManager::disposeAll()
-	{
-		Core::Logger::get()->info("Releasing all meshes...");
+    void MeshManager::disposeAll()
+    {
+        Core::Logger::info("Releasing all meshes...");
 
-		for(Core::Mesh& mesh : _meshContainer)
-		{
-			disposeMesh(mesh);
-		}
+        _meshContainer.clear();
 
-		_meshContainer.clear();
+        Core::Logger::info("Released all meshes");
+    }
 
-		Core::Logger::get()->info("Released all meshes");
-	}
+    Core::Mesh* MeshManager::tryGetMesh(handle_t handle)
+    {
+        Core::Mesh* ptr = nullptr;
+        if (_meshContainer.contains(handle))
+        {
+            ptr = &getMesh(handle);
+        }
+        return ptr;
+    }
 
-	Core::Mesh* MeshManager::tryGetMesh(handle_t handle)
-	{
-		Core::Mesh* ptr = nullptr;
-		if(_meshContainer.contains(handle))
-		{
-			ptr = &getMesh(handle);
-		}
-		return ptr;
-	}
+    void MeshManager::disposeMesh(Core::Mesh &mesh)
+    {
+        disposeMesh(mesh.Handle);
+    }
 
-	void MeshManager::disposeMesh(Core::Mesh &mesh)
-	{
-		disposeMesh(mesh.Handle);
-	}
+    void MeshManager::disposeMesh(handle_t handle)
+    {
+        // TODO: ADDITIONAL THINGS, LIKE STATIC BUFFER INVALIDATION
 
-	void MeshManager::disposeMesh(handle_t handle)
-	{
-		// TODO: ADDITIONAL THINGS, LIKE STATIC BUFFER INVALIDATION
+        _meshContainer.remove(handle);
+    }
 
-		_meshContainer.remove(handle);
-	}
+    Gfx::StaticBuffer* MeshManager::findBestFitBuffer(MeshSchemeId scheme, std::size_t vertexCount, std::size_t indexCount)
+    {
+        Gfx::StaticBuffer* bestFitBuffer = nullptr;
+        std::size_t smallestDiff = vertexCount;
 
-	Gfx::StaticBuffer* MeshManager::findBestFitBuffer(MeshSchemeId scheme, std::size_t vertexCount, std::size_t indexCount)
-	{
-		Gfx::StaticBuffer* bestFitBuffer = nullptr;
-		std::size_t smallestDiff = vertexCount;
+        for (SchemeBuffer& schemeBuffer : _schemeBuffers)
+        {
+            if (schemeBuffer.getSchemeId() == scheme)
+            {
+                for (auto handle : schemeBuffer.getBuffers())
+                {
+                    Gfx::StaticBuffer& buffer = _engine.BufferManager.get().getBuffer(handle);
+                    if (buffer.hasSize(vertexCount, indexCount))
+                    {
+                        const std::size_t sizeDiff = buffer.getVertexCount() - buffer.getUsedVertexCount();
+                        if (sizeDiff < smallestDiff)
+                        {
+                            smallestDiff	= sizeDiff;
+                            bestFitBuffer	= &buffer;
+                        }
+                    }
+                }
+            }
+        }
 
-		for(SchemeBuffer& schemeBuffer : _schemeBuffers)
-		{
-			if(schemeBuffer.getSchemeId() == scheme)
-			{
-				for(auto handle : schemeBuffer.getBuffers())
-				{
-					Gfx::StaticBuffer& buffer = _engine.BufferManager.get().getBuffer(handle);
-					if(buffer.hasSize(vertexCount, indexCount))
-					{
-						const std::size_t sizeDiff = buffer.getVertexCount() - buffer.getUsedVertexCount();
-						if(sizeDiff < smallestDiff)
-						{
-							smallestDiff	= sizeDiff;
-							bestFitBuffer	= &buffer;
-						}
-					}
-				}
-			}
-		}
+        return bestFitBuffer;
+    }
 
-		return bestFitBuffer;
-	}
+    Gfx::StaticBuffer* MeshManager::getOrCreateBuffer(MeshSchemeId schemeID, std::size_t vertexCount, std::size_t indexCount)
+    {
+        Gfx::StaticBuffer* result = findBestFitBuffer(schemeID, vertexCount, indexCount);
 
-	Gfx::StaticBuffer* MeshManager::getOrCreateBuffer(MeshSchemeId schemeID, std::size_t vertexCount, std::size_t indexCount)
-	{
-		Gfx::StaticBuffer* result = findBestFitBuffer(schemeID, vertexCount, indexCount);
+        if(result == nullptr)
+        {
+            // Dereference scheme
+            // Calc vertex size
+            // Calc appropriate buffer size (1-2MB)
 
-		if(result == nullptr)
-		{
-			// Dereference scheme
-			// Calc vertex size
-			// Calc appropriate buffer size (1-2MB)
+            Core::MeshScheme* schemePtr = tryGetMeshScheme(schemeID);
 
-			Core::MeshScheme* schemePtr = tryGetMeshScheme(schemeID);
+            // TODO: log errors
+            if(schemePtr == nullptr)
+            {
+                return nullptr;
+            }
 
-			// TODO: log errors
-			if(schemePtr == nullptr)
-			{
-				return nullptr;
-			}
+            const Core::MeshScheme& scheme = (*schemePtr);
+            std::size_t vertexSize = 0;
 
-			const Core::MeshScheme& scheme = (*schemePtr);
-			std::size_t vertexSize = 0;
+            for(uint32_t i = 0; i < scheme.getPropertiesInfo().size(); i++)
+            {
+                const Core::MeshScheme::PropertyInfo& propInfo = scheme.getPropertiesInfo()[i];
+                vertexSize += propInfo.PropertySize * propInfo.PropertyCount;
+            }
 
-			for(uint32_t i = 0; i < scheme.getPropertiesInfo().size(); i++)
-			{
-				const Core::MeshScheme::PropertyInfo& propInfo = scheme.getPropertiesInfo()[i];
-				vertexSize += propInfo.PropertySize * propInfo.PropertyCount;
-			}
+            std::size_t maxVertexCount = Memory::MB(1) / vertexSize;
+            std::size_t maxIndexCount = Memory::MB(1) / scheme.getIndexSize();
 
-			std::size_t maxVertexCount = Memory::MB(1) / vertexSize;
-			std::size_t maxIndexCount = Memory::MB(1) / scheme.getIndexSize();
+            if(maxVertexCount < vertexCount)
+            {
+                maxVertexCount = vertexCount * vertexSize;
+            }
 
-			if(maxVertexCount < vertexCount)
-			{
-				maxVertexCount = vertexCount * vertexSize;
-			}
+            if(maxIndexCount < vertexCount)
+            {
+                maxIndexCount = vertexCount * scheme.getIndexSize();
+            }
 
-			if(maxIndexCount < vertexCount)
-			{
-				maxIndexCount = vertexCount * scheme.getIndexSize();
-			}
+            Gfx::StaticBuffer::handle_t	handle = _engine.BufferManager.get().createNew(vertexSize, scheme.getIndexSize(), maxVertexCount, maxIndexCount);
+            Gfx::StaticBuffer&			buffer = _engine.BufferManager.get().getBuffer(handle);
 
-			Gfx::StaticBuffer::handle_t	handle = _engine.BufferManager.get().createNew(vertexSize, scheme.getIndexSize(), maxVertexCount, maxIndexCount);
-			Gfx::StaticBuffer&			buffer = _engine.BufferManager.get().getBuffer(handle);
+            result = &buffer;
+        }
 
-			result = &buffer;
-		}
+        return result;
+    }
 
-		return result;
-	}
+    // TODO: Only prepare data to some pointer, then create separate CMD queue and do unsynchronized bit and fence sync!
+    bool MeshManager::uploadToBuffer(handle_t handle)
+    {
+        // TODO: log errors
+        Core::Mesh* meshPtr = tryGetMesh(handle);
 
-	// TODO: Only prepare data to some pointer, then create separate CMD queue and do unsynchronized bit and fence sync!
-	bool MeshManager::uploadToBuffer(handle_t handle)
-	{
-		// TODO: log errors
-		Core::Mesh* meshPtr = tryGetMesh(handle);
+        if(meshPtr == nullptr)
+            return false;
 
-		if(meshPtr == nullptr)
-			return false;
+        if(meshPtr->_buffer)
+        {
+            disposeMesh(meshPtr->Handle);
+        }
 
-		if(meshPtr->_buffer)
-		{
-			disposeMesh(meshPtr->Handle);
-		}
+        Core::MeshScheme* schemePtr = tryGetMeshScheme(meshPtr->getMeshSchemeId());
 
-		Core::MeshScheme* schemePtr = tryGetMeshScheme(meshPtr->getMeshSchemeId());
+        if(schemePtr == nullptr)
+            return false;
 
-		if(schemePtr == nullptr)
-			return false;
+        Core::Mesh&			mesh	= (*meshPtr);
+        Core::MeshScheme&	scheme	= (*schemePtr);
+        Core::MeshData&		data	= mesh.getMeshData();
 
-		Core::Mesh&			mesh	= (*meshPtr);
-		Core::MeshScheme&	scheme	= (*schemePtr);
-		Core::MeshData&		data	= mesh.getMeshData();
+        const std::size_t allVertexCount = mesh.getVertexCount();
+        const std::size_t allIndiceCount = mesh.getIndiceCount();
 
-		const std::size_t allVertexCount = mesh.getVertexCount();
-		const std::size_t allIndiceCount = mesh.getIndiceCount();
+        if(allVertexCount == 0 || allIndiceCount == 0)
+            return false;
 
-		if(allVertexCount == 0 || allIndiceCount == 0)
-			return false;
+        // Get buffer or create one
+        // Aquire pointer through mapping
 
-		// Get buffer or create one
-		// Aquire pointer through mapping
+        // GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_UNSYNCHRONIZED_BIT - requires fence sync!
+        Gfx::StaticBuffer* buffer = getOrCreateBuffer(mesh.getMeshSchemeId(), allVertexCount, allIndiceCount);
 
-		// GL_MAP_FLUSH_EXPLICIT_BIT | GL_MAP_UNSYNCHRONIZED_BIT - requires fence sync!
-		Gfx::StaticBuffer* buffer = getOrCreateBuffer(mesh.getMeshSchemeId(), allVertexCount, allIndiceCount);
+        if(buffer == nullptr)
+        {
+            return false;
+        }
 
-		if(buffer == nullptr)
-		{
-			return false;
-		}
+        void* vertexMapPtr	= buffer->mapVertexMemory(allVertexCount, gl::MAP_WRITE_BIT);
+        char* vertexPtr		= static_cast<char*>(vertexMapPtr);
 
-		void* vertexMapPtr	= buffer->mapVertexMemory(allVertexCount, gl::MAP_WRITE_BIT);
-		char* vertexPtr		= static_cast<char*>(vertexMapPtr);
+        OpenGL::checkError();
 
-		OpenGL::checkError();
+        for(uint32_t vertex = 0; vertex < allVertexCount; vertex++)
+        {
+            // for every vertex
+            // interleaved data
+            for(uint32_t i = 0; i < scheme.getPropertiesInfo().size(); i++)
+            {
+                // go through each property
+                const Core::MeshData::PropertyData&		propData	=   data.getPropertiesData()[i];
+                const Core::MeshScheme::PropertyInfo&	propInfo	= scheme.getPropertiesInfo()[i];
+                const std::size_t 						vertexSize	= propData.vertexSize();
+                const char*								dataPtr		= static_cast<const char*>(propData.getDataPtr());
 
-		for(uint32_t vertex = 0; vertex < allVertexCount; vertex++)
-		{
-			// for every vertex
-			// interleaved data
-			for(uint32_t i = 0; i < scheme.getPropertiesInfo().size(); i++)
-			{
-				// go through each property
-				const Core::MeshData::PropertyData&		propData	=   data.getPropertiesData()[i];
-				const Core::MeshScheme::PropertyInfo&	propInfo	= scheme.getPropertiesInfo()[i];
-				const std::size_t 						vertexSize	= propData.vertexSize();
-				const char*								dataPtr		= static_cast<const char*>(propData.getDataPtr());
+                dataPtr += vertex * vertexSize;//propInfo.PropertySize * propInfo.PropertyCount;
 
-				dataPtr += vertex * vertexSize;//propInfo.PropertySize * propInfo.PropertyCount;
+                // TODO: we may have some sort of alignment/offset here, get this from propInfo!
+                // push its data to pointer
+                memcpy(vertexPtr, dataPtr, vertexSize);
 
-				// TODO: we may have some sort of alignment/offset here, get this from propInfo!
-				// push its data to pointer
-				memcpy(vertexPtr, dataPtr, vertexSize);
+                // advance pointer by bytes
+                vertexPtr += vertexSize;
+            }
+        }
 
-				// advance pointer by bytes
-				vertexPtr += vertexSize;
-			}
-		}
+        buffer->unmapVertexMemory();
 
-		buffer->unmapVertexMemory();
+        void* indexMapPtr	= buffer->mapIndexMemory(allIndiceCount, gl::MAP_WRITE_BIT);
+        char* indexPtr		= static_cast<char*>(indexMapPtr);
 
-		void* indexMapPtr	= buffer->mapIndexMemory(allIndiceCount, gl::MAP_WRITE_BIT);
-		char* indexPtr		= static_cast<char*>(indexMapPtr);
+        std::size_t startingOffset	= buffer->getUsedIndexCount();
+        std::size_t indexSize		= scheme.getIndexSize();
 
-		std::size_t startingOffset	= buffer->getUsedIndexCount();
-		std::size_t indexSize		= scheme.getIndexSize();
+        for(Core::Submesh& submesh : mesh.getSubmeshes())
+        {
+            // push to IBO
+            // save baseVertex
 
-		for(Core::Submesh& submesh : mesh.getSubmeshes())
-		{
-			// push to IBO
-			// save baseVertex
+            const std::size_t submeshIndexSize = indexSize * submesh.getIndiceCount();
 
-			const std::size_t submeshIndexSize = indexSize * submesh.getIndiceCount();
+            memcpy(indexPtr, submesh.getIndicePtr(), submeshIndexSize);
 
-			memcpy(indexPtr, submesh.getIndicePtr(), submeshIndexSize);
+            indexPtr 			+= submeshIndexSize;
+            submesh._baseVertex  = startingOffset;
+            startingOffset		+= submesh.getIndiceCount();
+        }
 
-			indexPtr 			+= submeshIndexSize;
-			submesh._baseVertex  = startingOffset;
-			startingOffset		+= submesh.getIndiceCount();
-		}
+        buffer->unmapIndexMemory();
 
-		buffer->unmapIndexMemory();
+        // Set handle to buffer
+        mesh._buffer = buffer->Handle;
 
-		// Set handle to buffer
-		mesh._buffer = buffer->Handle;
+        // Get scheme
+        // Walk through scheme
+        // Calc Needed size
+        // Map Ptr of size from GPU
+        // Create particular vertices
+        // Pack them into pointer
+        // Upload pointer to GPU
+        // Unmap
 
-		// Get scheme
-		// Walk through scheme
-		// Calc Needed size
-		// Map Ptr of size from GPU
-		// Create particular vertices
-		// Pack them into pointer
-		// Upload pointer to GPU
-		// Unmap
-
-		return true;
-	}
+        return true;
+    }
 }

@@ -17,6 +17,7 @@
 #include <Utils/Color.hpp>
 #include <Utils/DefaultTrait.h>
 #include <Utils/LinearAllocator.h>
+#include <Core/Logger.h>
 
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Resources/Resource.h"
@@ -55,12 +56,14 @@ namespace Core
         uint32_t		_offset;
         GLint			_location;
         Core::Material&	_material;
+        std::string     _debugName;
 
     public:
-        explicit IAutoUniform(const char*, Core::Material&, const Resources::ShaderManager&);
+        explicit IAutoUniform(const char* name, Core::Material&, const Resources::ShaderManager&);
         virtual ~IAutoUniform() = default;
 
         virtual void set() = 0;
+        const std::string& getName() const { return _debugName; }
     };
 
     DECL_RESOURCE(Material)
@@ -92,7 +95,7 @@ namespace Core
 
     public:
         inline explicit Material(Memory::IMemoryBlock& memory)
-            : _memory(memory), _allocator(nullptr), _uniforms(_memory)
+            : _memory(memory), _allocator(nullptr), _uniforms(_memory), _textureIndex(0)
         { }
 
         Material(const Material&) = delete;
@@ -103,16 +106,18 @@ namespace Core
             : _memory(other._memory),
               _allocator(other._allocator),
               _uniforms(std::move(other._uniforms)),
-              _shader(std::move(other._shader))
+              _shader(std::move(other._shader)),
+              _textureIndex(0)
         {
             other._allocator = nullptr;
             other._shader = Utils::Handle<Gfx::ShaderProgram>::invalid();
         }
 
-        virtual ~Material()
+        ~Material()
         {
             for (IAutoUniform* uniform : _uniforms)
             {
+                Core::Logger::info("Delete uniform {}", uniform->getName());
                 Memory::Delete(_memory, uniform);
             }
 
@@ -193,6 +198,7 @@ namespace Core
     Core::Material& Material::addUniform(const char* name, const Resources::ShaderManager& manager)
     {
         IAutoUniform* uniform = YAGE_CREATE_NEW(_memory, AutoUniform<T>)(name, *this, manager);
+        Core::Logger::info("Created uniform {}", name);
         _uniformMap.emplace(name, _uniforms.size());
         _uniforms.add(uniform);
         return *this;
