@@ -5,10 +5,10 @@
 #include <Utils/MemorySizes.h>
 #include <Core/GameTime.h>
 #include "Core/Game.h"
-#include "Core/Logger.h"
 #include "Core/WindowManager.h"
 #include "Core/Gfx/Camera.h"
 #include "Core/Gfx/Renderer.h"
+#include "Core/Logger.h"
 
 namespace Yage
 {
