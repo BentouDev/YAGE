@@ -22,27 +22,27 @@
 
 namespace Core
 {
-	class Window;
-	class Logger;
+    class Window;
+    class Logger;
 }
 
 namespace OpenGL
 {
-	extern gl::exts::LoadTest didLoadFunctions;
+    extern gl::exts::LoadTest didLoadFunctions;
 
-	auto initialize() -> bool;
+    auto initialize() -> bool;
 
-	void beginDraw(const Core::Window& window);
+    void beginDraw(const Core::Window& window);
 
-	void endDraw(const Core::Window& window);
+    void endDraw(const Core::Window& window);
 
-	void resizeWindow(const Core::Window& window);
+    void resizeWindow(const Core::Window& window);
 
-	bool registerWindow(const Core::Window& window);
+    bool registerWindow(const Core::Window& window);
 
-	bool checkError();
+    bool checkError();
 
-	GLenum toOpenGlType(type_t type);
+    GLenum toOpenGlType(type_t type);
 }
 
 #endif //GAME_OPENGLBASE_H
