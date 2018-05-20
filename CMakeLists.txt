@@ -148,9 +148,7 @@ cmake_policy(POP)
 
 # Include all engine modules
 enable_testing()
-add_subdirectory(Source/Utils)
-add_subdirectory(Source/Core)
-add_subdirectory(Source/Script)
+add_subdirectory(Source/Engine)
 
 # Include Editor
 if(YAGE_BUILD_EDITOR)
@@ -159,6 +157,10 @@ endif(YAGE_BUILD_EDITOR)
 
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
 
+# Create log output directory
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/../Log)
+
+# Copy configuration
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPYONLY)
 
 # Evaluate test coverage when testing is enabled

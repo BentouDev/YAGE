@@ -31,7 +31,7 @@ target_compile_features(Editor
 # Disable static link of Qt
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
-target_link_libraries(Editor YAGE::Core Qt5::Core Qt5::Widgets ${OS_LIBS})
+target_link_libraries(Editor YAGE::Engine Qt5::Core Qt5::Widgets ${OS_LIBS})
 
 # 'make install' to the correct location
 install(TARGETS Editor
