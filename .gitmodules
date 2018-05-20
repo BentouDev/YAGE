@@ -1,36 +1,36 @@
-[submodule "Dependencies/GLM"]
-	path = Dependencies/GLM_src
+[submodule "Dependencies/GLM/Source"]
+	path = Dependencies/GLM/Source
 	url = https://github.com/g-truc/glm.git
-[submodule "Dependencies/CppLinq"]
-	path = Dependencies/CppLinq_src
+[submodule "Dependencies/CppLinq/Source"]
+	path = Dependencies/CppLinq/Source
 	url = https://github.com/mrange/cpplinq.git
-[submodule "Dependencies/GLFW"]
-	path = Dependencies/GLFW_src
+[submodule "Dependencies/GLFW/Source"]
+	path = Dependencies/GLFW/Source
 	url = https://github.com/glfw/glfw.git
 [submodule "Modules/CMake-codecov"]
 	path = Modules/CMake-codecov
 	url = git://github.com/RWTH-ELP/CMake-codecov.git
-[submodule "Dependencies/Json"]
-	path = Dependencies/Json_src
+[submodule "Dependencies/Json/Source"]
+	path = Dependencies/Json/Source
 	url = https://github.com/nlohmann/json.git
-[submodule "Dependencies/Spdlog"]
-	path = Dependencies/Spdlog_src
+[submodule "Dependencies/Spdlog/Source"]
+	path = Dependencies/Spdlog/Source
 	url = https://github.com/gabime/spdlog.git
-[submodule "Dependencies/Assimp"]
-	path = Dependencies/Assimp
+[submodule "Dependencies/Assimp/Source"]
+	path = Dependencies/Assimp/Source
 	url = https://github.com/assimp/assimp.git
-[submodule "Dependencies/Lodepng"]
-	path = Dependencies/Lodepng_src
+[submodule "Dependencies/Lodepng/Source"]
+	path = Dependencies/Lodepng/Source
 	url = https://github.com/lvandeve/lodepng.git
 [submodule "Modules/CMake-SDL2"]
 	path = Modules/CMake-SDL2
 	url = https://github.com/tcbrindle/sdl2-cmake-scripts.git
-[submodule "Dependencies/Utf8"]
-	path = Dependencies/Utf8_src
+[submodule "Dependencies/Utf8/Source"]
+	path = Dependencies/Utf8/Source
 	url = https://github.com/nemtrif/utfcpp.git
-[submodule "Dependencies/Catch2"]
-	path = Dependencies/Catch2_src
+[submodule "Dependencies/Catch2/Source"]
+	path = Dependencies/Catch2/Source
 	url = https://github.com/catchorg/Catch2.git
-[submodule "Dependencies/Trompeloeil"]
-	path = Dependencies/Trompeloeil_src
+[submodule "Dependencies/Trompeloeil/Source"]
+	path = Dependencies/Trompeloeil/Source
 	url = https://github.com/rollbear/trompeloeil.git
