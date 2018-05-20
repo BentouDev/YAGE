@@ -9,9 +9,6 @@ endif()
 
 project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
-# Supress warning for dependencies with old Cmake files
-cmake_policy(PUSH)
-
 option(YAGE_BUILD_TESTS "Build Tests" ${NOT_SUBPROJECT})
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
@@ -49,83 +46,43 @@ add_library(YAGE INTERFACE)
 find_package(Vulkan)
 
 # Add OpenGl
+set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL)
 
 # Add pThreads
 find_package(Threads)
 
 # Add GLFW
-set (GLFW_BUILD_DOCS OFF CACHE BOOL "")
-set (GLFW_BUILD_EXAMPLES OFF CACHE BOOL "")
-set (GLFW_BUILD_TESTS OFF CACHE BOOL "")
-
-yage_setup_dependency(GLFW
-        CONAN glfw/3.2.1.20180327@bincrafters/stable
-        TARGET glfw
-        SOURCE Dependencies/GLFW
-        INCLUDE Dependencies/GLFW/include)
-
-yage_include(YAGE ${GLFW_INCLUDE_DIR})
+yage_add_dependency(Dependencies/GLFW)
 
 # Add GLM
-yage_setup_dependency(GLM
-        SOURCE Dependencies/GLM
-        INCLUDE Dependencies/GLM)
-
-yage_include(YAGE ${GLM_INCLUDE_DIR})
+yage_add_dependency(Dependencies/GLM)
 
 # Add Assimp
-yage_setup_dependency(Assimp
-        CONAN Assimp/0.1@bentoudev/yage
-        VAR_NAME ASSIMP
-        TARGET assimp
-        SOURCE Dependencies/Assimp
-        INCLUDE Dependencies/Assimp/include)
-
-yage_include(YAGE ${ASSIMP_INCLUDE_DIR})
-
-# Windows needs zlibstatic and IrrXml in assimp export target
-if((NOT ${ASSIMP_FOUND}) AND (WIN32))
-    if(MINGW)
-        set(ASSIMP_TARGETS assimp zlibstatic)
-    else()
-        set(ASSIMP_TARGETS assimp zlibstatic)
-    endif()
-else()
-    set(ASSIMP_TARGETS ${ASSIMP_TARGET})
-endif()
+yage_add_dependency(Dependencies/Assimp)
 
 # Add Spdlog
-yage_setup_dependency(Spdlog
-        VAR_NAME SPDLOG
-        SOURCE Dependencies/Spdlog
-        INCLUDE Dependencies/Spdlog/include)
-
-yage_include(YAGE ${SPDLOG_INCLUDE_DIR})
+yage_add_dependency(Dependencies/Spdlog)
 
 # Add Json
-add_subdirectory(Dependencies/Json EXCLUDE_FROM_ALL)
-yage_include(YAGE Dependencies/Json/single_include)
+yage_add_dependency(Dependencies/Json)
 
 # Add Utf8
-yage_include(YAGE Dependencies/Utf8/source)
-add_library(utf8 STATIC Dependencies/Utf8/source/utf8.h Dependencies/Utf8/source/utf8/checked.h Dependencies/Utf8/source/utf8/core.h Dependencies/Utf8/source/utf8/unchecked.h)
-set_target_properties(utf8 PROPERTIES LINKER_LANGUAGE CXX)
+yage_add_dependency(Dependencies/Utf8)
 
 # Add CppLinq
 yage_include(YAGE Dependencies/CppLinq)
 
 # Add LodePng
-yage_include(YAGE Dependencies/Lodepng)
-add_library(lodepng STATIC Dependencies/Lodepng/lodepng.cpp Dependencies/Lodepng/lodepng.h)
+yage_add_dependency(Dependencies/Lodepng)
 
 if(YAGE_BUILD_TESTS)
     # Add codecov scripts module to cmake
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
     find_package(codecov REQUIRED)
 
-    include_directories(Dependencies/Catch2/single_include)
-    include_directories(Dependencies/Trompeloeil/include)
+    yage_add_dependency(Dependencies/Catch2)
+    yage_add_dependency(Dependencies/Trompeloeil)
 endif()
 
 # Add QT5 when building Editor
@@ -142,9 +99,6 @@ endif(YAGE_BUILD_EDITOR)
 if(YAGE_VALGRIND)
     find_package(Valgrind)
 endif(YAGE_VALGRIND)
-
-# Revert to standard policy
-cmake_policy(POP)
 
 # Include all engine modules
 enable_testing()

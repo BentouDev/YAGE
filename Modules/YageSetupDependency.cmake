@@ -2,8 +2,20 @@
 #
 # Includes directories both in current scope and for target
 function(yage_include NAME)
-	target_include_directories(${NAME} INTERFACE ${ARGN})
-	include_directories(${ARGN})
+    target_include_directories(${NAME} INTERFACE ${ARGN})
+    include_directories(${ARGN})
+endfunction()
+
+# Add Dependency
+#
+# Manages inclusion of cmake file and setting module path
+function(yage_add_dependency PATH)
+    get_filename_component(NAME ${PATH} NAME)
+
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PATH} ${CMAKE_MODULE_PATH} PARENT_SCOPE)
+    set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/${PATH} ${CMAKE_MODULE_PATH} )
+
+    include(${PATH}/${NAME}.cmake)
 endfunction()
 
 # Setup Dependency
@@ -37,62 +49,62 @@ function(yage_setup_dependency NAME)
         endif()
 
         if ((NOT DEP_PREFER STREQUAL "BUILD") AND (NOT ${${DEP_VAR_NAME}_FOUND}) AND (DEP_CONAN))
-			message ("-- yage: Search for " ${NAME} " in conan repositories")
+            message ("-- yage: Search for " ${NAME} " in conan repositories")
 
             conan_cmake_run(REQUIRES ${DEP_CONAN}
                 BASIC_SETUP)
 
-			set(${DEP_VAR_NAME}_CONAN_FOUND TRUE)
+            set(${DEP_VAR_NAME}_CONAN_FOUND TRUE)
             set(${DEP_VAR_NAME}_CONAN_FOUND TRUE PARENT_SCOPE)
 
-			if (CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE )
+            if (CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE )
 
-				foreach(CMAKE_BUILD_TYPE "RELEASE" "DEBUG")	
-					set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES})
-					set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
-					set(CONAN_${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR})
-				endforeach()
+                foreach(CMAKE_BUILD_TYPE "RELEASE" "DEBUG")
+                    set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES})
+                    set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
+                    set(CONAN_${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR})
+                endforeach()
 
-				#set(${DEP_VAR_NAME}_LIBRARIES  PARENT_SCOPE)
-				#set(${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR} PARENT_SCOPE)
-				set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR} PARENT_SCOPE)
+                #set(${DEP_VAR_NAME}_LIBRARIES  PARENT_SCOPE)
+                #set(${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR} PARENT_SCOPE)
+                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR} PARENT_SCOPE)
 
-				set(CMAKE_BUILD_TYPE)
+                set(CMAKE_BUILD_TYPE)
 
-			else()
-				#set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} )
-				#set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
-				
-				set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} )
-				set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
+            else()
+                #set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} )
+                #set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
 
-				set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} )
-				set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+                set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} )
+                set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
 
-				set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} )
-				set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
-			endif()
+                set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} )
+                set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
 
-			set(${DEP_VAR_NAME}_LIBRARIES)
-			set(${DEP_VAR_NAME}_LIBRARIES PARENT_SCOPE)
+                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} )
+                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+            endif()
 
-			message("-- yage: Conan package library search dir " ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
-			foreach(_LIB_NAME ${CONAN_${DEP_VAR_NAME}_LIBRARIES})				
-				find_library(YAGE_FOUND_LIBRARY NAMES ${_LIB_NAME} PATHS ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR}
-					NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
-				
-				if (YAGE_FOUND_LIBRARY)
-					message ("--   Found packaged library " ${_LIB_NAME})
-					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} )
-					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} PARENT_SCOPE)
-				else()
-					message ("--   Will attempt to use OS library " ${_LIB_NAME})
-					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} )
-					set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} PARENT_SCOPE)
-				endif()
+            set(${DEP_VAR_NAME}_LIBRARIES)
+            set(${DEP_VAR_NAME}_LIBRARIES PARENT_SCOPE)
 
-				unset(YAGE_FOUND_LIBRARY CACHE)
-			endforeach()
+            message("-- yage: Conan package library search dir " ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
+            foreach(_LIB_NAME ${CONAN_${DEP_VAR_NAME}_LIBRARIES})
+                find_library(YAGE_FOUND_LIBRARY NAMES ${_LIB_NAME} PATHS ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR}
+                    NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
+
+                if (YAGE_FOUND_LIBRARY)
+                    message ("--   Found packaged library " ${_LIB_NAME})
+                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} )
+                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} PARENT_SCOPE)
+                else()
+                    message ("--   Will attempt to use OS library " ${_LIB_NAME})
+                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} )
+                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} PARENT_SCOPE)
+                endif()
+
+                unset(YAGE_FOUND_LIBRARY CACHE)
+            endforeach()
 
         endif()
 
