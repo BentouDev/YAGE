@@ -296,7 +296,7 @@ namespace Utils
         {
             for (unsigned i = 0; i < _size; i++)
             {
-                _elements->~T();
+                _elements[i].~T();
             }
 
             resize(0);

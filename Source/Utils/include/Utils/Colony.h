@@ -61,10 +61,7 @@ namespace Utils
 
         void clear()
         {
-            for (auto& obj : _elements)
-            {
-                obj.~object_t();
-            }
+            _elements.clear();
 
             for (auto i = 0; i < _lookup.size(); i++)
             {
@@ -90,8 +87,7 @@ namespace Utils
                 freeListStart = index.next;
                 index.liveId++;
 
-                auto& obj = _elements[index.pos];
-                new (&obj) object_t(std::move(original));
+                auto& obj = _elements.emplace(std::move(original));
 
                 Trait::setHandle(obj, index.liveId, info_idx);
 
@@ -122,6 +118,8 @@ namespace Utils
                 auto& index   = _lookup[freeListStart];
                 freeListStart = index.next;
                 index.liveId++;
+
+                YAGE_ASSERT(index.pos != _elements.size(), "Fun!");
 
                 auto& obj = _elements.emplace(std::forward<Args>(args)...);
 
