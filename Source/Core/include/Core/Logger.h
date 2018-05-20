@@ -5,7 +5,28 @@
 #ifndef YAGE_LOGGER_H
 #define YAGE_LOGGER_H
 
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+
 #include <spdlog/fmt/fmt.h>
+
+#ifdef CREATE_NEW
+#undef CREATE_NEW
+#endif
+
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
+
 #include <Utils/String.h>
 #include <Utils/FreeListAllocator.h>
 #include <Utils/MemorySizes.h>

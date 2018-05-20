@@ -16,6 +16,10 @@
 #undef CreateWindow
 #endif
 
+#ifdef GetCurrentTime
+#undef GetCurrentTime
+#endif
+
 namespace Core
 {
 	class Window;

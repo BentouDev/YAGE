@@ -2,29 +2,9 @@
 // Created by bentoo on 17.05.18.
 //
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif
-
-#ifndef NOMINMAX
-#define NOMINMAX
-#endif
-
 #include "Core/Logger.h"
 #include "Core/FileLoggerOutput.h"
 #include <spdlog/spdlog.h>
-
-#ifdef CREATE_NEW
-#undef CREATE_NEW
-#endif
-
-#ifdef CreateWindow
-#undef CreateWindow
-#endif
-
-#ifdef GetCurrentTime
-#undef GetCurrentTime
-#endif
 
 namespace Core
 {
@@ -44,7 +24,7 @@ namespace Core
     };
 
     FileLoggerOutput::FileLoggerOutput(const char* file_path)
-        : Filelogger(spdlog::rotating_logger_mt("log", file_path, Memory::MB(100), 1, true))
+        : Filelogger(spdlog::rotating_logger_mt("log", file_path, Memory::MB(100), 1))
     { }
 
     void FileLoggerOutput::PrintMessage(Core::LogLevel::TYPE level, const char* message)
