@@ -19,6 +19,11 @@ namespace Resources
         disposeAll();
     }
 
+    MaterialManager::smart_t MaterialManager::createMaterial()
+    {
+        return Utils::make_handle(&_materialContainer, _memory);
+    }
+
     void MaterialManager::disposeAll()
     {
         Core::Logger::info("Releasing all materials...");
@@ -47,7 +52,7 @@ namespace Resources
     {
         // TODO: ADDITIONAL THINGS, LIKE STATIC BUFFER INVALIDATION
 
-        _materialContainer.remove(handle);
+        _materialContainer.erase(handle);
     }
 
     void MaterialManager::uploadToBuffer(handle_t handle)

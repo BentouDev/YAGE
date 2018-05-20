@@ -6,18 +6,23 @@
 
 namespace Resources
 {
-	FontManager::FontManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-		: Core::IManager(engine, memory), _fontContainer(_memory)
-	{ }
+    FontManager::FontManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
+        : Core::IManager(engine, memory), _fontContainer(_memory)
+    { }
 
-	FontManager::~FontManager()
-	{ }
+    FontManager::~FontManager()
+    { }
 
-	Font* FontManager::tryGetFont(handle_t handle)
-	{
-		if(_fontContainer.contains(handle))
-			return &_fontContainer.get(handle);
+    Font* FontManager::tryGetFont(handle_t handle)
+    {
+        if(_fontContainer.contains(handle))
+            return &_fontContainer.get(handle);
 
-		return nullptr;
-	}
+        return nullptr;
+    }
+
+    FontManager::smart_t FontManager::createFont()
+    {
+        return Utils::make_handle<FontTrait>(&_fontContainer, _memory);
+    }
 }

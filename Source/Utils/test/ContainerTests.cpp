@@ -27,11 +27,20 @@ namespace MemoryTests
         IFooMock() : Handle(), test(fooConst) {}
         explicit IFooMock(unsigned t) : Handle(), test(t) {}
 
-        IFooMock(IFooMock&& other) : Handle(), test(other.test) { }
+        IFooMock(IFooMock&& other) noexcept : Handle(std::move(other.Handle)), test(other.test) { }
+        IFooMock& operator=(IFooMock&& other) noexcept
+        {
+            Handle = std::move(other.Handle);
+            test   = other.test;
+
+            other.test = 0;
+            other.Handle = Utils::Handle<TMock>();
+
+            return *this;
+        }
 
         IFooMock(const IFooMock&) = delete;
         IFooMock& operator=(const IFooMock&) = delete;
-        IFooMock& operator=(IFooMock&&) = delete;
 
         Utils::Handle<TMock> Handle;
         unsigned test;
@@ -84,9 +93,10 @@ namespace MemoryTests
             return _handle.index;
         }
 
-        inline static void setHandle(object_t& obj, handle_t& _handle) noexcept
+        inline static void setHandle(object_t& obj, uint16_t liveId, uint32_t index) noexcept
         {
-            obj.Handle = _handle;
+            obj.Handle.liveId = liveId;
+            obj.Handle.index = index;
         }
 
         inline static handle_t& getHandle(object_t& obj) noexcept
@@ -102,11 +112,6 @@ namespace MemoryTests
         unsigned count = 32;
         void* memory;
 
-        auto getMemory = [&]() -> MockMemory&
-        {
-            return *memoryBlock;
-        };
-
         memory = malloc(memorySize);
         memoryBlock = new MockMemory(*new Memory::FreeListAllocator(memory, memorySize), "ContainerBlock");
 
@@ -117,7 +122,7 @@ namespace MemoryTests
 
         SECTION("CanCreateContainer")
         {
-            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+            auto* container = new Utils::Container<FooTrait>(*memoryBlock, count);
 
             REQUIRE(container != nullptr);
 
@@ -126,8 +131,8 @@ namespace MemoryTests
 
         SECTION("CanCreateObject")
         {
-            Utils::Container<FooTrait> container(getMemory(), count);
-            FooTrait::handle_t handle = container.create(13);
+            Utils::Container<FooTrait> container(*memoryBlock, count);
+            FooTrait::handle_t handle = container.emplace(13);
 
             auto& obj = container.get(handle);
 
@@ -145,26 +150,26 @@ namespace MemoryTests
 
         SECTION("CanRemoveObject")
         {
-            Utils::Container<FooTrait> container(getMemory(), count);
-            auto handle = container.create();
+            Utils::Container<FooTrait> container(*memoryBlock, count);
+            auto handle = container.emplace();
 
             REQUIRE_DESTRUCTION(container.get(handle));
 
-            container.remove(handle);
+            container.erase(handle);
 
             REQUIRE(!container.contains(handle));
         }
 
         SECTION("CanReuseObject")
         {
-            Utils::Container<FooTrait> container(getMemory(), count);
+            Utils::Container<FooTrait> container(*memoryBlock, count);
 
-            auto oldHandle = container.create();
+            auto oldHandle = container.emplace();
 
             REQUIRE_DESTRUCTION(container.get(oldHandle));
 
-            container.remove(oldHandle);
-            auto newHandle = container.create();
+            container.erase(oldHandle);
+            auto newHandle = container.emplace();
 
             REQUIRE(container.contains(newHandle));
             REQUIRE(!container.contains(oldHandle));
@@ -177,8 +182,8 @@ namespace MemoryTests
 
         SECTION("CanFreeContainer")
         {
-            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
-            auto handle = container->create();
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(*memoryBlock, count);
+            auto handle = container->emplace();
             auto& obj = container->get(handle);
 
             REQUIRE_DESTRUCTION(obj);
@@ -188,10 +193,10 @@ namespace MemoryTests
 
         SECTION("CanCreateManyItemsFromContainer")
         {
-            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(*memoryBlock, count);
 
             for (int i = 0; i < count; i++)
-                container->create();
+                container->emplace();
 
             REQUIRE(container->size() == count);
 
@@ -206,19 +211,19 @@ namespace MemoryTests
         {
             const int elementCount = 5;
             const int elementToDelete = 2;
-            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(getMemory(), count);
+            Utils::Container<FooTrait>* container = new Utils::Container<FooTrait>(*memoryBlock, count);
 
             std::vector<FooTrait::handle_t> handles;
 
             for (auto i = 0; i < elementCount; i++)
-                handles.push_back(container->create());
+                handles.push_back(container->emplace());
 
             FooMock& deletedItem = container->get(handles[elementToDelete]);
 
             REQUIRE(elementCount == container->size());
             REQUIRE_DESTRUCTION(deletedItem);
 
-            container->remove(handles[elementToDelete]);
+            container->erase(handles[elementToDelete]);
 
             for (auto i = 0; i < elementCount; i++)
             {
@@ -233,10 +238,11 @@ namespace MemoryTests
 
             REQUIRE(elementCount - 1 == container->size());
 
-            //for (int i = 0; i < container->size(); i++)
-            //    REQUIRE_DESTRUCTION(container->at(i));
+            TDestructionReqVec vec;
+            for (int i = 0; i < container->size(); i++)
+                vec.emplace_back(NAMED_REQUIRE_DESTRUCTION(container->at(i)));
 
-            //container->clear();
+            container->clear();
         }
     }
 }

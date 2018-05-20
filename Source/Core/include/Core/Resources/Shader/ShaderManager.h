@@ -38,15 +38,20 @@ namespace Resources
         void disposeAll();
         void dispose(handle_t);
 
-        inline handle_t createNew()
-        { return _shadersContainer.create(); }
+        handle_t createNew()
+        { return _shadersContainer.emplace(); }
 
-        inline Gfx::ShaderProgram& get(handle_t handle) const
+        Gfx::ShaderProgram& get(handle_t handle)
         { return _shadersContainer.get(handle); }
 
-        Gfx::ShaderProgram* tryGet(handle_t) const;
+        const Gfx::ShaderProgram& get(handle_t handle) const
+        { return _shadersContainer.get(handle); }
 
-        inline bool contains(handle_t handle) const
+        Gfx::ShaderProgram* tryGet(handle_t);
+
+        const Gfx::ShaderProgram* tryGet(handle_t) const;
+
+        bool contains(handle_t handle) const
         { return _shadersContainer.contains(handle); }
     };
 }

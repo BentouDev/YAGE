@@ -16,57 +16,56 @@
 
 namespace Resources
 {
-	struct CharData
-	{
-		CharData()
-			: textureRect(0,0,1,1), offset(0,0), advance(1), page(0)
-		{ }
+    struct CharData
+    {
+        CharData()
+            : textureRect(0,0,1,1), offset(0,0), advance(1), page(0)
+        { }
 
-		Gfx::Rectangle<float>	textureRect;
-		glm::vec2				offset;
-		std::uint32_t			advance;
-		std::uint8_t			page;
-	};
+        Gfx::Rectangle<float>	textureRect;
+        glm::vec2				offset;
+        std::uint32_t			advance;
+        std::uint8_t			page;
+    };
 
-	DECL_RESOURCE(Font)
-	{
-		friend class FontLoader;
+    DECL_RESOURCE(Font)
+    {
+        friend class FontLoader;
 
-		Texture::handle_t					textureAtlas;
-		Utils::List<CharData>				charset;
-		std::map<wchar_t, std::uint32_t>	charLookup;
+        Texture::handle_t					textureAtlas;
+        Utils::List<CharData>				charset;
+        std::map<wchar_t, std::uint32_t>	charLookup;
 
-		glm::vec2		size;
+        glm::vec2		size;
 
-		unsigned short	lineHeight;
-		unsigned short	base;
-		unsigned short	width;
-		unsigned short	height;
-		unsigned int	firstChar;
-		unsigned int	lastChar;
+        unsigned short	lineHeight;
+        unsigned short	base;
+        unsigned short	width;
+        unsigned short	height;
+        unsigned int	firstChar;
+        unsigned int	lastChar;
 
-	public:
-		using trait_t = Utils::DefaultTrait<Font>;
+    public:
+        explicit Font(Memory::IMemoryBlock& memory);
+        virtual ~Font();
 
-		explicit Font(Memory::IMemoryBlock& memory);
-		virtual ~Font();
+        Font(Font&& other);
 
-		Font(Font&& other);
+        CharData* lookupChar(wchar_t code);
+        Texture::handle_t getTextureAtlas()
+        { return textureAtlas; }
 
-		CharData* lookupChar(wchar_t code);
-		Texture::handle_t getTextureAtlas()
-		{
-			return textureAtlas;
-		}
+        unsigned short getWidth() const { return width; }
+        unsigned short getHeight() const { return height; }
+        unsigned short getLineHeight() const { return lineHeight; }
 
-		unsigned short getWidth() const { return width; }
-		unsigned short getHeight() const { return height; }
-		unsigned short getLineHeight() const { return lineHeight; }
+        Font(const Font&) = delete;
+        Font& operator=(Font&&) = delete;
+        Font& operator=(const Font&) = delete;
+    };
 
-		Font(const Font&) = delete;
-		Font& operator=(Font&&) = delete;
-		Font& operator=(const Font&) = delete;
-	};
+    class FontTrait : public Utils::DefaultTrait<Font>
+    { };
 }
 
 #endif //YAGE_FONT_H

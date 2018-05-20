@@ -42,7 +42,7 @@ namespace Logic
 
         Memory::IMemoryBlock&	_memory;
         EntityManager*			_entityManager;
-        Utils::IContainer*		_componentContainers[32];
+        Utils::IColony* 		_componentContainers[32];
 
         Utils::List<SystemInfo>			_registeredSystems;
         Utils::List<entity_handle_t>	_dirtyEntities;
@@ -77,7 +77,7 @@ namespace Logic
 
             void operator()()
             {
-                Utils::IContainer** containerPtr = &world->_componentContainers[IComponent::GetComponentId<T>()];
+                Utils::IColony** containerPtr = &world->_componentContainers[IComponent::GetComponentId<T>()];
                 if((*containerPtr) == nullptr)
                 {
                     (*containerPtr) = YAGE_CREATE_NEW(world->_memory, Utils::Container<trait_t>)(world->_memory);
@@ -97,7 +97,7 @@ namespace Logic
             static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
             using trait_t = typename T::trait_t;
 
-            Utils::IContainer* containerPtr = _componentContainers[IComponent::GetComponentId<T>()];
+            Utils::IColony* containerPtr = _componentContainers[IComponent::GetComponentId<T>()];
 
             return *static_cast<Utils::Container<trait_t>*>(containerPtr);
         }
@@ -153,7 +153,7 @@ namespace Logic
             static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
 
             auto&	container	= getComponentContainer<T>();
-            auto	handle		= container.create(std::forward<Args>(args)...);
+            auto	handle		= container.emplace(std::forward<Args>(args)...);
 
             addComponent(e, IComponent::GetComponentId<T>(), handle);
 

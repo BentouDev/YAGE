@@ -50,7 +50,7 @@ namespace Resources
     {
         // TODO: ADDITIONAL THINGS, LIKE STATIC BUFFER INVALIDATION
 
-        _meshContainer.remove(handle);
+        _meshContainer.erase(handle);
     }
 
     Gfx::StaticBuffer* MeshManager::findBestFitBuffer(MeshSchemeId scheme, std::size_t vertexCount, std::size_t indexCount)

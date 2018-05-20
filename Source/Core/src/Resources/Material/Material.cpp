@@ -46,14 +46,16 @@ namespace Core
         gl::Uniform4f(location, value.R / 255.f, value.G / 255.f, value.B / 255.f, value.A / 255.f);
     }
 
-    void Material::setUniform(GLint location, Resources::Texture* texture)
+    void Material::setUniform(GLint location, Utils::SmartHandle<Resources::Texture::trait_t> texture)
     {
-        if (texture == nullptr)
+        if (!texture)
             return;
+
+        auto* txt = texture.get();
 
         gl::ActiveTexture(gl::TEXTURE0 + _textureIndex);
         OpenGL::checkError();
-        gl::BindTexture(texture->getMode(), *texture);
+        gl::BindTexture(texture->getMode(), *txt);
         OpenGL::checkError();
         gl::Uniform1i(location, _textureIndex);
         OpenGL::checkError();

@@ -88,7 +88,8 @@ namespace Gfx
         ShaderProgram& operator=(ShaderProgram&&) = delete;
 
         ShaderProgram(ShaderProgram&& other) noexcept
-            : _handle(other._handle)
+            : Resource(std::move(other)),
+             _handle(other._handle)
         {
             other._handle = 0;
         }

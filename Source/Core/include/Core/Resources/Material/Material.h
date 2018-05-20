@@ -15,12 +15,16 @@
 #include <Utils/List.h>
 #include <Utils/String.h>
 #include <Utils/Color.hpp>
+#include <Utils/SmartHandle.h>
 #include <Utils/DefaultTrait.h>
 #include <Utils/LinearAllocator.h>
 #include <Core/Logger.h>
 
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Resources/Resource.h"
+
+// temporary
+#include "Core/Resources/Texture/Texture.h"
 
 namespace Resources
 {
@@ -103,14 +107,15 @@ namespace Core
         Material& operator=(Material&&) = delete;
 
         Material(Material&& other)
-            : _memory(other._memory),
+            : Resource(std::move(other)),
+              _memory(other._memory),
               _allocator(other._allocator),
               _uniforms(std::move(other._uniforms)),
               _shader(std::move(other._shader)),
               _textureIndex(0)
         {
             other._allocator = nullptr;
-            other._shader = Utils::Handle<Gfx::ShaderProgram>::invalid();
+            other._shader    = Utils::Handle<Gfx::ShaderProgram>::invalid();
         }
 
         ~Material()
@@ -156,7 +161,7 @@ namespace Core
         void setUniform(GLint location, glm::vec4 value);
         void setUniform(GLint location, glm::mat4x4 value);
         void setUniform(GLint location, Utils::Color value);
-        void setUniform(GLint location, Resources::Texture* texture);
+        void setUniform(GLint location, Utils::SmartHandle<Resources::Texture::trait_t> texture);
     };
 
     class MaterialTrait : public Utils::DefaultTrait<Material> {};

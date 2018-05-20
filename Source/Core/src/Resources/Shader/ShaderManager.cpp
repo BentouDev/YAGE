@@ -30,7 +30,7 @@ namespace Resources
 
     void ShaderManager::dispose(handle_t handle)
     {
-        _shadersContainer.remove(handle);
+        _shadersContainer.erase(handle);
     }
 
     void ShaderManager::dispose(Gfx::ShaderProgram& program)
@@ -38,9 +38,19 @@ namespace Resources
         dispose(program.Handle);
     }
 
-    Gfx::ShaderProgram* ShaderManager::tryGet(handle_t handle) const
+    Gfx::ShaderProgram* ShaderManager::tryGet(handle_t handle)
     {
         Gfx::ShaderProgram* ptr = nullptr;
+        if(_shadersContainer.contains(handle))
+        {
+            ptr = &get(handle);
+        }
+        return ptr;
+    }
+
+    const Gfx::ShaderProgram* ShaderManager::tryGet(handle_t handle) const
+    {
+        const Gfx::ShaderProgram* ptr = nullptr;
         if(_shadersContainer.contains(handle))
         {
             ptr = &get(handle);

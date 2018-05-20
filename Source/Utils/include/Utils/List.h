@@ -62,10 +62,28 @@ namespace Utils
 
                 if (_elements != nullptr)
                 {
-                    for (std::size_t i = 0; i < std::min(newSize, std::min(_size, _capacity)); i++)
+//                    if constexpr(std::is_trivially_copy_constructible<T>::value)
+//                    {
+//                        // POD, memcpy will suffice
+//                        std::size_t copied_size = std::min(newSize, std::min(_size, _capacity));
+//                        memcpy(mallocedPtr, _elements, sizeof(T) * copied_size);
+//                    }
+//                    else if constexpr (std::is_move_constructible<T>::value)
                     {
-                        new (&mallocedPtr[i]) T (_elements[i]);
+                        // move constructor
+                        for (std::size_t i = 0; i < std::min(newSize, std::min(_size, _capacity)); i++)
+                        {
+                            new (&mallocedPtr[i]) T (std::move(_elements[i]));
+                        }
                     }
+//                    else
+//                    {
+//                        // copy constructor
+//                        for (std::size_t i = 0; i < std::min(newSize, std::min(_size, _capacity)); i++)
+//                        {
+//                            new (&mallocedPtr[i]) T (_elements[i]);
+//                        }
+//                    }
                 }
 
                 newPtr = mallocedPtr;
@@ -181,7 +199,7 @@ namespace Utils
 
             int index = std::max(((int)_size) - 1, 0);
             T* result = &_elements[index];
-            new (result) T(args ...);
+            new (result) T(std::forward<Args>(args) ...);
 
             onAddElement();
 
@@ -207,7 +225,8 @@ namespace Utils
 
             int index = std::max(((int)_size) - 1, 0);
             T* result = &_elements[index];
-            (*result) = std::move(other);
+
+            new (result) T(std::move(other));
 
             onAddElement();
 
@@ -232,10 +251,29 @@ namespace Utils
             std::size_t maxIndex = _size - 1;
             if (index < maxIndex)
             {
-                for (std::size_t i = index; i < maxIndex - index; i++)
+//                if constexpr (std::is_trivially_copy_constructible<T>::value
+//                           && std::is_trivially_destructible<T>::value)
+//                {
+//                    memmove(&_elements[index], &_elements[index + 1], sizeof(T) * (maxIndex - index));
+//                }
+//                else if constexpr (std::is_move_constructible<T>::value)
                 {
-                    new (&_elements[i]) T(_elements[i + 1]);
+                    new (&_elements[index]) T(std::move(_elements[index + 1]));
+                    for (std::size_t i = index + 1; i < maxIndex - index; i++)
+                    {
+                        if (i != index) _elements[i].~T();
+                        new (&_elements[i]) T(std::move(_elements[i + 1]));
+                    }
                 }
+//                else
+//                {
+//                    new (&_elements[index]) T(_elements[index + 1]);
+//                    for (std::size_t i = index + 1; i < maxIndex - index; i++)
+//                    {
+//                        _elements[i].~T();
+//                        new (&_elements[i]) T(_elements[i + 1]);
+//                    }
+//                }
             }
 
             _size--;

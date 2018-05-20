@@ -22,7 +22,7 @@ namespace Logic
             Memory::Delete(_memory, info.instance);
         }
 
-        for(Utils::IContainer* ptr : _componentContainers)
+        for(Utils::IColony* ptr : _componentContainers)
         {
             if(ptr != nullptr)
             {

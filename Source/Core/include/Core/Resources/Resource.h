@@ -22,7 +22,11 @@ namespace Core
 
     protected:
         explicit Resource() : Handle(), Name("none") { }
-        Resource(Resource&&) noexcept : Handle(), Name("none") { }
+
+        Resource(Resource&& other) noexcept
+            : Handle(std::move(other.Handle))
+            , Name(std::move(other.Name))
+        { }
 
     public:
         explicit Resource(const Resource&) = delete;
@@ -31,13 +35,9 @@ namespace Core
 
         virtual ~Resource() = default;
 
-        //	virtual auto swap(Res& other) noexcept -> void = 0;
-    //	virtual auto cleanUp() noexcept -> void = 0;
-
-        handle_t 	Handle;
-
-        // Todo : package reference
         std::string Name;
+
+        handle_t Handle;
     };
 }
 

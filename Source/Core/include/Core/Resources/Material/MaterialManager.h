@@ -7,51 +7,55 @@
 
 #include <Utils/MemoryBlock.h>
 #include <Utils/Container.h>
+#include <Utils/SmartHandle.h>
 #include "Material.h"
 #include "Core/IManager.h"
 
 namespace Core
 {
-	class Engine;
+    class Engine;
 }
 
 namespace Resources
 {
-	class MaterialManager : public Core::IManager
-	{
-		MANAGER(MaterialManager);
+    class MaterialManager : public Core::IManager
+    {
+        MANAGER(MaterialManager);
 
-		using handle_t = Core::Material::handle_t;
+        using handle_t = Core::Material::handle_t;
+        using smart_t  = Utils::SmartHandle<Core::MaterialTrait>;
 
-		Utils::Container<Core::MaterialTrait> _materialContainer;
+        Utils::Container<Core::MaterialTrait> _materialContainer;
 
-		void disposeMaterial(Core::Material& material);
+        void disposeMaterial(Core::Material& material);
 
-	public:
-		explicit MaterialManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
-		virtual ~MaterialManager() noexcept;
+    public:
+        explicit MaterialManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
+        virtual ~MaterialManager() noexcept;
 
-		MaterialManager(const MaterialManager&) = delete;
-		MaterialManager(MaterialManager&&) = delete;
+        MaterialManager(const MaterialManager&) = delete;
+        MaterialManager(MaterialManager&&) = delete;
 
-		void disposeAll();
-		void reloadAll();
+        void disposeAll();
+        void reloadAll();
 
-		void disposeMaterial(handle_t material);
+        void disposeMaterial(handle_t material);
 
-		Core::Material* tryGetMaterial(handle_t);
+        Core::Material* tryGetMaterial(handle_t);
 
-		void uploadToBuffer(handle_t handle);
+        smart_t createMaterial();
 
-		inline bool hasMesh(handle_t handle)
-		{ return _materialContainer.contains(handle); }
+        void uploadToBuffer(handle_t handle);
 
-		inline handle_t createMaterial()
-		{ return _materialContainer.create(_memory); }
+        bool hasMesh(handle_t handle)
+        { return _materialContainer.contains(handle); }
 
-		inline Core::Material& getMaterial(handle_t handle)
-		{ return _materialContainer.get(handle); }
-	};
+        Core::Material& getMaterial(handle_t handle)
+        { return _materialContainer.get(handle); }
+
+        const Core::Material& getMaterial(handle_t handle) const
+        { return _materialContainer.get(handle); }
+    };
 }
 
 #endif //GAME_MATERIALMANAGER_H

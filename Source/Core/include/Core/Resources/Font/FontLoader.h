@@ -10,43 +10,45 @@
 #include <Utils/List.h>
 #include <Utils/String.h>
 #include <Utils/Handle.h>
+#include <Utils/SmartHandle.h>
 
 namespace Core
 {
-	class Engine;
+    class Engine;
 }
 
 namespace Resources
 {
-	class Font;
-	class FontManager;
-	class TextureLoader;
+    class Font;
+    class FontTrait;
+    class FontManager;
+    class TextureLoader;
 
-	class FontLoader : protected ObjParser<Font, FontLoader>
-	{
-		Resources::TextureLoader*	textureLoader;
-		Resources::FontManager&	 	_manager;
-		Memory::IMemoryBlock&		_memory;
-		Utils::List<Utils::String>	textures;
+    class FontLoader : protected ObjParser<Font, FontLoader>
+    {
+        Resources::TextureLoader*	textureLoader;
+        Resources::FontManager&	 	_manager;
+        Memory::IMemoryBlock&		_memory;
+        Utils::List<Utils::String>	textures;
 
-		const char* filepath;
+        const char* filepath;
 
-		static bool parseInfo	(std::string line, FontLoader& loader, Font& font);
-		static bool parseCommon	(std::string line, FontLoader& loader, Font& font);
-		static bool parsePage	(std::string line, FontLoader& loader, Font& font);
-		static bool parseChars	(std::string line, FontLoader& loader, Font& font);
-		static bool parseChar	(std::string line, FontLoader& loader, Font& font);
+        static bool parseInfo	(std::string line, FontLoader& loader, Font& font);
+        static bool parseCommon	(std::string line, FontLoader& loader, Font& font);
+        static bool parsePage	(std::string line, FontLoader& loader, Font& font);
+        static bool parseChars	(std::string line, FontLoader& loader, Font& font);
+        static bool parseChar	(std::string line, FontLoader& loader, Font& font);
 
-	public:
-		using handle_t = Utils::Handle<Font>;
+    public:
+        using handle_t = Utils::SmartHandle<FontTrait>;
 
-		explicit FontLoader(Resources::FontManager& manager, Memory::IMemoryBlock& memory);
-		virtual ~FontLoader();
+        explicit FontLoader(Resources::FontManager& manager, Memory::IMemoryBlock& memory);
+        virtual ~FontLoader();
 
-		FontLoader& withTextureLoader(Resources::TextureLoader& loader);
-		FontLoader& loadFromFile(const char* path);
-		handle_t	build();
-	};
+        FontLoader& withTextureLoader(Resources::TextureLoader& loader);
+        FontLoader& loadFromFile(const char* path);
+        handle_t	build();
+    };
 }
 
 #endif //YAGE_FONTLOADER_H

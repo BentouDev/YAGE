@@ -12,36 +12,36 @@
 
 namespace Resources
 {
-	DECL_RESOURCE(Texture)
-	{
-		friend class TextureLoader;
+    DECL_RESOURCE(Texture)
+    {
+        friend class TextureLoader;
 
-		uint32_t _width;
-		uint32_t _height;
+        uint32_t _width;
+        uint32_t _height;
 
-		GLuint _handle;
-		GLenum _mode;
-		GLenum _format;
-		GLenum _pixelFormat;
+        GLuint _handle;
+        GLenum _mode;
+        GLenum _format;
+        GLenum _pixelFormat;
 
-	public:
-		using trait_t	= Utils::DefaultTrait<Texture>;
+    public:
+        using trait_t	= Utils::DefaultTrait<Texture>;
 
-		explicit Texture();
-		Texture(Texture&& other);
+        explicit Texture();
+        Texture(Texture&& other) noexcept;
 
-		Texture(const Texture&) = delete;
-		Texture& operator=(Texture&&) = delete;
-		Texture& operator=(const Texture&) = delete;
+        Texture(const Texture&) = delete;
+        Texture& operator=(Texture&&) = delete;
+        Texture& operator=(const Texture&) = delete;
 
-		virtual ~Texture();
+        virtual ~Texture();
 
-		GLenum getMode() const
-		{ return _mode; }
+        GLenum getMode() const
+        { return _mode; }
 
-		inline operator GLuint() const
-		{ return _handle; }
-	};
+        inline operator GLuint() const
+        { return _handle; }
+    };
 }
 
 #endif //GAME_TEXTURE_H

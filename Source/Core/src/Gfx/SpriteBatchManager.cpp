@@ -117,6 +117,11 @@ namespace Gfx
 
     SpriteBatchManager::~SpriteBatchManager() noexcept
     {
+        for (auto* batch : _batches)
+        {
+            Memory::Delete(_memory, batch);
+        }
+
         for (auto& buffer : _buffers)
         {
             Memory::Delete(_memory, buffer->_vao);
@@ -132,9 +137,9 @@ namespace Gfx
 
     void SpriteBatchManager::clear()
     {
-        for (auto& batch : _batches)
+        for (auto* batch : _batches)
         {
-            batch.clear();
+            batch->clear();
         }
 
         for (auto* buffer : _buffers)
@@ -173,12 +178,12 @@ namespace Gfx
             if (minimalSize < 0)
                 minimalSize = SpriteBuffer::DEFAULT_BUFFER_SIZE;
 
-            _batches.emplace(createNewBuffer(std::min(minimalSize, SpriteBuffer::MAX_BUFFER_SIZE)));
-            batchPtr = &_batches.back();
+            batchPtr = YAGE_CREATE_NEW(_memory, SpriteBatch)(createNewBuffer(std::min(minimalSize, SpriteBuffer::MAX_BUFFER_SIZE)));
+            _batches.add(batchPtr);
         }
         else
         {
-            batchPtr = &_batches[batchItr->second];
+            batchPtr = _batches[batchItr->second];
 
             if (minimalSize > 0)
                 batchPtr->ensureCapacity(minimalSize);

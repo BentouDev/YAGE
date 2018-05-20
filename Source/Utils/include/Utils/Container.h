@@ -16,11 +16,15 @@
 #include "Index.h"
 #include "SafeDelete.h"
 #include "MemoryBlock.h"
+#include "Colony.h"
 
 namespace Utils
 {
+    template <typename Trait>
+    using Container = Colony<Trait>;
+
     template<typename Trait>
-    class Container : public IContainer
+    class LegacyContainer : public IContainer
     {
     public:
         using object_t = typename Trait::object_t;
@@ -82,7 +86,7 @@ namespace Utils
             }
         }*/
 
-        static auto initialize(Container* container) -> void
+        static auto initialize(LegacyContainer* container) -> void
         {
             container->elementCount = 0;
             container->activeCount = 0;
@@ -101,7 +105,7 @@ namespace Utils
         }
 
     public:
-        inline explicit Container(Memory::IMemoryBlock& memory, uint16_t size = 16)
+        inline explicit LegacyContainer(Memory::IMemoryBlock& memory, uint16_t size = 16)
             : _memory(memory), _indices(_memory), maxSize(size)
         {
             _indices.reserve(maxSize);
@@ -112,7 +116,7 @@ namespace Utils
             initialize(this);
         }
 
-        inline virtual ~Container()
+        inline virtual ~LegacyContainer()
         {
             removeAllElements();
             // destructElements();

@@ -40,11 +40,7 @@ namespace Utils
         uint16_t	freelistEnd;
         uint16_t	freelistStart;
 
-        uint16_t	unactivelistEnd;
-        uint16_t	unactivelistStart;
-
         uint16_t 	elementCount;
-        uint16_t 	activeCount;
 
         void removeAllElements()
         {
@@ -58,7 +54,6 @@ namespace Utils
         static auto initialize(HandleContainer* container) -> void
         {
             container->elementCount = 0;
-            container->activeCount = 0;
 
             for (unsigned i = 0; i < container->maxSize; ++i)
             {
@@ -67,8 +62,6 @@ namespace Utils
                 container->_indices[i].next = i + 1;
             }
 
-            container->unactivelistStart = 0;
-            container->unactivelistEnd = 0;
             container->freelistStart = 0;
             container->freelistEnd = (uint16_t) (container->maxSize - 1);
         }
@@ -125,7 +118,7 @@ namespace Utils
             }
 
             object_t& o = _elements[in.index];
-            Trait::setHandle(o, in.handle);
+            Trait::setHandle(o, in.handle.liveId, in.handle.index);
 
             return Trait::getHandle(o);
         }
