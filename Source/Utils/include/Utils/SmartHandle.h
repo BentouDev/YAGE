@@ -19,7 +19,10 @@ namespace Utils
         handle_t       Handle;
 
     public:
-        SmartHandle() = default;
+        SmartHandle() 
+            : Owner(nullptr)
+            , Handle()
+        { }
 
         SmartHandle(Colony<Trait>* colony, handle_t handle)
             : Owner(colony)

@@ -119,7 +119,7 @@ namespace Utils
                 freeListStart = index.next;
                 index.liveId++;
 
-                YAGE_ASSERT(index.pos != _elements.size(), "Fun!");
+                YAGE_ASSERT(index.pos == _elements.size(), "Fun!");
 
                 auto& obj = _elements.emplace(std::forward<Args>(args)...);
 
@@ -176,7 +176,11 @@ namespace Utils
 
         bool contains(handle_t handle) const
         {
-            const IndexInfo& in = _lookup[Trait::getIndex(handle)];
+            auto idx_pos = Trait::getIndex(handle);
+            if (idx_pos < 0 || idx_pos >= _lookup.size())
+                return false;
+
+            const IndexInfo& in = _lookup[idx_pos];
             return in.liveId == handle.liveId && in.pos < _elements.size();
         }
 

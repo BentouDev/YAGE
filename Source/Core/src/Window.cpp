@@ -11,7 +11,7 @@ namespace Core
 {
     Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
         : _memory(memory), Title {title}, Width {width}, Height {height},
-          DefaultViewport {nullptr}, hWindow {nullptr}
+          DefaultViewport {nullptr}, hWindow {nullptr}, IsCloseRequested(false)
     {
         Create();
     }
