@@ -3,8 +3,8 @@ yage_setup_dependency(Assimp
         CONAN Assimp/0.1@bentoudev/yage
         VAR_NAME ASSIMP
         TARGET assimp
-        SOURCE Dependencies/Assimp
-        INCLUDE Dependencies/Assimp/include)
+        SOURCE Dependencies/Assimp/Source
+        INCLUDE Dependencies/Assimp/Source/include)
 
 yage_include(YAGE ${ASSIMP_INCLUDE_DIR})
 

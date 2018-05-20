@@ -71,7 +71,7 @@ yage_add_dependency(Dependencies/Json)
 yage_add_dependency(Dependencies/Utf8)
 
 # Add CppLinq
-yage_include(YAGE Dependencies/CppLinq)
+yage_add_dependency(Dependencies/CppLinq)
 
 # Add LodePng
 yage_add_dependency(Dependencies/Lodepng)
