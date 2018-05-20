@@ -76,40 +76,55 @@ yage_include(YAGE Dependencies/CppLinq)
 # Add LodePng
 yage_add_dependency(Dependencies/Lodepng)
 
+# Add Valgrind support for memory debugging
+if(YAGE_VALGRIND)
+    find_package(Valgrind)
+endif(YAGE_VALGRIND)
+
+#============================#
+# Tests                      #
+#============================#
 if(YAGE_BUILD_TESTS)
+
     # Add codecov scripts module to cmake
     set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules/CMake-codecov/cmake" ${CMAKE_MODULE_PATH})
     find_package(codecov REQUIRED)
 
     yage_add_dependency(Dependencies/Catch2)
     yage_add_dependency(Dependencies/Trompeloeil)
+
 endif()
 
-# Add QT5 when building Editor
+#============================#
+# Engine Library             #
+#============================#
+# Include all engine modules
+enable_testing()
+add_subdirectory(Source/Engine)
+
+target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
+
+#============================#
+# Editor                     #
+#============================#
 if(YAGE_BUILD_EDITOR)
+
+    # Add QT5 when building Editor
     find_package(Qt5Widgets REQUIRED)
 
     # Additional windows specific features
     if(WIN32)
         find_package(Qt5WinExtras)
     endif(WIN32)
-endif(YAGE_BUILD_EDITOR)
 
-# Add Valgrind support for memory debugging
-if(YAGE_VALGRIND)
-    find_package(Valgrind)
-endif(YAGE_VALGRIND)
-
-# Include all engine modules
-enable_testing()
-add_subdirectory(Source/Engine)
-
-# Include Editor
-if(YAGE_BUILD_EDITOR)
+    # Include Editor
     add_subdirectory(Source/Editor)
+
 endif(YAGE_BUILD_EDITOR)
 
-target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
+#============================#
+# Post Build                 #
+#============================#
 
 # Create log output directory
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/../Log)
