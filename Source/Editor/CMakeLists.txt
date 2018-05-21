@@ -17,12 +17,12 @@ endif(WIN32)
 
 add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h)
 add_executable(YAGE::Editor ALIAS Editor)
+set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
 
 target_include_directories(Editor PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils/include>
-        $<INSTALL_INTERFACE:include>
         PRIVATE src)
 
 target_compile_features(Editor
@@ -35,11 +35,9 @@ target_link_libraries(Editor YAGE::Engine Qt5::Core Qt5::Widgets ${OS_LIBS})
 
 # 'make install' to the correct location
 install(TARGETS Editor
-        ARCHIVE  DESTINATION lib
-        LIBRARY  DESTINATION lib
-        RUNTIME  DESTINATION bin)  # This is for Windows
-# Do not distribute editor headers
-# install(DIRECTORY include/ DESTINATION include)
+        ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
+        LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
+        RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
 
 # This makes the project importable from the build directory
 export(TARGETS Editor FILE EditorConfig.cmake)

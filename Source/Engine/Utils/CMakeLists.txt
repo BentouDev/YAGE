@@ -10,7 +10,7 @@ add_library(YAGE::Utils ALIAS Utils)
 
 target_include_directories(Utils PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
         PRIVATE src)
 
 target_compile_features(Utils PUBLIC
@@ -31,10 +31,11 @@ endif()
 
 # 'make install' to the correct location
 install(TARGETS Utils
-        ARCHIVE  DESTINATION lib
-        LIBRARY  DESTINATION lib
-        RUNTIME  DESTINATION bin)  # This is for Windows
-install(DIRECTORY include/ DESTINATION include)
+        EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}"
+        ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
+        LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
+        RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
+install(DIRECTORY include/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 # This makes the project importable from the build directory
 export(TARGETS Utils FILE UtilsConfig.cmake)

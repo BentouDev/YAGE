@@ -14,6 +14,10 @@ option(YAGE_BUILD_TESTS "Build Tests" ${NOT_SUBPROJECT})
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
 
+if (NOT YAGE_VERSION_PATCH)
+    set(YAGE_VERSION_PATCH dev)
+endif()
+
 set(PROJECT_VERSION_PATCH ${YAGE_VERSION_PATCH})
 
 # Add modules
@@ -24,6 +28,18 @@ include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
 # Emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
+# Pick either lib or lib64
+include("GNUInstallDirs")
+
+# Installation
+if(NOT LIBDIR)
+    set (LIBDIR lib)
+endif()
+
+set (YAGE_BINARY_DIR "bin")
+set (YAGE_LIBRARY_DIR "${LIBDIR}/YAGE")
+set (YAGE_INCLUDE_DIR "include/YAGE")
+
 # Enforce warnings
 if(CMAKE_COMPILER_IS_GNUCC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
@@ -31,7 +47,6 @@ endif(CMAKE_COMPILER_IS_GNUCC)
 if(MSVC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
 endif(MSVC)
-
 
 #============================#
 #   _  _   __    ___  ____   #
@@ -41,7 +56,7 @@ endif(MSVC)
 #                            #
 #   Yet Another Game Engine  #
 #                            #
-#=============================
+#============================#
 
 message ("-- yage: Version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
@@ -109,6 +124,14 @@ enable_testing()
 add_subdirectory(Source/Engine)
 
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
+set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
+
+# Export yage-config.cmake, so engine user may use find_package
+install(EXPORT Engine
+        FILE yage-config.cmake
+        NAMESPACE Yage::
+        DESTINATION "${YAGE_LIBRARY_DIR}")
 
 #============================#
 # Editor                     #
