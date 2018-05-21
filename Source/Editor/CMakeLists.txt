@@ -38,7 +38,8 @@ install(TARGETS Editor
         ARCHIVE  DESTINATION lib
         LIBRARY  DESTINATION lib
         RUNTIME  DESTINATION bin)  # This is for Windows
-install(DIRECTORY include/ DESTINATION include)
+# Do not distribute editor headers
+# install(DIRECTORY include/ DESTINATION include)
 
 # This makes the project importable from the build directory
 export(TARGETS Editor FILE EditorConfig.cmake)

@@ -5,5 +5,5 @@ $CXX --version
 cmake --version
 mkdir bin
 cd bin
-cmake --target all ..
+cmake --target all -DYAGE_VERSION_PATCH=$PATCH_VER ..
 make

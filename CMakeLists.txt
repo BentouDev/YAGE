@@ -9,9 +9,12 @@ endif()
 
 project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
+option(YAGE_VERSION_PATCH "Build version" "dev")
 option(YAGE_BUILD_TESTS "Build Tests" ${NOT_SUBPROJECT})
 option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
+
+set(PROJECT_VERSION_PATCH ${YAGE_VERSION_PATCH})
 
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
@@ -29,6 +32,7 @@ if(MSVC)
     set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
 endif(MSVC)
 
+
 #============================#
 #   _  _   __    ___  ____   #
 #  ( \/ ) /__\  / __)( ___)  #
@@ -38,6 +42,8 @@ endif(MSVC)
 #   Yet Another Game Engine  #
 #                            #
 #=============================
+
+message ("-- yage: Version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
 # Define engine library
 add_library(YAGE INTERFACE)
@@ -136,3 +142,15 @@ configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPYONLY)
 if(YAGE_BUILD_TESTS)
     coverage_evaluate()
 endif()
+
+#============================#
+# Packaging                  #
+#============================#
+include (InstallRequiredSystemLibraries)
+set (CPACK_RESOURCE_FILE_LICENSE  
+     "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md")
+set (CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set (CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set (CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set (CPACK_PACKAGE_VERSION_NAME "YAGE")
+include(CPack)
