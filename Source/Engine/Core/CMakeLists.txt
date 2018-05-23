@@ -22,6 +22,8 @@ target_compile_features(Core
         PRIVATE cxx_variadic_templates
         cxx_nullptr)
 
+target_compile_definitions(Core PRIVATE ${YAGE_LIB_COMPILE_DEFS})
+		
 target_link_libraries(Core YAGE::Utils lodepng ${ASSIMP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GLFW_LIBRARIES})
 
 if(OPENGL_FOUND)

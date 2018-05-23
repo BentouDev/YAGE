@@ -15,6 +15,8 @@ endif(WIN32)
 
 #qt_
 
+add_definitions(-DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE)
+
 add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h)
 add_executable(YAGE::Editor ALIAS Editor)
 set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
@@ -28,10 +30,13 @@ target_include_directories(Editor PUBLIC
 target_compile_features(Editor
         PUBLIC cxx_auto_type cxx_nullptr cxx_variadic_templates)
 
+target_compile_definitions(Editor PRIVATE ${YAGE_EXE_COMPILE_DEFS})
+		
 # Disable static link of Qt
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
-target_link_libraries(Editor YAGE::Engine Qt5::Core Qt5::Widgets ${OS_LIBS})
+target_link_libraries(Editor Qt5::Core Qt5::Widgets ${OS_LIBS})
+target_link_libraries(Editor YAGE::Engine)
 
 # 'make install' to the correct location
 install(TARGETS Editor

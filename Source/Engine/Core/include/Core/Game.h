@@ -20,7 +20,7 @@ namespace Yage
 	 *
 	 * You dont have to use it, feel free to write appropriate code yourself.
 	 */
-	class Game
+	class YAGE_API Game
 	{
 		float	lastTime;
 		float	lagAccumulator;

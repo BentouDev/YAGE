@@ -119,9 +119,16 @@ endif()
 #============================#
 # Engine Library             #
 #============================#
-# Include all engine modules
 enable_testing()
+
+# Include all engine modules
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+set(YAGE_LIB_COMPILE_DEFS -DYAGE_EXPORTS)
+set(YAGE_EXE_COMPILE_DEFS -DYAGE_EDITOR)
+#add_definitions(-DYAGE_EXPORTS)
 add_subdirectory(Source/Engine)
+
+#set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
 set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES

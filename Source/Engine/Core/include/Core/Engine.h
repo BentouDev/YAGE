@@ -11,6 +11,7 @@
 #include <Utils/Handle.h>
 #include <Utils/List.h>
 
+#include "Utils/Defines.h"
 #include "MemoryModule.h"
 
 namespace Logic
@@ -62,7 +63,7 @@ namespace Core
 
 	class IManager;
 
-	class Engine
+	class YAGE_API Engine
 	{
 		borrowed_ptr<Logic::Scene> activeScene;
 

@@ -1,12 +1,14 @@
 ## Yet Another Game Engine
 project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
-add_library(Engine SHARED yage.h)
+add_library(Engine SHARED yage.h yage.cpp)
 add_library(YAGE::Engine ALIAS Engine)
 
 add_subdirectory(Utils)
 add_subdirectory(Core)
 add_subdirectory(Script)
+
+target_compile_definitions(Engine PRIVATE ${YAGE_LIB_COMPILE_DEFS})
 
 set_target_properties(Engine PROPERTIES
         LINKER_LANGUAGE CXX
@@ -14,8 +16,8 @@ set_target_properties(Engine PROPERTIES
 
 target_link_libraries(Engine YAGE::Utils YAGE::Script YAGE::Core)
 
-target_include_directories(Engine PUBLIC
-    $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
+target_include_directories(Engine 
+	PUBLIC $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 # 'make install' to the correct location
 install(TARGETS Engine
