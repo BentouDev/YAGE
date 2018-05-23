@@ -11,11 +11,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 if(WIN32)
     set(OS_BUNDLE WIN32)
     set(OS_LIBS Qt5::WinExtras)
+    add_definitions(-DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE)
 endif(WIN32)
 
 #qt_
-
-add_definitions(-DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE)
 
 add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h)
 add_executable(YAGE::Editor ALIAS Editor)

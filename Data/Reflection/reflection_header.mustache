@@ -1,0 +1,35 @@
+#include <Reflection/ReflectionInfo.h>
+
+namespace Meta::ReflectionData
+{
+    class meta_{{class_name}} : public ClassInfo
+    {
+        static meta_{{class_name}} Data;
+
+        // private constructor
+        meta_{{class_name}}();
+
+        const std::string Name = "{{class_name}}";
+        const std::string CanonicalName = "{{{canonical_name}}}";
+
+        public:
+            ClassInfo& Get() { return Data; }
+    };
+
+    TReflectionVector<FieldInfo> {{class_name}}Meta::Fields = {
+        {{#fields}}
+            { {{name}}, &{{{canonical_name}}}::{{name}}, {{access}}, Meta::GetType<{{{type}}}>() },
+        {{/fields}}
+    };
+
+    TReflectionVector<MethodInfo> {{class_name}}Meta::Methods = {
+        {{#methods}}
+            { {{name}}, detail::MethodWrapper<decltype(&{{{canonical_name}}}::{{name}}), &{{{canonical_name}}}::{{name}}>() },
+        {{/methods}}
+    };
+}
+
+template <> ClassInfo* Meta::GetType<typename {{{canonical_name}}}>()
+{
+    return &Meta::ReflectionData::meta_{{class_name}}::Get();
+}

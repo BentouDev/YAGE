@@ -122,7 +122,10 @@ endif()
 enable_testing()
 
 # Include all engine modules
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+if(WIN32)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+endif()
+
 set(YAGE_LIB_COMPILE_DEFS -DYAGE_EXPORTS)
 set(YAGE_EXE_COMPILE_DEFS -DYAGE_EDITOR)
 #add_definitions(-DYAGE_EXPORTS)
