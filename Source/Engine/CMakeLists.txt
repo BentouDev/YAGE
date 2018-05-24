@@ -15,18 +15,24 @@ file(GLOB_RECURSE
         ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 
 add_custom_command(
-        TARGET Engine POST_BUILD
+        OUTPUT ${CMAKE_SOURCE_DIR}/Generated/generated.timestamp ${CMAKE_SOURCE_DIR}/Generated/register_reflection.cpp
+        DEPENDS ${YAGE_ALL_HEADERS}
         COMMENT "Generating CTTI..."
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMAND Agnes ARGS Data/Reflection/Yage.json ${YAGE_ALL_HEADERS})
+        COMMAND Agnes ARGS Data/Reflection/Yage.json ${YAGE_ALL_HEADERS}
+        COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/Generated/generated.timestamp)
+
+add_custom_target(YAGE_RUN_AGNES 
+        DEPENDS ${CMAKE_SOURCE_DIR}/Generated/generated.timestamp
+        COMMENT "Checking if CTTI needs regeneration...")
 
 file(GLOB
         YAGE_GENERATED_CRTTI
-        ${CMAKE_SOURCE_DIR}/Generated/*.cpp
         ${CMAKE_SOURCE_DIR}/Generated/*.h)
 
-add_library(EngineCRTTI ${YAGE_GENERATED_CRTTI})
+add_library(EngineCRTTI ${YAGE_GENERATED_CRTTI} ${CMAKE_SOURCE_DIR}/Generated/register_reflection.cpp)
 add_library(Yage::EngineCRTTI ALIAS EngineCRTTI)
+add_dependencies(EngineCRTTI YAGE_RUN_AGNES)
 set_target_properties(EngineCRTTI PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
 
 install(TARGETS EngineCRTTI
@@ -50,14 +56,3 @@ install(TARGETS Engine
         ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
         LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
         RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
-
-#add_custom_command(
-#        TARGET Engine POST_BUILD
-#        COMMAND Agnes Data/Reflection/Yage.json ${YAGE_ALL_HEADERS}
-#        DEPENDS Engine
-#        COMMENT "Generating CTTI..."
-#        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-#        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Generated/
-#)
-
-#include_directories( ${CMAKE_CURRENT_BINARY_DIR}/Generated/ )

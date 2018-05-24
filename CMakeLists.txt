@@ -1,12 +1,26 @@
 ## Yet Another Game Engine
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
+#============================#
+# Project setup              #
+#============================#
 # detect if YAGE is being bundled,
 # disable testsuite in that case
 if(NOT DEFINED PROJECT_NAME)
   set(NOT_SUBPROJECT ON)
 endif()
 
+# Add modules
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/Conan.cmake)
+include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
+
+# Emit additional metadata for debug builds
+include(CMakeToolsHelpers OPTIONAL)
+
+#============================#
+# Version                    #
+#============================#
 project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
 option(YAGE_VERSION_PATCH "Build version" "dev")
@@ -19,14 +33,6 @@ if (NOT YAGE_VERSION_PATCH)
 endif()
 
 set(PROJECT_VERSION_PATCH ${YAGE_VERSION_PATCH})
-
-# Add modules
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
-include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/Conan.cmake)
-include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
-
-# Emit additional metadata for debug builds
-include(CMakeToolsHelpers OPTIONAL)
 
 # Pick either lib or lib64
 include("GNUInstallDirs")
@@ -121,17 +127,12 @@ endif()
 #============================#
 enable_testing()
 
-# Include all engine modules
-if(WIN32)
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
-endif()
-
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 set(YAGE_LIB_COMPILE_DEFS -DYAGE_EXPORTS)
 set(YAGE_EXE_COMPILE_DEFS -DYAGE_EDITOR)
-#add_definitions(-DYAGE_EXPORTS)
-add_subdirectory(Source/Engine)
 
-#set(WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
+# Include all engine modules
+add_subdirectory(Source/Engine)
 
 target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
 set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
