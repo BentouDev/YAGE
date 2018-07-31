@@ -1,3 +1,8 @@
 # Json
-add_subdirectory(Dependencies/Json/Source EXCLUDE_FROM_ALL)
-yage_include(YAGE Dependencies/Json/Source/single_include)
+yage_setup_dependency(Json 
+        NOT_OS TRUE
+        CONAN jsonformoderncpp/3.1.2@vthiery/stable
+        TARGET json
+        VAR_NAME JSON)
+
+yage_include(YAGE ${JSON_INCLUDE_DIR})

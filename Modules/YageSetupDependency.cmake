@@ -23,7 +23,7 @@ endfunction()
 # Provides procedure to easily setup dependency that can both be build from source or get from environment
 function(yage_setup_dependency NAME)
     set(options TEST)
-    set(oneArg PREFER TARGET SOURCE VAR_NAME CONAN)
+    set(oneArg PREFER TARGET SOURCE VAR_NAME CONAN NOT_OS)
     set(multiArg INCLUDE)
     cmake_parse_arguments(DEP "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
 
@@ -38,7 +38,7 @@ function(yage_setup_dependency NAME)
     if (NOT NAME)
         message(FATAL_ERROR "yage_setup_dependency called without specyfing name!\n")
     else()
-        if (NOT DEP_PREFER STREQUAL "BUILD")
+        if ((NOT DEP_PREFER STREQUAL "BUILD") AND (NOT DEP_NOT_OS))
             find_package(${NAME})
             message("-- yage: Search for " ${NAME} " in OS")
             if (${DEP_VAR_NAME}_FOUND)
@@ -48,7 +48,7 @@ function(yage_setup_dependency NAME)
             endif()
         endif()
 
-        if ((NOT DEP_PREFER STREQUAL "BUILD") AND (NOT ${${DEP_VAR_NAME}_FOUND}) AND (DEP_CONAN))
+        if ((NOT DEP_PREFER STREQUAL "BUILD") AND ((NOT ${${DEP_VAR_NAME}_FOUND}) OR (DEP_NOT_OS)) AND (DEP_CONAN))
             message ("-- yage: Search for " ${NAME} " in conan repositories")
 
             conan_cmake_run(REQUIRES ${DEP_CONAN}

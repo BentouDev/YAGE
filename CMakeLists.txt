@@ -79,6 +79,9 @@ find_package(OpenGL)
 # Add pThreads
 find_package(Threads)
 
+# Add Agnes
+yage_add_dependency(Dependencies/Agnes)
+
 # Add GLFW
 yage_add_dependency(Dependencies/GLFW)
 

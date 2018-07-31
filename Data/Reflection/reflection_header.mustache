@@ -16,13 +16,13 @@ namespace Meta::ReflectionData
             ClassInfo& Get() { return Data; }
     };
 
-    TReflectionVector<FieldInfo> {{class_name}}Meta::Fields = {
+    TReflectionVector<FieldInfo> meta_{{class_name}}::Fields = {
         {{#fields}}
             { {{name}}, &{{{canonical_name}}}::{{name}}, {{access}}, Meta::GetType<{{{type}}}>() },
         {{/fields}}
     };
 
-    TReflectionVector<MethodInfo> {{class_name}}Meta::Methods = {
+    TReflectionVector<MethodInfo> meta_{{class_name}}::Methods = {
         {{#methods}}
             { {{name}}, detail::MethodWrapper<decltype(&{{{canonical_name}}}::{{name}}), &{{{canonical_name}}}::{{name}}>() },
         {{/methods}}
