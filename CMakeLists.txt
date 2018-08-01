@@ -15,6 +15,10 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH}
 include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/Conan.cmake)
 include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
 
+# Configure conan
+include (conanbuildinfo.cmake)
+conan_basic_setup()
+
 # Emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 

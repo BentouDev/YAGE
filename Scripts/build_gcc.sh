@@ -6,6 +6,7 @@ cmake --version
 conan --version
 mkdir bin
 cd bin
+conan remote add yage https://api.bintray.com/conan/bentoudev/yage
 conan install ..
 cmake -DCMAKE_CXX_FLAGS="-fprofile-arcs -ftest-coverage " -DENABLE_COVERAGE=On -DYAGE_VERSION_PATCH=$PATCH_VER --target all ..
 make

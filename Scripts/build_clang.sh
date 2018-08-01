@@ -6,6 +6,7 @@ cmake --version
 conan --version
 mkdir bin
 cd bin
+conan remote add yage https://api.bintray.com/conan/bentoudev/yage
 conan install ..
 cmake --target all -DYAGE_VERSION_PATCH=$PATCH_VER ..
 make

@@ -16,3 +16,4 @@ Generated/
 # Conan
 conaninfo.txt
 conanbuildinfo.txt
+conanbuildinfo.cmake
