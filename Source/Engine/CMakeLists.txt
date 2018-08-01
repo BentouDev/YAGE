@@ -8,13 +8,6 @@ add_subdirectory(Utils)
 add_subdirectory(Core)
 add_subdirectory(Script)
 
-#message("-- yage: Checking for Agnes presence...")
-#execute_process(COMMAND ${AGNES_BINARY} --help OUTPUT_VARIABLE YAGE_AGNES_PRESENT)
-#message("-- yage: Anges returned " ${YAGE_AGNES_PRESENT})
-#if (YAGE_AGNES_PRESENT)
-#    message(FATAL_ERROR "-- yage: Agnes not operateable!")
-#endif()
-
 message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB_RECURSE
         YAGE_ALL_HEADERS

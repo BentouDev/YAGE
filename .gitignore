@@ -1,9 +1,18 @@
+# IDE
 .idea
 .vs
 .vscode
 .directory
 .idea
+
+# Builds
 cmake-build-debug/
 build/
 bin/
+
+# Code generation
 Generated/
+
+# Conan
+conaninfo.txt
+conanbuildinfo.txt
