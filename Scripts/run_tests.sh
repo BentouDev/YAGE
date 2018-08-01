@@ -1,4 +1,4 @@
 #!/bin/sh
-cd bin
+cd Build
 make test
 make gcov        

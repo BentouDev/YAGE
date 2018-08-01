@@ -16,7 +16,7 @@ include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/Conan.cmake)
 include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
 
 # Configure conan
-include (conanbuildinfo.cmake)
+include (Build/conanbuildinfo.cmake)
 conan_basic_setup()
 
 # Emit additional metadata for debug builds
