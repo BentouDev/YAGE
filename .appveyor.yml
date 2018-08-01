@@ -43,7 +43,7 @@ before_build:
   - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - cmd: msbuild /version
   - cmd: mkdir Build && cd Build
-  - cmd: conan install .
+  - cmd: conan install ..
   - cmd: cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% -DYAGE_VERSION_PATCH=%PATCH_VER% ..
 
 build:
