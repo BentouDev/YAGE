@@ -13,14 +13,12 @@ include (Conan)
 include (Yage)
 
 # Configure conan
-set (YAGE_CONAN_INFO ${EXECUTABLE_OUTPUT_PATH}/conanbuildinfo.cmake)
-if (NOT EXISTS YAGE_CONAN_INFO)
-    set(YAGE_CONAN_INFO ${CMAKE_CURRENT_SOURCE_DIR}/Build/conanbuildinfo.cmake)
-endif()
-
-if(EXISTS YAGE_CONAN_INFO)
-    include (YAGE_CONAN_INFO)
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
+    message ("-- yage: Using Conan!")
+    include (${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
     conan_basic_setup()
+else()
+    message ("-- yage: No Conan!" ${YAGE_CONAN_INFO})
 endif()
 
 # Emit additional metadata for debug builds

@@ -4,12 +4,13 @@
 find_program (
     AGNES_BINARY
     NAMES Agnes Agnes.exe agnes agnes.exe
+    PATHS ${CONAN_BIN_DIRS_AGNES}
 )
 
 find_path (
     AGNES_INCLUDE_DIR
     NAMES Reflection/ReflectionInfo.h Reflection/ReflectionUtils.h
-    PATHS /usr/include/ /usr/local/include/
+    PATHS ${CONAN_INCLUDE_DIRS_AGNES} /usr/include/ /usr/local/include/
 )
 
 # Handle the QUIETLY and REQUIRED arguments and set GLFW_FOUND to TRUE if

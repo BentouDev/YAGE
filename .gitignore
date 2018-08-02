@@ -41,7 +41,7 @@
 
 # Builds
 cmake-build-debug/
-build/
+[Bb]uild/
 .vs
 
 # Code generation

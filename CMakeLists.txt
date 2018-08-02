@@ -1,13 +1,14 @@
 ## Yet Another Game Engine
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
+project(YAGE VERSION 0.1 LANGUAGES CXX C)
+
 # Project setup
 include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupProject.cmake)
 
 #============================#
 # Version                    #
 #============================#
-project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
 option(YAGE_VERSION_PATCH "Build version" "dev")
 option(YAGE_BUILD_TESTS "Build Tests" ${NOT_SUBPROJECT})
