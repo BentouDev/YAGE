@@ -1,3 +1,43 @@
+# Add CTTI
+#
+# Creates and setups command to generate CTTI using Agnes
+function (yage_add_ctti NAME)
+    set(options TEST)
+    set(oneArg PATTERN DIRECTORY)
+    set(multiArg OUTPUT DEPENDS HEADERS)
+    cmake_parse_arguments(AGNES "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
+
+    string(TOUPPER ${NAME} AGNES_VAR_NAME)
+
+    file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/${NAME})
+
+    if (AGNES_DIRECTORY)
+        set(DIR_PARAM "-d " ${AGNES_DIRECTORY})
+    endif()
+
+    add_custom_command(
+            OUTPUT ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp ${AGNES_OUTPUT}
+            DEPENDS ${AGNES_DEPENDS} ${AGNES_HEADERS}
+            COMMENT "Generating CTTI for ${NAME}..."
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMAND ${AGNES_BINARY} ARGS ${DIR_PARAM} ${AGNES_PATTERN} ${AGNES_HEADERS}
+            COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp)
+
+   # add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI
+   #         DEPENDS ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp
+   #         COMMENT "Checking if ${NAME} CTTI needs regeneration...")
+
+    file(GLOB
+            ${AGNES_VAR_NAME}_GENERATED_CRTTI
+            ${CMAKE_SOURCE_DIR}/Generated/${NAME}/*.h)
+
+    add_library(${NAME}_CTTI ${${AGNES_VAR_NAME}_GENERATED_CRTTI} ${AGNES_OUTPUT})
+   # add_dependencies(${NAME}_CTTI YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI)
+    set_target_properties(${NAME}_CTTI PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
+    add_library(CTTI::${NAME} ALIAS ${NAME}_CTTI)
+
+endfunction()
+
 # Include
 #
 # Includes directories both in current scope and for target

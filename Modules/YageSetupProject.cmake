@@ -10,10 +10,10 @@ endif()
 # Add modules
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
 include (Conan)
-include (YageSetupDependency)
+include (Yage)
 
 # Configure conan
-set (YAGE_CONAN_INFO ${CMAKE_CURRENT_SOURCE_DIR}/conanbuildinfo.cmake)
+set (YAGE_CONAN_INFO ${EXECUTABLE_OUTPUT_PATH}/conanbuildinfo.cmake)
 if (NOT EXISTS YAGE_CONAN_INFO)
     set(YAGE_CONAN_INFO ${CMAKE_CURRENT_SOURCE_DIR}/Build/conanbuildinfo.cmake)
 endif()
