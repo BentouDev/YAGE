@@ -52,8 +52,8 @@ build:
   parallel: true
 
 test_script:
-  - cmd: C:\projects\yage\Build\Source\Engine\Core\Release\CoreTests.exe -r junit > CoreTests.xml
-  - cmd: C:\projects\yage\Build\Source\Engine\Utils\Release\UtilsTests.exe -r junit > UtilsTests.xml
+  - cmd: C:\projects\yage\Build\bin\CoreTests.exe -r junit > CoreTests.xml
+  - cmd: C:\projects\yage\Build\bin\UtilsTests.exe -r junit > UtilsTests.xml
 
 on_success:
   - ps: |
