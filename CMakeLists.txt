@@ -1,26 +1,8 @@
 ## Yet Another Game Engine
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-#============================#
-# Project setup              #
-#============================#
-# detect if YAGE is being bundled,
-# disable testsuite in that case
-if(NOT DEFINED PROJECT_NAME)
-  set(NOT_SUBPROJECT ON)
-endif()
-
-# Add modules
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
-include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/Conan.cmake)
-include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupDependency.cmake)
-
-# Configure conan
-include (Build/conanbuildinfo.cmake)
-conan_basic_setup()
-
-# Emit additional metadata for debug builds
-include(CMakeToolsHelpers OPTIONAL)
+# Project setup
+include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupProject.cmake)
 
 #============================#
 # Version                    #
@@ -37,26 +19,6 @@ if (NOT YAGE_VERSION_PATCH)
 endif()
 
 set(PROJECT_VERSION_PATCH ${YAGE_VERSION_PATCH})
-
-# Pick either lib or lib64
-include("GNUInstallDirs")
-
-# Installation
-if(NOT LIBDIR)
-    set (LIBDIR lib)
-endif()
-
-set (YAGE_BINARY_DIR "bin")
-set (YAGE_LIBRARY_DIR "${LIBDIR}/YAGE")
-set (YAGE_INCLUDE_DIR "include/YAGE")
-
-# Enforce warnings
-if(CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
-endif(CMAKE_COMPILER_IS_GNUCC)
-if(MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
-endif(MSVC)
 
 #============================#
 #   _  _   __    ___  ____   #
