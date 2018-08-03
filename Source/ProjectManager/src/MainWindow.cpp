@@ -1,6 +1,8 @@
 #include "MainWindow.h"
+#include "Backend.h"
 #include <QTimer>
 #include <QtQml/QQmlEngine>
+#include <QtQml/QQmlContext>
 #include <QLayout>
 #include <QAction>
 #include <QDir>
@@ -45,4 +47,12 @@ void MainWindow::ReloadUI()
         _View->engine()->clearComponentCache();
         _View->setSource(QUrl("Data/main.qml"));
     });
+}
+
+Q_DECLARE_METATYPE(QQmlListProperty<Project>);
+
+void MainWindow::RegisterBackend(Backend& backend)
+{
+    _View->engine()->rootContext()->setContextProperty("projects", QVariant::fromValue(backend.GetProjects()));
+    ReloadUI();
 }

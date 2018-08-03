@@ -5,6 +5,8 @@
 #include <QFileSelector>
 #include <QtQuick/QQuickView>
 
+class Backend;
+
 class MainWindow : public QMainWindow
 {
 public:
@@ -12,10 +14,10 @@ public:
     ~MainWindow();
 
     void ReloadUI();
+    void RegisterBackend(Backend& backend);
 
 private:
     void resizeEvent(QResizeEvent* event) override;
-    void delayReloadUI();
 
     QFileSelector* _FileSelector;
     QQuickView* _View;

@@ -1,4 +1,5 @@
 #include "Backend.h"
+#include "Project.h"
 
 Backend::Backend(QObject *parent) :
     QObject(parent)
@@ -10,16 +11,17 @@ Backend::~Backend()
     
 }
 
-QString Backend::userName()
+void Backend::AddProject(const QString& name)
 {
-    return m_userName;
+    auto* proj = new Project();
+    proj->SetName(name);
+    proj->SetPath("Data/" + name);
+    proj->SetDate(QDateTime::currentDateTime());
+
+    emit OnProjectAdded();
 }
 
-void Backend::setUserName(const QString &userName)
+QQmlListProperty<Project> Backend::GetProjects()
 {
-    if (userName == m_userName)
-        return;
-
-    m_userName = userName;
-    emit userNameChanged();
+    return QQmlListProperty<Project>(this, Projects);
 }

@@ -3,25 +3,30 @@
 
 #include <QObject>
 #include <QString>
+#include <QList>
+#include <QQmlListProperty>
+
+class Project;
 
 class Backend : public QObject
 {
     Q_OBJECT
     
-    Q_PROPERTY(QString userName READ userName WRITE setUserName NOTIFY userNameChanged)
+    Q_PROPERTY(QQmlListProperty<Project> Projects READ GetProjects NOTIFY OnProjectAdded)
 
 public:
     explicit Backend(QObject* parent = nullptr);
     virtual ~Backend();
-    
-    QString userName();
-    void setUserName(const QString &userName);
+
+    void AddProject(const QString& name);
+
+    QQmlListProperty<Project> GetProjects();
 
 signals:
-    void userNameChanged();
-
+    void OnProjectAdded();
+    
 private:
-    QString m_userName;
+    QList<Project *> Projects;
 };
 
 #endif // YAGE_BACKEND_H

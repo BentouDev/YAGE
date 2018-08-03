@@ -8,10 +8,6 @@ Rectangle {
 	anchors.centerIn: parent
 	anchors.fill: parent
 
-	Backend {
-		id: backend
-	}
-
     Text {
         id: text
         text: "This is QML code.\n(Click to pause)\n"
@@ -31,11 +27,38 @@ Rectangle {
     }
     Component.onCompleted: animation.start()
 	
-	TextField {
-        text: backend.userName
-        placeholderText: qsTr("User name")
-        anchors.centerIn: parent
+    ListModel {
+        id: mock
+        ListElement {
+            Name: "Bill Smith"
+            number: "555 3264"
+        }
+        ListElement {
+            Name: "John Brown"
+            number: "555 8426"
+        }
+        ListElement {
+            Name: "Sam Wise"
+            number: "555 0473"
+        }
+    }
 
-        onTextChanged: backend.userName = text
+    ListView {
+	    anchors.centerIn: parent
+        anchors.fill: parent
+
+        focus: true
+        model: projects // mock //backend.Project //
+
+        highlight: Rectangle { color: "lightsteelblue"; radius: 5 }
+        delegate: Rectangle {
+            height: 25
+            width: 100
+            color: "red"
+            Text {
+                text: Name
+                color: "black"
+            }
+        }
     }
 }
