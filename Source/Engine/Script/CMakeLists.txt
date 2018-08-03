@@ -6,7 +6,6 @@ add_library(YAGE::Script ALIAS Script)
 
 target_include_directories(Script PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
         PRIVATE Source)
 
 target_compile_features(Script
@@ -15,10 +14,10 @@ target_compile_features(Script
 
 # 'make install' to the correct location
 install(TARGETS Script
-        ARCHIVE  DESTINATION lib
-        LIBRARY  DESTINATION lib
-        RUNTIME  DESTINATION bin)  # This is for Windows
-install(DIRECTORY include/ DESTINATION include)
+        EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}"
+        ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
+        LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
+        RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
 
 # This makes the project importable from the build directory
 export(TARGETS Script FILE ScriptConfig.cmake)

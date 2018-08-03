@@ -1,0 +1,13 @@
+{
+  "patterns" : [
+    {
+      "class_template" : ["reflection_header.mustache"],
+      "class_out" : "meta_{{class_name}}.h",
+      "main_template" : "main_template.mustache",
+      "main_out" : "register_reflection.cpp",
+      "output_dir" : "Generated",
+      "file" : "(\\W|\\w)*\\.h\\b",
+      "annotation" : "CTTI"
+    }
+  ]
+}

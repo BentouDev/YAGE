@@ -16,6 +16,7 @@ platform:
 environment:
   PYTHON: "C:\\Python27"
   QTDIR: "C:\\Qt\\5.10.1\\msvc2017_64\\"
+  PATCH_VER: "%APPVEYOR_REPO_COMMIT%"
 
 install:
   - cmd: git submodule update --init --recursive
@@ -42,7 +43,8 @@ before_build:
   - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - cmd: msbuild /version
   - cmd: mkdir Build && cd Build
-  - cmd: cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% ..
+  - cmd: conan install ..
+  - cmd: cmake -G "Visual Studio 15 2017 Win64" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% -DYAGE_VERSION_PATCH=%PATCH_VER% -DYAGE_BUILD_TESTS=On ..
 
 build:
   project: C:\projects\yage\Build\ALL_BUILD.vcxproj
@@ -50,8 +52,9 @@ build:
   parallel: true
 
 test_script:
-  - cmd: C:\projects\yage\Build\Source\Core\Release\CoreTests.exe -r junit > CoreTests.xml
-  - cmd: C:\projects\yage\Build\Source\Utils\Release\UtilsTests.exe -r junit > UtilsTests.xml
+  - cmd: C:\projects\yage\Build\bin\CoreTests.exe -r junit > CoreTests.xml
+  - cmd: C:\projects\yage\Build\bin\UtilsTests.exe -r junit > UtilsTests.xml
+  - cmd: dir
 
 on_success:
   - ps: |

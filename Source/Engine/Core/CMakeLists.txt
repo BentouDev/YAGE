@@ -13,7 +13,7 @@ add_library(YAGE::Core ALIAS Core)
 target_include_directories(Core PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
         PRIVATE src )
 
 #set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
@@ -22,6 +22,8 @@ target_compile_features(Core
         PRIVATE cxx_variadic_templates
         cxx_nullptr)
 
+target_compile_definitions(Core PRIVATE ${YAGE_LIB_COMPILE_DEFS})
+		
 target_link_libraries(Core YAGE::Utils lodepng ${ASSIMP_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ${GLFW_LIBRARIES})
 
 if(OPENGL_FOUND)
@@ -32,13 +34,14 @@ endif()
 
 # 'make install' to the correct location
 install(TARGETS Core
-        ARCHIVE  DESTINATION lib
-        LIBRARY  DESTINATION lib
-        RUNTIME  DESTINATION bin)  # This is for Windows
-install(DIRECTORY include/ DESTINATION include)
+        EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}"
+        ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
+        LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
+        RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
+install(DIRECTORY include/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 # This makes the project importable from the build directory
-export(TARGETS lodepng ${GLFW_TARGET} ${ASSIMP_TARGETS} Core FILE CoreConfig.cmake)
+export(TARGETS ${GLFW_TARGET} ${ASSIMP_TARGETS} lodepng Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course

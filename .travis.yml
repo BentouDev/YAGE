@@ -29,8 +29,9 @@ matrix:
 #  - wget https://s3-us-west-2.amazonaws.com/prod.lunarx/sdk/1457744859783_vulkansdk-linux-x86_64-1.0.5.0.run?AWSAccessKeyId=AKIAJ2OMJY5KDUYV55GA&Expires=1458999290&Signature=mU%2BOkmFcbx5ryz3HwgZ%2F7of%2Fkw8%3D
 
 before_script:
+  - export PATCH_VER=$TRAVIS_COMMIT
   - docker pull bentou/ubuntuartfuldev
   - docker ps -a
-  - mkdir bin
+  - mkdir Build
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start" # X virtual framebuffer
