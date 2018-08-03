@@ -120,7 +120,10 @@ install(EXPORT Engine
 if(YAGE_BUILD_EDITOR)
 
     # Add QT5 when building Editor
-    find_package(Qt5Widgets REQUIRED)
+    find_package(Qt5Widgets CONFIG REQUIRED Qml Quick QuickWidgets)
+    find_package(Qt5Qml)
+    find_package(Qt5Quick)
+    find_package(Qt5QuickWidgets)
 
     # Additional windows specific features
     if(WIN32)
@@ -128,6 +131,7 @@ if(YAGE_BUILD_EDITOR)
     endif(WIN32)
 
     # Include Editor
+    add_subdirectory(Source/ProjectManager)
     add_subdirectory(Source/Editor)
 
 endif(YAGE_BUILD_EDITOR)
