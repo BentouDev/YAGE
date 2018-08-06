@@ -1,35 +1,48 @@
 import QtQuick 2.6
-import QtQuick.Controls 2.0
+import QtQuick.Controls 1.0
+import QtQuick.Controls.Styles 1.4
 
 Button {
     id: control
     property string image
-    contentItem: Rectangle {
-        color: "transparent"
-        Image {
-            id: icon
-            
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-
-            source: "image://standardIcon/" + image
-            width: 20; height: 20;
-            fillMode: Image.PreserveAspectFit
+    style: ButtonStyle { 
+        background: Rectangle {
+            implicitHeight: 42
+            color: "transparent"
         }
-        Text {
-            id: label
+        label: Rectangle {
+            color: control.hovered ? "#303030" : "transparent"
+            Image {
+                id: icon
+                
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
 
-            anchors.left: icon.right
-            anchors.leftMargin: 10
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
+                source: "image://standardIcon/" + image
+                width: 24; height: 24;
 
-            text: control.text
-            horizontalAlignment: Text.AlignHLeft
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
-            font.pointSize: 10
-            font.underline: control.hovered
+                fillMode: Image.PreserveAspectFit
+            }
+            Text {
+                id: label
+
+                color: "#aaa"
+
+                anchors.leftMargin: 10
+                anchors.left: icon.right
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+
+                text: control.text
+                horizontalAlignment: Text.AlignHLeft
+                verticalAlignment: Text.AlignVCenter
+                elide: Text.ElideRight
+
+                font.pointSize: 10
+                font.underline: control.hovered        
+            }
         }
     }
 }

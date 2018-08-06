@@ -1,9 +1,10 @@
 import QtQuick 2.6
-import QtQuick.Controls 2.0
+import QtQuick.Controls 1.0
 import Yage.ProjectManager.Backend 1.0
 
 Rectangle {
     id: main
+
 	anchors.centerIn: parent
 	anchors.fill: parent
 
@@ -47,8 +48,8 @@ Rectangle {
         anchors.centerIn: parent
         anchors.fill: parent
 
-        anchors.leftMargin: parent.width * 0.25
-        width: parent.width * 0.75
+        anchors.leftMargin: 200
+        width: parent.width - 200
 
         ListView {
             id: listView
@@ -59,8 +60,6 @@ Rectangle {
 
             interactive: false
             focus: true
-            
-            onCurrentItemChanged: console.log((listView.currentIndex) + ' selected')
             
             highlight: Rectangle { color: "lightsteelblue"; }
             delegate: listElement
@@ -74,10 +73,10 @@ Rectangle {
         anchors.centerIn: parent
         anchors.fill: parent
 
-        anchors.rightMargin: parent.width * 0.75
-        width: parent.width * 0.25
+        anchors.rightMargin: parent.width - 200
+        width: 200
 
-        color: "gray"
+        color: "#202020"
 
         Row {
             Column {

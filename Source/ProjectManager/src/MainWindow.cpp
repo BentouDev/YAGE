@@ -2,20 +2,22 @@
 #include "Backend.h"
 #include "Project.h"
 #include "StandardIconProvider.h"
-#include <QTimer>
+
 #include <QtQml/QQmlEngine>
 #include <QtQml/QQmlContext>
+
 #include <QSizePolicy>
+#include <QFileInfo>
 #include <QLayout>
 #include <QAction>
+#include <QTimer>
 #include <QDir>
-#include <QFileInfo>
 
 MainWindow::MainWindow()
 {
     setWindowTitle("YAGE - Project Manager");
-    resize(600, 800);
-    setMinimumSize(480, 200);
+    resize(600, 400);
+    setMinimumSize(600, 200);
 
     qDebug() << "-- yage: Working dir: " << QDir::currentPath();
 
@@ -41,10 +43,16 @@ MainWindow::~MainWindow()
 void MainWindow::ReloadUI()
 {
     QTimer::singleShot(0, [this](){
-        QUrl runtime("Data/Editor/main.qml");
-        QFileInfo exists(runtime.toString());
+        QString   main("Data/Editor/main.qml");
+        QFileInfo exists(main);
+        QUrl      runtime;
 
-        if (!exists.exists() || !exists.isFile())
+        if (exists.exists() && exists.isFile())
+        {
+            runtime = main;
+            qDebug() << "--yage: Found main.qml!";
+        }
+        else
         {
             runtime = QUrl("qrc:/main.qml");
         }
