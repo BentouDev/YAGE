@@ -9,6 +9,7 @@
 #include <QLayout>
 #include <QAction>
 #include <QDir>
+#include <QFileInfo>
 
 MainWindow::MainWindow()
 {
@@ -40,8 +41,16 @@ MainWindow::~MainWindow()
 void MainWindow::ReloadUI()
 {
     QTimer::singleShot(0, [this](){
+        QUrl runtime("Data/Editor/main.qml");
+        QFileInfo exists(runtime.toString());
+
+        if (!exists.exists() || !exists.isFile())
+        {
+            runtime = QUrl("qrc:/main.qml");
+        }
+
         _View->engine()->clearComponentCache();
-        _View->setSource(QUrl("Data/Editor/main.qml"));
+        _View->setSource(runtime);
     });
 }
 

@@ -1,6 +1,5 @@
 import QtQuick 2.6
 import QtQuick.Controls 2.0
-import QtLocation 5.6
 
 Button {
     id: control

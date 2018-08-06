@@ -35,7 +35,9 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(ProjectManager ${OS_BUNDLE} src/main.cpp include/MainWindow.h src/MainWindow.cpp include/Backend.h src/Backend.cpp include/Project.h src/Project.cpp include/StandardIconProvider.h)
+qt5_add_resources(MANAGER_QML_RESOURCES src/qml.qrc)
+
+add_executable(ProjectManager ${MANAGER_QML_RESOURCES} ${OS_BUNDLE} src/main.cpp include/MainWindow.h src/MainWindow.cpp include/Backend.h src/Backend.cpp include/Project.h src/Project.cpp include/StandardIconProvider.h)
 add_executable(YAGE::ProjectManager ALIAS ProjectManager)
 set_target_properties(ProjectManager PROPERTIES OUTPUT_NAME "YageProjectManager")
 
