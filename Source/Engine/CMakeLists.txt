@@ -50,7 +50,7 @@ yage_add_ctti(Engine
 
 install(TARGETS Engine_CTTI
         EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}")
-install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Generated/Engine DESTINATION ${YAGE_INCLUDE_DIR}/CTTI/Engine)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/Engine DESTINATION ${YAGE_INCLUDE_DIR}/CTTI/Engine)
 
 target_compile_definitions(Engine PRIVATE ${YAGE_LIB_COMPILE_DEFS})
 

@@ -28,7 +28,7 @@ Button {
             text: control.text
             horizontalAlignment: Text.AlignHLeft
             verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight                        
+            elide: Text.ElideRight
             font.pointSize: 10
             font.underline: control.hovered
         }

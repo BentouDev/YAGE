@@ -28,10 +28,12 @@ Rectangle {
                     text: model.Name
                     color: "black"
                     font.pointSize: 10
+                    elide: Text.ElideRight
                 }
                 Text {
                     text: model.Path
                     color: "black"
+                    elide: Text.ElideRight
                 }
             }
             MouseArea {                    

@@ -15,7 +15,7 @@ int main(int argc, char** args)
     
     MainWindow window;
 	window.show();
-	
+		
 	window.RegisterBackend(backend);
 	
 	window.ReloadUI();

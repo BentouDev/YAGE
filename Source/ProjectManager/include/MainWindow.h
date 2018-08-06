@@ -17,9 +17,7 @@ public:
     void RegisterBackend(Backend& backend);
 
 private:
-    void resizeEvent(QResizeEvent* event) override;
-
-    QFileSelector* _FileSelector;
+    
     QQuickView* _View;
     QWidget* _ViewWidget;
 };
