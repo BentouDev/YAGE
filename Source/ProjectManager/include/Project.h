@@ -10,9 +10,9 @@ class Project : public QObject
 {
     Q_OBJECT
     
-    Q_PROPERTY(QString   Name READ GetName WRITE SetName NOTIFY NameChanged)
-    Q_PROPERTY(QDir      Path READ GetPath WRITE SetPath NOTIFY PathChanged)
-    Q_PROPERTY(QDateTime Date READ GetDate WRITE SetDate NOTIFY DateChanged)
+    Q_PROPERTY(QString Name READ GetName NOTIFY NameChanged)
+    Q_PROPERTY(QString Path READ GetPath NOTIFY PathChanged)
+    Q_PROPERTY(QString Date READ GetDate NOTIFY DateChanged)
 
 public:
     explicit Project(QObject* parent = nullptr);
@@ -21,10 +21,10 @@ public:
     QString GetName() { return Name; }
     void SetName(const QString &userName);
 
-    QDir GetPath() { return Path; }
+    QString GetPath() { return Path.absolutePath(); }
     void SetPath(const QDir& path);
 
-    QDateTime GetDate() { return LastUsed; }
+    QString GetDate() { return LastUsed.toString(); }
     void SetDate(const QDateTime& date);
 
 signals:

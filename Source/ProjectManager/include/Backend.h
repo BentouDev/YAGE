@@ -18,15 +18,15 @@ public:
     explicit Backend(QObject* parent = nullptr);
     virtual ~Backend();
 
-    void AddProject(const QString& name);
-
+    // Projects
+    void AddProject(const QString& name);    
     QQmlListProperty<Project> GetProjects();
 
 signals:
     void OnProjectAdded();
-    
+
 private:
     QList<Project *> Projects;
 };
 
-#endif // YAGE_BACKEND_H
+#endif // YAGE_BACKEND_H 

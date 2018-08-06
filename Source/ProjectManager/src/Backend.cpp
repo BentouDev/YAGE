@@ -18,6 +18,8 @@ void Backend::AddProject(const QString& name)
     proj->SetPath("Data/" + name);
     proj->SetDate(QDateTime::currentDateTime());
 
+    Projects.push_back(proj);
+
     emit OnProjectAdded();
 }
 
