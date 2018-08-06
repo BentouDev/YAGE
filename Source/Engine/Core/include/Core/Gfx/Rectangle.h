@@ -12,7 +12,7 @@ namespace Gfx
 	template <typename N>
 	class Rectangle
 	{
-		using vector2 = glm::tvec2<N, glm::precision::defaultp>;
+		using vector2 = glm::tvec2<N>;
 
 		vector2 _min;
 		vector2 _max;
@@ -54,7 +54,7 @@ namespace Gfx
 
 		auto getCenter()		const noexcept -> vector2
 		{
-			return glm::tvec2<N, glm::precision::defaultp> (
+			return glm::tvec2<N> (
 				getLeft() + getWidth() * 0.5, getBottom() + getHeight() * 0.5
 			);
 		}
