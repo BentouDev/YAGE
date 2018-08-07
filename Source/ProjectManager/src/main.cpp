@@ -1,7 +1,9 @@
-#include <QApplication>
 #include "MainWindow.h"
 #include "Backend.h"
 #include "Project.h"
+
+#include <QtQml/QQmlEngine>
+#include <QApplication>
 #include <QStyle>
 
 int main(int argc, char** args)
@@ -11,20 +13,16 @@ int main(int argc, char** args)
     qmlRegisterType<Backend>("Yage.ProjectManager.Backend", 1, 0, "Backend");
 	qmlRegisterType<Project>("Yage.ProjectManager.Backend", 1, 0, "Project");
 
-	Backend backend;
-    
+	Backend    backend;    
     MainWindow window;
-	window.show();
-		
-	window.RegisterBackend(backend);
-	
-	window.ReloadUI();
-	
+
 	backend.AddProject("Test1");
 	backend.AddProject("WitchKnight");
 	backend.AddProject("RobbutAssault");
 	backend.AddProject("SoulOfMagic");
-	
+
+	window.RegisterBackend(backend);
+	window.show();
 
 	return app.exec();
 }

@@ -1,1 +1,0 @@
-/mnt/windows/Projekty/YAGE/Engine/Source/ProjectManager/src/YageButton.qml

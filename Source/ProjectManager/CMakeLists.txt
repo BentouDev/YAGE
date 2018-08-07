@@ -37,7 +37,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 qt5_add_resources(MANAGER_QML_RESOURCES src/qml.qrc)
 
-add_executable(ProjectManager ${MANAGER_QML_RESOURCES} ${OS_BUNDLE} src/main.cpp include/MainWindow.h src/MainWindow.cpp include/Backend.h src/Backend.cpp include/Project.h src/Project.cpp include/StandardIconProvider.h)
+add_executable(ProjectManager ${MANAGER_QML_RESOURCES} ${OS_BUNDLE} src/main.cpp include/MainWindow.h src/MainWindow.cpp include/Backend.h src/Backend.cpp include/Project.h src/Project.cpp include/StandardIconProvider.h include/QmlFrame.h src/QmlFrame.cpp)
 add_executable(YAGE::ProjectManager ALIAS ProjectManager)
 set_target_properties(ProjectManager PROPERTIES OUTPUT_NAME "YageProjectManager")
 

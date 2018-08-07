@@ -8,39 +8,19 @@ Rectangle {
 	anchors.centerIn: parent
 	anchors.fill: parent
 
+    color: "#202020"
+
     Component {
         id: listElement
-        Item {
-            x: 10
-            y: 10
-            height: 36
+        YageButton {
+
             width: parent.width
-            Row {                
-                anchors.left: undefined
-                anchors.right: parent.right
-                Text {
-                    text: model.Date
-                    color: "black"
-                }
-            }
-            Column {
-                Text {
-                    text: model.Name
-                    color: "black"
-                    font.pointSize: 10
-                    elide: Text.ElideRight
-                }
-                Text {
-                    text: model.Path
-                    color: "black"
-                    elide: Text.ElideRight
-                }
-            }
-            MouseArea {                    
-                z: 1
-                anchors.fill: parent
-                onClicked: listView.currentIndex = index
-            }
+
+            isProject: true
+            image: "SP_DirIcon"
+            text: model.Name
+            desc: model.Path
+            date: model.Date
         }
     }
 
@@ -51,18 +31,18 @@ Rectangle {
         anchors.leftMargin: 200
         width: parent.width - 200
 
+        color: "#2f2f2f"
+
         ListView {
             id: listView
+
             anchors.centerIn: parent
             anchors.fill: parent
 
             model: backend.Projects
+            delegate: listElement
 
             interactive: false
-            focus: true
-            
-            highlight: Rectangle { color: "lightsteelblue"; }
-            delegate: listElement
         }
     }
 
@@ -76,7 +56,7 @@ Rectangle {
         anchors.rightMargin: parent.width - 200
         width: 200
 
-        color: "#202020"
+        color: "transparent"
 
         Row {
             Column {
