@@ -1,10 +1,11 @@
 #ifndef YAGE_BACKEND_H
 #define YAGE_BACKEND_H
 
+#include <QQmlListProperty>
 #include <QObject>
 #include <QString>
 #include <QList>
-#include <QQmlListProperty>
+#include <QDir>
 
 class Project;
 
@@ -19,13 +20,24 @@ public:
     virtual ~Backend();
 
     // Projects
-    void AddProject(const QString& name);    
-    QQmlListProperty<Project> GetProjects();
+    void OpenProject(const QDir& path);
+    void OpenProject(Project* project);
+    void AddProject(const QString& name);
+    auto GetProjects() -> QQmlListProperty<Project>;
+
+    // Interface
+    Q_INVOKABLE void OnNewProject();
+    Q_INVOKABLE void OnOpenProject();
+    Q_INVOKABLE void OnCheckUpdates();
+    Q_INVOKABLE void OnAbout();
 
 signals:
     void OnProjectAdded();
 
 private:
+    void LoadSettings();
+    void SaveSettings();
+
     QList<Project *> Projects;
 };
 

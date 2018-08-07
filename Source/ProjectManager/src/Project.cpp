@@ -1,7 +1,9 @@
 #include "Project.h"
+#include "Backend.h"
 
-Project::Project(QObject* parent)
-    : QObject(parent)
+Project::Project(Backend* backend)
+    : QObject(backend)
+    , _Backend(backend)
 {
 
 }
@@ -24,4 +26,9 @@ void Project::SetPath(const QDir& path)
 void Project::SetDate(const QDateTime& date)
 {
     LastUsed = date;
+}
+
+Q_INVOKABLE void Project::OnOpen()
+{
+    if (_Backend) _Backend->OpenProject(this);
 }

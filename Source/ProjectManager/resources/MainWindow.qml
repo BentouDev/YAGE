@@ -21,6 +21,8 @@ Rectangle {
             text: model.Name
             desc: model.Path
             date: model.Date
+
+            onClicked: modelData.OnOpen();
         }
     }
 
@@ -64,11 +66,13 @@ Rectangle {
                     width: buttons.width
                     text: "New project"
                     image: "SP_FileIcon"
+                    onClicked: backend.OnNewProject();
                 }
                 YageButton {
                     width: buttons.width
                     text: "Open project..."
                     image: "SP_DirOpenIcon"
+                    onClicked: backend.OnOpenProject();
                 }
             }
         }
@@ -79,11 +83,13 @@ Rectangle {
                     width: buttons.width
                     text: "Check for updates"
                     image: "SP_BrowserReload"
+                    onClicked: backend.OnCheckUpdates();
                 }
                 YageButton {
                     width: buttons.width
                     text: "About"
                     image: "SP_MessageBoxQuestion"
+                    onClicked: backend.OnAbout();
                 }
             }
         }

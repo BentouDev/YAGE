@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
+        <file>MainWindow.qml</file>
         <file>YageButton.qml</file>
     </qresource>
 </RCC>

@@ -16,11 +16,6 @@ int main(int argc, char** args)
 	Backend    backend;    
     MainWindow window;
 
-	backend.AddProject("Test1");
-	backend.AddProject("WitchKnight");
-	backend.AddProject("RobbutAssault");
-	backend.AddProject("SoulOfMagic");
-
 	window.RegisterBackend(backend);
 	window.show();
 
