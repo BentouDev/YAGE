@@ -3,7 +3,7 @@ project(ProjectManager VERSION 0.1 LANGUAGES CXX)
 
 # Additional setup for Windows
 if(WIN32)
-    set(OS_BUNDLE WIN32)
+    # set(OS_BUNDLE WIN32)
     set(OS_LIBS Qt5::WinExtras)
     add_definitions(-DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE)
 endif(WIN32)
@@ -35,7 +35,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-qt5_add_resources(MANAGER_QML_RESOURCES src/qml.qrc)
+qt5_add_resources(MANAGER_QML_RESOURCES resources/qml.qrc)
 
 add_executable(ProjectManager ${MANAGER_QML_RESOURCES} ${OS_BUNDLE} src/main.cpp include/MainWindow.h src/MainWindow.cpp include/Backend.h src/Backend.cpp include/Project.h src/Project.cpp include/StandardIconProvider.h include/QmlFrame.h src/QmlFrame.cpp)
 add_executable(YAGE::ProjectManager ALIAS ProjectManager)

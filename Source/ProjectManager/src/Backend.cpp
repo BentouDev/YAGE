@@ -9,6 +9,23 @@
 Backend::Backend(QObject *parent) :
     QObject(parent)
 {
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple2");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple3");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple4");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple5");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple6");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple7");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple8");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple8");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simpleq");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplew");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplee");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplert");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simpleww");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplert");
+    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple123");
+
     LoadSettings();
 }
 
@@ -43,7 +60,7 @@ void Backend::LoadSettings()
             continue;
 
         auto* proj = new Project(this);
-              proj->SetName(file.dir().dirName());
+              proj->SetName(file.baseName());
               proj->SetPath(path);
               proj->SetDate(date);
         Projects.push_back(proj);
@@ -136,4 +153,9 @@ void Backend::OnCheckUpdates()
 void Backend::OnAbout()
 {
 
+}
+
+auto Backend::GetProjectTemplates() -> QStringList&
+{
+    return Templates;
 }

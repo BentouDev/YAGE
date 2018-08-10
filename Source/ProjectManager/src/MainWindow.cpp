@@ -28,6 +28,7 @@ MainWindow::~MainWindow()
 void MainWindow::RegisterBackend(Backend& backend)
 {
     _MainQml->GetEngine()->rootContext()->setContextProperty("backend", &backend);
+    _MainQml->GetEngine()->rootContext()->setContextProperty("templates", QVariant::fromValue(backend.GetProjectTemplates()));
     _MainQml->GetEngine()->addImageProvider(QLatin1String("standardIcon"), new StandardIconProvider);
 
     _MainQml->Reload();

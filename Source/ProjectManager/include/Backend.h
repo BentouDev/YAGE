@@ -24,6 +24,7 @@ public:
     void OpenProject(Project* project);
     void AddProject(const QString& name);
     auto GetProjects() -> QQmlListProperty<Project>;
+    auto GetProjectTemplates() -> QStringList&;
 
     // Interface
     Q_INVOKABLE void OnNewProject();
@@ -38,7 +39,8 @@ private:
     void LoadSettings();
     void SaveSettings();
 
-    QList<Project *> Projects;
+    QList<Project*> Projects;
+    QStringList     Templates;
 };
 
 #endif // YAGE_BACKEND_H 
