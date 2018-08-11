@@ -14,10 +14,13 @@ class Backend : public QObject
     Q_OBJECT
     
     Q_PROPERTY(QQmlListProperty<Project> Projects READ GetProjects NOTIFY OnProjectAdded)
+    Q_PROPERTY(QString CurrentDir READ GetCurrentDir NOTIFY OnCurrentDirChanged)
 
 public:
     explicit Backend(QObject* parent = nullptr);
     virtual ~Backend();
+
+    auto GetCurrentDir() -> QString;
 
     // Projects
     void OpenProject(const QDir& path);
@@ -27,18 +30,22 @@ public:
     auto GetProjectTemplates() -> QStringList&;
 
     // Interface
-    Q_INVOKABLE void OnNewProject();
+    Q_INVOKABLE void OnPickFolder();
+    Q_INVOKABLE bool OnNewProject(const QString& name);
     Q_INVOKABLE void OnOpenProject();
     Q_INVOKABLE void OnCheckUpdates();
     Q_INVOKABLE void OnAbout();
 
 signals:
     void OnProjectAdded();
+    void OnCurrentDirChanged();
 
 private:
+    void LoadTemplates();
     void LoadSettings();
     void SaveSettings();
 
+    QDir            CurrentFolder;
     QList<Project*> Projects;
     QStringList     Templates;
 };

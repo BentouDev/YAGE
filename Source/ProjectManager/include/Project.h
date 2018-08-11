@@ -20,14 +20,14 @@ public:
     explicit Project(Backend* parent = nullptr);
     virtual ~Project();
     
-    QString GetName() { return Name; }
+    QString GetName() const { return Name; }
     void SetName(const QString &userName);
 
-    QString GetPath() { return Path.absolutePath(); }
+    QString GetPath() const { return Path.absolutePath(); }
     void SetPath(const QDir& path);
 
-    QDateTime GetDateTime() { return LastUsed; }
-    QString GetDate() { return LastUsed.toString(); }
+    QDateTime GetDateTime() const { return LastUsed; }
+    QString   GetDate() const { return LastUsed.toString(); }
     void SetDate(const QDateTime& date);
 
     // Interface

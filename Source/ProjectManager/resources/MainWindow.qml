@@ -38,10 +38,9 @@ StackView {
                     color: "#ccc"
                 }
 
-                TextField {
+                Item {
                     id: path_field
-
-                    placeholderText: "Select or type project path..."
+                    height: 26
                     anchors {
                         horizontalCenter: parent.horizontalCenter
                         top: parent.top
@@ -50,6 +49,21 @@ StackView {
                         topMargin: 20
                         leftMargin: 64
                         rightMargin: 64
+                    }
+
+                    TextField {
+                        id: path_field_form
+                        text: backend.CurrentDir
+                        anchors.left: parent.left
+                        anchors.right: path_field_button.left
+                    }
+
+                    Button {
+                        id: path_field_button
+                        text: "..."
+                        onClicked: backend.OnPickFolder();
+                        anchors.right: parent.right
+                        width: 48
                     }
                 }
                 
@@ -113,7 +127,7 @@ StackView {
                         color: "transparent"
 
                         width: parent.width
-                        height: 25
+                        height: 20
                         Text {
                             color: "#aaa"
                             width: parent.width
@@ -151,7 +165,7 @@ StackView {
                 text: "Create"
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                onClicked: backend.OnNewProject()
+                onClicked: backend.OnNewProject(name_field.text)
             }
         }
     }

@@ -1,7 +1,10 @@
 #include "Backend.h"
 #include "Project.h"
 
+#include <QStandardPaths>
+#include <QDirIterator>
 #include <QApplication>
+#include <QMessageBox>
 #include <QFileDialog>
 #include <QSettings>
 #include <QFileInfo>
@@ -9,24 +12,8 @@
 Backend::Backend(QObject *parent) :
     QObject(parent)
 {
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple2");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple3");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple4");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple5");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple6");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple7");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple8");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple8");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simpleq");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplew");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplee");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplert");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simpleww");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simplert");
-    Templates.append("~/.config/BentouDev/ProjectTemplates/Simple123");
-
     LoadSettings();
+    LoadTemplates();
 }
 
 Backend::~Backend()
@@ -39,6 +26,41 @@ Backend::~Backend()
     }
 
     Projects.clear();
+}
+
+void Backend::LoadTemplates()
+{
+    QStringList templatePaths = QStandardPaths::locateAll
+    (
+        QStandardPaths::ConfigLocation,
+        "BentouDev",
+        QStandardPaths::LocateDirectory
+    );
+
+    for (auto itr : templatePaths)
+    {
+        QDir dir(itr);
+             
+        if (!dir.cd("ProjectTemplates"))
+            continue;
+
+        QDirIterator dirItr
+        (
+            dir.absolutePath(),
+            QDir::Dirs | QDir::NoDotAndDotDot, 
+            QDirIterator::Subdirectories
+        );
+
+        while (dirItr.hasNext())
+        {
+            dirItr.next();
+
+            if (!dirItr.fileInfo().dir().isEmpty())
+            {
+                Templates.push_back(dirItr.filePath());
+            }
+        }
+    }
 }
 
 void Backend::LoadSettings()
@@ -59,6 +81,13 @@ void Backend::LoadSettings()
         if (!file.exists() || !file.isDir())
             continue;
 
+        auto itr = std::find_if(Projects.begin(), Projects.end(), [&](Project* proj){
+            return proj->GetPath().compare(path) == 0;
+        });
+
+        if (itr != Projects.end())
+            continue;
+
         auto* proj = new Project(this);
               proj->SetName(file.baseName());
               proj->SetPath(path);
@@ -67,6 +96,10 @@ void Backend::LoadSettings()
     }
 
     settings.endArray();
+
+    std::sort(Projects.begin(), Projects.end(), [](const Project* first, const Project* second){
+        return first->GetDateTime() > second->GetDateTime();
+    });
 }
 
 void Backend::SaveSettings()
@@ -84,6 +117,11 @@ void Backend::SaveSettings()
 
     settings.endArray();
     settings.sync();
+}
+
+auto Backend::GetCurrentDir() -> QString
+{
+    return CurrentFolder.absolutePath();
 }
 
 void Backend::OpenProject(const QDir& dir)
@@ -124,9 +162,73 @@ QQmlListProperty<Project> Backend::GetProjects()
     return QQmlListProperty<Project>(this, Projects);
 }
 
-void Backend::OnNewProject()
+auto Backend::GetProjectTemplates() -> QStringList&
 {
+    return Templates;
+}
 
+void Backend::OnPickFolder()
+{
+    QString dir = QFileDialog::getExistingDirectory
+    (
+        nullptr,
+        tr("Open Directory"),
+        CurrentFolder.absolutePath(),
+        QFileDialog::ShowDirsOnly
+    );
+
+    QDir new_dir(dir);
+
+    if (!new_dir.exists())
+        return;
+
+    CurrentFolder = new_dir;
+    emit OnCurrentDirChanged();
+}
+
+bool Backend::OnNewProject(const QString& name)
+{
+    if (name.isEmpty())
+        return false;
+
+    if (!CurrentFolder.exists())
+        return false;
+
+    if (!CurrentFolder.cd(name))
+    {
+        CurrentFolder.mkdir(name);
+
+        if (!CurrentFolder.cd(name))
+            return false;
+    }
+
+    if (!CurrentFolder.isEmpty())
+    {
+        QMessageBox choice;
+        choice.setText(
+            QString("Selected directory '%1' is not empty! Do you want to create anyway?")
+            .arg(CurrentFolder.absolutePath())
+        );
+
+        choice.setStandardButtons(QMessageBox::Cancel | QMessageBox::Ok);
+        choice.setDefaultButton(QMessageBox::Cancel);
+
+        if (choice.exec() != QMessageBox::Ok)
+        {
+            CurrentFolder.cdUp();
+            return false;
+        }
+    }
+
+    auto* proj = new Project();
+    proj->SetName(name);
+    proj->SetPath(CurrentFolder);
+
+    Projects.push_back(proj);
+
+    OpenProject(proj);
+
+    return true;
 }
 
 void Backend::OnOpenProject()
@@ -147,15 +249,20 @@ void Backend::OnOpenProject()
 
 void Backend::OnCheckUpdates()
 {
-
+    QMessageBox dialog;
+    dialog.setWindowTitle("YAGE - Check for updates");
+    dialog.setText("Checking for updates is not implemented yet!");
+    dialog.setIcon(QMessageBox::Warning);
+    dialog.exec();
 }
 
 void Backend::OnAbout()
 {
-
-}
-
-auto Backend::GetProjectTemplates() -> QStringList&
-{
-    return Templates;
+    QMessageBox::about(
+        nullptr,
+        "YAGE - About",
+        "<h3>Yet Another Game Engine</h3>\n"
+        "<p>by BentouDev</p>\n"
+        "<p><a href='https://github.com/BentouDev/YAGE'>github</a></p>"
+    );
 }
