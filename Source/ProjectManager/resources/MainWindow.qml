@@ -2,7 +2,7 @@ import QtQuick 2.6
 import QtQuick.Controls 1.0
 import Yage.ProjectManager.Backend 1.0
 
-StackView {    
+StackView {
     id: stack
 
     anchors.centerIn: parent
@@ -165,7 +165,7 @@ StackView {
                 text: "Create"
                 anchors.right: parent.right
                 anchors.bottom: parent.bottom
-                onClicked: backend.OnNewProject(name_field.text)
+                onClicked: backend.OnNewProject(name_field.text, template_list.currentIndex)
             }
         }
     }

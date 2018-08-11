@@ -31,7 +31,7 @@ public:
 
     // Interface
     Q_INVOKABLE void OnPickFolder();
-    Q_INVOKABLE bool OnNewProject(const QString& name);
+    Q_INVOKABLE bool OnNewProject(const QString& name, int templateIndex = -1);
     Q_INVOKABLE void OnOpenProject();
     Q_INVOKABLE void OnCheckUpdates();
     Q_INVOKABLE void OnAbout();
@@ -44,6 +44,7 @@ private:
     void LoadTemplates();
     void LoadSettings();
     void SaveSettings();
+    void CreateProjectFiles(const Project* project, const QString& templatePath);
 
     QDir            CurrentFolder;
     QList<Project*> Projects;
