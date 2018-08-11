@@ -152,6 +152,12 @@ if(YAGE_BUILD_TESTS)
 endif()
 
 #============================#
+# Post Install               #
+#============================#
+
+add_subdirectory(Modules/PostInstall)
+
+#============================#
 # Packaging                  #
 #============================#
 include (InstallRequiredSystemLibraries)
