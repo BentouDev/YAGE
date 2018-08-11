@@ -8,6 +8,7 @@
 #include <QFileDialog>
 #include <QSettings>
 #include <QFileInfo>
+#include <QProcess>
 
 Backend::Backend(QObject *parent) :
     QObject(parent)
@@ -153,6 +154,11 @@ void Backend::OpenProject(const QDir& dir)
 void Backend::OpenProject(Project *project)
 {
     project->SetDate(QDateTime::currentDateTime());
+
+    QStringList args;
+                args.push_back(project->GetPath());
+
+    LaunchYageEditor(args);
 
     QApplication::quit();
 }
@@ -314,4 +320,9 @@ void Backend::CreateProjectFiles(const Project* project, const QString& template
     detail::copyRecursively(templatePath, project->GetPath());
 
     // Execute mustache
+}
+
+void Backend::LaunchYageEditor(const QStringList& args)
+{
+    QProcess::startDetached("YageEditor", args);
 }

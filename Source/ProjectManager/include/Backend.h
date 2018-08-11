@@ -45,6 +45,7 @@ private:
     void LoadSettings();
     void SaveSettings();
     void CreateProjectFiles(const Project* project, const QString& templatePath);
+    void LaunchYageEditor(const QStringList& args);
 
     QDir            CurrentFolder;
     QList<Project*> Projects;
