@@ -18,6 +18,10 @@ MainWindow::MainWindow()
 
     _MainQml = new QmlFrame("MainWindow.qml", this);
     setCentralWidget(_MainQml);
+
+    connect (_MainQml, &QmlFrame::OnLoaded, [this](){
+        show();
+    });
 }
 
 MainWindow::~MainWindow()

@@ -8,6 +8,8 @@ class QQmlEngine;
 
 class QmlFrame : public QFrame
 {
+    Q_OBJECT
+
 public:
     explicit QmlFrame(const QString& source, QWidget* parent = nullptr);
     virtual ~QmlFrame();
@@ -15,6 +17,9 @@ public:
     void SetSource(const QString& source);
     void Reload();
     auto GetEngine() -> QQmlEngine*;
+
+signals:
+    void OnLoaded();
 
 private:
 

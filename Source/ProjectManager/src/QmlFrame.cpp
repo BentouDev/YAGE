@@ -32,6 +32,11 @@ QmlFrame::QmlFrame(const QString& source, QWidget* parent)
     action->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_R));
     connect(action, &QAction::triggered, [this](){ Reload(); });
 
+    connect(_View, &QQuickView::statusChanged, [this](QQuickView::Status status){
+        if (status == QQuickView::Ready)
+            emit OnLoaded();
+    });
+
     addAction(action);
 }
 

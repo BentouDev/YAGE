@@ -1,5 +1,6 @@
 ## QT based ProjectManager for YAGE
 project(ProjectManager VERSION 0.1 LANGUAGES CXX)
+set (YAGE_MANAGER_OUTPUT_NAME "YageProjectManager")
 
 # Additional setup for Windows
 if(WIN32)
@@ -39,7 +40,7 @@ qt5_add_resources(MANAGER_QML_RESOURCES resources/qml.qrc)
 
 add_executable(ProjectManager ${MANAGER_QML_RESOURCES} ${OS_BUNDLE} src/main.cpp include/MainWindow.h src/MainWindow.cpp include/Backend.h src/Backend.cpp include/Project.h src/Project.cpp include/StandardIconProvider.h include/QmlFrame.h src/QmlFrame.cpp)
 add_executable(YAGE::ProjectManager ALIAS ProjectManager)
-set_target_properties(ProjectManager PROPERTIES OUTPUT_NAME "YageProjectManager")
+set_target_properties(ProjectManager PROPERTIES OUTPUT_NAME ${YAGE_MANAGER_OUTPUT_NAME})
 
 target_include_directories(ProjectManager PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -60,6 +61,13 @@ install(TARGETS ProjectManager
         ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
         LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
         RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
+
+# Deploy Qt library
+if (WIN32)
+        string (CONCAT MANAGER_BINARY ${YAGE_BINARY_DIR}/${YAGE_MANAGER_OUTPUT_NAME} ".exe")
+        string (CONCAT MANAGER_DEPLOY "execute_process(COMMAND windeployqt.exe --qmldir " ${CMAKE_CURRENT_SOURCE_DIR} "/resources " ${MANAGER_BINARY} ")")
+        install(CODE ${MANAGER_DEPLOY})
+endif()
 
 # This makes the project importable from the build directory
 export(TARGETS ProjectManager ProjectManager_CTTI FILE ProjectManagerConfig.cmake)

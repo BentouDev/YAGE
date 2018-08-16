@@ -17,7 +17,6 @@ int main(int argc, char** args)
     MainWindow window;
 
 	window.RegisterBackend(backend);
-	window.show();
 
 	return app.exec();
 }
