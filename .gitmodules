@@ -13,9 +13,6 @@
 [submodule "Dependencies/GLFW/Source"]
 	path = Dependencies/GLFW/Source
 	url = https://github.com/glfw/glfw.git
-[submodule "Dependencies/Spdlog/Source"]
-	path = Dependencies/Spdlog/Source
-	url = https://github.com/gabime/spdlog.git
 [submodule "Dependencies/Lodepng/Source"]
 	path = Dependencies/Lodepng/Source
 	url = https://github.com/lvandeve/lodepng.git
