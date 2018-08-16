@@ -28,7 +28,7 @@ namespace Editor
 	public:
 		explicit EditorWindow(QWidget *parent = nullptr);
 		~EditorWindow();
-
+	
 	private slots:
 		void on_actionExit_triggered();
 		void onAddButtonClick();

@@ -21,12 +21,16 @@ enum EntryType
 	ET_Custom        = 0x0000ffff
 };
 
+static constexpr qint32 MAGIC = 0x00001337;
+static constexpr qint32 MAJOR_VERSION = 2;
+static constexpr qint32 MINOR_VERSION = 0;
+
 class ADS_EXPORT_API HeaderEntity
 {
 public:
-	static qint32 MAGIC;
-	static qint32 MAJOR_VERSION;
-	static qint32 MINOR_VERSION;
+	//static qint32 MAGIC;
+	//static qint32 MAJOR_VERSION;
+	//static qint32 MINOR_VERSION;
 
 	HeaderEntity();
 	qint32 magic;

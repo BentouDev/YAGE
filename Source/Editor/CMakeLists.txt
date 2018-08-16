@@ -35,7 +35,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h)
+add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h include/IconTitleWidget.h src/IconTitleWidget.cpp)
 add_executable(YAGE::Editor ALIAS Editor)
 set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
 
@@ -49,6 +49,7 @@ target_compile_features(Editor
         PUBLIC cxx_auto_type cxx_nullptr cxx_variadic_templates)
 
 target_compile_definitions(Editor PRIVATE ${YAGE_EXE_COMPILE_DEFS})
+# target_compile_definitions(Editor PRIVATE ADS_NAMESPACE_ENABLED)
 
 # Disable static link of Qt
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)

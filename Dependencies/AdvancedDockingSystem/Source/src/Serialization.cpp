@@ -61,9 +61,9 @@ ADS_NAMESPACE_SER_BEGIN
 
 ///////////////////////////////////////////////////////////////////////////////
 
-qint32 HeaderEntity::MAGIC = 0x00001337;
-qint32 HeaderEntity::MAJOR_VERSION = 2;
-qint32 HeaderEntity::MINOR_VERSION = 0;
+//qint32 HeaderEntity::MAGIC = 0x00001337;
+//qint32 HeaderEntity::MAJOR_VERSION = 2;
+//qint32 HeaderEntity::MINOR_VERSION = 0;
 
 HeaderEntity::HeaderEntity() :
 	magic(0), majorVersion(0), minorVersion(0)
@@ -324,9 +324,9 @@ QByteArray InMemoryWriter::toByteArray() const
 
 	// Basic format header.
 	HeaderEntity header;
-	header.magic = HeaderEntity::MAGIC;
-	header.majorVersion = HeaderEntity::MAJOR_VERSION;
-	header.minorVersion = HeaderEntity::MINOR_VERSION;
+	header.magic = MAGIC;
+	header.majorVersion = MAJOR_VERSION;
+	header.minorVersion = MINOR_VERSION;
 	out << header;
 
 	// Offsets-Header
@@ -373,12 +373,12 @@ bool InMemoryReader::initReadHeader()
 	// Basic format header.
 	HeaderEntity header;
 	in >> header;
-	if (header.magic != HeaderEntity::MAGIC)
+	if (header.magic != MAGIC)
 	{
 		qWarning() << QString("invalid format (magic=%1)").arg(header.magic);
 		return false;
 	}
-	if (header.majorVersion != HeaderEntity::MAJOR_VERSION)
+	if (header.majorVersion != MAJOR_VERSION)
 	{
 		qWarning() << QString("format is too new (major=%1; minor=%2)")
 					  .arg(header.majorVersion).arg(header.minorVersion);

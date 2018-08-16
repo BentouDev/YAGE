@@ -26,8 +26,21 @@ set (ADS_HEADERS
 	Dependencies/AdvancedDockingSystem/Source/include/ads/Serialization.h
 )
 
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTOMOC ON)
+
 yage_include(YAGE Dependencies/AdvancedDockingSystem/Source/include)
 
 add_library(ADS_LIB STATIC ${ADS_SOURCES} ${ADS_HEADERS})
+# target_compile_definitions(ADS_LIB PRIVATE ADS_EXPORT)
 target_compile_definitions(ADS_LIB PRIVATE ADS_IMPORT)
+# target_compile_definitions(ADS_LIB PRIVATE ADS_NAMESPACE_ENABLED)
+set_target_properties(ADS_LIB PROPERTIES LINKER_LANGUAGE CXX)
 target_link_libraries(ADS_LIB Qt5::Core Qt5::Widgets)
+set (ADS_LIBS ADS_LIB)
+
+install(TARGETS ADS_LIB
+        ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
+        LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
+        RUNTIME  DESTINATION ${YAGE_BINARY_DIR})

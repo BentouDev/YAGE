@@ -3,5 +3,8 @@
         <file>resources/PlusButton.png</file>
         <file>resources/CloseButton.png</file>
         <file>resources/EditorWindow.css</file>
+        <file>resources/stylesheets/default-windows.css</file>
+        <file>resources/stylesheets/vendor-partsolutions.css</file>
+        <file>resources/stylesheets/modern-windows.css</file>
     </qresource>
 </RCC>
