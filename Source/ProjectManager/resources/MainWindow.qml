@@ -86,6 +86,7 @@ Rectangle {
                             text: backend.CurrentDir
                             anchors.left: parent.left
                             anchors.right: path_field_button.left
+                            onTextChanged: backend.CurrentDir = text
                         }
 
                         Button {
@@ -120,7 +121,6 @@ Rectangle {
                             leftMargin: 64
                             rightMargin: 64
                         }
-
                     }
                 }
 
@@ -186,6 +186,7 @@ Rectangle {
                     width: 120; height: 42
                     
                     text: "Back "
+                    image: "SP_ArrowLeft"
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
                     onClicked: stack.pop()
@@ -195,6 +196,7 @@ Rectangle {
                     width: 120; height: 42
                     
                     text: "Create"
+                    image: "SP_ArrowRight"
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     onClicked: backend.OnNewProject(name_field.text, template_list.currentIndex)

@@ -14,13 +14,14 @@ class Backend : public QObject
     Q_OBJECT
     
     Q_PROPERTY(QQmlListProperty<Project> Projects READ GetProjects NOTIFY OnProjectAdded)
-    Q_PROPERTY(QString CurrentDir READ GetCurrentDir NOTIFY OnCurrentDirChanged)
+    Q_PROPERTY(QString CurrentDir READ GetCurrentDir WRITE SetCurrentDir NOTIFY OnCurrentDirChanged)
 
 public:
     explicit Backend(QObject* parent = nullptr);
     virtual ~Backend();
 
     auto GetCurrentDir() -> QString;
+    void SetCurrentDir(const QString& dir);
 
     // Projects
     void OpenProject(const QDir& path);

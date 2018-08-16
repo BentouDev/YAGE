@@ -38,10 +38,21 @@ void Backend::LoadTemplates()
         QStandardPaths::LocateDirectory
     );
 
+    templatePaths.push_back("../data");
+    templatePaths.push_back("../Data");
+
+    // Use ./Data directly when cwd is set
+    templatePaths.push_back("Data");
+
+#ifndef NDEBUG
+    // Get out of ./build during development
+    templatePaths.push_back("../../Data");
+#endif
+
     for (auto itr : templatePaths)
     {
         QDir dir(itr);
-             
+
         if (!dir.cd("ProjectTemplates"))
             continue;
 
@@ -123,6 +134,13 @@ void Backend::SaveSettings()
 auto Backend::GetCurrentDir() -> QString
 {
     return CurrentFolder.absolutePath();
+}
+
+void Backend::SetCurrentDir(const QString& dir)
+{
+    QDir folder(dir);
+    if (folder.exists())
+        CurrentFolder = folder;
 }
 
 void Backend::OpenProject(const QDir& dir)
