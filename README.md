@@ -15,6 +15,8 @@ Yet Another Game Engine
 ```
 mkdir build
 cd build
+conan remote add yage https://api.bintray.com/conan/bentoudev/yage
+conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
 conan install ..
 cmake ..
 ```
