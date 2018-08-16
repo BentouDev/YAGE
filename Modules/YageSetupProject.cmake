@@ -28,13 +28,20 @@ include(CMakeToolsHelpers OPTIONAL)
 include("GNUInstallDirs")
 
 # Installation
+set(LIBDIR ${CMAKE_INSTALL_LIB})
 if(NOT LIBDIR)
     set (LIBDIR lib)
+endif()
+
+# set(SHAREDSTATEDIR ${CMAKE_INSTALL_SHAREDSTATEDIR})
+if(NOT SHAREDSTATEDIR)
+    set (SHAREDSTATEDIR "./")
 endif()
 
 set (YAGE_BINARY_DIR "bin")
 set (YAGE_LIBRARY_DIR "${LIBDIR}/YAGE")
 set (YAGE_INCLUDE_DIR "include/YAGE")
+set (YAGE_DATA_DIR ${SHAREDSTATEDIR})
 
 # Enforce warnings
 if(CMAKE_COMPILER_IS_GNUCC)
