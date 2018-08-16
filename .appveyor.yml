@@ -4,7 +4,9 @@ image:
   - Visual Studio 2017
 
 artifacts:
-  - path: 'YAGE-*.zip'
+  - path: '*.zip'
+  - path: Build\CoreTests.xml
+  - path: Build\UtilsTests.xml
 
 cache:
   - C:\sdl_root
