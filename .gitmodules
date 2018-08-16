@@ -13,9 +13,6 @@
 [submodule "Dependencies/GLFW/Source"]
 	path = Dependencies/GLFW/Source
 	url = https://github.com/glfw/glfw.git
-[submodule "Dependencies/Json/Source"]
-	path = Dependencies/Json/Source
-	url = https://github.com/nlohmann/json.git
 [submodule "Dependencies/Spdlog/Source"]
 	path = Dependencies/Spdlog/Source
 	url = https://github.com/gabime/spdlog.git
