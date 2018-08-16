@@ -9,3 +9,16 @@ Yet Another Game Engine
 
 ### Tests status
 [![Test status](https://flauschig.ch/batch.php?type=tests&account=MrJaqbq&slug=YAGE)](https://ci.appveyor.com/project/MrJaqbq/yage/build/tests)
+
+## Usage
+### Build
+```
+mkdir build
+cd build
+conan install ..
+cmake ..
+```
+
+```
+cmake install ..
+```
