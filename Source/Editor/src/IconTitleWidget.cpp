@@ -1,4 +1,4 @@
-#include "icontitlewidget.h"
+#include "IconTitleWidget.h"
 
 #include <QIcon>
 #include <QString>

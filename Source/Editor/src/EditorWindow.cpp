@@ -27,7 +27,7 @@
 #include <ads/SectionWidget.h>
 #include <ads/DropOverlay.h>
 
-#include "icontitlewidget.h"
+#include "IconTitleWidget.h"
 
 namespace Editor
 {
