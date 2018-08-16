@@ -9,12 +9,12 @@
 int main(int argc, char** args)
 {
 	QApplication app(argc, args);
-	
-    qmlRegisterType<Backend>("Yage.ProjectManager.Backend", 1, 0, "Backend");
+
+	qmlRegisterType<Backend>("Yage.ProjectManager.Backend", 1, 0, "Backend");
 	qmlRegisterType<Project>("Yage.ProjectManager.Backend", 1, 0, "Project");
 
-	Backend    backend;    
-    MainWindow window;
+	Backend    backend;
+	MainWindow window;
 
 	window.RegisterBackend(backend);
 
