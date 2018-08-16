@@ -3,8 +3,9 @@ version: 1.0.{build}
 image:
   - Visual Studio 2017
 
+
 artifacts:
-  - path: '*.zip'
+  - path: 'Build\YAGE-*.zip'
   - path: Build\CoreTests.xml
   - path: Build\UtilsTests.xml
 
