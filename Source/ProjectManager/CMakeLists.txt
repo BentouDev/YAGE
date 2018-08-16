@@ -65,7 +65,7 @@ install(TARGETS ProjectManager
 # Deploy Qt library
 if (WIN32)
         string (CONCAT MANAGER_BINARY ${YAGE_BINARY_DIR}/${YAGE_MANAGER_OUTPUT_NAME} ".exe")
-        string (CONCAT MANAGER_DEPLOY "execute_process(COMMAND windeployqt.exe --qmldir " ${CMAKE_CURRENT_SOURCE_DIR} "/resources " ${MANAGER_BINARY} ")")
+        string (CONCAT MANAGER_DEPLOY "execute_process(COMMAND " ${WINDEPLOYQT_EXECUTABLE} " --qmldir " ${CMAKE_CURRENT_SOURCE_DIR} "/resources " ${MANAGER_BINARY} ")")
         install(CODE ${MANAGER_DEPLOY})
 endif()
 

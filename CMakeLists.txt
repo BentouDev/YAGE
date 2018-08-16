@@ -127,6 +127,7 @@ if(YAGE_BUILD_EDITOR)
 
     # Additional windows specific features
     if(WIN32)
+        yage_add_dependency(Dependencies/WinDeployQt)
         find_package(Qt5WinExtras)
     endif(WIN32)
 
