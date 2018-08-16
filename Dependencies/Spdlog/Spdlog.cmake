@@ -1,7 +1,6 @@
 #Spdlog
 yage_setup_dependency(Spdlog
-        VAR_NAME SPDLOG
-        SOURCE Dependencies/Spdlog/Source
-        INCLUDE Dependencies/Spdlog/Source/include)
+        CONAN spdlog/1.0.0@bincrafters/stable
+        VAR_NAME SPDLOG)
 
 yage_include(YAGE ${SPDLOG_INCLUDE_DIR})
