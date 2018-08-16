@@ -10,6 +10,9 @@
 #include <QFileInfo>
 #include <QProcess>
 
+#define YAGE_VENDOR_NAME "YAGE"
+#define YAGE_APP_NAME "ProjectManager"
+
 Backend::Backend(QObject *parent) :
     QObject(parent)
 {
@@ -34,12 +37,16 @@ void Backend::LoadTemplates()
     QStringList templatePaths = QStandardPaths::locateAll
     (
         QStandardPaths::ConfigLocation,
-        "BentouDev",
+        YAGE_VENDOR_NAME,
         QStandardPaths::LocateDirectory
     );
 
-    templatePaths.push_back("../data");
-    templatePaths.push_back("../Data");
+    templatePaths.append(QStandardPaths::locateAll
+    (
+        QStandardPaths::GenericDataLocation,
+        YAGE_VENDOR_NAME,
+        QStandardPaths::LocateDirectory
+    ));
 
     // Use ./Data directly when cwd is set
     templatePaths.push_back("Data");
@@ -78,7 +85,7 @@ void Backend::LoadTemplates()
 void Backend::LoadSettings()
 {
     QSettings   settings(QSettings::IniFormat, QSettings::UserScope, 
-                         "BentouDev", "YageProjectManager");
+                         YAGE_VENDOR_NAME, YAGE_APP_NAME);
     int count = settings.beginReadArray("RecentProjects");
 
     for (int i = 0; i < count; i++)
@@ -117,7 +124,7 @@ void Backend::LoadSettings()
 void Backend::SaveSettings()
 {
     QSettings   settings(QSettings::IniFormat, QSettings::UserScope, 
-                        "BentouDev", "YageProjectManager");
+                        YAGE_VENDOR_NAME, YAGE_APP_NAME);
                 settings.beginWriteArray("RecentProjects");
 
     for (int i = 0; i < Projects.size(); i++)

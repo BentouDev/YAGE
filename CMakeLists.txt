@@ -148,7 +148,7 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/../Log)
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPYONLY)
 
 # Copy ./Data on install
-install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/Data DESTINATION ${YAGE_DATA_DIR})
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/Data/ DESTINATION ${YAGE_DATA_DIR})
 
 # Evaluate test coverage when testing is enabled
 if(YAGE_BUILD_TESTS)

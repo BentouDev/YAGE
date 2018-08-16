@@ -35,7 +35,11 @@ endif()
 
 # set(SHAREDSTATEDIR ${CMAKE_INSTALL_SHAREDSTATEDIR})
 if(NOT SHAREDSTATEDIR)
-    set (SHAREDSTATEDIR "./")
+    if(WIN32)
+        set (SHAREDSTATEDIR "bin/Data")
+    elseif(UNIX)
+        set (SHAREDSTATEDIR "usr/share/YAGE")
+    endif()
 endif()
 
 set (YAGE_BINARY_DIR "bin")
