@@ -127,6 +127,9 @@ if(YAGE_BUILD_EDITOR)
         find_package(Qt5WinExtras)
     endif(WIN32)
 
+    # Add AdvancedDockingSystem
+    yage_add_dependency(Dependencies/AdvancedDockingSystem)
+
     # Include Editor
     add_subdirectory(Source/Editor)
 
