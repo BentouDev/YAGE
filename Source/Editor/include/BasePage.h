@@ -5,12 +5,12 @@
 #ifndef GAME_BASEPAGE_H
 #define GAME_BASEPAGE_H
 
-#include <QWidget>
+#include <QFrame>
 #include <QtWidgets/QHBoxLayout>
 
 namespace Editor
 {
-	class BasePage : public QWidget
+	class BasePage : public QFrame
 	{
 		Q_OBJECT
 

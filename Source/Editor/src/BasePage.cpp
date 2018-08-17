@@ -12,7 +12,7 @@
 namespace Editor
 {
 	BasePage::BasePage(QWidget *parent)
-		: QWidget(parent)
+		: QFrame(parent)
 	{
 		QVBoxLayout* masterPageLayout = new QVBoxLayout();
 		_toolbarLayout = new QHBoxLayout();

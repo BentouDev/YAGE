@@ -51,6 +51,21 @@ namespace Editor
 		return sc;
 	}
 
+	static ADS_NS::SectionContent::RefPtr createBasePage(ADS_NS::ContainerWidget* container)
+	{
+		QWidget* w = new QWidget();
+		QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
+		w->setLayout(bl);
+
+		BasePage* p = new BasePage();
+		bl->addWidget(p);
+
+		const int index = ++CONTENT_COUNT;
+		ADS_NS::SectionContent::RefPtr sc = ADS_NS::SectionContent::newSectionContent(QString("uname-%1").arg(index), container, new IconTitleWidget(QIcon(), QString("Label %1").arg(index)), w);
+		sc->setTitle("Ein Label " + QString::number(index));
+		return sc;
+	}
+
 	EditorWindow::EditorWindow(QWidget *parent) :
 			QMainWindow(parent),
 			_ui(new Ui::EditorWindow)
@@ -97,8 +112,8 @@ namespace Editor
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createBasePage(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createBasePage(cw), sw, ADS_NS::CenterDropArea);
 	}
 
 	void EditorWindow::onAddButtonClick()

@@ -11,6 +11,8 @@
 #include "ads/SectionContent.h"
 #endif
 
+#define ADS_ANIMATION_DURATION 200
+
 #define SCLookupMapById(X)   X->_scLookupMapById
 #define SCLookupMapByName(X) X->_scLookupMapByName
 #define SWLookupMapById(X)   X->_swLookupMapById

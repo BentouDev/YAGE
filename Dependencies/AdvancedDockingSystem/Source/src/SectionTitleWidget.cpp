@@ -109,9 +109,10 @@ void SectionTitleWidget::mouseReleaseEvent(QMouseEvent* ev)
 				resizeAnim->setDuration(ADS_ANIMATION_DURATION);
 
 				QParallelAnimationGroup* animGroup = new QParallelAnimationGroup(this);
-				QObject::connect(animGroup, &QPropertyAnimation::finished, [this, data, sw, loc]()
+				QObject::connect(animGroup, &QPropertyAnimation::finished, [this, sw, cw, loc]()
 				{
-					InternalContentData data = _fw->takeContent();
+					InternalContentData data;
+					_fw->takeContent(data);
 					_fw->deleteLater();
 					_fw.clear();
 					cw->dropContent(data, sw, loc);
