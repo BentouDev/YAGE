@@ -1,10 +1,12 @@
 import QtQuick 2.6
 import QtQuick.Controls 1.0
 import QtQuick.Controls.Styles 1.4
+import QtGraphicalEffects 1.0
 
 Button {
     id: control
     property string image
+    property string standardIcon
     property string desc
     property string date
     property bool isProject
@@ -28,6 +30,7 @@ Button {
         id: yage_button_project_entry
         Rectangle {
             color: control.pressed ? "#66000000" : (control.hovered ? "#22ffffff" : "transparent")
+
             Image {
                 id: icon
                 
@@ -36,11 +39,21 @@ Button {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
 
-                source: "image://standardIcon/" + image
+                source: standardIcon ? "image://standardIcon/" + standardIcon : image
                 width: 24; height: 24;
 
                 fillMode: Image.PreserveAspectFit
+            }            
+
+            Colorize {
+                anchors.fill: icon
+                source: icon
+
+                hue: 0.75
+                saturation: 1
+                lightness: 0
             }
+
             Row {
                 anchors.left: undefined
                 anchors.right: parent.right
@@ -74,6 +87,7 @@ Button {
         id: yage_button_single_line
         Rectangle {
             color: control.pressed ? "#66000000" : (control.hovered ? "#22ffffff" : "transparent")
+
             Image {
                 id: icon
                 
@@ -82,11 +96,21 @@ Button {
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
 
-                source: "image://standardIcon/" + image
+                source: standardIcon ? "image://standardIcon/" + standardIcon : image
                 width: 24; height: 24;
 
                 fillMode: Image.PreserveAspectFit
             }
+            
+            Colorize {
+                anchors.fill: icon
+                source: icon
+                
+                hue: 0.75
+                saturation: 1
+                lightness: 0
+            }
+
             Text {
                 id: label
 

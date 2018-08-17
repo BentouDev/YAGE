@@ -2,5 +2,12 @@
     <qresource prefix="/">
         <file>MainWindow.qml</file>
         <file>YageButton.qml</file>
+        <file>images/round_arrow_back_white_18dp.png</file>
+        <file>images/round_navigate_next_white_18dp.png</file>
+        <file>images/twotone_cloud_download_white_18dp.png</file>
+        <file>images/twotone_create_new_folder_white_18dp.png</file>
+        <file>images/twotone_folder_open_white_18dp.png</file>
+        <file>images/twotone_info_white_18dp.png</file>
+        <file>images/twotone_videogame_asset_white_18dp.png</file>
     </qresource>
 </RCC>

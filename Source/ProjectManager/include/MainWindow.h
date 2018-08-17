@@ -4,7 +4,9 @@
 #include <QMainWindow>
 
 class Backend;
+class QPixmap;
 class QmlFrame;
+class QSplashScreen;
 
 class MainWindow : public QMainWindow
 {
@@ -15,7 +17,9 @@ public:
     void RegisterBackend(Backend& backend);
 
 private:
-    QmlFrame* _MainQml;
+    QmlFrame*      _MainQml;
+    QSplashScreen* _Splash;
+    QPixmap*       _SplashImage;
 };
 
 #endif //  PROJECT_MANAGER_MAIN_WINDOW_H

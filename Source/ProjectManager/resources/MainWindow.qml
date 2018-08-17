@@ -186,7 +186,7 @@ Rectangle {
                     width: 120; height: 42
                     
                     text: "Back "
-                    image: "SP_ArrowLeft"
+                    image: "images/round_arrow_back_white_18dp.png"
                     anchors.left: parent.left
                     anchors.bottom: parent.bottom
                     onClicked: stack.pop()
@@ -196,7 +196,7 @@ Rectangle {
                     width: 120; height: 42
                     
                     text: "Create"
-                    image: "SP_ArrowRight"
+                    image: "images/round_navigate_next_white_18dp.png"
                     anchors.right: parent.right
                     anchors.bottom: parent.bottom
                     onClicked: backend.OnNewProject(name_field.text, template_list.currentIndex)
@@ -216,7 +216,7 @@ Rectangle {
                     width: parent.width
 
                     isProject: true
-                    image: "SP_DirIcon"
+                    image: "images/twotone_videogame_asset_white_18dp.png"
                     text: model.Name
                     desc: model.Path
                     date: model.Date
@@ -270,13 +270,13 @@ Rectangle {
                         YageButton {
                             width: buttons.width
                             text: "New project"
-                            image: "SP_FileIcon"
+                            image: "images/twotone_create_new_folder_white_18dp.png"
                             onClicked: stack.push(thePage)
                         }
                         YageButton {
                             width: buttons.width
                             text: "Open project..."
-                            image: "SP_DirOpenIcon"
+                            image: "images/twotone_folder_open_white_18dp.png"
                             onClicked: backend.OnOpenProject();
                         }
                     }
@@ -287,13 +287,13 @@ Rectangle {
                         YageButton {
                             width: buttons.width
                             text: "Check for updates"
-                            image: "SP_BrowserReload"
+                            image: "images/twotone_cloud_download_white_18dp.png"
                             onClicked: backend.OnCheckUpdates();
                         }
                         YageButton {
                             width: buttons.width
                             text: "About"
-                            image: "SP_MessageBoxQuestion"
+                            image: "images/twotone_info_white_18dp.png"
                             onClicked: backend.OnAbout();
                         }
                     }

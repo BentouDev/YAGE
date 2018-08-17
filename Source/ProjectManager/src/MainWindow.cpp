@@ -6,56 +6,61 @@
 
 #include <QDebug>
 #include <QPixmap>
+#include <QPointer>
 #include <QSplashScreen>
 #include <QtQml/QQmlEngine>
 #include <QtQml/QQmlContext>
+
+template <typename T>
+void SAFE_DELETE(T*& ptr)
+{
+    delete ptr;
+    ptr = nullptr;
+}
 
 MainWindow::MainWindow()
 {
     qDebug() << "-- yage: Working dir: " << QDir::currentPath();
 
-	QSplashScreen* splash = nullptr;
-	QPixmap*       pixmap = nullptr;
+    QFile image(":/resources/images/splash.png");
 
-	QFile image(":/resources/images/splash.png");
+    if (image.open(QFile::ReadOnly))
+    {
+        _SplashImage = new QPixmap(":/resources/images/splash.png");
+        _Splash      = new QSplashScreen(*_SplashImage);
 
-	if (image.open(QFile::ReadOnly))
-	{
-		pixmap = new QPixmap(":/resources/images/splash.png");
-		splash = new QSplashScreen(*pixmap);
+        //QFont splashFont;
+        //splashFont.setFamily("Arial");
+        //splashFont.setBold(true);
+        //splashFont.setPixelSize(9);
+        //splashFont.setStretch(125);
 
-		//QFont splashFont;
-		//splashFont.setFamily("Arial");
-		//splashFont.setBold(true);
-		//splashFont.setPixelSize(9);
-		//splashFont.setStretch(125);
+        //splash->setFont(splashFont);
 
-		//splash->setFont(splashFont);
+        _Splash->showMessage("Loading qml...", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
+        _Splash->show();
 
-		splash->showMessage("Loading qml...", Qt::AlignBottom | Qt::AlignHCenter, Qt::white);
-		splash->show();
+        qApp->processEvents();
+    }
 
-		qApp->processEvents();
-	}
+    setWindowTitle("YAGE - Project Manager");
+    resize(600, 400);
+    setMinimumSize(600, 200);
 
-	setWindowTitle("YAGE - Project Manager");
-	resize(600, 400);
-	setMinimumSize(600, 200);
+    _MainQml = new QmlFrame("MainWindow.qml", this);
+    setCentralWidget(_MainQml);
 
-	_MainQml = new QmlFrame("MainWindow.qml", this);
-	setCentralWidget(_MainQml);
-
-    connect (_MainQml, &QmlFrame::OnLoaded, [=]()
-	{
+    connect (_MainQml, &QmlFrame::OnLoaded, [this]()
+    {
         show();
         
-		if (splash)
-		{
-			splash->finish(this);
+        if (_Splash)
+        {
+            _Splash->finish(this);
 
-			delete splash;
-			delete pixmap;
-		}
+            SAFE_DELETE(_Splash);
+            SAFE_DELETE(_SplashImage);
+        }
     });
 }
 
