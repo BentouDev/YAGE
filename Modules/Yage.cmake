@@ -167,8 +167,14 @@ function(yage_setup_dependency NAME)
 
             if (DEP_SOURCE)
                 message("--   " ${NAME} " source dir " ${DEP_SOURCE})
+                
+                cmake_policy(PUSH)
+                cmake_policy(SET CMP0048 OLD)
 
-                add_subdirectory(${DEP_SOURCE} EXCLUDE_FROM_ALL)
+                    add_subdirectory(${DEP_SOURCE} EXCLUDE_FROM_ALL)
+
+                cmake_policy(POP)
+
             endif()
 
             set(${DEP_VAR_NAME}_TARGET ${DEP_TARGET} PARENT_SCOPE)

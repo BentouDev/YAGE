@@ -28,3 +28,6 @@
 [submodule "Dependencies/Trompeloeil/Source"]
 	path = Dependencies/Trompeloeil/Source
 	url = https://github.com/rollbear/trompeloeil.git
+[submodule "Dependencies/Mustache/Source"]
+	path = Dependencies/Mustache/Source
+	url = https://github.com/kainjow/Mustache.git

@@ -10,6 +10,12 @@
 #include <QFileInfo>
 #include <QProcess>
 
+#include <fstream>
+#include <mustache.hpp>
+
+using TMustacheView = kainjow::mustache::mustache;
+using TMustacheData = kainjow::mustache::data;
+
 #define YAGE_VENDOR_NAME "YAGE"
 #define YAGE_APP_NAME "ProjectManager"
 
@@ -34,14 +40,16 @@ Backend::~Backend()
 
 void Backend::LoadTemplates()
 {
-    QStringList templatePaths = QStandardPaths::locateAll
+    QStringList templatePaths;
+    
+    templatePaths.append(QStandardPaths::locate
     (
         QStandardPaths::ConfigLocation,
         YAGE_VENDOR_NAME,
         QStandardPaths::LocateDirectory
-    );
+    ));
 
-    templatePaths.append(QStandardPaths::locateAll
+    templatePaths.append(QStandardPaths::locate
     (
         QStandardPaths::GenericDataLocation,
         YAGE_VENDOR_NAME,
@@ -304,35 +312,78 @@ void Backend::OnAbout()
 
 namespace detail
 {
-    bool copyRecursively(const QString sourceFolder, const QString destFolder)
+    bool renderMustache(const std::string& source, int size, const std::string& target, TMustacheData& data)
+    {
+        if (size == 0)
+            return true;
+
+        std::fstream file(source);
+        std::string  mustache_source;
+
+        // Load view source
+        mustache_source.reserve(size);
+        mustache_source.assign((std::istreambuf_iterator<char>(file)),
+            std::istreambuf_iterator<char>());
+
+        TMustacheView view(mustache_source);
+
+        // Render output to file
+        std::fstream out(target, std::ios_base::out);
+        out << view.render(data);
+        out.close();
+
+        return true;
+    }
+
+    bool copyRecursively(const QString sourceFolder, const QString destFolder, TMustacheData& data)
     {
         bool success = false;
         QDir sourceDir(sourceFolder);
 
-        if(!sourceDir.exists())
+        if (!sourceDir.exists())
             return false;
 
         QDir destDir(destFolder);
-        if(!destDir.exists())
+        if (!destDir.exists())
             destDir.mkdir(destFolder);
 
         QStringList files = sourceDir.entryList(QDir::Files);
-        for(int i = 0; i< files.count(); i++) {
-            QString srcName = sourceFolder + QDir::separator() + files[i];
-            QString destName = destFolder + QDir::separator() + files[i];
-            success = QFile::copy(srcName, destName);
-            if(!success)
+        for (int i = 0; i< files.count(); i++)
+        {
+            QString sourceName = files[i];
+            QString targetName = sourceName;
+
+            int mustacheItr  = sourceName.indexOf(".mustache");
+            if (mustacheItr != -1)
+            {
+                targetName = sourceName.left(mustacheItr);
+            }
+
+            QString srcName  = sourceFolder + QDir::separator() + sourceName;
+            QString destName = destFolder   + QDir::separator() + targetName;
+
+            if (mustacheItr == -1)
+            {
+                success = QFile::copy(srcName, destName);
+            }
+            else
+            {
+                QFileInfo info(srcName);
+                success = renderMustache(srcName.toStdString(), info.size(), destName.toStdString(), data);
+            }
+
+            if (!success)
                 return false;
         }
 
         files.clear();
         files = sourceDir.entryList(QDir::AllDirs | QDir::NoDotAndDotDot);
-        for(int i = 0; i< files.count(); i++)
+        for (int i = 0; i< files.count(); i++)
         {
-            QString srcName = sourceFolder + QDir::separator() + files[i];
+            QString srcName  = sourceFolder + QDir::separator() + files[i];
             QString destName = destFolder + QDir::separator() + files[i];
-            success = copyRecursively(srcName, destName);
-            if(!success)
+            success = copyRecursively(srcName, destName, data);
+            if (!success)
                 return false;
         }
 
@@ -342,7 +393,10 @@ namespace detail
 
 void Backend::CreateProjectFiles(const Project* project, const QString& templatePath)
 {
-    detail::copyRecursively(templatePath, project->GetPath());
+    TMustacheData data;
+    data.set("project_name", project->GetName().toStdString());
+
+    detail::copyRecursively(templatePath, project->GetPath(), data);
 
     // Execute mustache
 }

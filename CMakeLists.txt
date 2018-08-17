@@ -134,6 +134,9 @@ if(YAGE_BUILD_EDITOR)
     # Add AdvancedDockingSystem
     yage_add_dependency(Dependencies/AdvancedDockingSystem)
 
+    # Add Mustache
+    yage_add_dependency(Dependencies/Mustache)
+
     # Include Editor
     add_subdirectory(Source/ProjectManager)
     add_subdirectory(Source/Editor)
