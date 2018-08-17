@@ -19,7 +19,7 @@ ads--SectionWidget,
 SectionWidget
 {
 	background: palette(window);
-	border: 1px solid palette(light);
+	/*border: 1px solid palette(light);*/
 }
 
 ads--SectionWidget #tabsMenuButton::menu-indicator,
@@ -32,10 +32,17 @@ ads--SectionTitleWidget,
 SectionTitleWidget
 {
 	background: palette(window);
-	border-color: palette(light);
+	/*border-color: palette(light);
 	border-style: solid;
-	border-width: 0 1px 0 0;
+	border-width: 0 1px 0 0;*/
 	padding: 0 9px;
+	color: white
+}
+
+ads--SectionTitleWidget,
+SectionTitleWidget:hover
+{
+	background: #555;
 }
 
 ads--SectionTitleWidget[activeTab="true"],
@@ -43,14 +50,15 @@ SectionTitleWidget[activeTab="true"]
 {
 /*	background: palette(light);*/
 /*	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:1, stop:0 rgba(255, 255, 255, 255), stop:1 rgba(240, 240, 240, 255));*/
-	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:0.5, stop:0 palette(window), stop:1 palette(light));
+/*	background: qlineargradient(spread:pad, x1:0, y1:0, x2:0, y2:0.5, stop:0 palette(dark), stop:1 palette(window));*/
+	background: palette(base);
 }
 
 ads--SectionContentWidget,
 SectionContentWidget
 {
-	background: palette(light);
-	border-color: palette(light);
+	background: palette(base);
+	border-color: palette(base);
 	border-style: solid;
 	border-width: 1px 0 0 0;
 }
@@ -60,7 +68,7 @@ SectionContentWidget
 ads--SectionTitleWidget QLabel,
 SectionTitleWidget QLabel
 {
-	color: palette(dark);
+	color: palette(foreground);
 }
 ads--SectionTitleWidget[activeTab="true"] QLabel,
 SectionTitleWidget[activeTab="true"] QLabel
