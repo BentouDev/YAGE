@@ -5,6 +5,8 @@
 #include "Core/Logger.h"
 #include "Core/FileLoggerOutput.h"
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
+#include <spdlog/sinks/rotating_file_sink.h>
 
 namespace Core
 {
@@ -41,7 +43,7 @@ namespace Core
     , _memory   (_allocator, "LogMemory")
     , _outputs  (_memory)
     {
-        createOutput<SpdLoggerOutput>(spdlog::stdout_logger_mt("terminal"));
+        createOutput<SpdLoggerOutput>(spdlog::stdout_color_mt("terminal"));
     }
 
     void Logger::destroy()

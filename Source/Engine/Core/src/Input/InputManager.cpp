@@ -58,7 +58,7 @@ namespace Core
 				result = getDeviceForId(event.deviceId);
 				break;
 			default:
-				Logger::warn("InputManager : Unknown device '%zu'", event.deviceType);
+				Logger::warn("InputManager : Unknown device '%zu'", (unsigned int) event.deviceType);
 				break;
 		}
 

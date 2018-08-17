@@ -28,18 +28,29 @@ include(CMakeToolsHelpers OPTIONAL)
 include("GNUInstallDirs")
 
 # Installation
+set(LIBDIR ${CMAKE_INSTALL_LIB})
 if(NOT LIBDIR)
     set (LIBDIR lib)
+endif()
+
+# set(SHAREDSTATEDIR ${CMAKE_INSTALL_SHAREDSTATEDIR})
+if(NOT SHAREDSTATEDIR)
+    if(WIN32)
+        set (SHAREDSTATEDIR "bin/Data")
+    elseif(UNIX)
+        set (SHAREDSTATEDIR "usr/share/YAGE")
+    endif()
 endif()
 
 set (YAGE_BINARY_DIR "bin")
 set (YAGE_LIBRARY_DIR "${LIBDIR}/YAGE")
 set (YAGE_INCLUDE_DIR "include/YAGE")
+set (YAGE_DATA_DIR ${SHAREDSTATEDIR})
 
 # Enforce warnings
 if(CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wno-reorder")
 endif(CMAKE_COMPILER_IS_GNUCC)
 if(MSVC)
-    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4")
+    set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4 /wd4201 ")
 endif(MSVC)
