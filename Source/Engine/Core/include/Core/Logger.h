@@ -109,12 +109,12 @@ namespace Core
         {
             if (lvl < get()._log_level) return;
 
-            fmt::MemoryWriter raw;
-            raw.write(fmt, args...);
+            fmt::memory_buffer raw;
+            fmt::format_to(raw, fmt, args...);
 
             for (auto* output : get()._outputs)
             {
-                output->PrintMessage(lvl, raw.c_str());
+                output->PrintMessage(lvl, raw.data());
             }
         }
 

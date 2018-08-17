@@ -3,6 +3,12 @@ version: 1.0.{build}
 image:
   - Visual Studio 2017
 
+
+artifacts:
+  - path: 'Build\YAGE-*.zip'
+  - path: Build\CoreTests.xml
+  - path: Build\UtilsTests.xml
+
 cache:
   - C:\sdl_root
   - '%LOCALAPPDATA%\pip\Cache'
@@ -63,3 +69,6 @@ on_success:
   - ps: |
       $wc = New-Object 'System.Net.WebClient'
       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\UtilsTests.xml))
+
+after_build:
+  - cmd: cpack -G ZIP ..

@@ -120,10 +120,14 @@ install(EXPORT Engine
 if(YAGE_BUILD_EDITOR)
 
     # Add QT5 when building Editor
-    find_package(Qt5Widgets REQUIRED)
+    find_package(Qt5Widgets CONFIG REQUIRED Qml Quick QuickWidgets)
+    find_package(Qt5Qml)
+    find_package(Qt5Quick)
+    find_package(Qt5QuickWidgets)
 
     # Additional windows specific features
     if(WIN32)
+        yage_add_dependency(Dependencies/WinDeployQt)
         find_package(Qt5WinExtras)
     endif(WIN32)
 
@@ -131,6 +135,7 @@ if(YAGE_BUILD_EDITOR)
     yage_add_dependency(Dependencies/AdvancedDockingSystem)
 
     # Include Editor
+    add_subdirectory(Source/ProjectManager)
     add_subdirectory(Source/Editor)
 
 endif(YAGE_BUILD_EDITOR)
@@ -145,10 +150,19 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/../Log)
 # Copy configuration
 configure_file(Config/Config.json ${CMAKE_BINARY_DIR} COPYONLY)
 
+# Copy ./Data on install
+install(DIRECTORY ${CMAKE_CURRENT_LIST_DIR}/Data/ DESTINATION ${YAGE_DATA_DIR})
+
 # Evaluate test coverage when testing is enabled
 if(YAGE_BUILD_TESTS)
     coverage_evaluate()
 endif()
+
+#============================#
+# Post Install               #
+#============================#
+
+add_subdirectory(Modules/PostInstall)
 
 #============================#
 # Packaging                  #
