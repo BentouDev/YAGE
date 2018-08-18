@@ -1,0 +1,15 @@
+# {{project_name}}
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+Project({{project_name}} VERSION 0.1 LANGUAGES CXX)
+
+# Emit additional metadata for debug builds
+include(CMakeToolsHelpers OPTIONAL)
+
+# Add YAGE
+find_package(YAGE)
+find_path(YAGE_INCLUDE_DIR YAGE/yage.h)
+include_directories(${YAGE_INCLUDE_DIR}/YAGE)
+
+# Add Game Code
+add_subdirectory(Code/GameLib)
+add_subdirectory(Code/GameExe)

@@ -1,0 +1,6 @@
+#include "GameLib.h"
+
+GAME_LIB_API void RegisterGameLib(Yage::Injector* injector)
+{
+    injector->inject(YAGE_CREATE({{project_name}}_GameLib)());
+}

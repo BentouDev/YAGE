@@ -27,6 +27,7 @@
 #undef GetCurrentTime
 #endif
 
+#include <exception>
 #include <Utils/String.h>
 #include <Utils/FreeListAllocator.h>
 #include <Utils/MemorySizes.h>
@@ -99,7 +100,16 @@ namespace Core
         template <typename T, typename ... Args>
         void createOutput(Args&&... args)
         {
-            _outputs.add(YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...));
+            try
+            {
+                auto* _output = YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...);
+                _outputs.add(_output);
+            }
+            catch (std::exception e)
+            {
+                YAGE_ASSERT(false, "Unable to create logger output:\n {0}}", e.what());
+            }
+            
         }
 
         static void setLogLevel(LogLevel::TYPE level)

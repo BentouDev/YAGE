@@ -4,6 +4,7 @@
 
 #include <Utils/MemorySizes.h>
 #include <Core/GameTime.h>
+#include "Core/Engine.h"
 #include "Core/Game.h"
 #include "Core/WindowManager.h"
 #include "Core/Gfx/Camera.h"

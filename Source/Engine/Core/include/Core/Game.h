@@ -5,11 +5,25 @@
 #ifndef YAGE_GAME_H
 #define YAGE_GAME_H
 
-#include "Core/Engine.h"
+#include <Utils/Defines.h>
+#include <cstdint>
 
 namespace Gfx
 {
 	class Camera;
+}
+
+namespace Memory
+{
+	class IMemoryBlock;
+}
+
+namespace Core
+{
+	class GameTime;
+	class Engine;
+	class Window;
+	class World;
 }
 
 namespace Yage

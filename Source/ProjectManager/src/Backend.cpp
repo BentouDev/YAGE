@@ -192,6 +192,7 @@ void Backend::OpenProject(Project *project)
                 args.push_back(project->GetPath());
 
     LaunchYageEditor(args);
+    LaunchCodeEditor(args);
 
     QApplication::quit();
 }
@@ -397,11 +398,15 @@ void Backend::CreateProjectFiles(const Project* project, const QString& template
     data.set("project_name", project->GetName().toStdString());
 
     detail::copyRecursively(templatePath, project->GetPath(), data);
-
-    // Execute mustache
 }
 
 void Backend::LaunchYageEditor(const QStringList& args)
 {
     QProcess::startDetached("YageEditor", args);
+}
+
+void Backend::LaunchCodeEditor(const QStringList& args)
+{
+    // ToDo: provide a list of IDE's to launch with, and save that choice
+    QProcess::startDetached("code", args);
 }

@@ -62,7 +62,7 @@ endfunction()
 #
 # Provides procedure to easily setup dependency that can both be build from source or get from environment
 function(yage_setup_dependency NAME)
-    set(options TEST)
+    set(options PUBLIC_INSTALL)
     set(oneArg PREFER TARGET SOURCE VAR_NAME CONAN NOT_OS)
     set(multiArg INCLUDE)
     cmake_parse_arguments(DEP "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
@@ -184,5 +184,9 @@ function(yage_setup_dependency NAME)
             set(${DEP_VAR_NAME}_LIBRARIES ${DEP_TARGET} PARENT_SCOPE)
 
         endif()
+        # if(DEP_PUBLIC_INSTALL)
+        #     message ("-- yage: " ${NAME} " will be publicly exported on install!")
+        #     install (DIRECTORY ${DEP_INCLUDE} DESTINATION ${YAGE_INCLUDE_DIR})
+        # endif()
     endif()
 endfunction()

@@ -1,0 +1,13 @@
+# {{project_name}} library
+cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+project({{project_name}}Library VERSION 0.1 LANGUAGES CXX)
+
+file(GLOB {{project_name}}_LIB_SRC
+    "Source/*.h"
+    "Source/*.cpp"
+)
+
+# Game library
+add_library({{project_name}}_LIB ${{{project_name}}_LIB_SRC})
+add_library({{project_name}}::LIB ALIAS {{project_name}}_LIB)
+target_link_libraries({{project_name}}_LIB Yage::Engine)
