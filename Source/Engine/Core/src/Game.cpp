@@ -10,6 +10,7 @@
 #include "Core/Gfx/Camera.h"
 #include "Core/Gfx/Renderer.h"
 #include "Core/Logger.h"
+#include "Core/GameLib/IGameLib.h"
 
 namespace Yage
 {
@@ -98,6 +99,7 @@ namespace Yage
 
         persistentBlock	= &engine->MemoryModule->requestMemoryBlock(persistentBlockSize, "GamePersistentBlock");
         frameBlock		= &engine->MemoryModule->requestMemoryBlock(frameBlockSize,      "GameFrameBlock");
+
         defaultCamera	= &engine->Renderer->createCamera();
 
         auto windowHandle = engine->CreateWindow();

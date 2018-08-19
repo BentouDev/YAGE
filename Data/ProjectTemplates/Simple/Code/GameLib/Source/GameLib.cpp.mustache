@@ -1,6 +1,28 @@
 #include "GameLib.h"
+#include <Core/RTTI/RTTIGameLoader.h>
 
-GAME_LIB_API void RegisterGameLib(Yage::Injector* injector)
+GAME_LIB_API Core::IGameLib* CreateGameLib()
 {
-    injector->inject(YAGE_CREATE({{project_name}}_GameLib)());
+    return new {{project_name}}_GameLib();
+}
+
+GAME_LIB_API bool DestroyGameLib(Core::IGameLib*& lib)
+{
+    if (lib == nullptr)
+        return false;
+
+    delete lib;
+    lib = nullptr;
+
+    return true;
+}
+
+{{project_name}}_GameLib::~{{project_name}}_GameLib()
+{
+
+}
+
+void {{project_name}}_GameLib::RegisterRTTI(RTTI::IStorage& storage)
+{
+    Meta::GameLib::RegisterReflection(storage);
 }

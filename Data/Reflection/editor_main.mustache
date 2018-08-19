@@ -1,0 +1,17 @@
+#include "RTTIEditorLoader.h"
+{{#classes}}
+#include "meta_{{class_name}}.h"
+{{/classes}}
+
+namespace Meta
+{
+    namespace Editor
+    {
+        void RegisterClasses(RTTI::IStorage& storage)
+        {
+        {{#classes}}
+            storage.RegisterType(Meta::GetType<typename {{{canonical_name}}}>());
+        {{/classes}}
+        }
+    }
+}

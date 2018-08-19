@@ -5,4 +5,10 @@ project({{project_name}}Runner VERSION 0.1 LANGUAGES CXX)
 # Game executable
 add_executable({{project_name}}Runner Source/main.cpp)
 add_executable({{project_name}}::Runner ALIAS {{project_name}}Runner)
+
 target_link_libraries({{project_name}}Runner {{project_name}}_LIB YAGE)
+target_include_directories({{project_name}}Runner
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Code/GameLib/Source>
+    PRIVATE
+        Source)

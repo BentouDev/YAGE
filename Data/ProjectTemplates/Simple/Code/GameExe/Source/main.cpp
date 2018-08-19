@@ -1,8 +1,8 @@
-#include <GameLib.h>
-#include <SimpleGameRunner.h>
+#include <Game.h>
+#include <Core/Game.h>
 
 int main(int argc, const char* args[])
 {
-    SimpleGameRunner<GameLib> game;
+    Yage::Game game;
     game.Run();
 }

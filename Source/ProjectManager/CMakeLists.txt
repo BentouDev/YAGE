@@ -9,27 +9,6 @@ if(WIN32)
     add_definitions(-DWIN32 -D_WINDOWS -D_UNICODE -DUNICODE)
 endif(WIN32)
 
-message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
-file(GLOB_RECURSE
-        MANAGER_ALL_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
-
-set(YAGE_REFLECTION_CONFIG
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/main_template.mustache
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
-
-set_property(SOURCE ${CMAKE_SOURCE_DIR}/Generated/ProjectManager/register_reflection.cpp PROPERTY SKIP_AUTOGEN ON)
-
-yage_add_ctti(ProjectManager
-        DIRECTORY Generated/ProjectManager
-        PATTERN Data/Reflection/Editor.json
-        OUTPUT ${CMAKE_SOURCE_DIR}/Generated/ProjectManager/register_reflection.cpp
-        HEADERS ${MANAGER_ALL_HEADERS}
-        DEPENDS ${YAGE_REFLECTION_CONFIG})
-
 # Automate build of Qt files
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
@@ -54,7 +33,7 @@ target_compile_definitions(ProjectManager PRIVATE ${YAGE_EXE_COMPILE_DEFS})
 # Disable static link of Qt
 set_property(TARGET ProjectManager PROPERTY QT5_NO_LINK_QTMAIN ON)
 
-target_link_libraries(ProjectManager Qt5::Core Qt5::Widgets Qt5::Qml Qt5::Quick ${OS_LIBS} CTTI::ProjectManager)
+target_link_libraries(ProjectManager Qt5::Core Qt5::Widgets Qt5::Qml Qt5::Quick ${OS_LIBS})
 
 # 'make install' to the correct location
 install(TARGETS ProjectManager
@@ -70,4 +49,4 @@ if (WIN32)
 endif()
 
 # This makes the project importable from the build directory
-export(TARGETS ProjectManager ProjectManager_CTTI FILE ProjectManagerConfig.cmake)
+export(TARGETS ProjectManager FILE ProjectManagerConfig.cmake)

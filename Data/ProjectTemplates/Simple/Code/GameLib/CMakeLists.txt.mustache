@@ -8,6 +8,8 @@ file(GLOB {{project_name}}_LIB_SRC
 )
 
 # Game library
-add_library({{project_name}}_LIB ${{{project_name}}_LIB_SRC})
-add_library({{project_name}}::LIB ALIAS {{project_name}}_LIB)
-target_link_libraries({{project_name}}_LIB Yage::Engine)
+{{=<@ @>=}}
+add_library(<@project_name@>_LIB ${<@project_name@>_LIB_SRC})
+add_library(<@project_name@>::LIB ALIAS <@project_name@>_LIB)
+target_compile_definitions(<@project_name@>_LIB PRIVATE GAME_LIB_EXPORTS)
+target_link_libraries(<@project_name@>_LIB Yage::Engine)

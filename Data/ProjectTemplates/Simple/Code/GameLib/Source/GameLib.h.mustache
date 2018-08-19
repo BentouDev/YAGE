@@ -1,13 +1,14 @@
 #ifndef  {{project_name}}_GAME_LIB_H
 #define  {{project_name}}_GAME_LIB_H
 
-#include <Yage.h>
+#include <Core/GameLib/IGameLib.h>
+#include <Core/RTTI/RTTIStorage.h>
 
-class {{project_name}}_GameLib
+class {{project_name}}_GameLib : public Core::IGameLib
 {
-
+public:
+    virtual ~{{project_name}}_GameLib();
+    virtual void RegisterRTTI(RTTI::IStorage& storage) override;
 };
-
-GAME_LIB_API void RegisterGameLib(Yage::Injector* injector);
 
 #endif //{{project_name}}_GAME_LIB_H

@@ -24,6 +24,7 @@ namespace Core
 	class Engine;
 	class Window;
 	class World;
+    class IGameLib;
 }
 
 namespace Yage
@@ -51,8 +52,8 @@ namespace Yage
 		std::uint32_t persistentBlockSize;
 		std::uint32_t frameBlockSize;
 
-		Core::Engine* engine;
-		Core::Window* window;
+		Core::Engine*   engine;
+		Core::Window*   window;
 
 		virtual void OnInit();
 		virtual void OnCleanUp();

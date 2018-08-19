@@ -10,24 +10,31 @@ endif(WIN32)
 
 message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB_RECURSE
-        EDITOR_ALL_HEADERS
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
+    EDITOR_ALL_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 
 set(YAGE_REFLECTION_CONFIG
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/main_template.mustache
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
-        ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/editor_main.mustache
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
 
 set_property(SOURCE ${CMAKE_SOURCE_DIR}/Generated/Editor/register_reflection.cpp PROPERTY SKIP_AUTOGEN ON)
 
 yage_add_ctti(Editor
-        DIRECTORY Generated/Editor
-        PATTERN Data/Reflection/Editor.json
-        OUTPUT ${CMAKE_SOURCE_DIR}/Generated/Editor/register_reflection.cpp
-        HEADERS ${EDITOR_ALL_HEADERS}
-        DEPENDS ${YAGE_REFLECTION_CONFIG})
+    DIRECTORY Generated/Editor
+    PATTERN Data/Reflection/Editor.json
+    OUTPUT ${CMAKE_SOURCE_DIR}/Generated/Editor/register_reflection.cpp
+    HEADERS ${EDITOR_ALL_HEADERS}
+    DEPENDS ${YAGE_REFLECTION_CONFIG})
+
+target_include_directories(Editor_CTTI
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Core/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Utils/include>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 # Automate build of Qt files
 set(CMAKE_AUTORCC ON)
@@ -39,17 +46,23 @@ add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/Edito
 add_executable(YAGE::Editor ALIAS Editor)
 set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
 
-target_include_directories(Editor PUBLIC
+target_include_directories(Editor 
+    PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils/include>
-        PRIVATE src)
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Core/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Utils/include>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
+    PRIVATE
+        src)
 
 target_compile_features(Editor
-        PUBLIC cxx_auto_type cxx_nullptr cxx_variadic_templates)
+    PUBLIC 
+        cxx_auto_type 
+        cxx_nullptr 
+        cxx_variadic_templates)
 
 target_compile_definitions(Editor PRIVATE ${YAGE_EXE_COMPILE_DEFS})
-# target_compile_definitions(Editor PRIVATE ADS_NAMESPACE_ENABLED)
+target_compile_options(Editor PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 # Disable static link of Qt
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)

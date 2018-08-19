@@ -33,6 +33,8 @@ namespace Memory
 {
     class IAllocator;
 
+    class HeapAllocator;
+
     class IMemoryBlock
     {
     protected:

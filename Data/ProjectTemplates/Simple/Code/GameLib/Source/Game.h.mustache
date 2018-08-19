@@ -1,0 +1,21 @@
+#ifndef  {{project_name}}_GAME_H
+#define  {{project_name}}_GAME_H
+
+#include <YAGE/Core/Game.h>
+
+class {{project_name}} : public Yage::Game
+{
+public:
+    {{project_name}}();
+
+protected:
+    void OnInit() override;
+
+    void OnCleanUp() override;
+
+    void OnUpdate(Core::GameTime& gameTime) override;
+    void OnPreDraw(Core::GameTime& gameTime) override;
+    void OnPostDraw(Core::GameTime& gameTime) override;
+};
+
+#endif //{{project_name}}_GAME_H

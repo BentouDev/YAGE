@@ -1,0 +1,46 @@
+#include "Game.h"
+
+#include <YAGE/Core/FileLoggerOutput.h>
+#include <YAGE/Core/Gfx/RenderTarget.h>
+#include <YAGE/Core/Gfx/Renderer.h>
+#include <YAGE/Core/Gfx/Camera.h>
+#include <ctime>
+
+{{project_name}}::{{project_name}}()
+{
+    time_t rawtime;
+    time (&rawtime);
+    struct tm* start_date = localtime(&rawtime);
+
+    Core::Logger::get().createOutput<Core::FileLoggerOutput>
+    (
+        fmt::format("../Log/Log-{}.{}.{}-[{}.{}.{}].txt",
+        start_date->tm_year, start_date->tm_mon, start_date->tm_mday,
+        start_date->tm_hour, start_date->tm_min, start_date->tm_sec
+    ).c_str());
+}
+
+void {{project_name}}::OnInit()
+{
+    getDefaultCamera().position.z -= 0.5;
+}
+
+void {{project_name}}::OnCleanUp()
+{
+
+}
+
+void {{project_name}}::OnUpdate(Core::GameTime& time)
+{
+
+}
+
+void {{project_name}}::OnPreDraw(Core::GameTime& time)
+{
+    getDefaultCamera().getRenderTarget()->Clear(Utils::Color(128, 128, 0, 0));
+}
+
+void {{project_name}}::OnPostDraw(Core::GameTime& time)
+{
+    getDefaultCamera().getRenderTarget()->Submit();
+}

@@ -12,6 +12,7 @@
 #include <cctype>
 #include "List.h"
 #include "Slice.h"
+#include "DefaultBlock.h"
 
 namespace Utils
 {
@@ -53,6 +54,24 @@ namespace Utils
 
 		inline String(Memory::IMemoryBlock& memory, Utils::Slice<char>& slice)
 			: List(memory)
+		{
+			append(slice.begin(), slice.size());
+		}
+
+		inline String()
+			: List(Memory::GetDefaultBlock<String>())
+		{
+
+		}
+
+		inline String(const char* string)
+			: List(Memory::GetDefaultBlock<String>())
+		{
+			append(string);
+		}
+
+		inline String(Utils::Slice<char>& slice)
+			: List(Memory::GetDefaultBlock<String>())
 		{
 			append(slice.begin(), slice.size());
 		}
