@@ -23,6 +23,7 @@ public:
     QString GetName() const { return Name; }
     void SetName(const QString &userName);
 
+    QDir GetDir() const { return Path; }
     QString GetPath() const { return Path.absolutePath(); }
     void SetPath(const QDir& path);
 

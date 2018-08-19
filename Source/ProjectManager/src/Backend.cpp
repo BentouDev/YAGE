@@ -74,7 +74,7 @@ void Backend::LoadTemplates()
         QDirIterator dirItr
         (
             dir.absolutePath(),
-            QDir::Dirs | QDir::NoDotAndDotDot, 
+            QDir::Dirs | QDir::NoDotAndDotDot,
             QDirIterator::Subdirectories
         );
 
@@ -108,8 +108,11 @@ void Backend::LoadSettings()
         if (!file.exists() || !file.isDir())
             continue;
 
+        QDir    dir(path);
+        QString canonPath = dir.canonicalPath();
+
         auto itr = std::find_if(Projects.begin(), Projects.end(), [&](Project* proj){
-            return proj->GetPath().compare(path) == 0;
+            return proj->GetDir().canonicalPath().compare(canonPath) == 0;
         });
 
         if (itr != Projects.end())
@@ -117,7 +120,7 @@ void Backend::LoadSettings()
 
         auto* proj = new Project(this);
               proj->SetName(file.baseName());
-              proj->SetPath(path);
+              proj->SetPath(dir);
               proj->SetDate(date);
         Projects.push_back(proj);
     }
