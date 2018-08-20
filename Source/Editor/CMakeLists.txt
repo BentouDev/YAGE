@@ -33,7 +33,7 @@ target_include_directories(Editor_CTTI
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Core/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Utils/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Kernel/include>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 # Automate build of Qt files
@@ -50,7 +50,7 @@ target_include_directories(Editor
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Core/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Utils/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Source/Engine/Kernel/include>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
     PRIVATE
         src)

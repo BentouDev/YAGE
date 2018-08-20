@@ -104,7 +104,7 @@ set(YAGE_EXE_COMPILE_DEFS -DYAGE_EDITOR)
 # Include all engine modules
 add_subdirectory(Source/Engine)
 
-target_link_libraries(YAGE INTERFACE YAGE::Utils YAGE::Script YAGE::Core)
+target_link_libraries(YAGE INTERFACE YAGE::Kernel YAGE::Script YAGE::Core)
 set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 

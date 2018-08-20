@@ -22,7 +22,7 @@ add_library(YAGE::Core ALIAS Core)
 
 target_include_directories(Core 
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Kernel/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
     PRIVATE
@@ -40,9 +40,10 @@ target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 target_link_libraries(Core
     PUBLIC
-        YAGE::Utils
+        YAGE::Kernel
     PRIVATE
         lodepng
+        utf8
         ${ASSIMP_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
         ${GLFW_LIBRARIES})
@@ -62,7 +63,7 @@ install(TARGETS Core
 install(DIRECTORY include/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 # This makes the project importable from the build directory
-export(TARGETS ${GLFW_TARGET} ${ASSIMP_TARGETS} lodepng Core FILE CoreConfig.cmake)
+export(TARGETS ${GLFW_TARGET} ${ASSIMP_TARGETS} lodepng utf8 Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course

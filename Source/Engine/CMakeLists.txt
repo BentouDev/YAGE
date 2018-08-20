@@ -4,7 +4,7 @@ project(YAGE VERSION 0.1 LANGUAGES CXX C)
 add_library(Engine SHARED yage.h yage.cpp)
 add_library(YAGE::Engine ALIAS Engine)
 
-add_subdirectory(Utils)
+add_subdirectory(Kernel)
 add_subdirectory(Core)
 add_subdirectory(Script)
 
@@ -30,7 +30,7 @@ yage_add_ctti(Engine
 target_include_directories(Engine_CTTI
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Utils/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Kernel/include>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 install(TARGETS Engine_CTTI
@@ -46,7 +46,7 @@ set_target_properties(Engine PROPERTIES
 
 target_link_libraries(Engine 
     PUBLIC
-        YAGE::Utils 
+        YAGE::Kernel 
         YAGE::Script 
         YAGE::Core 
         CTTI::Engine)
