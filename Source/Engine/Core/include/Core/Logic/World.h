@@ -209,11 +209,12 @@ namespace Logic
         {
             static_assert(std::is_base_of<ISystem, T>::value, "TSystem must derive from ISystem!");
 
-            for(SystemInfo& info : _registeredSystems)
-            {
-                if(info.type == TypeInfo<T>::id())
-                    return true;
-            }
+            // ToDo : Implement type dispatching
+            // for(SystemInfo& info : _registeredSystems)
+            // {
+            //     if(info.type == TypeInfo<T>::id())
+            //         return true;
+            // }
 
             return false;
         }
@@ -223,12 +224,13 @@ namespace Logic
         {
             static_assert(std::is_base_of<ISystem, T>::value, "T must derive from ISystem!");
 
-            YAGE_ASSERT(!hasSystem<T>(), "World : Cannot register '{}' system twice!", TypeInfo<T>::cName());
+            YAGE_ASSERT(!hasSystem<T>(), "World : Cannot register '{}' system twice!", "unnamed");//TypeInfo<T>::cName());
 
-            createComponentContainers<typename T::requirements::component_list_t>();
+            // ToDo : Implement type dispatching
+            // createComponentContainers<typename T::requirements::component_list_t>();
 
-            T* instance = YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...);
-            _registeredSystems.emplace(instance, TypeInfo<T>::id());
+            // T* instance = YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...);
+            // _registeredSystems.emplace(instance, TypeInfo<T>::id());
         };
     };
 }

@@ -7,7 +7,6 @@
 
 #include <string>
 #include <Utils/Index.h>
-#include <Utils/TypeInfo.h>
 #include <Utils/Handle.h>
 
 #define DECL_RESOURCE(name) class name : public Core::Resource<name>

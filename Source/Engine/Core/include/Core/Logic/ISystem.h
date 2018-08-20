@@ -7,7 +7,6 @@
 
 #include <cstddef>
 #include <atomic>
-#include <Utils/TypeInfo.h>
 #include <Utils/MemoryBlock.h>
 #include <Utils/List.h>
 
@@ -22,7 +21,7 @@ namespace Logic
 {
 	class Entity;
 
-	using system_id_t = std::uint8_t;
+	using system_id_t = type_t;
 
 	class ISystem
 	{

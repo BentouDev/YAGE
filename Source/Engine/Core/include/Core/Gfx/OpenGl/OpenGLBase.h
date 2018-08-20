@@ -6,7 +6,7 @@
 #define GAME_OPENGLBASE_H
 
 #include "Generated/gl_core_3_3.hpp"
-#include <Utils/TypeInfo.h>
+#include <RTTI/Defines.h>
 
 #ifdef CREATE_NEW
 #undef CREATE_NEW

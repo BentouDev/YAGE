@@ -122,7 +122,8 @@ namespace OpenGL
 
     GLenum toOpenGlType(type_t type)
     {
-        static std::map<type_t, GLenum> dispatcher = {
+        // ToDo : Fix OpenGL type dispatching
+        static std::map<type_t, GLenum> dispatcher;/* = {
             { TypeInfo<float>::id(), gl::FLOAT },
             { TypeInfo<double>::id(), gl::DOUBLE },
             { TypeInfo<signed char>::id(), gl::BYTE },
@@ -131,7 +132,7 @@ namespace OpenGL
             { TypeInfo<uint16_t>::id(), gl::UNSIGNED_SHORT },
             { TypeInfo<int32_t>::id(), gl::INT },
             { TypeInfo<uint32_t>::id(), gl::UNSIGNED_INT },
-        };
+        }; */
 
         auto itr = dispatcher.find(type);
         if (itr != dispatcher.end())

@@ -44,8 +44,9 @@ namespace Logic
 		{ }
 
 	protected:
-		explicit System(Memory::IMemoryBlock& memory)
-			: ISystem(memory, TypeInfo<Sys>::cName(), TypeInfo<Sys>::id(), ISystem::GetSystemId<Sys>(),
+        // ToDo : Implement proper type dispatching
+		explicit System(Memory::IMemoryBlock& memory, RTTI::ClassInfo* sys = nullptr)
+			: ISystem(memory, sys->Name.c_str(), sys->GetId(), ISystem::GetSystemId<Sys>(),
 					  Reqs::BuildBitset())
 		{ }
 	};

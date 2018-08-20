@@ -7,7 +7,8 @@
 
 #include <cstdint>
 #include <utility>
-#include "TypeInfo.h"
+#include <RTTI/ClassInfo.h>
+#include <RTTI/Reflection.h>
 #include "Assert.h"
 
 namespace Utils
@@ -47,10 +48,11 @@ namespace Utils
     public:
         uint32_t key;
 
+        // ToDo : Make handle 64bit
         struct
         {
-            uint8_t liveId;
-            type_t typeId;
+            uint8_t  liveId;
+            type_t   typeId;
             uint16_t index;
         };
 
@@ -63,7 +65,14 @@ namespace Utils
         }
     public:
 
-        Handle() : key(0) { typeId = TypeInfo<Resource>::id(); }
+        Handle() : key(0) 
+        {
+            // ToDo : provide a way to get just TypeInfo*
+            auto* type = Meta::GetType<Resource>();
+            YAGE_ASSERT(type != nullptr, "Cannot create handle for non-registered type!");
+            typeId = type != nullptr ? type->GetId() : 0; 
+        }
+
         Handle(Handle&& other) : key(other.release()) { }
         Handle(const Handle& other) : key(other.key) { }
 

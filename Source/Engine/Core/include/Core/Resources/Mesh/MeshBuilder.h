@@ -30,25 +30,28 @@ namespace Resources
         template<typename T>
         MeshBuilder& withProperty(const char* name, const T* ptr, uint32_t propCount, uint32_t arrayLength, bool normalize = false)
         {
-            _scheme->addPropertyInfo(name, TypeInfo<T>::id(), sizeof(T), propCount, normalize);
-            _data->addPropertyData(ptr, propCount * sizeof(T), arrayLength);
+            // ToDo : introduce compile time Engine side integral types
+            //_scheme->addPropertyInfo(name, TypeInfo<T>::id(), sizeof(T), propCount, normalize);
+            //_data->addPropertyData(ptr, propCount * sizeof(T), arrayLength);
             return *this;
         }
 
         template<typename T>
         MeshBuilder& withIndexType()
         {
-            _scheme->setIndexType(sizeof(T), TypeInfo<T>::id());
+            // ToDo : introduce compile time Engine side integral types
+            // _scheme->setIndexType(sizeof(T), TypeInfo<T>::id());
             return *this;
         }
 
         template<typename T>
         MeshBuilder& withSubmeshIndices(const T* ptr, uint32_t indiceCount)
         {
-            YAGE_ASSERT(_scheme->getIndexSize() == sizeof(T)
-                   && _scheme->getIndexType() == OpenGL::toOpenGlType(TypeInfo<T>::id()),
-                   "All submeshes must have same index type! Expected : '{}', got : '{}'",
-                   _scheme->getIndexType(), OpenGL::toOpenGlType(TypeInfo<T>::id()));
+            // ToDo : introduce compile time Engine side integral types
+            // YAGE_ASSERT(_scheme->getIndexSize() == sizeof(T)
+            //        && _scheme->getIndexType() == OpenGL::toOpenGlType(TypeInfo<T>::id()),
+            //        "All submeshes must have same index type! Expected : '{}', got : '{}'",
+            //        _scheme->getIndexType(), OpenGL::toOpenGlType(TypeInfo<T>::id()));
 
             _submeshes.emplace(ptr, indiceCount);
             return *this;

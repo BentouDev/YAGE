@@ -1,7 +1,7 @@
-#ifndef YAGE_RTTI_LOADER_H
-#define YAGE_RTTI_LOADER_H
+#ifndef YAGE_RTTI_ENGINE_LOADER_H
+#define YAGE_RTTI_ENGINE_LOADER_H
 
-#include "RTTIStorage.h"
+#include <RTTI/RTTIStorage.h>
 
 namespace Meta
 {
@@ -11,4 +11,4 @@ namespace Meta
     }
 }
 
-#endif // YAGE_RTTI_LOADER_H
+#endif // YAGE_RTTI_ENGINE_LOADER_H

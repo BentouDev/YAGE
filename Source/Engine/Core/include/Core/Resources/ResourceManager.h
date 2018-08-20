@@ -6,7 +6,7 @@
 #define GAME_RESOURCEMANAGER_H
 
 #include <Utils/Dictionary.h>
-#include <Utils/TypeInfo.h>
+#include <RTTI/TypeInfo.h>
 #include <Utils/Handle.h>
 #include <Utils/Container.h>
 

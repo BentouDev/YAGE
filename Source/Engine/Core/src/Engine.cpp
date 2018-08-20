@@ -3,7 +3,7 @@
 //
 
 #include <algorithm>
-#include <Utils/TypeInfo.h>
+#include <RTTI/TypeInfo.h>
 #include <Utils/MemorySizes.h>
 
 #include "Core/EngineApis.h"

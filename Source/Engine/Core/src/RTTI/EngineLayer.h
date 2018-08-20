@@ -1,8 +1,8 @@
 #ifndef YAGE_RTTI_ENGINE_LAYER_H
 #define YAGE_RTTI_ENGINE_LAYER_H
 
-#include "Core/RTTI/RTTILayer.h"
-#include "Core/RTTI/RTTIStorage.h"
+#include <RTTI/RTTILayer.h>
+#include <RTTI/RTTIStorage.h>
 #include <Utils/List.h>
 
 class ClassInfo;

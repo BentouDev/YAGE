@@ -3,15 +3,20 @@
 
 #include <Utils/List.h>
 #include <Utils/String.h>
-#include <Reflection/ReflectionInfo.h>
 
 namespace RTTI
 {
+    class TypeInfo;
+    class EnumInfo;
+    class ClassInfo;
+
     class ILayer;
 
     class Register
     {
     public:
+        TypeInfo*  FindType(const Utils::String& name);
+        EnumInfo*  FindEnum(const Utils::String& name);
         ClassInfo* FindClass(const Utils::String& name);
 
     private:

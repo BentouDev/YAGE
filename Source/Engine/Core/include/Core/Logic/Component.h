@@ -8,14 +8,13 @@
 #include <Utils/Index.h>
 #include <Utils/String.h>
 #include <Utils/Handle.h>
-#include <Utils/TypeInfo.h>
 #include <Utils/DefaultTrait.h>
 
 #define DECL_COMP(name) class name : public Logic::Component<name>
 
 namespace Logic
 {
-	using comp_id_t = std::uint8_t;
+	using comp_id_t = type_t;
 
 	class IComponent
 	{
