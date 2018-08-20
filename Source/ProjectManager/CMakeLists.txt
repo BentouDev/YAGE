@@ -33,7 +33,7 @@ target_compile_definitions(ProjectManager PRIVATE ${YAGE_EXE_COMPILE_DEFS})
 # Disable static link of Qt
 set_property(TARGET ProjectManager PROPERTY QT5_NO_LINK_QTMAIN ON)
 
-target_link_libraries(ProjectManager Qt5::Core Qt5::Widgets Qt5::Qml Qt5::Quick ${OS_LIBS})
+target_link_libraries(ProjectManager Mustache Qt5::Core Qt5::Widgets Qt5::Qml Qt5::Quick ${OS_LIBS})
 
 # 'make install' to the correct location
 install(TARGETS ProjectManager
