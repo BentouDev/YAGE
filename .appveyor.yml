@@ -7,7 +7,7 @@ image:
 artifacts:
   - path: 'Build\YAGE-*.zip'
   - path: Build\CoreTests.xml
-  - path: Build\UtilsTests.xml
+  - path: Build\KernelTests.xml
 
 cache:
   - C:\sdl_root
@@ -59,7 +59,7 @@ build:
 
 test_script:
   - cmd: C:\projects\yage\Build\bin\CoreTests.exe -r junit > CoreTests.xml
-  - cmd: C:\projects\yage\Build\bin\UtilsTests.exe -r junit > UtilsTests.xml
+  - cmd: C:\projects\yage\Build\bin\KernelTests.exe -r junit > KernelTests.xml
   - cmd: dir
 
 on_success:
@@ -68,7 +68,7 @@ on_success:
       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
   - ps: |
       $wc = New-Object 'System.Net.WebClient'
-      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\UtilsTests.xml))
+      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\KernelTests.xml))
 
 after_build:
   - cmd: cpack -G ZIP ..
