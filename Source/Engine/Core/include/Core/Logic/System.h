@@ -22,7 +22,7 @@ namespace Logic
 
 		static std::bitset<32> BuildBitset()
 		{
-			std::uint8_t componentBits[] = { IComponent::GetComponentId<Components>()... };
+			comp_id_t       componentBits[] = { IComponent::GetComponentId<Components>()... };
 			std::bitset<32> bitset;
 
 			for(auto i = 0; i < sizeof...(Components); i++)
