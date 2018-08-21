@@ -1,7 +1,7 @@
 #ifndef YAGE_EDITOR_RTTI_LOADER_H
 #define YAGE_EDITOR_RTTI_LOADER_H
 
-#include <Core/RTTI/RTTIStorage.h>
+#include <RTTI/RTTIStorage.h>
 
 namespace Meta
 {

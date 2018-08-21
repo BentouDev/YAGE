@@ -33,7 +33,8 @@ target_compile_features(Core
     PUBLIC
         cxx_auto_type
         cxx_variadic_templates
-        cxx_nullptr)
+        cxx_nullptr
+        cxx_std_17)
 
 target_compile_definitions(Core PRIVATE ${YAGE_LIB_COMPILE_DEFS})
 target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})

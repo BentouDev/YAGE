@@ -21,9 +21,8 @@ target_compile_features(Kernel
         cxx_trailing_return_types
         cxx_return_type_deduction
         cxx_right_angle_brackets
-        cxx_constexpr)
-#          cxx_std_17
-#          cxx_relaxed_constexpr)
+        cxx_constexpr
+        cxx_std_17)
 
 target_compile_definitions(Kernel PRIVATE ${YAGE_LIB_COMPILE_DEFS})
 target_compile_options(Kernel PRIVATE ${YAGE_ENFORCE_WARNINGS})

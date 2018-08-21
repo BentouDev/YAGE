@@ -5,6 +5,11 @@
 #ifndef YAGE_LOGGER_H
 #define YAGE_LOGGER_H
 
+#include <exception>
+#include <Utils/String.h>
+#include <Utils/FreeListAllocator.h>
+#include <Utils/MemorySizes.h>
+
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -26,11 +31,6 @@
 #ifdef GetCurrentTime
 #undef GetCurrentTime
 #endif
-
-#include <exception>
-#include <Utils/String.h>
-#include <Utils/FreeListAllocator.h>
-#include <Utils/MemorySizes.h>
 
 namespace Core
 {
@@ -109,18 +109,18 @@ namespace Core
             {
                 YAGE_ASSERT(false, "Unable to create logger output:\n {0}}", e.what());
             }
-            
         }
 
         static void setLogLevel(LogLevel::TYPE level)
         { get()._log_level = level; }
 
-        template <typename... Args> static void log(LogLevel::TYPE lvl, const char* fmt, const Args&... args)
+        template <typename... Args> static void log(LogLevel::TYPE lvl, const char* str_format, const Args&... args)
         {
+            using TBuffer = typename fmt::memory_buffer;
             if (lvl < get()._log_level) return;
 
-            fmt::memory_buffer raw;
-            fmt::format_to(raw, fmt, args...);
+            TBuffer raw;
+            fmt::format_to(raw, str_format, args...);
 
             for (auto* output : get()._outputs)
             {
