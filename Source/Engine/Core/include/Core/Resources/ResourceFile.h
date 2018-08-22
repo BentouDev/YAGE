@@ -10,6 +10,7 @@
 
 namespace Core
 {
+    YClass();
 	class ResourceFile
 	{
 		Utils::RawHandle handle;

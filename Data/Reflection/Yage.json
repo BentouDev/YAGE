@@ -7,7 +7,14 @@
       "main_out" : "register_reflection.cpp",
       "output_dir" : "Generated",
       "file" : "(\\W|\\w)*\\.h\\b",
-      "annotation" : "CTTI"
+      "annotation" : ["__Y_CLASS__"],
+      "require_annotation" : "true",
+      "includes" : "true",
+      "include_directories": [
+          "Source/Engine/Kernel/include",
+          "Source/Engine/Core/include"
+      ],
+      "inject_includes" : ["Utils/Attribute.h"]
     }
   ]
 }

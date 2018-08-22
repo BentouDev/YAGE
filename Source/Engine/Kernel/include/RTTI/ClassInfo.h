@@ -2,9 +2,11 @@
 #define YAGE_RTTI_CLASS_INFO_H
 
 #include <type_traits>
+#include <Utils/Attribute.h>
 #include "TypeInfo.h"
 #include "FieldInfo.h"
 #include "MethodInfo.h"
+
 
 namespace RTTI
 {
@@ -25,6 +27,7 @@ namespace RTTI
             , Interfaces(memory)
             , Methods(memory)
             , Fields(memory)
+            , Attributes(memory)
             , Super(nullptr)
         { }
 
@@ -40,6 +43,7 @@ namespace RTTI
         Utils::List<ClassInfo*> Interfaces;
         Utils::List<MethodInfo> Methods;
         Utils::List<FieldInfo>  Fields;
+        Utils::List<Attribute>  Attributes;
     };
 }
 
