@@ -1,0 +1,33 @@
+#include <RTTI/Register.h>
+#include <RTTI/ClassInfo.h>
+
+namespace Meta
+{
+    template <>
+    void ClassRegister::Declare<
+        {{{canonical_name}}}
+    >(Register& reg, RTTI::ClassInfo& data) {
+        data.CanonicalName = "{{{canonical_name}}}";
+        data.Name          = "{{class_name}}";
+        data.Attributes    = {
+            {{class_attributes}}
+        };
+    }
+
+    template <>
+    void ClassRegister::Define<
+        {{{canonical_name}}}
+    >(Register& reg, RTTI::ClassInfo& data) {
+        data.Fields = {
+        {{#fields}}
+            { {{name}}, &{{{canonical_name}}}::{{name}}, {{access}}, Meta::GetType<{{{type}}}>() },
+        {{/fields}}
+        };
+
+        data.Methods = {
+        {{#methods}}
+            { {{name}}, detail::MethodWrapper<decltype(&{{{canonical_name}}}::{{name}}), &{{{canonical_name}}}::{{name}}>() },
+        {{/methods}}
+        }
+    }
+}

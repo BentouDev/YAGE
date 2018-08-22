@@ -8,8 +8,12 @@
 #include <string>
 #include <Utils/Index.h>
 #include <Utils/Handle.h>
+#include <Utils/CompileString.h>
 
-#define DECL_RESOURCE(name) class name : public Core::Resource<name>
+#define Meta( ... ) __attribute((annotate( #__VA_ARGS__ )))
+
+#define DECL_RESOURCE(name) class [Meta(CTTI)] name : public Core::Resource<name>
+#define DECL_RESOURCE(name, ... ) class [Meta(CTTI, __VA_ARGS__ )] name : public Core::Resource<name>
 
 namespace Core
 {

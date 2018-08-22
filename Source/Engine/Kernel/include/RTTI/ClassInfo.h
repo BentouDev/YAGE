@@ -9,10 +9,15 @@
 namespace RTTI
 {
     class Register;
+    class ClassRegister;
+
+    // How to create ClassInfo instance? 
+    // either derive a new type
+    // or specialize templated method
 
     class ClassInfo : public TypeInfo
     {
-        friend class Register;
+        friend class ClassRegister;
 
     protected:
         explicit ClassInfo(Utils::CompileString& name, Memory::IMemoryBlock& memory)
