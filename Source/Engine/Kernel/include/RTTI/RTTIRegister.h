@@ -29,16 +29,16 @@ namespace Meta
 {
     class RegisterClass
     {
-        friend class Register;
+        friend class RTTI::Register;
         RegisterClass() = delete;
 
     protected:
         template <typename T>
-        void Declare(Register& reg, RTTI::ClassInfo& data)
+        void Declare(RTTI::Register& reg, RTTI::ClassInfo& data)
         { }
 
         template <typename T>
-        void Define(Register& reg, RTTI::ClassInfo& data)
+        void Define(RTTI::Register& reg, RTTI::ClassInfo& data)
         { }
     };
 }

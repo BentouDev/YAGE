@@ -1,11 +1,11 @@
 #ifndef YAGE_RTTI_STORAGE_H
 #define YAGE_RTTI_STORAGE_H
 
-class ClassInfo;
-class EnumInfo;
-
 namespace RTTI
 {
+    class ClassInfo;
+    class EnumInfo;
+
     class IStorage
     {
     public:

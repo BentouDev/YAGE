@@ -23,9 +23,9 @@ function (yage_add_ctti NAME)
         COMMAND ${AGNES_BINARY} ARGS ${DIR_PARAM} ${AGNES_PATTERN} ${AGNES_HEADERS}
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp)
 
-   # add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI
-   #         DEPENDS ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp
-   #         COMMENT "Checking if ${NAME} CTTI needs regeneration...")
+    add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI
+            DEPENDS ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp
+            COMMENT "Checking if ${NAME} CTTI needs regeneration...")
 
     file(GLOB
         ${AGNES_VAR_NAME}_GENERATED_CRTTI
@@ -33,6 +33,7 @@ function (yage_add_ctti NAME)
 
     add_library(${NAME}_CTTI STATIC ${${AGNES_VAR_NAME}_GENERATED_CRTTI} ${AGNES_OUTPUT})
     add_library(CTTI::${NAME} ALIAS ${NAME}_CTTI)
+    add_dependencies(${NAME}_CTTI YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI)
     set_target_properties(${NAME}_CTTI PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
 
 endfunction()

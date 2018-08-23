@@ -11,8 +11,7 @@
 #include <Utils/Attribute.h>
 #include <Utils/CompileString.h>
 
-#define DECL_RESOURCE(name, ... ) YClass( __VA_ARGS__ );\
-     class name : public Core::Resource<name>
+#define DECL_RESOURCE(name, ... ) class name : public Core::Resource<name>
 
 namespace Core
 {

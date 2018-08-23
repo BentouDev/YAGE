@@ -28,7 +28,8 @@ namespace Resources
         std::uint8_t			page;
     };
 
-    DECL_RESOURCE(Font)
+    YClass(Serialize);
+    class Font : public Core::Resource<Font>
     {
         friend class FontLoader;
 

@@ -7,11 +7,14 @@
 #include "FieldInfo.h"
 #include "MethodInfo.h"
 
+namespace Meta
+{
+    class RegisterClass;
+}
 
 namespace RTTI
 {
     class Register;
-    class ClassRegister;
 
     // How to create ClassInfo instance? 
     // either derive a new type
@@ -19,7 +22,7 @@ namespace RTTI
 
     class ClassInfo : public TypeInfo
     {
-        friend class ClassRegister;
+        friend class Meta::RegisterClass;
 
     protected:
         explicit ClassInfo(Utils::CompileString& name, Memory::IMemoryBlock& memory)

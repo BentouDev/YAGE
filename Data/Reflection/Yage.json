@@ -1,7 +1,7 @@
 {
   "patterns" : [
     {
-      "class_template" : ["reflection_header.mustache"],
+      "class_template" : ["class_info.mustache"],
       "class_out" : "meta_{{class_name}}.h",
       "main_template" : "engine_main.mustache",
       "main_out" : "register_reflection.cpp",
@@ -9,7 +9,6 @@
       "file" : "(\\W|\\w)*\\.h\\b",
       "annotation" : ["__Y_CLASS__"],
       "require_annotation" : "true",
-      "includes" : "true",
       "include_directories": [
           "Source/Engine/Kernel/include",
           "Source/Engine/Core/include"
