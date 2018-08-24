@@ -7,9 +7,9 @@ namespace Meta
 {
     template <> 
     void RegisterClass::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
-        data.CanonicalName = "{{{canonical_name}}}";
-        data.Name          = "{{class_name}}";
-        data.Attributes    = {
+        data.CanonicalName << "{{{canonical_name}}}";
+        data.Name          << "{{class_name}}";
+        data.Attributes     = {
         {{#attributes}}
             {{{value}}},
         {{/attributes}}
@@ -20,13 +20,13 @@ namespace Meta
     void RegisterClass::Define<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
         data.Fields = {
         {{#fields}}
-            { {{name}}, &{{{canonical_name}}}::{{name}},  Meta::GetType<{{{type}}}>() }, // {{access}},
+            { "{{name}}", &{{{canonical_name}}}::{{name}},  Meta::GetType<{{{type}}}>() }, // {{access}},
         {{/fields}}
         };
 
         data.Methods = {
         {{#methods}}
-            { {{name}}, detail::MethodWrapper<decltype(&{{{canonical_name}}}::{{name}}), &{{{canonical_name}}}::{{name}}>() },
+            { "{{name}}", detail::MethodWrapper<decltype(&{{{canonical_name}}}::{{name}}), &{{{canonical_name}}}::{{name}}>() },
         {{/methods}}
         }
     }
