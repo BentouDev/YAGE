@@ -7,8 +7,8 @@ namespace Meta
 {
     template <> 
     void RegisterClass::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
-        data.CanonicalName = Utils::String("{{{canonical_name}}}");
-        data.Name          = Utils::String("{{class_name}}");
+        data.CanonicalName = "{{{canonical_name}}}";
+        data.Name          = "{{class_name}}";
         data.Attributes    = {
         {{#attributes}}
             {{{value}}},
