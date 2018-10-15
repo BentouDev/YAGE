@@ -18,6 +18,12 @@ namespace Meta
 
     template <>
     void RegisterClass::Define<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
+        data.Interfaces = {
+        {{#interfaces}}
+            reg.GetClass("{{name}}"),
+        {{/interfaces}}
+        };
+
         data.Fields = {
         {{#fields}}
             { "{{name}}", &{{{canonical_name}}}::{{name}},  Meta::GetType<{{{type}}}>() }, // {{access}},
