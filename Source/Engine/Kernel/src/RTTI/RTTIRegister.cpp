@@ -9,4 +9,31 @@ namespace RTTI
 
         return clazz;
     }
+
+    void Register::LoadLayer(ILayer* layer)
+    {
+        if (auto itr = std::find(Layers.begin(), Layers.end(), layer); itr != Layers.end())
+        {
+            YAGE_ASSERT(false, "RTTI : Attempt to register same layer twice!");
+            return;
+        }
+
+        layer->Load();
+
+        Layers.push_back(layer);
+    }
+
+    void Register::UnloadLayer(ILayer* layer)
+    {
+        if (layer == Layers.back())
+        {
+            layer->Unload();
+
+            Layers.eraseAddress(layer);
+        }
+        else
+        {
+            YAGE_ASSERT(false, "RTTI : Attempt to unload layer out of order!");
+        }
+    }
 }

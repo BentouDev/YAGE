@@ -13,7 +13,9 @@
           "Source/Engine/Kernel/include",
           "Source/Engine/Core/include"
       ],
-      "inject_includes" : ["Utils/Attribute.h"]
+      "inject_includes" : [
+          "Utils/Attribute.h"
+      ]
     }
   ]
 }

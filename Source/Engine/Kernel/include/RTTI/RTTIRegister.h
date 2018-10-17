@@ -3,6 +3,7 @@
 
 #include <Utils/List.h>
 #include <Utils/String.h>
+#include <Utils/CompileString.h>
 
 namespace Meta
 {
@@ -14,6 +15,7 @@ namespace RTTI
     class TypeInfo;
     class EnumInfo;
     class ClassInfo;
+    class FieldInfo;
 
     class ILayer;
 
@@ -40,6 +42,9 @@ namespace RTTI
         virtual EnumInfo*  GetEnum (const Utils::String& name) override;
         virtual ClassInfo* GetClass(const Utils::String& name) override;
 
+        void LoadLayer  (ILayer* layer);
+        void UnloadLayer(ILayer* layer);
+
     private:
         // Layers can only resolve down, so there's no need to process already registered types after unload of upmost layer
         Utils::List<ILayer*> _Layers;
@@ -53,7 +58,18 @@ namespace Meta
         friend class RTTI::Register;
         RegisterClass() = delete;
 
+        Memory::IMemoryBlock& _memory;
+
     protected:
+        RTTI::ClassInfo* NewClass(Utils::CompileString& name, Memory::IMemoryBlock& block);
+
+        template <typename T, typename TField>
+        RTTI::FieldInfo* RegisterField(Utils::String& field_name, typename T::TField(*offset))
+        {
+            RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, FieldInfo)(field_name);
+            return field;
+        }
+
         template <typename T>
         void Declare(RTTI::Register& reg, RTTI::ClassInfo& data)
         { }

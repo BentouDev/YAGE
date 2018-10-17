@@ -177,6 +177,13 @@ namespace Utils
             return *this;
         }
 
+        void operator=(std::initializer_list<T> values)
+        {
+            // reserve(values.size());
+            // for (auto itr = values.begin(); itr != values.end(); itr++)
+                
+        }
+
         inline virtual ~List() noexcept
         {
             destructElements();

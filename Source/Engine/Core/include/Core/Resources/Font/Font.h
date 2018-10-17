@@ -14,6 +14,11 @@
 #include "Core/Resources/Texture/Texture.h"
 #include "Core/Gfx/Rectangle.h"
 
+namespace Meta
+{
+    class RegisterClass;
+}
+
 namespace Resources
 {
     struct CharData
@@ -28,9 +33,11 @@ namespace Resources
         std::uint8_t			page;
     };
 
-    YClass(Serialize);
+    YClass(Serialize());
     class Font : public Core::Resource<Font>
     {
+        friend class Meta::RegisterClass;
+
         friend class FontLoader;
 
         Texture::handle_t					textureAtlas;

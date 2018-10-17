@@ -1,14 +1,14 @@
 #include <{{{include}}}>
 
-#include <RTTI/RTTIRegister.h>
 #include <RTTI/ClassInfo.h>
+#include <RTTI/RTTIRegister.h>
+#include <Core/Attributes.h>
 
 namespace Meta
 {
-    template <> 
+    template <>
     void RegisterClass::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
         data.CanonicalName << "{{{canonical_name}}}";
-        data.Name          << "{{class_name}}";
         data.Attributes     = {
         {{#attributes}}
             {{{value}}},
