@@ -21,7 +21,7 @@ namespace RTTI
 
         layer->Load();
 
-        Layers.push_back(layer);
+        Layers.add(layer);
     }
 
     void Register::UnloadLayer(ILayer* layer)
@@ -30,7 +30,7 @@ namespace RTTI
         {
             layer->Unload();
 
-            Layers.eraseAddress(layer);
+            Layers.eraseAddress(&layer);
         }
         else
         {
