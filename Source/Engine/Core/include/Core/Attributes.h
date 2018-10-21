@@ -8,4 +8,4 @@ class Serialize : public Attribute
 
 };
 
-#endif YAGE_ATTRIBUTES_H
+#endif // YAGE_ATTRIBUTES_H

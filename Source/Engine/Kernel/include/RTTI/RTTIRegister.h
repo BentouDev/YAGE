@@ -66,7 +66,7 @@ namespace Meta
         template <typename T, typename TField>
         RTTI::FieldInfo* RegisterField(Utils::String& field_name, typename T::TField(*offset))
         {
-            RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, FieldInfo)(field_name);
+            RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, RTTI::FieldInfo)(field_name);
             return field;
         }
 
