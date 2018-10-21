@@ -15,12 +15,22 @@ function (yage_add_ctti NAME)
         set(DIR_PARAM "-d " ${AGNES_DIRECTORY})
     endif()
 
+    set(INPUT_FILE_CONTENT)
+    foreach(HEADER_FILE ${AGNES_HEADERS})
+        string (CONCAT INPUT_FILE_CONTENT ${INPUT_FILE_CONTENT} "\n" ${HEADER_FILE})
+    endforeach()
+
+    string (CONCAT INPUT_FILE ${CMAKE_SOURCE_DIR} "/" ${AGNES_DIRECTORY} "/headers.txt")
+    message("-- yage: Creating Agnes input file: " ${INPUT_FILE})
+
+    file(WRITE ${INPUT_FILE} ${INPUT_FILE_CONTENT})
+
     add_custom_command(
         OUTPUT ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp ${AGNES_OUTPUT}
-        DEPENDS ${AGNES_DEPENDS} ${AGNES_HEADERS}
+        DEPENDS ${AGNES_DEPENDS} ${INPUT_FILE} ${AGNES_HEADERS}
         COMMENT "Generating CTTI for ${NAME}..."
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMAND ${AGNES_BINARY} ARGS ${DIR_PARAM} ${AGNES_PATTERN} ${AGNES_HEADERS}
+        COMMAND ${AGNES_BINARY} ARGS ${DIR_PARAM} ${AGNES_PATTERN} "-i " ${INPUT_FILE}
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp)
 
     add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI

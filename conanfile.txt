@@ -1,5 +1,5 @@
 [requires]
-Agnes/0.2@bentoudev/yage
+Agnes/0.3@bentoudev/yage
 
 [generators]
 cmake
