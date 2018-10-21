@@ -63,13 +63,13 @@ namespace Meta
     protected:
         RTTI::ClassInfo* NewClass(Utils::CompileString& name, Memory::IMemoryBlock& block);
 
-        template <typename T, typename TField>
-        RTTI::FieldInfo* RegisterField(Utils::CompileString& field_name, typename T::TField(*offset))
-        {
-            RTTI::TypeInfo*  type  = GetType<TField>();
-            RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, RTTI::FieldInfo)(field_name, type);
-            return field;
-        }
+        // template <typename T, typename TField>
+        // RTTI::FieldInfo* RegisterField(Utils::CompileString& field_name, typename T::TField(*offset))
+        // {
+        //     RTTI::TypeInfo*  type  = GetType<TField>();
+        //     RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, RTTI::FieldInfo)(field_name, type);
+        //     return field;
+        // }
 
         template <typename T>
         void Declare(RTTI::Register& reg, RTTI::ClassInfo& data)
