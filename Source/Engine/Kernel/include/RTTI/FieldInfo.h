@@ -12,11 +12,9 @@ namespace RTTI
         friend class ClassInfo;
 
     protected:
-        FieldInfo(Utils::CompileString& name)
-            : MetaInfo(name), BaseType(nullptr)
+        FieldInfo(Utils::CompileString& name, TypeInfo* type)
+            : MetaInfo(name), BaseType(type)
         { }
-
-        void Resolve();
 
         TypeInfo*         BaseType;
         ValueType::TYPE   ValueType;

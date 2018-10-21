@@ -1,4 +1,5 @@
 #include "RTTI/RTTIRegister.h"
+#include "RTTI/RTTILayer.h"
 
 namespace RTTI
 {

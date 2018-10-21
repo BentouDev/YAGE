@@ -47,7 +47,7 @@ namespace RTTI
 
     private:
         // Layers can only resolve down, so there's no need to process already registered types after unload of upmost layer
-        Utils::List<ILayer*> _Layers;
+        Utils::List<ILayer*> Layers;
     };
 }
 
@@ -64,9 +64,10 @@ namespace Meta
         RTTI::ClassInfo* NewClass(Utils::CompileString& name, Memory::IMemoryBlock& block);
 
         template <typename T, typename TField>
-        RTTI::FieldInfo* RegisterField(Utils::String& field_name, typename T::TField(*offset))
+        RTTI::FieldInfo* RegisterField(Utils::CompileString& field_name, typename T::TField(*offset))
         {
-            RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, RTTI::FieldInfo)(field_name);
+            RTTI::TypeInfo*  type  = GetType<TField>();
+            RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, RTTI::FieldInfo)(field_name, type);
             return field;
         }
 

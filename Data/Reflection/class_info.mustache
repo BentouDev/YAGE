@@ -23,17 +23,18 @@ namespace Meta
             reg.GetClass("{{name}}"),
         {{/interfaces}}
         };
-
+        /*
         data.Fields = {
         {{#fields}}
             { "{{name}}", &{{{canonical_name}}}::{{name}},  Meta::GetType<{{{type}}}>() }, // {{access}},
         {{/fields}}
         };
-
+        */
+        /*
         data.Methods = {
         {{#methods}}
             { "{{name}}", detail::MethodWrapper<decltype(&{{{canonical_name}}}::{{name}}), &{{{canonical_name}}}::{{name}}>() },
         {{/methods}}
-        }
+        }*/
     }
 }
