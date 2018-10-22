@@ -34,8 +34,11 @@ function (yage_add_ctti NAME)
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp)
 
     add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI
-            DEPENDS ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp
-            COMMENT "Checking if ${NAME} CTTI needs regeneration...")
+        DEPENDS 
+            ${CMAKE_SOURCE_DIR}/Generated/${NAME}/generated.timestamp 
+            ${CMAKE_SOURCE_DIR}/Generated/${NAME}/headers.txt
+        COMMENT
+            "Checking if ${NAME} CTTI needs regeneration...")
 
     file(GLOB
         ${AGNES_VAR_NAME}_GENERATED_CRTTI
