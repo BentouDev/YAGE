@@ -6,7 +6,7 @@
 #include <QStyleFactory>
 #include "EditorWindow.h"
 
-static void initStyleSheet(QApplication& a)
+void initStyleSheet(QApplication& a)
 {
 	// Q_INIT_RESOURCE(ads); // If static linked.
 	QFile f(":/resources/stylesheets/default-windows.css");
@@ -18,21 +18,10 @@ static void initStyleSheet(QApplication& a)
 	}
 }
 
-int main(int argc, char** args)
+void setDarkStyle(QApplication& a, QPalette& darkPalette)
 {
-	QApplication a(argc, args);
-	//a.setStyle(QStyleFactory::create("Fusion"));
-
-	/*QFile stylesheet( ":/resources/EditorWindow.css" );
-	if(stylesheet.open(QFile::ReadOnly))
-	{
-		QString styleSheet = stylesheet.readAll();
-		a.setStyleSheet( styleSheet );
-	}*/
-
 	a.setStyle(QStyleFactory::create("Fusion"));
 
-	QPalette darkPalette;
 	darkPalette.setColor(QPalette::Window, QColor(33,33,33));
 	darkPalette.setColor(QPalette::Dark, QColor(20,20,20));
 	darkPalette.setColor(QPalette::WindowText, Qt::white);
@@ -53,10 +42,18 @@ int main(int argc, char** args)
 	a.setPalette(darkPalette);
 
 	a.setStyleSheet("QToolTip { color: #ffffff; background-color: #2a82da; border: 1px solid white; }");
+}
 
+int main(int argc, char** args)
+{
+	QApplication a(argc, args);
+
+	QPalette darkPalette;
+	setDarkStyle(a, darkPalette);
 	initStyleSheet(a);
 
 	Editor::EditorWindow w;
+	Editor::Editor instance;
 	w.show();
 
 	return a.exec();
