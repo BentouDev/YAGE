@@ -10,11 +10,13 @@ namespace Editor
 {
     class EditorWindow;
 
-    class Editor
+    class EditorApp
     {
     public:
-         Editor();
-        ~Editor();
+         EditorApp();
+        ~EditorApp();
+
+        int Exec(int argc, char** args);
 
     private:
         EditorWindow* _MainWindow { nullptr };

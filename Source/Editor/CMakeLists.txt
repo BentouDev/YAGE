@@ -42,7 +42,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(Editor ${OS_BUNDLE} src/main.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h include/IconTitleWidget.h src/IconTitleWidget.cpp)
+add_executable(Editor ${OS_BUNDLE} src/main.cpp include/Editor.h src/Editor.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h include/IconTitleWidget.h src/IconTitleWidget.cpp include/Pages/SceneView.h src/Pages/SceneView.cpp)
 add_executable(YAGE::Editor ALIAS Editor)
 set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
 
@@ -67,8 +67,14 @@ target_compile_options(Editor PRIVATE ${YAGE_ENFORCE_WARNINGS})
 # Disable static link of Qt
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
-target_link_libraries(Editor Qt5::Core Qt5::Widgets ADS_LIB ${OS_LIBS} CTTI::Editor)
-target_link_libraries(Editor YAGE::Engine)
+target_link_libraries(Editor 
+    YAGE::Engine 
+    ${GLFW_LIBRARIES}
+    Qt5::Core 
+    Qt5::Widgets 
+    ADS_LIB 
+    ${OS_LIBS} 
+    CTTI::Editor)
 
 # 'make install' to the correct location
 install(TARGETS Editor
