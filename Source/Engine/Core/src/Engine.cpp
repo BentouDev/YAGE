@@ -31,25 +31,40 @@
 
 namespace Core
 {
-    Engine::Engine(std::string name, std::size_t memorySize)
-        : Name(name), _isDone(false), _cleanedUp(false)
+    Engine::Engine(const char* name, std::size_t memorySize)
+        : Name(name), _isDone(false), _cleanedUp(false), managers(Memory::GetDefaultBlock<Engine>())
     {
         MemoryModule	.reset(new Core::MemoryModule(memorySize));
         Config			.reset(new Core::Config(
-            MemoryModule.get().requestMemoryBlock(Memory::KB(1), "Config Block"))
+            MemoryModule->requestMemoryBlock(Memory::KB(1), "Config Block"))
         );
 
-        Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
-        BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
-        MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
-        FontManager		.reset(CreateManager<Resources::FontManager>    (Memory::KB(400)));
-        TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
-        MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
-        ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
-        WindowManager	.reset(CreateManager<Core::WindowManager>       (Memory::KB(10)));
-        InputManager	.reset(CreateManager<Core::InputManager>        (Memory::KB(10)));
+        CreateManager<Gfx::Renderer>             (Renderer,        Memory::KB(100));
+        CreateManager<Gfx::BufferManager>        (BufferManager,   Memory::KB(100));
+        CreateManager<Resources::MeshManager>    (MeshManager,     Memory::KB(100));
+        CreateManager<Resources::FontManager>    (FontManager,     Memory::KB(400));
+        CreateManager<Resources::TextureManager> (TextureManager,  Memory::MB(4));
+        CreateManager<Resources::MaterialManager>(MaterialManager, Memory::KB(100));
+        CreateManager<Resources::ShaderManager>  (ShaderManager,   Memory::KB(100));
+        CreateManager<Core::WindowManager>       (WindowManager,   Memory::KB(10));
+        CreateManager<Core::InputManager>        (InputManager,    Memory::KB(10));
+
+        // Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
+        // BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
+        // MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
+        // FontManager		.reset(CreateManager<Resources::FontManager>    (Memory::KB(400)));
+        // TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
+        // MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
+        // ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
+        // WindowManager	.reset(CreateManager<Core::WindowManager>       (Memory::KB(10)));
+        // InputManager	.reset(CreateManager<Core::InputManager>        (Memory::KB(10)));
 
         glfwSetErrorCallback(&Engine::ErrorCallback);
+    }
+
+    Engine::~Engine()
+    {
+        CleanUp();
     }
 
     void Engine::ErrorCallback(int code, const char* description)
@@ -59,13 +74,13 @@ namespace Core
 
     auto Engine::CreateWindow() const noexcept -> Window::handle_t
     {
-        auto handle = WindowManager.get().createNew (
-            ((std::string)Config.get().WindowTitle).c_str(),
-             Config.get().WindowWidth,
-             Config.get().WindowHeight
+        auto handle = WindowManager->createNew (
+            ((std::string)Config->WindowTitle).c_str(),
+             Config->WindowWidth,
+             Config->WindowHeight
         );
 
-        auto* window = WindowManager.get().tryGet(handle);
+        auto* window = WindowManager->tryGet(handle);
         if (window != nullptr)
         {
             if (!Renderer->registerWindow(window))
@@ -86,7 +101,7 @@ namespace Core
         return handle;
     }
 
-    auto Engine::LoadConfig(std::string path) -> bool
+    auto Engine::LoadConfig(const char* path) -> bool
     {
         return Config->Load(path);
     }
@@ -104,7 +119,7 @@ namespace Core
         // todo: refactor to handle instead of raw pointer
         if (activeScene) activeScene->End();
 
-        activeScene = scene;
+        //activeScene = scene;
 
         if (activeScene) activeScene->Start();
     }
@@ -115,7 +130,7 @@ namespace Core
         if (WindowManager->allWindowsClosed())
             return;
 
-        if (activeScene) activeScene->Draw(time, Renderer.get());
+        if (activeScene) activeScene->Draw(time, *Renderer.get());
 
         Renderer->draw();
         Renderer->drawSpriteBatches();
@@ -157,12 +172,32 @@ namespace Core
         return glfwGetTime();
     }
 
-    auto Engine::Quit() -> void
+    void Engine::Quit()
     {
         _isDone = true;
     }
 
-    auto Engine::CleanUp() -> void
+    void Engine::ReleaseManagers()
+    {
+        for (int i = 0; i < managers.size(); i++)
+        {
+            Utils::borrowed_ptr<IManager>& ptr = managers[i];
+            auto* owner = ptr.getBaseOwner();
+
+            ptr.~borrowed_ptr();
+
+            if (owner->hasBorrowers())
+            {
+                Logger::error("Manager at '{}' has unreleased borrowed_ptr's!", i);
+            }
+
+            owner->destroy();
+        }
+
+        managers.clear();
+    }
+
+    void Engine::CleanUp()
     {
         if (_cleanedUp)
             return;
@@ -171,21 +206,24 @@ namespace Core
 
         EventQueue::destroy();
 
-        Memory::Delete(MemoryModule->masterBlock(), InputManager);
-        Memory::Delete(MemoryModule->masterBlock(), WindowManager);
-        Memory::Delete(MemoryModule->masterBlock(), BufferManager);
-        Memory::Delete(MemoryModule->masterBlock(), FontManager);
-        Memory::Delete(MemoryModule->masterBlock(), MeshManager);
-        Memory::Delete(MemoryModule->masterBlock(), TextureManager);
-        Memory::Delete(MemoryModule->masterBlock(), MaterialManager);
-        Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
-        Memory::Delete(MemoryModule->masterBlock(), Renderer);
+        ReleaseManagers();
+
+        // Memory::Delete(MemoryModule->masterBlock(), InputManager);
+        // Memory::Delete(MemoryModule->masterBlock(), WindowManager);
+        // Memory::Delete(MemoryModule->masterBlock(), BufferManager);
+        // Memory::Delete(MemoryModule->masterBlock(), FontManager);
+        // Memory::Delete(MemoryModule->masterBlock(), MeshManager);
+        // Memory::Delete(MemoryModule->masterBlock(), TextureManager);
+        // Memory::Delete(MemoryModule->masterBlock(), MaterialManager);
+        // Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
+        // Memory::Delete(MemoryModule->masterBlock(), Renderer);
 
         glfwTerminate();
 
         Logger::info("Cleaned up!");
-        Memory::SafeDelete(Config);
-        Memory::SafeDelete(MemoryModule);
+
+        Config.destroy();
+        MemoryModule.destroy();
 
         _cleanedUp = true;
     }

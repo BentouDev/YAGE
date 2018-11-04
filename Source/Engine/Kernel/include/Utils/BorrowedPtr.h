@@ -6,93 +6,125 @@
 #define GAME_BORROWEDPTR_H
 
 #include <algorithm>
+#include "Defines.h"
+#include "OwnedPtr.h"
+#include "Assert.h"
 
 namespace Utils
 {
-    template <typename T>
-    class borrowed_ptr
+	template <typename T>
+	class owned_ptr;
+
+	namespace detail
     {
-        T* value;
+		class owned_ptr_base;
+
+        class borrowed_ptr_base
+        {
+        protected:
+            owned_ptr_base* _owner;
+
+            borrowed_ptr_base()
+                : _owner { nullptr }
+            { }
+
+            borrowed_ptr_base(owned_ptr_base* owner)
+                : _owner { owner }
+            { }
+
+            borrowed_ptr_base(borrowed_ptr_base&& other);
+
+        public:
+            virtual ~borrowed_ptr_base();
+
+            template <typename T>
+            friend class owned_ptr;
+            friend class owned_ptr_base;
+        };
+    }
+
+    template <typename T>
+    class borrowed_ptr : public detail::borrowed_ptr_base
+    {
+        bool isDerived = false;
+
+        template <typename X>
+        friend class owned_ptr;
+
+        explicit borrowed_ptr(owned_ptr<T>* owner) noexcept
+            : borrowed_ptr_base (owner)
+        { 
+            owner->registerBorrower(this);
+        }
+
+        template <typename U>
+        explicit borrowed_ptr(owned_ptr<U>* owner) noexcept
+            : borrowed_ptr_base (owner)
+        {
+            static_assert(std::is_base_of<T, U>::value, 
+                "Cannot create borrowed pointer from incompatible class!");
+
+            owner->template registerBorrower<T>(this);
+            isDerived = true;
+        }
 
     public:
-        explicit borrowed_ptr(T* raw_value = nullptr) noexcept :
-        value { raw_value } { }
+        borrowed_ptr()
+        { }
 
-        borrowed_ptr(borrowed_ptr && other) noexcept : value { other.release() } { }
+        borrowed_ptr(borrowed_ptr && other) noexcept
+            : isDerived { other.isDerived }
+        { }
 
-        borrowed_ptr(const borrowed_ptr& other) noexcept : value { other.getRaw() } { }
+        ~borrowed_ptr()
+        { }
 
-        auto operator=(borrowed_ptr && other) noexcept -> borrowed_ptr&
-        {
-            value = other.release();
-            return *this;
-        }
+        // Disable copy constructor
+        borrowed_ptr(const borrowed_ptr& other) = delete;
 
-        auto operator=(const borrowed_ptr & other) noexcept -> borrowed_ptr&
-        {
-            value = other.getRaw();
-            return *this;
-        }
+        // Disable copy assignment
+        auto operator=(borrowed_ptr && other) = delete;
 
-        auto reset(T* new_value = nullptr) noexcept -> bool
-        {
-            if(new_value != value)
-            {
-                value = new_value;
-            }
-
-            return static_cast<bool>(*this);
-        }
-
-        auto release() noexcept -> T*
-        {
-            auto raw_value = value;
-            value = nullptr;
-            return raw_value;
-        }
+        // Disable move assignment
+        auto operator=(const borrowed_ptr & other) = delete;
 
         explicit operator bool() const noexcept
         {
-            return value != nullptr;
+            return _owner != nullptr && get() != nullptr;
         }
+
+        auto operator->() noexcept -> T*
+        { return get(); }
 
         auto operator->() const noexcept -> T*
+        { return get(); }
+
+        auto operator*() noexcept -> T*
+        { return get(); }
+
+        auto operator*() const noexcept -> T*
+        { return get(); }
+
+        auto get() const noexcept -> T*
         {
-            return getRaw();
+            YAGE_ASSERT(_owner, "Attempt to use unset borrowed_ptr!");
+            return static_cast<owned_ptr<T>*>(_owner)->get();
         }
 
-        auto operator*() const noexcept -> T&
+        owned_ptr<T>* getOwner()
         {
-            return get();
+            YAGE_ASSERT(_owner, "Attempt to use unset borrowed_ptr!");
+            if (!isDerived)
+                return static_cast<owned_ptr<T>*>(_owner);
+            return nullptr;
         }
 
-        auto get() const noexcept -> T&
+        detail::owned_ptr_base* getBaseOwner()
         {
-            return *value;
-        }
-
-        auto getRaw() const noexcept -> T*
-        {
-            return value;
-        }
-
-        auto swap(borrowed_ptr<T>& other) noexcept -> void
-        {
-            std::swap(value, other.value);
-        }
-
-        static auto invalid() -> borrowed_ptr <T>
-        {
-            return borrowed_ptr<T>();
+            YAGE_ASSERT(_owner, "Attempt to use unset borrowed_ptr!");
+            return _owner;
         }
     };
-
-    template <typename T>
-    auto swap(borrowed_ptr<T>& left, borrowed_ptr<T>& right) noexcept -> void
-    {
-        left.swap(right);
-    }
 }
-
 
 #endif //GAME_BORROWEDPTR_H

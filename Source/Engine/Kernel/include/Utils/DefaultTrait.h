@@ -11,6 +11,10 @@
 
 namespace Utils
 {
+    /* ToDo: really use type traits?
+       maybe introduce base class (SafeObject?) and put all that code there?
+       Colony would require stored class to derive from it
+    */
     template <typename T, typename THandle = Utils::Handle<T>>
     class DefaultTrait
     {

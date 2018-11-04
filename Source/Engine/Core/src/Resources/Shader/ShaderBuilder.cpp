@@ -45,8 +45,8 @@ namespace Resources
         }
         else
         {
-            handle_t handle = _engine.ShaderManager.get().createNew();
-            program = &_engine.ShaderManager.get().get(handle);
+            handle_t handle = _engine.ShaderManager->createNew();
+            program = &_engine.ShaderManager->get(handle);
         }
 
         program->Name = programName;
@@ -95,7 +95,7 @@ namespace Resources
 
     ShaderBuilder& ShaderBuilder::onExisting(handle_t existing)
     {
-        _existing = _engine.ShaderManager.get().tryGet(existing);
+        _existing = _engine.ShaderManager->tryGet(existing);
         return *this;
     }
 

@@ -42,7 +42,8 @@ target_compile_options(Engine PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 set_target_properties(Engine PROPERTIES
     LINKER_LANGUAGE CXX
-    OUTPUT_NAME "YAGE")
+    OUTPUT_NAME "YAGE"
+    WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 target_link_libraries(Engine 
     PUBLIC

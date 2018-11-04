@@ -17,7 +17,6 @@
 #include "DebugSourceInfo.h"
 #include "MemoryBoundChecker.h"
 #include "MemoryTracker.h"
-#include "BorrowedPtr.h"
 #include "Assert.h"
 
 #define YAGE_CREATE_NEW(MemBlock, T) \
@@ -194,7 +193,7 @@ namespace Memory
         memory.as_raw_ptr = block.allocate(memory_size, alignof(T), source);
         *memory.as_size++ = length;
 
-        for(const T* const endPtr = memory.as_T + length; memory.as_T < endPtr;)
+        for (const T* const endPtr = memory.as_T + length; memory.as_T < endPtr;)
             new (memory.as_T++) T(defaultValue);
 
         return memory.as_T - length;
@@ -213,26 +212,26 @@ namespace Memory
          memory.as_raw_ptr = block.allocate(memory_size, alignof(T), source);
         *memory.as_size++ = length;
 
-        for(const T* const endPtr = memory.as_T + length; memory.as_T < endPtr;)
+        for (const T* const endPtr = memory.as_T + length; memory.as_T < endPtr;)
             new (memory.as_T++) T;
 
         return memory.as_T - length;
     }
 
-    template <typename MemoryBlock, typename T>
-    void Delete(MemoryBlock& block, Utils::borrowed_ptr<T>& ptr)
-    {
-        if(ptr)
-        {
-            ptr.get().~T();
-            block.deallocate(ptr.release());
-        }
-    };
+    // template <typename MemoryBlock, typename T>
+    // void Delete(MemoryBlock& block, Utils::borrowed_ptr<T>& ptr)
+    // {
+    //     if (ptr)
+    //     {
+    //         ptr.get().~T();
+    //         block.deallocate(ptr.release());
+    //     }
+    // };
 
     template <typename MemoryBlock, typename T>
     void Delete(MemoryBlock& block, T*& ptr)
     {
-        if(ptr != nullptr)
+        if (ptr != nullptr)
         {
             ptr->~T();
             block.deallocate(ptr);
@@ -243,13 +242,13 @@ namespace Memory
     template <typename MemoryBlock, typename T>
     void DeleteArray(MemoryBlock& block, T*& ptr)
     {
-        if(ptr != nullptr)
+        if (ptr != nullptr)
         {
             T* currentPtr = ptr;
             std::uintptr_t 	lengthAddress 	=  reinterpret_cast<std::uintptr_t >(ptr) - sizeof(std::size_t);
             std::size_t 	length 			= *reinterpret_cast<std::size_t*>(lengthAddress);
 
-            for(const T* const endPtr = ptr + length; currentPtr < endPtr;)
+            for (const T* const endPtr = ptr + length; currentPtr < endPtr;)
                 currentPtr++->~T();
 
             block.deallocate(ptr);

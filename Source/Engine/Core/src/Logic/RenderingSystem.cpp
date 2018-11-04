@@ -35,12 +35,12 @@ namespace Logic
 
 	void RenderingSystem::createVAO(RenderingComponent& component)
 	{
-		Core::Mesh* mesh = _engine.MeshManager.get().tryGetMesh(component.getMesh());
+		Core::Mesh* mesh = _engine.MeshManager->tryGetMesh(component.getMesh());
 
 		if(mesh == nullptr)
 			return;
 
-		Core::MeshScheme* scheme = _engine.MeshManager.get().tryGetMeshScheme(mesh->getMeshSchemeId());
+		Core::MeshScheme* scheme = _engine.MeshManager->tryGetMeshScheme(mesh->getMeshSchemeId());
 
 		if(scheme == nullptr)
 			return;
@@ -62,8 +62,8 @@ namespace Logic
 
 			gl::BindVertexArray(*vao);
 
-			Core::Material& material = _engine.MaterialManager.get().getMaterial(component.getMaterials()[i]);
-			Gfx::ShaderProgram& shader = _engine.ShaderManager.get().get(material.getShaderProgram());
+			Core::Material& material = _engine.MaterialManager->getMaterial(component.getMaterials()[i]);
+			Gfx::ShaderProgram& shader = _engine.ShaderManager->get(material.getShaderProgram());
 
 			for(Core::MeshScheme::PropertyInfo& info : scheme->getPropertiesInfo())
 			{
@@ -122,7 +122,7 @@ namespace Logic
 
 	void RenderingSystem::refreshDirtyComponent(RenderingComponent& component)
 	{
-		Core::Mesh* mesh = _engine.MeshManager.get().tryGetMesh(component.getMesh());
+		Core::Mesh* mesh = _engine.MeshManager->tryGetMesh(component.getMesh());
 		if(mesh != nullptr)
 		{
 			/*for (Core::Submesh& submesh : mesh->getSubmeshes())
@@ -188,9 +188,9 @@ namespace Logic
 				if(comp.isDirty())
 					refreshDirtyComponent(comp);
 
-				const Core::Mesh&					mesh		= _engine.MeshManager.get().getMesh(comp.getMesh());
-				const Gfx::StaticBuffer&			buffer		= _engine.BufferManager.get().getBuffer(mesh.getBuffer());
-				const Core::MeshScheme&				scheme		= _engine.MeshManager.get().getMeshScheme(mesh.getMeshSchemeId());
+				const Core::Mesh&					mesh		= _engine.MeshManager->getMesh(comp.getMesh());
+				const Gfx::StaticBuffer&			buffer		= _engine.BufferManager->getBuffer(mesh.getBuffer());
+				const Core::MeshScheme&				scheme		= _engine.MeshManager->getMeshScheme(mesh.getMeshSchemeId());
 				const Utils::List<Core::Submesh>&	submeshes	= mesh.getSubmeshes();
 
 				// TODO: Maybe cachce entire submesh data?

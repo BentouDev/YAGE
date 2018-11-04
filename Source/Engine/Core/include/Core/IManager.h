@@ -9,11 +9,12 @@
 #include <Utils/MemoryBlock.h>
 
 #define MANAGER(Clazz) \
-private: \
-	static constexpr const char* ClazzName = #Clazz; \
 public: \
 	static inline constexpr const char* const GetStaticClassName() \
-	{ return ClazzName; }
+	{ return ClazzName; } \
+	virtual const char* GetClassNameA() const override { return GetStaticClassName(); } \
+private: \
+	static constexpr const char* ClazzName = #Clazz;
 
 namespace Core
 {
@@ -36,6 +37,8 @@ namespace Core
 
 		Memory::IMemoryBlock& getMemoryBlock() const
 		{ return _memory; }
+
+		virtual const char* GetClassNameA() const = 0;
 	};
 }
 

@@ -10,7 +10,7 @@
 
 namespace SmartHandleTests
 {
-    typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
+    /*typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
 
     constexpr uint32_t fooConst = 0xF00BACEC;
 
@@ -18,7 +18,7 @@ namespace SmartHandleTests
     class IFooMock
     {
     public:
-        virtual ~IFooMock() { test = 0; /*Die();*/ }
+        virtual ~IFooMock() { test = 0; } // Die();
         IFooMock() : Handle(), test(fooConst) {}
         explicit IFooMock(unsigned t) : Handle(), test(t) {}
 
@@ -118,5 +118,5 @@ namespace SmartHandleTests
             REQUIRE(handle);
             REQUIRE(handle.get() != nullptr);
         }
-    }
+    }*/
 }

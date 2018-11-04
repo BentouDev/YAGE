@@ -3,12 +3,13 @@
 //
 
 #include "Utils/SafeDelete.h"
+#include <memory>
 
 namespace Memory
 {
 	template <> void SafeFree(void*& pVal)
 	{
-		if(pVal != nullptr)
+		if (pVal != nullptr)
 		{
 			free(pVal);
 			pVal = nullptr;

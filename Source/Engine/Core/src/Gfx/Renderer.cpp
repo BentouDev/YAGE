@@ -35,18 +35,17 @@ namespace Gfx
 {
     Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
         : IManager(engine, memory),
-          _spriteBatchManager(_engine.CreateManager<SpriteBatchManager>(Memory::KB(100))),
           _queue(_memory, *this),
           lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0),
           cameraProjectionUniformLocation(1), cameraViewUniformLocation(2)
     {
         DebugResources._debug2DCamera = nullptr;
         DebugResources._debug3DCamera = nullptr;
+        _engine.CreateManager<SpriteBatchManager>(_spriteBatchManager, Memory::KB(100));
     }
 
     Renderer::~Renderer()
     {
-        Memory::Delete(_engine.MemoryModule->masterBlock(), _spriteBatchManager);
         Memory::Delete(_memory, DebugResources._debug2DCamera);
         Memory::Delete(_memory, DebugResources._debug3DCamera);
     }
@@ -95,14 +94,14 @@ namespace Gfx
 
         if (!DebugResources._debugFont)
         {
-            Resources::TextureLoader textureLoader(_engine.TextureManager.get(), _memory);
+            Resources::TextureLoader textureLoader(*_engine.TextureManager.get(), _memory);
             textureLoader
                     .setParameter(gl::TEXTURE_MAG_FILTER, gl::LINEAR)
                     .setParameter(gl::TEXTURE_MIN_FILTER, gl::LINEAR)
                     .setParameter(gl::TEXTURE_WRAP_S, gl::CLAMP_TO_EDGE)
                     .setParameter(gl::TEXTURE_WRAP_T, gl::CLAMP_TO_EDGE);
 
-            Resources::FontLoader fontLoader(_engine.FontManager.get(), _memory);
+            Resources::FontLoader fontLoader(*_engine.FontManager.get(), _memory);
             auto font = fontLoader
                     .withTextureLoader(textureLoader)
                     .loadFromFile("../Data/Fonts/fantasque.fnt")
@@ -112,7 +111,7 @@ namespace Gfx
                 return false;
 
             DebugResources._debugFont = font;
-            DebugResources._debugFontMaterial->addUniform<Utils::SmartHandle<Resources::Texture::trait_t>>("diffuseTex", _engine.ShaderManager.get());
+            DebugResources._debugFontMaterial->addUniform<Utils::SmartHandle<Resources::Texture::trait_t>>("diffuseTex", *_engine.ShaderManager.get());
             DebugResources._debugFontMaterial->setUniform
             (
                 "diffuseTex",

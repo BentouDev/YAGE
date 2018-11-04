@@ -1,6 +1,7 @@
 #ifndef YAGE_RTTI_REGISTER_H
 #define YAGE_RTTI_REGISTER_H
 
+#include <functional>
 #include <Utils/List.h>
 #include <Utils/String.h>
 #include <Utils/CompileString.h>
@@ -55,10 +56,30 @@ namespace Meta
 {
     class RegisterClass
     {
+        using TResolveFunc = std::function<void(RTTI::Register&, RTTI::ClassInfo&)>;
+        using TResolver = std::pair<RTTI::ClassInfo*, TResolveFunc>;
+
         friend class RTTI::Register;
         RegisterClass() = delete;
 
         Memory::IMemoryBlock& _memory;
+
+        template <typename T>
+        TResolver PredeclareClass(Utils::CompileString& name)
+        {
+            auto* info = NewClass(name, _memory);
+
+            Declare<T>();
+
+            return
+            {
+                info, 
+                [this](RTTI::Register& reg, RTTI::ClassInfo& info)
+                {
+                    Define<T>(reg, info);
+                } 
+            };
+        }
 
     protected:
         RTTI::ClassInfo* NewClass(Utils::CompileString& name, Memory::IMemoryBlock& block);

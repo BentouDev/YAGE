@@ -16,12 +16,12 @@ extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace HandleContainerTests
 {
-    typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
+    /*typedef Memory::MemoryBlock<Memory::FreeListAllocator> MockMemory;
 
     class IFooMock
     {
     public:
-        virtual ~IFooMock() { test = 0; /*Die()*/; }
+        virtual ~IFooMock() { test = 0; } // Die();
         IFooMock() : Handle(), test(fooConst) {}
         explicit IFooMock(unsigned t) : Handle(), test(t) {}
 
@@ -185,5 +185,5 @@ namespace HandleContainerTests
 
             vec.clear();
         }
-    }
+    }*/
 }

@@ -10,7 +10,7 @@ namespace Meta
         void RegisterClasses(RTTI::IStorage& storage)
         {
         {{#classes}}
-            storage.RegisterType(Meta::GetType<typename {{{canonical_name}}}>());
+        //    storage.RegisterType(RTTI::GetType<typename {{{canonical_name}}}>());
         {{/classes}}
         }
     }

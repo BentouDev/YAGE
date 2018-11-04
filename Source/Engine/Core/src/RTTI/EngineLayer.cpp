@@ -15,7 +15,7 @@ namespace RTTI
         Unload();
     }
 
-    bool EngineLayer::Load()
+    bool EngineLayer::OnLoad()
     {
         if (_loaded)
             return false;
@@ -28,7 +28,7 @@ namespace RTTI
         return true;
     }
 
-    bool EngineLayer::Unload()
+    bool EngineLayer::OnUnload()
     {
         _loaded = false;
 
@@ -36,11 +36,6 @@ namespace RTTI
         Enums.clear();
 
         return true;
-    }
-
-    bool EngineLayer::IsLoaded() const
-    {
-        return _loaded;
     }
 
     void EngineLayer::RegisterType(ClassInfo* clazz)

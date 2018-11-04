@@ -8,10 +8,12 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+
+#include <Utils/Defines.h>
 #include <Utils/Handle.h>
 #include <Utils/List.h>
+#include <Utils/OwnedPtr.h>
 
-#include "Utils/Defines.h"
 #include "MemoryModule.h"
 
 namespace Logic
@@ -67,75 +69,82 @@ namespace Core
 	{
 		borrowed_ptr<Logic::Scene> activeScene;
 
+		List<borrowed_ptr<IManager>> managers;
+
 		bool _cleanedUp = false;
 		bool _isDone = false;
 
 		static void ErrorCallback(int code, const char* description);
 
+		void ReleaseManagers();
+
 	public:
 
 		static void initializeReferences(Engine* engine);
 
-		const std::string Name;
+		Utils::String Name;
 
-		borrowed_ptr<Core::MemoryModule>			MemoryModule;
-		borrowed_ptr<Core::Config>					Config;
-		borrowed_ptr<Gfx::Renderer>					Renderer;
-		borrowed_ptr<Gfx::BufferManager>			BufferManager;
-		borrowed_ptr<Resources::MeshManager>		MeshManager;
-		borrowed_ptr<Resources::FontManager>		FontManager;
-		borrowed_ptr<Resources::TextureManager>		TextureManager;
-		borrowed_ptr<Resources::MaterialManager>	MaterialManager;
-		borrowed_ptr<Resources::ShaderManager>		ShaderManager;
-		borrowed_ptr<Core::WindowManager>			WindowManager;
-		borrowed_ptr<Core::InputManager>			InputManager;
+		owned_ptr<Core::MemoryModule>			MemoryModule;
+		owned_ptr<Core::Config>					Config;
+		owned_ptr<Gfx::Renderer>				Renderer;
+		owned_ptr<Gfx::BufferManager>			BufferManager;
+		owned_ptr<Resources::MeshManager>		MeshManager;
+		owned_ptr<Resources::FontManager>		FontManager;
+		owned_ptr<Resources::TextureManager>	TextureManager;
+		owned_ptr<Resources::MaterialManager>	MaterialManager;
+		owned_ptr<Resources::ShaderManager>		ShaderManager;
+		owned_ptr<Core::WindowManager>			WindowManager;
+		owned_ptr<Core::InputManager>			InputManager;
 
-		explicit Engine(std::string name, std::size_t memorySize);
+		explicit Engine(const char* name, std::size_t memorySize);
 
-		virtual ~Engine() { CleanUp(); }
+		virtual ~Engine();
 
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Utils::Handle<Window>;
 
 		// Load configuration
-		auto LoadConfig(std::string path = "Config.json") -> bool;
+		bool LoadConfig(const char* = "Config.json");
 
 		// Initialize graphics context based on current config
-		auto Initialize() -> bool;
+		bool Initialize();
 
 		// Change active scene
-		auto SwitchScene(borrowed_ptr<Logic::Scene> scene) -> void;
+		void SwitchScene(borrowed_ptr<Logic::Scene> scene);
 
 		// Draw active scene
-		auto Draw(const Core::Window& window, Core::GameTime& time) -> void;
+		void Draw(const Core::Window& window, Core::GameTime& time);
 
 		// Update active scene
-		auto Update(Core::GameTime& time) -> void;
+		void Update(Core::GameTime& time);
 
 		// Return current time in ms
 		auto GetCurrentTime() -> double;
 
 		// Process user input
-		auto ProcessEvents(Core::GameTime& time) -> void;
+		void ProcessEvents(Core::GameTime& time);
 
 		// Free all resources
-		auto CleanUp() -> void;
+		void CleanUp();
 
 		// Call this when user wants to quit
-		auto Quit() -> void;
+		void Quit();
 
 		bool WasCleanedUp();
 
 		bool ShouldClose();
 
 		template <typename T>
-		T* CreateManager(std::size_t memorySize)
+		void CreateManager(owned_ptr<T>& ptr, std::size_t memorySize)
 		{
-			static_assert(std::is_base_of<IManager, T>::value, "Engine : Cannot create manager that doesnt derive from IManager!");
-			Memory::IMemoryBlock& memoryBlock = MemoryModule.get().requestMemoryBlock(memorySize, T::GetStaticClassName());
-			T* manager = YAGE_CREATE_NEW(MemoryModule.get().masterBlock(), T)(*this, memoryBlock);
+			static_assert(std::is_base_of<IManager, T>::value,
+				"Engine : Cannot create manager that doesnt derive from IManager!");
 
-			return manager;
+			Memory::IMemoryBlock& memoryBlock = MemoryModule->requestMemoryBlock(memorySize, T::GetStaticClassName());
+			T* manager = YAGE_CREATE_NEW(MemoryModule->masterBlock(), T)(*this, memoryBlock);
+
+			ptr.reset(manager);
+			managers.add(ptr.template borrow<IManager>());
 		}
 	};
 }

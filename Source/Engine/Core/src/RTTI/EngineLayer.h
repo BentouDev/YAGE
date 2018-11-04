@@ -22,16 +22,14 @@ namespace RTTI
         virtual ~EngineLayer();
 
         // ILoader
-        virtual bool Load() override;
-        virtual bool Unload() override;
-        virtual bool IsLoaded() const override;
+        virtual bool OnLoad() override;
+        virtual bool OnUnload() override;
 
         // IStorage
         virtual void RegisterType(ClassInfo* clazz) override;
         virtual void RegisterType(EnumInfo*  enumz) override;
 
     private:
-        bool _loaded;
         Utils::List<ClassInfo*> Classes;
         Utils::List<EnumInfo*>  Enums;
     };

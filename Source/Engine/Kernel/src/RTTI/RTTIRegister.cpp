@@ -19,9 +19,12 @@ namespace RTTI
             return;
         }
 
-        layer->Load();
+        if (layer->Load(ClassResolvePolicy::Strict))
+        {
+            Layers.add(layer);
+        }
 
-        Layers.add(layer);
+        YAGE_ASSERT(false, "RTTI : Failed attempt to register layer!");
     }
 
     void Register::UnloadLayer(ILayer* layer)
@@ -30,7 +33,7 @@ namespace RTTI
         {
             layer->Unload();
 
-            Layers.eraseAddress(&layer);
+            Layers.eraseAt(Layers.size() - 1);
         }
         else
         {

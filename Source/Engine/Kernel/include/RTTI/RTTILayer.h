@@ -3,6 +3,12 @@
 
 namespace RTTI
 {
+    enum class ClassResolvePolicy
+    {
+        Strict,
+        Permissive
+    };
+
     // Derived by engine layer, game lib layer and game script layer
     class ILayer
     {
@@ -14,9 +20,15 @@ namespace RTTI
         virtual ~ILayer()
         { }
 
-        virtual bool Load() = 0;
-        virtual bool Unload() = 0;
-        virtual bool IsLoaded() const = 0;
+        bool Load(ClassResolvePolicy policy);
+        bool Unload();
+        bool IsLoaded() const;
+
+    protected:
+        virtual bool OnLoad() = 0;
+        virtual bool OnUnload() = 0;
+
+        bool _loaded;
     };
 }
 

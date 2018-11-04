@@ -22,16 +22,17 @@ namespace Core
  		Utils::borrowed_ptr<Core::Config> Config;
 		Utils::borrowed_ptr<Core::Logger> Logger;
 
+		// ToDo: this shall be looked upon
 		Context(Utils::borrowed_ptr<Core::Config> conf, Utils::borrowed_ptr<Core::Logger> log) :
-			Config(conf.release()),
-			Logger(log.release())
+			Config(std::move(conf)),
+			Logger(std::move(log))
 		{ }
 
 		//Context(Context&& ctx) : Config(ctx.Config.release()), Logger(ctx.Logger.release())
 		//{ }
 
-		Context(const Context& ctx) : Config(ctx.Config.getRaw()), Logger(ctx.Logger.getRaw())
-		{ }
+		// Context(const Context& ctx) : Config(ctx.Config.getRaw()), Logger(ctx.Logger.getRaw())
+		// { }
 
 		auto operator=(Context&& ctx) -> Context&;
 

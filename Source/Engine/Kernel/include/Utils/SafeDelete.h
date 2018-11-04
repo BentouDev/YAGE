@@ -6,17 +6,13 @@
 #define YAGE_DEBUG_H
 
 #include <cstdint>
-#include "BorrowedPtr.h"
 
 namespace Memory
 {
-	template <class T> void SafeDelete(Utils::borrowed_ptr<T>& pVal)
-	{
-		if(pVal)
-		{
-			delete pVal.release();
-		}
-	}
+	// template <class T> void SafeDelete(Utils::borrowed_ptr<T>& pVal)
+	// {
+	// 	YAGE_ASSERT(false, "Cannot delete on borrowed_ptr!");
+	// }
 
 	template< class T > void SafeDelete( T*& pVal )
 	{

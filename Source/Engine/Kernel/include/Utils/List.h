@@ -2,14 +2,14 @@
 // Created by bentoo on 9/30/16.
 //
 
-#ifndef GAME_LIST_H
-#define GAME_LIST_H
+#ifndef YAGE_LIST_H
+#define YAGE_LIST_H
 
 #include <new>
 #include <cstring>
 #include <utility>
-#include "DebugSourceInfo.h"
 #include "MemoryBlock.h"
+#include "DebugSourceInfo.h"
 
 namespace Utils
 {
@@ -376,4 +376,4 @@ namespace Utils
     };
 }
 
-#endif //GAME_LIST_H
+#endif //YAGE_LIST_H

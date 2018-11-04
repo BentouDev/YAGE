@@ -64,7 +64,7 @@ namespace Resources
             {
                 for (auto handle : schemeBuffer.getBuffers())
                 {
-                    Gfx::StaticBuffer& buffer = _engine.BufferManager.get().getBuffer(handle);
+                    Gfx::StaticBuffer& buffer = _engine.BufferManager->getBuffer(handle);
                     if (buffer.hasSize(vertexCount, indexCount))
                     {
                         const std::size_t sizeDiff = buffer.getVertexCount() - buffer.getUsedVertexCount();
@@ -121,8 +121,8 @@ namespace Resources
                 maxIndexCount = vertexCount * scheme.getIndexSize();
             }
 
-            Gfx::StaticBuffer::handle_t	handle = _engine.BufferManager.get().createNew(vertexSize, scheme.getIndexSize(), maxVertexCount, maxIndexCount);
-            Gfx::StaticBuffer&			buffer = _engine.BufferManager.get().getBuffer(handle);
+            Gfx::StaticBuffer::handle_t	handle = _engine.BufferManager->createNew(vertexSize, scheme.getIndexSize(), maxVertexCount, maxIndexCount);
+            Gfx::StaticBuffer&			buffer = _engine.BufferManager->getBuffer(handle);
 
             result = &buffer;
         }

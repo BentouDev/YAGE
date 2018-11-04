@@ -77,7 +77,7 @@ namespace Gfx
         using queue_t = CommandQueue<RenderKey, RenderData, Logic::RenderingComponent>;
 
     protected:
-        SpriteBatchManager*	_spriteBatchManager;
+        Utils::owned_ptr<SpriteBatchManager> _spriteBatchManager;
 
         queue_t _queue;
 

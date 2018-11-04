@@ -1,10 +1,7 @@
 #ifndef YAGE_EDITOR_H
 #define YAGE_EDITOR_H
 
-namespace Core
-{
-    class Engine;
-}
+#include <Core/Engine.h>
 
 namespace Editor
 {
