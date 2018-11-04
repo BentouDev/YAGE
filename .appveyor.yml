@@ -58,17 +58,17 @@ build:
   parallel: true
 
 test_script:
-  - cmd: C:\projects\yage\Build\bin\CoreTests.exe -r junit > CoreTests.xml
   - cmd: C:\projects\yage\Build\bin\KernelTests.exe -r junit > KernelTests.xml
+  - cmd: C:\projects\yage\Build\bin\CoreTests.exe -r junit > CoreTests.xml
   - cmd: dir
 
 on_success:
   - ps: |
       $wc = New-Object 'System.Net.WebClient'
-      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
+      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\KernelTests.xml))
   - ps: |
       $wc = New-Object 'System.Net.WebClient'
-      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\KernelTests.xml))
+      $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\CoreTests.xml))
 
 after_build:
   - cmd: cpack -G ZIP ..
