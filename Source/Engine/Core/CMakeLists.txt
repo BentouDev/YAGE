@@ -40,12 +40,12 @@ target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})
 target_link_libraries(Core
     PUBLIC
         YAGE::Kernel
+        ${GLFW_LIBRARIES}
     PRIVATE
         lodepng
         utf8
         ${ASSIMP_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT}
-        ${GLFW_LIBRARIES})
+        ${CMAKE_THREAD_LIBS_INIT})
 
 if(OPENGL_FOUND)
     target_compile_definitions(Core PRIVATE YAGE_OPENGL=1)

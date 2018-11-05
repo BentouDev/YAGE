@@ -65,7 +65,7 @@ namespace Core
 
 	class IManager;
 
-	class YAGE_API Engine
+	class Engine
 	{
 		borrowed_ptr<Logic::Scene> activeScene;
 

@@ -108,20 +108,20 @@ function(yage_setup_dependency NAME)
                 BASIC_SETUP)
 
             set(${DEP_VAR_NAME}_CONAN_FOUND TRUE)
-            set(${DEP_VAR_NAME}_CONAN_FOUND TRUE PARENT_SCOPE)
+            set(${DEP_VAR_NAME}_CONAN_FOUND TRUE CACHE BOOL "Is dependency found by Conan")
 
             if (CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE )
 
                 foreach(CMAKE_BUILD_TYPE "RELEASE" "DEBUG")
-                    set(CONAN_${DEP_VAR_NAME}_BINARY ${CONAN_BIN_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_BINARY})
-                    set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES})
-                    set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
-                    set(CONAN_${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR})
+                    set(CONAN_${DEP_VAR_NAME}_BINARY ${CONAN_BIN_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_BINARY} CACHE FILEPATH "" FORCE)
+                    set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES} CACHE STRING "" FORCE)
+                    set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR} CACHE PATH "" FORCE)
+                    set(CONAN_${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}_${CMAKE_BUILD_TYPE}} ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR} CACHE PATH "" FORCE)
                 endforeach()
 
                 #set(${DEP_VAR_NAME}_LIBRARIES  PARENT_SCOPE)
                 #set(${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR} PARENT_SCOPE)
-                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR} PARENT_SCOPE)
+                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_${DEP_VAR_NAME}_INCLUDE_DIR} CACHE PATH "" FORCE)
 
                 set(CMAKE_BUILD_TYPE)
 
@@ -130,16 +130,16 @@ function(yage_setup_dependency NAME)
                 #set(${DEP_VAR_NAME}_LIBRARY ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
 
                 set(CONAN_${DEP_VAR_NAME}_BINARY ${CONAN_BIN_${DEP_VAR_NAME}} )
-                set(CONAN_${DEP_VAR_NAME}_BINARY ${CONAN_BIN_${DEP_VAR_NAME}} PARENT_SCOPE)
+                set(CONAN_${DEP_VAR_NAME}_BINARY ${CONAN_BIN_${DEP_VAR_NAME}} CACHE FILEPATH "" FORCE)
 
                 set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} )
-                set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} PARENT_SCOPE)
+                set(CONAN_${DEP_VAR_NAME}_LIBRARIES ${CONAN_LIBS_${DEP_VAR_NAME}} CACHE STRING "" FORCE)
 
                 set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} )
-                set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+                set(CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR ${CONAN_LIB_DIRS_${DEP_VAR_NAME}} CACHE PATH "" FORCE)
 
                 set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} )
-                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} PARENT_SCOPE)
+                set(${DEP_VAR_NAME}_INCLUDE_DIR ${CONAN_INCLUDE_DIRS_${DEP_VAR_NAME}} CACHE PATH "" FORCE)
             endif()
 
             set(${DEP_VAR_NAME}_LIBRARIES)
@@ -153,11 +153,11 @@ function(yage_setup_dependency NAME)
                 if (YAGE_FOUND_LIBRARY)
                     message ("--   Found packaged library " ${_LIB_NAME})
                     set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} )
-                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} PARENT_SCOPE)
+                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${YAGE_FOUND_LIBRARY} CACHE STRING "" FORCE)
                 else()
                     message ("--   Will attempt to use OS library " ${_LIB_NAME})
                     set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} )
-                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} PARENT_SCOPE)
+                    set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${_LIB_NAME} CACHE STRING "" FORCE)
                 endif()
 
                 unset(YAGE_FOUND_LIBRARY CACHE)
@@ -190,11 +190,11 @@ function(yage_setup_dependency NAME)
 
             endif()
 
-            set(${DEP_VAR_NAME}_TARGET ${DEP_TARGET} PARENT_SCOPE)
-            set(${DEP_VAR_NAME}_INCLUDE_DIR ${DEP_INCLUDE} PARENT_SCOPE)
+            set(${DEP_VAR_NAME}_TARGET ${DEP_TARGET} CACHE STRING "" FORCE)
+            set(${DEP_VAR_NAME}_INCLUDE_DIR ${DEP_INCLUDE} CACHE PATH "" FORCE)
 
-            set(${DEP_VAR_NAME}_LIBRARY ${DEP_TARGET} PARENT_SCOPE)
-            set(${DEP_VAR_NAME}_LIBRARIES ${DEP_TARGET} PARENT_SCOPE)
+            set(${DEP_VAR_NAME}_LIBRARY ${DEP_TARGET} CACHE FILEPATH "" FORCE)
+            set(${DEP_VAR_NAME}_LIBRARIES ${DEP_TARGET} CACHE STRING "" FORCE)
 
         endif()
         # if(DEP_PUBLIC_INSTALL)
@@ -202,4 +202,10 @@ function(yage_setup_dependency NAME)
         #     install (DIRECTORY ${DEP_INCLUDE} DESTINATION ${YAGE_INCLUDE_DIR})
         # endif()
     endif()
+
+    #message("-- yage: TARGET - " ${${DEP_VAR_NAME}_TARGET})
+    #message("-- yage: INCLUDE_DIR - " ${${DEP_VAR_NAME}_INCLUDE_DIR})
+    #message("-- yage: LIBRARY - " ${${DEP_VAR_NAME}_LIBRARY})
+    #message("-- yage: LIBRARIES - " ${${DEP_VAR_NAME}_LIBRARIES})
+
 endfunction()
