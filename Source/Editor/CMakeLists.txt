@@ -59,7 +59,12 @@ target_compile_features(Editor
     PUBLIC 
         cxx_auto_type 
         cxx_nullptr 
-        cxx_variadic_templates)
+        cxx_variadic_templates
+        cxx_trailing_return_types
+        cxx_return_type_deduction
+        cxx_right_angle_brackets
+        cxx_constexpr
+        cxx_std_17)
 
 target_compile_definitions(Editor PRIVATE ${YAGE_EXE_COMPILE_DEFS})
 target_compile_options(Editor PRIVATE ${YAGE_ENFORCE_WARNINGS})
