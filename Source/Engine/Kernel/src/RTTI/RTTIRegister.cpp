@@ -23,8 +23,10 @@ namespace RTTI
         {
             Layers.add(layer);
         }
-
-        YAGE_ASSERT(false, "RTTI : Failed attempt to register layer!");
+        else
+        {
+            YAGE_ASSERT(false, "RTTI : Failed attempt to register layer!");
+        }
     }
 
     void Register::UnloadLayer(ILayer* layer)
