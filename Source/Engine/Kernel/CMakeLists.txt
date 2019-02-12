@@ -1,8 +1,10 @@
 ## Provides various utilities, such as memory management, logger etc.
 project(Kernel VERSION 0.1 LANGUAGES CXX)
 
-file (GLOB
+file (GLOB_RECURSE
     KERNEL_SOURCES
+	CONFIGURE_DEPENDS
+	LIST_DIRECTORIES false
     ${CMAKE_CURRENT_LIST_DIR}/src/*.c
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 

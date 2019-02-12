@@ -13,7 +13,7 @@ find_path (
     PATHS ${CONAN_INCLUDE_DIRS_AGNES} /usr/include/ /usr/local/include/
 )
 
-# Handle the QUIETLY and REQUIRED arguments and set GLFW_FOUND to TRUE if
+# Handle the QUIETLY and REQUIRED arguments and set AGNES_FOUND to TRUE if
 # all listed variables are TRUE.
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(AGNES DEFAULT_MSG AGNES_BINARY AGNES_INCLUDE_DIR)

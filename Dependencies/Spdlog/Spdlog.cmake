@@ -1,6 +1,5 @@
 #Spdlog
 yage_setup_dependency(Spdlog
-        NOT_OS TRUE
         PUBLIC_INSTALL
         VAR_NAME SPDLOG
         SOURCE Dependencies/Spdlog/Source

@@ -11,6 +11,8 @@ endif(WIN32)
 message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB_RECURSE
     EDITOR_ALL_HEADERS
+    CONFIGURE_DEPENDS
+	LIST_DIRECTORIES false
     ${CMAKE_CURRENT_SOURCE_DIR}/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 
@@ -73,7 +75,7 @@ target_compile_options(Editor PRIVATE ${YAGE_ENFORCE_WARNINGS})
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
 target_link_libraries(Editor 
-    YAGE::Engine 
+    YAGE::Engine
     ${GLFW_LIBRARIES}
     Qt5::Core 
     Qt5::Widgets 
