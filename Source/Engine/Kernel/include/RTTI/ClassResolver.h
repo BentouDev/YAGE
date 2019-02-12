@@ -1,9 +1,8 @@
 #ifndef CLASS_RESOLVER_H
 #define CLASS_RESOLVER_H
 
-#include <functional>
-#include <utility>
 #include <RTTI/ClassInfo.h>
+#include <RTTI/RTTICommon.h>
 #include <RTTI/RTTIRegister.h>
 
 namespace Memory
@@ -28,12 +27,6 @@ namespace RTTI
 
 namespace Meta
 {
-    namespace detail
-    {
-        using TResolveFunc = std::function<void(RTTI::IRegister&, RTTI::ClassInfo&)>;
-        using TResolver    = std::pair<RTTI::ClassInfo*, TResolveFunc>;
-    }
-    
     template <typename T>
     class ClassStorage
     {
@@ -90,6 +83,19 @@ namespace Meta
         void Define(RTTI::Register& reg, RTTI::ClassInfo& data)
         { }
     };
+}
+
+namespace RTTI
+{
+    template <typename T>
+    void RegisterType(Utils::CompileString& name, IRegister& rtti)
+    {
+        using TBase = typename std::remove_reference<T>::type;
+        if constexpr (std::is_class<TBase>::value)
+        {
+            rtti.ResolveClass(std::move(rtti.GetClassResolver().PredeclareClass<T>(name, rtti)));
+        }
+    }
 }
 
 #endif // CLASS_RESOLVER_H

@@ -8,7 +8,7 @@
 #include <Utils/String.h>
 #include <Utils/DefaultBlock.h>
 #include <Utils/CompileString.h>
-#include <RTTI/ClassResolver.h>
+#include <RTTI/RTTICommon.h>
 
 namespace RTTI
 {
@@ -17,6 +17,7 @@ namespace RTTI
     class ClassInfo;
     class FieldInfo;
 
+    class IRegister;
     class Register;
 
     class ILayer;
@@ -43,10 +44,6 @@ namespace RTTI
         String-based type query is resolved top-down through layers.
     */
 
-    void SetupRTTI(Memory::IMemoryBlock& memory = Memory::GetDefaultBlock<Register>());
-    void ShutdownRTTI();
-	IRegister* GetRegister();
-
     class YAGE_API IRegister
     {
         template <typename T>
@@ -69,20 +66,14 @@ namespace RTTI
         virtual void ResolveClass(Meta::detail::TResolver&& resolver) = 0;
     };
 
-    template <typename T>
-    void RegisterType(Utils::CompileString& name, IRegister& rtti)
-    {
-        using TBase = typename std::remove_reference<T>::type;
-        if constexpr (std::is_class<TBase>::value)
-        {
-            rtti.ResolveClass(std::move(rtti.GetClassResolver().PredeclareClass<T>(name, rtti)));
-        }
-    }
-
     namespace detail
     {
         extern IRegister* _registerInstance;
     }
+    
+    void SetupRTTI(Memory::IMemoryBlock& memory = Memory::GetDefaultBlock<Register>());
+    void ShutdownRTTI();
+    IRegister* GetRegister();
 }
 
 #endif // !YAGE_RTTI_REGISTER_H

@@ -2,6 +2,7 @@
 #define YAGE_RTTI_ENGINE_LOADER_H
 
 #include <RTTI/RTTIRegister.h>
+#include <RTTI/ClassResolver.h>
 
 namespace Meta
 {
