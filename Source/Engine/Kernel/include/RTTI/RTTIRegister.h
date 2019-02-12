@@ -9,6 +9,7 @@
 #include <Utils/DefaultBlock.h>
 #include <Utils/CompileString.h>
 #include <RTTI/ClassResolver.h>
+#include <RTTI/RTTIRegister.h>
 
 namespace RTTI
 {
