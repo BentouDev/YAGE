@@ -22,7 +22,7 @@ namespace RTTI
     class ClassInfo;
 
     template <typename T>
-    void RegisterType(Utils::CompileString& name, RTTI::IRegister& rtti);
+    void RegisterType(Utils::CompileString name, RTTI::IRegister& rtti);
 }
 
 namespace Meta
@@ -88,7 +88,7 @@ namespace Meta
 namespace RTTI
 {
     template <typename T>
-    void RegisterType(Utils::CompileString& name, IRegister& rtti)
+    void RegisterType(Utils::CompileString name, IRegister& rtti)
     {
         using TBase = typename std::remove_reference<T>::type;
         if constexpr (std::is_class<TBase>::value)
