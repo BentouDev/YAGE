@@ -43,7 +43,7 @@ namespace Meta
     class ClassResolver
     {
         template <typename T>
-        friend void RTTI::RegisterType(Utils::CompileString& name, RTTI::IRegister& rtti);
+        friend void RTTI::RegisterType(Utils::CompileString name, RTTI::IRegister& rtti);
         friend class RTTI::Register;
 
         ClassResolver() = default;
