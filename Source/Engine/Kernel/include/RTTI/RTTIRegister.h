@@ -85,20 +85,4 @@ namespace RTTI
     }
 }
 
-namespace Meta
-{
-    template <typename T>
-    class ClassStorage
-    {
-        friend class ClassResolver;
-
-        inline static char _clazzMem[sizeof(RTTI::ClassInfo)] = { 0 };
-
-        static RTTI::ClassInfo* GetClassInfo()
-        {
-            return reinterpret_cast<RTTI::ClassInfo*>(_clazzMem);
-        }
-    };
-}
-
 #endif // !YAGE_RTTI_REGISTER_H

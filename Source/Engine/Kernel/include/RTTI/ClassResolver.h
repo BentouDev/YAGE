@@ -32,6 +32,19 @@ namespace Meta
         using TResolveFunc = std::function<void(RTTI::IRegister&, RTTI::ClassInfo&)>;
         using TResolver    = std::pair<RTTI::ClassInfo*, TResolveFunc>;
     }
+    
+    template <typename T>
+    class ClassStorage
+    {
+        friend class ClassResolver;
+
+        inline static char _clazzMem[sizeof(RTTI::ClassInfo)] = { 0 };
+
+        static RTTI::ClassInfo* GetClassInfo()
+        {
+            return reinterpret_cast<RTTI::ClassInfo*>(_clazzMem);
+        }
+    };
 
     class ClassResolver
     {
