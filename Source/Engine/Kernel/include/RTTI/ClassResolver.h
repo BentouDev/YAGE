@@ -4,6 +4,7 @@
 #include <functional>
 #include <utility>
 #include <RTTI/ClassInfo.h>
+#include <RTTI/RTTIRegister.h>
 
 namespace Memory
 {
