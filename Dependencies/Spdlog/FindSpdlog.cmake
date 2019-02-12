@@ -1,7 +1,7 @@
 # Find Spdlog
 # Find the native Spdlog includes
 #
-# SPDLOG_INCLUDE_DIR - where to find glm/common.hpp, etc.
+# SPDLOG_INCLUDE_DIR - where to find spdlog/spdlog.h, etc.
 # SPDLOG_FOUND       - True if libSpdlog found.
 
 if(SPDLOG_INCLUDE_DIR)
@@ -9,9 +9,9 @@ if(SPDLOG_INCLUDE_DIR)
     set(SPDLOG_FIND_QUIETLY TRUE)
 endif(SPDLOG_INCLUDE_DIR)
 
-find_path(SPDLOG_INCLUDE_DIR glm/common.hpp)
+find_path(SPDLOG_INCLUDE_DIR spdlog/spdlog.h)
 
-# Handle the QUIETLY and REQUIRED arguments and set GLFW_FOUND to TRUE if
+# Handle the QUIETLY and REQUIRED arguments and set SPDLOG_FOUND to TRUE if
 # all listed variables are TRUE.
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(SPDLOG DEFAULT_MSG SPDLOG_INCLUDE_DIR)
