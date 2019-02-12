@@ -1,6 +1,8 @@
 #ifndef YAGE_RTTI_LAYER_H
 #define YAGE_RTTI_LAYER_H
 
+#include <Utils/Defines.h>
+
 namespace RTTI
 {
     enum class ClassResolvePolicy
@@ -10,7 +12,7 @@ namespace RTTI
     };
 
     // Derived by engine layer, game lib layer and game script layer
-    class ILayer
+    class YAGE_API ILayer
     {
     protected:
         explicit ILayer()

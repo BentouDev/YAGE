@@ -7,10 +7,10 @@ namespace Meta
 {
     namespace Engine
     {
-        void RegisterClasses(RTTI::IStorage& storage)
+        void RegisterClasses(RTTI::IRegister& rtti)
         {
         {{#classes}}
-        //    storage.RegisterType(RTTI::GetType<typename {{{canonical_name}}}>());
+            ::RTTI::RegisterType<typename {{{canonical_name}}}>(Utils::CompileString("{{{canonical_name}}}"), rtti);
         {{/classes}}
         }
     }

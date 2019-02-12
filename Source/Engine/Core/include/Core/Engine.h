@@ -16,6 +16,13 @@
 
 #include "MemoryModule.h"
 
+namespace RTTI
+{
+	class Manager;
+	class IntegralLayer;
+	class EngineLayer;
+}
+
 namespace Logic
 {
 	class Scene;
@@ -71,6 +78,9 @@ namespace Core
 
 		List<borrowed_ptr<IManager>> managers;
 
+		owned_ptr<RTTI::IntegralLayer> RTTIIntegralLayer;
+		owned_ptr<RTTI::EngineLayer>   RTTIEngineLayer;
+
 		bool _cleanedUp = false;
 		bool _isDone = false;
 
@@ -95,10 +105,14 @@ namespace Core
 		owned_ptr<Resources::ShaderManager>		ShaderManager;
 		owned_ptr<Core::WindowManager>			WindowManager;
 		owned_ptr<Core::InputManager>			InputManager;
+		owned_ptr<RTTI::Manager>			    RTTIManager;
 
 		explicit Engine(const char* name, std::size_t memorySize);
 
 		virtual ~Engine();
+
+		Engine(Engine&&) = delete;
+		Engine& operator=(Engine&&) = delete;
 
 		// Create Window based on current configuration
 		auto CreateWindow() const noexcept -> Utils::Handle<Window>;
@@ -134,18 +148,18 @@ namespace Core
 
 		bool ShouldClose();
 
-		template <typename T>
-		void CreateManager(owned_ptr<T>& ptr, std::size_t memorySize)
-		{
-			static_assert(std::is_base_of<IManager, T>::value,
-				"Engine : Cannot create manager that doesnt derive from IManager!");
+		void RegisterManager(borrowed_ptr<IManager>&& manager);
 
-			Memory::IMemoryBlock& memoryBlock = MemoryModule->requestMemoryBlock(memorySize, T::GetStaticClassName());
-			T* manager = YAGE_CREATE_NEW(MemoryModule->masterBlock(), T)(*this, memoryBlock);
+		//template <typename T>
+		//void LoadRTTI(owned_ptr<T>& ptr)
+		//{
+		//	static_assert(std::is_base_of<RTTI::ILayer, T>::value,
+		//		"Engine: Cannot register RTTI later that doesn't derive from ILayer!");
 
-			ptr.reset(manager);
-			managers.add(ptr.template borrow<IManager>());
-		}
+		//	T* instance = YAGE_CREATE_NEW(Memory::GetDefaultBlock<Engine>(), T)();
+		//	ptr.reset(instance);
+		//	RTTIManager.LoadLayer(ptr.borrow());
+		//}
 	};
 }
 

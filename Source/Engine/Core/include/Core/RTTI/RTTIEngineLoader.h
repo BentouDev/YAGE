@@ -1,13 +1,13 @@
 #ifndef YAGE_RTTI_ENGINE_LOADER_H
 #define YAGE_RTTI_ENGINE_LOADER_H
 
-#include <RTTI/RTTIStorage.h>
+#include <RTTI/RTTIRegister.h>
 
 namespace Meta
 {
     namespace Engine
     {
-        void RegisterClasses(RTTI::IStorage& storage);
+        void RegisterClasses(RTTI::IRegister& storage);
     }
 }
 

@@ -16,6 +16,12 @@ namespace Utils
         {
             data = (*str);
         }
+        
+        template <std::size_t size>
+        constexpr CompileString(const char (&str)[size])
+        {
+            data = &(str)[0];
+        }
 
         const char* c_str()
         {

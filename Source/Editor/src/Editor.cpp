@@ -69,6 +69,7 @@ namespace Editor
         // init subsystems
 
         _MainWindow = new EditorWindow();
+		_MainWindow->show();
 
         return a.exec();
     }

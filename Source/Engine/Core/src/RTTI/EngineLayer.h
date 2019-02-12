@@ -1,9 +1,7 @@
 #ifndef YAGE_RTTI_ENGINE_LAYER_H
 #define YAGE_RTTI_ENGINE_LAYER_H
 
-#include <RTTI/RTTILayer.h>
-#include <RTTI/RTTIStorage.h>
-#include <Utils/List.h>
+#include <RTTI/BaseLayer.h>
 
 class ClassInfo;
 class EnumInfo;
@@ -15,23 +13,15 @@ namespace Memory
 
 namespace RTTI
 {
-    class EngineLayer : public ILayer, public IStorage
+    class EngineLayer : public BaseLayer
     {
     public:
-        explicit EngineLayer(Memory::IMemoryBlock& memory);
-        virtual ~EngineLayer();
+        explicit EngineLayer(){}
+        virtual ~EngineLayer(){}
 
-        // ILoader
+    protected:
+        // ILayer
         virtual bool OnLoad() override;
-        virtual bool OnUnload() override;
-
-        // IStorage
-        virtual void RegisterType(ClassInfo* clazz) override;
-        virtual void RegisterType(EnumInfo*  enumz) override;
-
-    private:
-        Utils::List<ClassInfo*> Classes;
-        Utils::List<EnumInfo*>  Enums;
     };
 }
 

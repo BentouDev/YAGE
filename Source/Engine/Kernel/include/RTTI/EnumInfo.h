@@ -1,8 +1,10 @@
 #ifndef YAGE_RTTI_ENUM_INFO_H
 #define YAGE_RTTI_ENUM_INFO_H
 
+#include "List.h"
 #include "Defines.h"
 #include "TypeInfo.h"
+#include "CompileString.h"
 
 namespace RTTI
 {

@@ -6,7 +6,6 @@
 #define YAGE_FONTMANAGER_H
 
 #include "Core/IManager.h"
-#include "Core/Engine.h"
 #include "Core/Resources/Font/Font.h"
 
 #include <Utils/MemoryBlock.h>

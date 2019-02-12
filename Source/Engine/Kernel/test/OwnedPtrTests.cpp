@@ -1,13 +1,16 @@
 #include <catch.hpp>
 #include <trompeloeil.hpp>
 #include <malloc.h>
-#include "Utils/OwnedPtr.h"
+#include "ExternalOwnedPtr.h"
 #include "Utils/StackAllocator.h"
 #include "Utils/SafeDelete.h"
 #include "Utils/MemoryBlock.h"
 #include "MockHelper.h"
 
 extern template struct trompeloeil::reporter<trompeloeil::specialized>;
+
+Sth::~Sth()
+{ }
 
 namespace OwnedPtrTests
 {

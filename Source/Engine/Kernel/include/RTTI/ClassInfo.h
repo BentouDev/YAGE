@@ -9,7 +9,7 @@
 
 namespace Meta
 {
-    class RegisterClass;
+    class ClassResolver;
 }
 
 namespace RTTI
@@ -22,7 +22,7 @@ namespace RTTI
 
     class ClassInfo : public TypeInfo
     {
-        friend class Meta::RegisterClass;
+        friend class Meta::ClassResolver;
 
     protected:
         explicit ClassInfo(Utils::CompileString& name, Memory::IMemoryBlock& memory)
@@ -34,12 +34,9 @@ namespace RTTI
             , Super(nullptr)
         { }
 
-        virtual bool Resolve(Register& ) = 0;
-
     public:
         const ClassInfo* GetSuper() const { return Super; }
 
-    protected:
         ClassInfo*    Super;
         Utils::String CanonicalName;
 

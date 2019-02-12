@@ -3,8 +3,11 @@
 //
 
 #include <algorithm>
-#include <RTTI/TypeInfo.h>
 #include <Utils/MemorySizes.h>
+#include <RTTI/TypeInfo.h>
+#include <RTTI/IntegralLayer.h>
+#include <RTTI/EngineLayer.h>
+#include "Core/RTTI/RTTIManager.h"
 
 #include "Core/EngineApis.h"
 #include "Core/MemoryModule.h"
@@ -25,6 +28,8 @@
 #include "Core/Logger.h"
 #include "Core/Config.h"
 
+#include "Core/ManagerFactory.h"
+
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
@@ -34,30 +39,29 @@ namespace Core
     Engine::Engine(const char* name, std::size_t memorySize)
         : Name(name), _isDone(false), _cleanedUp(false), managers(Memory::GetDefaultBlock<Engine>())
     {
+        RTTI::SetupRTTI();
+
         MemoryModule	.reset(new Core::MemoryModule(memorySize));
         Config			.reset(new Core::Config(
             MemoryModule->requestMemoryBlock(Memory::KB(1), "Config Block"))
         );
 
-        CreateManager<Gfx::Renderer>             (Renderer,        Memory::KB(100));
-        CreateManager<Gfx::BufferManager>        (BufferManager,   Memory::KB(100));
-        CreateManager<Resources::MeshManager>    (MeshManager,     Memory::KB(100));
-        CreateManager<Resources::FontManager>    (FontManager,     Memory::KB(400));
-        CreateManager<Resources::TextureManager> (TextureManager,  Memory::MB(4));
-        CreateManager<Resources::MaterialManager>(MaterialManager, Memory::KB(100));
-        CreateManager<Resources::ShaderManager>  (ShaderManager,   Memory::KB(100));
-        CreateManager<Core::WindowManager>       (WindowManager,   Memory::KB(10));
-        CreateManager<Core::InputManager>        (InputManager,    Memory::KB(10));
+        yage::CreateManager<Gfx::Renderer>             (*this, Renderer,        Memory::KB(100));
+        yage::CreateManager<Gfx::BufferManager>        (*this, BufferManager,   Memory::KB(100));
+        yage::CreateManager<Resources::MeshManager>    (*this, MeshManager,     Memory::KB(100));
+        yage::CreateManager<Resources::FontManager>    (*this, FontManager,     Memory::KB(400));
+        yage::CreateManager<Resources::TextureManager> (*this, TextureManager,  Memory::MB(4));
+        yage::CreateManager<Resources::MaterialManager>(*this, MaterialManager, Memory::KB(100));
+        yage::CreateManager<Resources::ShaderManager>  (*this, ShaderManager,   Memory::KB(100));
+        yage::CreateManager<Core::WindowManager>       (*this, WindowManager,   Memory::KB(10));
+        yage::CreateManager<Core::InputManager>        (*this, InputManager,    Memory::KB(10));
+        yage::CreateManager<RTTI::Manager>             (*this, RTTIManager,     Memory::KB(10));
 
-        // Renderer		.reset(CreateManager<Gfx::Renderer>             (Memory::KB(100)));
-        // BufferManager	.reset(CreateManager<Gfx::BufferManager>        (Memory::KB(100)));
-        // MeshManager		.reset(CreateManager<Resources::MeshManager>    (Memory::KB(100)));
-        // FontManager		.reset(CreateManager<Resources::FontManager>    (Memory::KB(400)));
-        // TextureManager	.reset(CreateManager<Resources::TextureManager> (Memory::MB(4)));
-        // MaterialManager	.reset(CreateManager<Resources::MaterialManager>(Memory::KB(100)));
-        // ShaderManager	.reset(CreateManager<Resources::ShaderManager>  (Memory::KB(100)));
-        // WindowManager	.reset(CreateManager<Core::WindowManager>       (Memory::KB(10)));
-        // InputManager	.reset(CreateManager<Core::InputManager>        (Memory::KB(10)));
+        // Integral types
+        RTTIManager->PushLayer<RTTI::IntegralLayer>();
+
+        // Engine CTTI
+        RTTIManager->PushLayer<RTTI::EngineLayer>();
 
         glfwSetErrorCallback(&Engine::ErrorCallback);
     }
@@ -70,6 +74,11 @@ namespace Core
     void Engine::ErrorCallback(int code, const char* description)
     {
         Logger::critical("GLFW : Error '{}' occured :\n\t{}", code, description);
+    }
+
+    void Engine::RegisterManager(borrowed_ptr<IManager>&& manager)
+    {
+        managers.add(std::move(manager));
     }
 
     auto Engine::CreateWindow() const noexcept -> Window::handle_t
@@ -179,7 +188,8 @@ namespace Core
 
     void Engine::ReleaseManagers()
     {
-        for (int i = 0; i < managers.size(); i++)
+        // From last to first
+        for (int i = managers.size() - 1; i >= 0; i--)
         {
             Utils::borrowed_ptr<IManager>& ptr = managers[i];
             auto* owner = ptr.getBaseOwner();
@@ -208,22 +218,14 @@ namespace Core
 
         ReleaseManagers();
 
-        // Memory::Delete(MemoryModule->masterBlock(), InputManager);
-        // Memory::Delete(MemoryModule->masterBlock(), WindowManager);
-        // Memory::Delete(MemoryModule->masterBlock(), BufferManager);
-        // Memory::Delete(MemoryModule->masterBlock(), FontManager);
-        // Memory::Delete(MemoryModule->masterBlock(), MeshManager);
-        // Memory::Delete(MemoryModule->masterBlock(), TextureManager);
-        // Memory::Delete(MemoryModule->masterBlock(), MaterialManager);
-        // Memory::Delete(MemoryModule->masterBlock(), ShaderManager);
-        // Memory::Delete(MemoryModule->masterBlock(), Renderer);
-
         glfwTerminate();
 
         Logger::info("Cleaned up!");
 
         Config.destroy();
         MemoryModule.destroy();
+
+        RTTI::ShutdownRTTI();
 
         _cleanedUp = true;
     }

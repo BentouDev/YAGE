@@ -132,8 +132,10 @@ namespace Utils
 
         bool reset(T* new_value = nullptr) noexcept
         {
-            if (new_value != _pointer)
+			if (new_value != _pointer)
             {
+				destroy();
+
                 _pointer = new_value;
             }
 
@@ -149,13 +151,18 @@ namespace Utils
 
         virtual bool destroy() override
         {
-            if (_pointer == nullptr)
+			static_assert(0 < sizeof(T), "Cannot delete an incomplete type!");
+
+			if (_pointer == nullptr)
                 return false;
 
             if (_deleter)
                 _deleter(_pointer);
-            else
-                Memory::SafeDelete(_pointer);
+			else
+			{
+				delete _pointer;
+				_pointer = nullptr;
+			}
 
             return true;
         }

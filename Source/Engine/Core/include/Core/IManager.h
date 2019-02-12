@@ -6,7 +6,11 @@
 #define GAME_IMANAGER_H
 
 #include <Utils/Handle.h>
-#include <Utils/MemoryBlock.h>
+
+namespace Memory
+{
+	class IMemoryBlock;
+}
 
 #define MANAGER(Clazz) \
 public: \

@@ -2,6 +2,7 @@
 // Created by bentoo on 26.11.16.
 //
 
+#include <algorithm>
 #include "Core/Logic/ISystem.h"
 #include "Core/Logger.h"
 

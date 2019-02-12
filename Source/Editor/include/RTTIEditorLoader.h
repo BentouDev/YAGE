@@ -1,13 +1,13 @@
 #ifndef YAGE_EDITOR_RTTI_LOADER_H
 #define YAGE_EDITOR_RTTI_LOADER_H
 
-#include <RTTI/RTTIStorage.h>
+#include <RTTI/RTTIRegister.h>
 
 namespace Meta
 {
     namespace Editor
     {
-        void RegisterClasses(RTTI::IStorage& storage);
+        void RegisterClasses(RTTI::IRegister& storage);
     }
 }
 

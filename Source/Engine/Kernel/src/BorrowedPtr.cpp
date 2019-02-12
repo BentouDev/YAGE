@@ -12,6 +12,11 @@ namespace Utils
 
         borrowed_ptr_base::~borrowed_ptr_base()
         {
+            release();
+        }
+
+        void borrowed_ptr_base::release()
+        {
             if (_owner)
                 _owner->unregisterBorrower(this);
         }

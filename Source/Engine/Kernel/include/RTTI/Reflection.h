@@ -1,6 +1,8 @@
 #ifndef YAGE_REFLECTION_H
 #define YAGE_REFLECTION_H
 
+#include <type_traits>
+
 namespace Utils
 {
     class String;

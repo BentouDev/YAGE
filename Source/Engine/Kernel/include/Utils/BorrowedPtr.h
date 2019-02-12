@@ -37,6 +37,8 @@ namespace Utils
         public:
             virtual ~borrowed_ptr_base();
 
+            void release();
+
             template <typename T>
             friend class owned_ptr;
             friend class owned_ptr_base;
@@ -72,8 +74,10 @@ namespace Utils
         borrowed_ptr()
         { }
 
+		// TODO: Should borrowed_ptr get owner on move?
         borrowed_ptr(borrowed_ptr && other) noexcept
-            : isDerived { other.isDerived }
+			: isDerived{ other.isDerived }
+			, borrowed_ptr_base{ std::move(other) }
         { }
 
         ~borrowed_ptr()

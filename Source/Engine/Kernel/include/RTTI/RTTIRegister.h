@@ -2,14 +2,13 @@
 #define YAGE_RTTI_REGISTER_H
 
 #include <functional>
+#include <memory>
+#include <Utils/Defines.h>
 #include <Utils/List.h>
 #include <Utils/String.h>
+#include <Utils/DefaultBlock.h>
 #include <Utils/CompileString.h>
-
-namespace Meta
-{
-    class RegisterClass;
-}
+#include <RTTI/ClassResolver.h>
 
 namespace RTTI
 {
@@ -18,87 +17,87 @@ namespace RTTI
     class ClassInfo;
     class FieldInfo;
 
+    class Register;
+
     class ILayer;
-
-    class IRegister
-    {
-        friend class RegisterClass;
-
-    protected:
-        virtual TypeInfo*  GetType (const Utils::String& name) = 0;
-        virtual EnumInfo*  GetEnum (const Utils::String& name) = 0;
-        virtual ClassInfo* GetClass(const Utils::String& name) = 0;
-    };
-
-    class Register : public IRegister
-    {
-    public:
-        TypeInfo*  FindType (const Utils::String& name);
-        EnumInfo*  FindEnum (const Utils::String& name);
-        ClassInfo* FindClass(const Utils::String& name);
-
-    // IRegister
-    protected:
-        virtual TypeInfo*  GetType (const Utils::String& name) override;
-        virtual EnumInfo*  GetEnum (const Utils::String& name) override;
-        virtual ClassInfo* GetClass(const Utils::String& name) override;
-
-        void LoadLayer  (ILayer* layer);
-        void UnloadLayer(ILayer* layer);
-
-    private:
-        // Layers can only resolve down, so there's no need to process already registered types after unload of upmost layer
-        Utils::List<ILayer*> Layers;
-    };
 }
 
 namespace Meta
 {
-    class RegisterClass
+    class ClassResolver;
+}
+
+namespace RTTI
+{
+    /*
+        During layer loading all types are first predeclared (full type list is built)
+        and only then defined (method, filed and base classes pointers are being resolved.
+
+        Kernel provides single static RTTI registry, with stack of layers.
+        Layers aggregates it's meta data independently inside.
+
+        RTTI meta data objects are accessed only through appropriate smart pointer,
+        so risk of accessing data of unloaded layer is neglected.
+
+        Templated type query is resolved in compile time.
+        String-based type query is resolved top-down through layers.
+    */
+
+    void SetupRTTI(Memory::IMemoryBlock& memory = Memory::GetDefaultBlock<Register>());
+    void ShutdownRTTI();
+	IRegister* GetRegister();
+
+    class YAGE_API IRegister
     {
-        using TResolveFunc = std::function<void(RTTI::Register&, RTTI::ClassInfo&)>;
-        using TResolver = std::pair<RTTI::ClassInfo*, TResolveFunc>;
-
-        friend class RTTI::Register;
-        RegisterClass() = delete;
-
-        Memory::IMemoryBlock& _memory;
-
         template <typename T>
-        TResolver PredeclareClass(Utils::CompileString& name)
-        {
-            auto* info = NewClass(name, _memory);
-
-            Declare<T>();
-
-            return
-            {
-                info, 
-                [this](RTTI::Register& reg, RTTI::ClassInfo& info)
-                {
-                    Define<T>(reg, info);
-                } 
-            };
-        }
+        friend void RegisterType(Utils::CompileString& name, IRegister& rtti);
+        friend class ClassResolver;
 
     protected:
-        RTTI::ClassInfo* NewClass(Utils::CompileString& name, Memory::IMemoryBlock& block);
+        virtual TypeInfo*  GetType (const char* name) = 0;
+        virtual EnumInfo*  GetEnum (const char* name) = 0;
+        virtual ClassInfo* GetClass(const char* name) = 0;
 
-        // template <typename T, typename TField>
-        // RTTI::FieldInfo* RegisterField(Utils::CompileString& field_name, typename T::TField(*offset))
-        // {
-        //     RTTI::TypeInfo*  type  = GetType<TField>();
-        //     RTTI::FieldInfo* field = YAGE_CREATE_NEW(_memory, RTTI::FieldInfo)(field_name, type);
-        //     return field;
-        // }
+    public:
+        virtual Meta::ClassResolver& GetClassResolver() = 0;
+        virtual Memory::IMemoryBlock& GetMemory() = 0;
 
-        template <typename T>
-        void Declare(RTTI::Register& reg, RTTI::ClassInfo& data)
-        { }
+        virtual void LoadLayer  (ILayer* layer) = 0;
+        virtual void UnloadLayer(ILayer* layer) = 0;
 
-        template <typename T>
-        void Define(RTTI::Register& reg, RTTI::ClassInfo& data)
-        { }
+        // Used by generated code
+        virtual void ResolveClass(Meta::detail::TResolver&& resolver) = 0;
+    };
+
+    template <typename T>
+    void RegisterType(Utils::CompileString& name, IRegister& rtti)
+    {
+        using TBase = typename std::remove_reference<T>::type;
+        if constexpr (std::is_class<TBase>::value)
+        {
+            rtti.ResolveClass(std::move(rtti.GetClassResolver().PredeclareClass<T>(name, rtti)));
+        }
+    }
+
+    namespace detail
+    {
+        extern IRegister* _registerInstance;
+    }
+}
+
+namespace Meta
+{
+    template <typename T>
+    class ClassStorage
+    {
+        friend class ClassResolver;
+
+        inline static char _clazzMem[sizeof(RTTI::ClassInfo)] = { 0 };
+
+        static RTTI::ClassInfo* GetClassInfo()
+        {
+            return reinterpret_cast<RTTI::ClassInfo*>(_clazzMem);
+        }
     };
 }
 

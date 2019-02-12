@@ -7,7 +7,7 @@
 namespace Meta
 {
     template <>
-    void RegisterClass::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
+    void ClassResolver::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
         data.CanonicalName << "{{{canonical_name}}}";
         data.Attributes     = {
         {{#attributes}}
@@ -17,7 +17,7 @@ namespace Meta
     }
 
     template <>
-    void RegisterClass::Define<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
+    void ClassResolver::Define<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
         data.Interfaces = {
         {{#interfaces}}
             reg.GetClass("{{name}}"),
