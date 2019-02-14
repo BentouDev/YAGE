@@ -56,6 +56,8 @@ namespace RTTI
         virtual ClassInfo* GetClass(const char* name) = 0;
 
     public:
+        virtual ~IRegister() {}
+
         virtual Meta::ClassResolver& GetClassResolver() = 0;
         virtual Memory::IMemoryBlock& GetMemory() = 0;
 

@@ -7,7 +7,7 @@ struct MockValue;
 struct Sth
 {
 	~Sth();
-	Utils::owned_ptr < MockValue > ;
+	Utils::owned_ptr < MockValue > ptr;
 };
 
 #endif // EXTERNAL_OWNED_H
