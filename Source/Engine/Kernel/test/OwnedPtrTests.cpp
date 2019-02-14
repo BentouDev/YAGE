@@ -9,6 +9,11 @@
 
 extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
+struct ExternMockType
+{
+
+};
+
 Sth::~Sth()
 { }
 

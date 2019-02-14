@@ -3,11 +3,11 @@
 
 #include "Utils/OwnedPtr.h"
 
-struct MockValue;
+struct ExternMockType;
 struct Sth
 {
 	~Sth();
-	Utils::owned_ptr < MockValue > ptr;
+	Utils::owned_ptr < ExternMockType > ptr;
 };
 
 #endif // EXTERNAL_OWNED_H
