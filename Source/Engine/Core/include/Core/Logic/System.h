@@ -25,7 +25,7 @@ namespace Logic
 			comp_id_t       componentBits[] = { IComponent::GetComponentId<Components>()... };
 			std::bitset<32> bitset;
 
-			for(auto i = 0; i < sizeof...(Components); i++)
+			for (size_t i = 0; i < sizeof...(Components); i++)
 			{
 				bitset.set(componentBits[i]);
 			}

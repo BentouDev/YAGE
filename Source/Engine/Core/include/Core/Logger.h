@@ -116,7 +116,7 @@ namespace Core
 
         template <typename... Args> static void log(LogLevel::TYPE lvl, const char* str_format, const Args&... args)
         {
-            using TBuffer = typename fmt::memory_buffer;
+            using TBuffer = fmt::memory_buffer;
             if (lvl < get()._log_level) return;
 
             TBuffer raw;

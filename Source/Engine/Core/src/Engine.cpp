@@ -134,7 +134,7 @@ namespace Core
     }
 
     // todo: remove window from here
-    auto Engine::Draw(const Core::Window& window, Core::GameTime& time) -> void
+    auto Engine::Draw(const Core::Window& /*window*/, Core::GameTime& time) -> void
     {
         if (WindowManager->allWindowsClosed())
             return;
@@ -189,7 +189,7 @@ namespace Core
     void Engine::ReleaseManagers()
     {
         // From last to first
-        for (int i = managers.size() - 1; i >= 0; i--)
+        for (auto i = managers.size() - 1; i >= 0; i--)
         {
             Utils::borrowed_ptr<IManager>& ptr = managers[i];
             auto* owner = ptr.getBaseOwner();

@@ -15,12 +15,12 @@ namespace Memory
 	{
 		struct PointerInfo
 		{
-			PointerInfo(std::size_t size, const char* file, unsigned long line, void* ptr)
+			PointerInfo(std::size_t size, const char* file, std::size_t line, void* ptr)
 				: size(size), file(file), line(line), ptr(ptr) { }
 
 			std::size_t size;
 			const char* file;
-			unsigned long line;
+			std::size_t line;
 			void* ptr;
 		};
 
@@ -41,7 +41,7 @@ namespace Memory
 		{
 			for (auto& info : _currentlyAllocatedAddresses)
 			{
-				std::fprintf(stderr, "%s : Address '%p' possibly leaked '%zu' bytes, allocated in file '%s' at line '%lu'\n",
+				std::fprintf(stderr, "%s : Address '%p' possibly leaked '%zu' bytes, allocated in file '%s' at line '%zu'\n",
 							 getName(), info.ptr, info.size, info.file, info.line);
 			}
 		}
@@ -50,7 +50,7 @@ namespace Memory
 		{
 			for (auto& info : _currentlyAllocatedAddresses)
 			{
-				std::fprintf(stderr, "%s : Address '%p' allocated '%zu' bytes in file '%s' at line '%lu'\n",
+				std::fprintf(stderr, "%s : Address '%p' allocated '%zu' bytes in file '%s' at line '%zu'\n",
 							 getName(), info.ptr, info.size, info.file, info.line);
 			}
 		}
@@ -83,7 +83,7 @@ namespace Memory
 					info = &_currentlyAllocatedAddresses[i];
 					if(info->ptr == ptr)
 					{
-						std::fprintf(stderr, "%s : Address '%p' with '%zu' bytes already freed, allocated in file '%s' at line '%lu'\n",
+						std::fprintf(stderr, "%s : Address '%p' with '%zu' bytes already freed, allocated in file '%s' at line '%zu'\n",
 									 getName(), ptr, info->size, info->file, info->line);
 					}
 				}
