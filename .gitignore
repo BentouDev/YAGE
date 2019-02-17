@@ -54,3 +54,4 @@ Generated/
 conaninfo.txt
 conanbuildinfo.txt
 conanbuildinfo.cmake
+CMakeLists.txt.user
