@@ -27,6 +27,28 @@ namespace yage
 
 		engine.RegisterManager(std::move(ptr.template borrow<Core::IManager>()));
 	}
+
+	template <typename T>
+	void UnregisterManager(Core::Engine& engine, Utils::owned_ptr<T>& ptr)
+	{
+		static_assert(std::is_base_of<Core::IManager, T>::value,
+			"Engine : Cannot unregister manager that doesnt derive from Core::IManager!");
+		engine.UnregisterManager(ptr);
+	}
+
+	template <typename T>
+	std::function<void(void*)> GetManagerDeleter(Core::Engine* engine)
+	{
+		static_assert(std::is_base_of<Core::IManager, T>::value,
+			"Engine : Cannot destroy manager that doesnt derive from Core::IManager!");
+		return std::function<void(void*)>
+		{
+			[engine](void* ptr) {
+				T* ptr_t = reinterpret_cast<T*>(ptr);
+				Memory::Delete(engine->MemoryModule->masterBlock(), ptr_t);
+			}
+		};
+	}
 }
 
 #endif // !YAGE_MANAGER_FACTORY_H

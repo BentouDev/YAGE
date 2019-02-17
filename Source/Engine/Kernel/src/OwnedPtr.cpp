@@ -4,6 +4,11 @@ namespace Utils
 {
     namespace detail
     {
+        void owned_ptr_base::destroy_type_erased(void* ptr)
+        {
+            _deleter(ptr);
+        }
+
         void owned_ptr_base::registerBorrowerImpl(detail::borrowed_ptr_base* borrower)
         {
             auto itr = std::find_if(_borrowers.begin(), _borrowers.end(), 

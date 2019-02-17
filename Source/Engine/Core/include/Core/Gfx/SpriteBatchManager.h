@@ -25,7 +25,7 @@ namespace Gfx
     class RenderTarget;
     class SpriteBatchManager;
 
-    struct SpriteBuffer
+    class SpriteBuffer
     {
         friend class SpriteBatchManager;
 

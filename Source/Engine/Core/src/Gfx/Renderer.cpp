@@ -38,6 +38,7 @@ namespace Gfx
     Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
         : IManager(engine, memory),
           _queue(_memory, *this),
+          _spriteBatchManager(yage::GetManagerDeleter<SpriteBatchManager>(&engine)),
           lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0),
           cameraProjectionUniformLocation(1), cameraViewUniformLocation(2)
     {
@@ -48,6 +49,7 @@ namespace Gfx
 
     Renderer::~Renderer()
     {
+		yage::UnregisterManager(_engine, _spriteBatchManager);
         Memory::Delete(_memory, DebugResources._debug2DCamera);
         Memory::Delete(_memory, DebugResources._debug3DCamera);
     }

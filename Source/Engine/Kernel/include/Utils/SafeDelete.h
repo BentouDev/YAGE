@@ -16,7 +16,8 @@ namespace Memory
 
 	template< class T > void SafeDelete( T*& pVal )
 	{
-		if(pVal != nullptr)
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+		if (pVal != nullptr)
 		{
 			delete pVal;
 			pVal = nullptr;
@@ -25,7 +26,8 @@ namespace Memory
 
 	template< class T > void SafeDeleteArray( T*& pVal )
 	{
-		if(pVal != nullptr)
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+		if (pVal != nullptr)
 		{
 			delete[] pVal;
 			pVal = nullptr;
@@ -34,9 +36,10 @@ namespace Memory
 
 	template< class T > void SafeDeleteArray( T*& pVal, std::uint32_t count)
 	{
-		if(pVal != nullptr)
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+		if (pVal != nullptr)
 		{
-			for(uint32_t i = 0; i < count; i++)
+			for (uint32_t i = 0; i < count; i++)
 			{
 				SafeDelete(pVal[i]);
 			}
@@ -48,10 +51,11 @@ namespace Memory
 
 	template< class T > void SafeFree( T*& pVal )
 	{
-		if(pVal != nullptr)
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+		if (pVal != nullptr)
 		{
 			pVal->~T();
-			free( pVal );
+			free(pVal);
 			pVal = nullptr;
 		}
 	}
@@ -60,15 +64,16 @@ namespace Memory
 
 	template< class T > void SafeFreeArray( T*& pVal, std::uint32_t count )
 	{
-		if(pVal != nullptr)
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+		if (pVal != nullptr)
 		{
-			for(uint32_t i = 0; i < count; i++)
+			for (uint32_t i = 0; i < count; i++)
 			{
 				unsigned char* current, result = 0;
 				T* start = &pVal[i];
 				T* end	 = start + 1;
 
-				for(current  = reinterpret_cast<unsigned char*>(start);
+				for (current  = reinterpret_cast<unsigned char*>(start);
 					current != reinterpret_cast<unsigned char*>(end);
 					current++)
 				{
@@ -76,13 +81,13 @@ namespace Memory
 				}
 
 				bool isZeroed = !result;
-				if(!isZeroed)
+				if (!isZeroed)
 				{
 					pVal[i].~T();
 				}
 			}
 
-			free( pVal );
+			free(pVal);
 			pVal = nullptr;
 		}
 	}

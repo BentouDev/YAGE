@@ -24,6 +24,16 @@ namespace RTTI
 
             RTTI::GetRegister()->LoadLayer(instance);
         }
+
+		template <typename T>
+		static void DeleteLayer(void* ptr)
+		{
+			static_assert(std::is_base_of<ILayer, T>::value,
+				"RTTI: Can delete only ILayer derivatives!");
+
+			T* ptr_t = reinterpret_cast<T*>(ptr);
+			Memory::Delete(Memory::GetDefaultBlock<Manager>(), ptr_t);
+		}
     };
 }
 

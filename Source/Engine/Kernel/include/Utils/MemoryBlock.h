@@ -231,6 +231,8 @@ namespace Memory
     template <typename MemoryBlock, typename T>
     void Delete(MemoryBlock& block, T*& ptr)
     {
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+
         if (ptr != nullptr)
         {
             ptr->~T();
@@ -242,7 +244,9 @@ namespace Memory
     template <typename MemoryBlock, typename T>
     void DeleteArray(MemoryBlock& block, T*& ptr)
     {
-        if (ptr != nullptr)
+		static_assert(0 < sizeof(T), "Cannot delete undefined type!");
+
+		if (ptr != nullptr)
         {
             T* currentPtr = ptr;
             std::uintptr_t 	lengthAddress 	=  reinterpret_cast<std::uintptr_t >(ptr) - sizeof(std::size_t);

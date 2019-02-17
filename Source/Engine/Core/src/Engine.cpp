@@ -29,6 +29,7 @@
 #include "Core/Config.h"
 
 #include "Core/ManagerFactory.h"
+#include "Core/DefaultDeleter.h"
 
 #ifdef CreateWindow
 #undef CreateWindow
@@ -38,6 +39,26 @@ namespace Core
 {
     Engine::Engine(const char* name, std::size_t memorySize)
         : Name(name), _isDone(false), _cleanedUp(false), managers(Memory::GetDefaultBlock<Engine>())
+        
+		// Raw objects
+		, MemoryModule(yage::DefaultDeleter<Core::MemoryModule>)
+        , Config(yage::DefaultDeleter<Core::Config>)
+
+		// Core::IManager
+        , Renderer(yage::GetManagerDeleter<Gfx::Renderer>(this))
+        , BufferManager(yage::GetManagerDeleter<Gfx::BufferManager>(this))
+        , MeshManager(yage::GetManagerDeleter<Resources::MeshManager>(this))
+        , FontManager(yage::GetManagerDeleter<Resources::FontManager>(this))
+        , TextureManager(yage::GetManagerDeleter<Resources::TextureManager>(this))
+        , MaterialManager(yage::GetManagerDeleter<Resources::MaterialManager>(this))
+        , ShaderManager(yage::GetManagerDeleter<Resources::ShaderManager>(this))
+        , WindowManager(yage::GetManagerDeleter<Core::WindowManager>(this))
+        , InputManager(yage::GetManagerDeleter<Core::InputManager>(this))
+        , RTTIManager(yage::GetManagerDeleter<RTTI::Manager>(this))
+        
+		// RTTI::ILayer
+		, RTTIIntegralLayer(RTTI::Manager::DeleteLayer<RTTI::IntegralLayer>)
+        , RTTIEngineLayer(RTTI::Manager::DeleteLayer<RTTI::EngineLayer>)
     {
         RTTI::SetupRTTI();
 
@@ -80,6 +101,22 @@ namespace Core
     {
         managers.add(std::move(manager));
     }
+
+	void Engine::UnregisterManager(detail::owned_ptr_base& owning_ptr)
+	{
+		auto* itr = std::find_if(managers.begin(), managers.end(), [&](borrowed_ptr<IManager>& ptr) {
+			return ptr.getBaseOwner() == &owning_ptr;
+		});
+
+		if (itr != managers.end())
+		{
+			managers.eraseAddress(itr);
+		}
+		else
+		{
+			YAGE_ASSERT(false, "Attempt to erase unregistered manager!");
+		}
+	}
 
     auto Engine::CreateWindow() const noexcept -> Window::handle_t
     {

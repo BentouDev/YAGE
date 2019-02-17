@@ -22,19 +22,26 @@ namespace Utils
 
         class owned_ptr_base
         {
+        public:
+            using TDeleter = std::function<void(void*)>;
+
         protected:
             template <typename T>
             friend class borrowed_ptr;
             friend class borrowed_ptr_base;
 
             List<borrowed_ptr_base*> _borrowers;
+            TDeleter                 _deleter;
 
             void unregisterBorrower(borrowed_ptr_base* borrower);
             void registerBorrowerImpl(borrowed_ptr_base* newBorrower);
 
-            owned_ptr_base()            
+            owned_ptr_base(TDeleter&& deleter)
                 : _borrowers(Memory::GetDefaultBlock<TOwnedPtrMemTag>())
+                , _deleter(std::move(deleter))
             { }
+
+            void destroy_type_erased(void* ptr);
 
         public:
             virtual ~owned_ptr_base()
@@ -54,8 +61,6 @@ namespace Utils
     {
         T* _pointer;
 
-        std::function<void(T*)> _deleter;
-
         template <typename X>
         friend class borrowed_ptr;
 
@@ -73,16 +78,14 @@ namespace Utils
         }
 
     public:
-        owned_ptr()
+        owned_ptr(TDeleter deleter)
             : _pointer(nullptr)
+            , owned_ptr_base(std::move(deleter))
         { }
 
-        owned_ptr(T* ptr)
+        owned_ptr(TDeleter deleter, T* ptr)
             : _pointer(ptr)
-        { }
-
-        owned_ptr(T* ptr, std::function<void(T*)> deleter)
-            : _pointer(ptr), _deleter(deleter)
+            , owned_ptr_base(std::move(deleter))
         { }
 
         ~owned_ptr()
@@ -132,9 +135,9 @@ namespace Utils
 
         bool reset(T* new_value = nullptr) noexcept
         {
-			if (new_value != _pointer)
+            if (new_value != _pointer)
             {
-				destroy();
+                destroy();
 
                 _pointer = new_value;
             }
@@ -151,18 +154,11 @@ namespace Utils
 
         virtual bool destroy() override
         {
-			static_assert(0 < sizeof(T), "Cannot delete an incomplete type!");
-
-			if (_pointer == nullptr)
+            if (_pointer == nullptr)
                 return false;
 
-            if (_deleter)
-                _deleter(_pointer);
-			else
-			{
-				delete _pointer;
-				_pointer = nullptr;
-			}
+            destroy_type_erased(_pointer);
+            _pointer = nullptr;
 
             return true;
         }
@@ -178,8 +174,8 @@ namespace Utils
     {
         return owned_ptr<T>
         (
-            YAGE_CREATE_NEW(block, T)(std::forward<TArgs>(args)...), [&](T* ptr){
-                Memory::Delete(block, ptr);
+            YAGE_CREATE_NEW(block, T)(std::forward<TArgs>(args)...), [&](void* ptr){
+                Memory::Delete(block, static_cast<T*>(ptr));
             }
         );
     }
@@ -189,8 +185,8 @@ namespace Utils
     {
         return owned_ptr<T>
         (
-            YAGE_CREATE_NEW(block, T)(), [&](T* ptr){
-                Memory::Delete(block, ptr);
+            YAGE_CREATE_NEW(block, T)(), [&](void* ptr){
+                Memory::Delete(block, static_cast<T*>(ptr));
             }
         );
     }

@@ -149,6 +149,8 @@ namespace Core
 		bool ShouldClose();
 
 		void RegisterManager(borrowed_ptr<IManager>&& manager);
+		
+		void Engine::UnregisterManager(detail::owned_ptr_base& owning_ptr);
 
 		//template <typename T>
 		//void LoadRTTI(owned_ptr<T>& ptr)
