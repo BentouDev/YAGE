@@ -208,6 +208,7 @@ function(yage_setup_dependency NAME)
 
                     add_subdirectory(${DEP_SOURCE} EXCLUDE_FROM_ALL)
 
+					set(${DEP_VAR_NAME}_FROM_SOURCE True CACHE STRING "" FORCE)
             endif()
 
             set(${DEP_VAR_NAME}_TARGET ${DEP_TARGET} CACHE STRING "" FORCE)
