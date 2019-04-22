@@ -1,6 +1,6 @@
 # Assimp
 yage_setup_dependency(Assimp
-        CONAN assimp/Release3.1_RC1-5149-g36bce5fa@bentoudev/stable
+        CONAN assimp/Release3.1_RC1-dev@bentoudev/stable
         VAR_NAME ASSIMP
         TARGET assimp)
 
