@@ -35,10 +35,12 @@
 #undef CreateWindow
 #endif
 
+// template<> RTTI::IntegralLayer* LayerHelper<RTTI::IntegralLayer>::_instance{ nullptr };
+
 namespace Core
 {
     Engine::Engine(const char* name, std::size_t memorySize)
-        : Name(name), _isDone(false), _cleanedUp(false), managers(Memory::GetDefaultBlock<Engine>())
+        : Name(name), _isDone(false), _cleanedUp(false), managers()// #NewAlloc Memory::GetDefaultBlock<Engine>())
         
 		// Raw objects
 		, MemoryModule(yage::DefaultDeleter<Core::MemoryModule>)
@@ -57,8 +59,8 @@ namespace Core
         , RTTIManager(yage::GetManagerDeleter<RTTI::Manager>(this))
         
 		// RTTI::ILayer
-		, RTTIIntegralLayer(RTTI::Manager::DeleteLayer<RTTI::IntegralLayer>)
-        , RTTIEngineLayer(RTTI::Manager::DeleteLayer<RTTI::EngineLayer>)
+		//, RTTIIntegralLayer(RTTI::Manager::DeleteLayer<RTTI::IntegralLayer>)
+        //, RTTIEngineLayer(RTTI::Manager::DeleteLayer<RTTI::EngineLayer>)
     {
         RTTI::SetupRTTI();
 
@@ -99,7 +101,8 @@ namespace Core
 
     void Engine::RegisterManager(borrowed_ptr<IManager>&& manager)
     {
-        managers.add(std::move(manager));
+		// #NewAlloc
+		managers.push_back(eastl::move(manager));
     }
 
 	void Engine::UnregisterManager(detail::owned_ptr_base& owning_ptr)
@@ -110,7 +113,8 @@ namespace Core
 
 		if (itr != managers.end())
 		{
-			managers.eraseAddress(itr);
+			// #NewAlloc 
+			managers.erase(itr);
 		}
 		else
 		{
@@ -229,16 +233,23 @@ namespace Core
         for (auto i = (std::int32_t) managers.size() - 1; i >= 0; i--)
         {
             Utils::borrowed_ptr<IManager>& ptr = managers[i];
-            auto* owner = ptr.getBaseOwner();
+			if (ptr)
+			{
+				auto* owner = ptr.getBaseOwner();
 
-            ptr.~borrowed_ptr();
+				ptr.~borrowed_ptr();
 
-            if (owner->hasBorrowers())
-            {
-                Logger::error("Manager at '{}' has unreleased borrowed_ptr's!", i);
-            }
+				if (owner->hasBorrowers())
+				{
+					Logger::error("Manager at '{}' has unreleased borrowed_ptr's!", i);
+				}
 
-            owner->destroy();
+				owner->destroy();
+			}
+			else
+			{
+				Logger::error("Orphaned borrowed ptr at '{}'!", i);
+			}
         }
 
         managers.clear();

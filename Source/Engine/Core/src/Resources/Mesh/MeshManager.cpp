@@ -12,7 +12,7 @@
 namespace Resources
 {
     MeshManager::MeshManager(Core::Engine &engine, Memory::IMemoryBlock &memory)
-        : IManager(engine, memory), _schemeManager(_memory), _meshContainer(_memory), _schemeBuffers(_memory)
+        : IManager(engine, memory), _schemeManager(_memory), _meshContainer(memory), _schemeBuffers()// #NewAlloc
     {
         Core::Logger::info("Created mesh manager with capacity {}", _meshContainer.capacity());
     }
@@ -206,7 +206,7 @@ namespace Resources
         std::size_t startingOffset	= buffer->getUsedIndexCount();
         std::size_t indexSize		= scheme.getIndexSize();
 
-        for(Core::Submesh& submesh : mesh.getSubmeshes())
+        for (Core::Submesh& submesh : mesh.getSubmeshes())
         {
             // push to IBO
             // save baseVertex

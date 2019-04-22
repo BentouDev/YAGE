@@ -9,8 +9,8 @@ namespace Meta
 {
     template <>
     void ClassResolver::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data) {
-        data.CanonicalName << "{{{canonical_name}}}";
-        data.Attributes     = {
+        data.CanonicalName = "{{{canonical_name}}}";
+        data.Attributes    = {
         {{#attributes}}
             {{{value}}},
         {{/attributes}}

@@ -7,22 +7,22 @@
 namespace Resources
 {
 	MeshSchemeManager::MeshSchemeManager(Memory::IMemoryBlock& memory)
-		: _memory(memory), _registeredSchemes(_memory)
+		: _memory(memory), _registeredSchemes() // #NewAlloc
 	{
 
 	}
 
 	MeshSchemeId MeshSchemeManager::registerScheme(const Core::MeshScheme& scheme)
 	{
-		_registeredSchemes.emplace(scheme);
+		_registeredSchemes.emplace_back(scheme);
 		return (MeshSchemeId) (_registeredSchemes.size() - 1);
 	}
 
 	bool MeshSchemeManager::contains(const Core::MeshScheme &scheme) const
 	{
-		for(Core::MeshScheme& registeredScheme : _registeredSchemes)
+		for (const Core::MeshScheme& registeredScheme : _registeredSchemes)
 		{
-			if(registeredScheme == scheme)
+			if (registeredScheme == scheme)
 			{
 				return true;
 			}

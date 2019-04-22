@@ -19,7 +19,7 @@
 namespace Logic
 {
 	RenderingSystem::RenderingSystem(Core::Engine &engine, Memory::IMemoryBlock& memory, World& world)
-		: System(memory), _engine(engine), _memory(memory), _world(world), _dirtyComponents(memory), _sceneEntities(memory)
+		: System(memory), _engine(engine), _memory(memory), _world(world), _dirtyComponents(), _sceneEntities()// #NewAlloc
 	{
 
 	}
@@ -29,7 +29,7 @@ namespace Logic
 		if(!comp._isDirty)
 		{
 			comp._isDirty = true;
-			_dirtyComponents.add(comp.Handle);
+			_dirtyComponents.push_back(comp.Handle);
 		}
 	}
 
@@ -65,16 +65,16 @@ namespace Logic
 			Core::Material& material = _engine.MaterialManager->getMaterial(component.getMaterials()[i]);
 			Gfx::ShaderProgram& shader = _engine.ShaderManager->get(material.getShaderProgram());
 
-			for(Core::MeshScheme::PropertyInfo& info : scheme->getPropertiesInfo())
+			for(const Core::MeshScheme::PropertyInfo& info : scheme->getPropertiesInfo())
 			{
-				GLint location = gl::GetAttribLocation(shader, info.Name);
+				GLint location = gl::GetAttribLocation(shader, info.Name.c_str());
 				OpenGL::checkError();
 
 				if(location == -1)
 				{
 					// todo: Report error: there is no such attribute or its reserved for driver
 					Core::Logger::error (
-						"createVAO : theres no attribute named '{}' or its driver reserved.", info.Name
+						"createVAO : theres no attribute named '{}' or its driver reserved.", info.Name.c_str()
 					);
 				}
 				else
@@ -229,13 +229,13 @@ namespace Logic
 			if(info.scene == &entity.getScene())
 			{
 				added = true;
-				info.entities.add(handle);
+				info.entities.push_back(handle);
 			}
 		}
 
 		if(!added)
 		{
-			_sceneEntities.emplace(&entity.getScene(), _memory, handle);
+			_sceneEntities.emplace_back(&entity.getScene(), _memory, handle);
 		}
 	}
 }

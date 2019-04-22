@@ -41,7 +41,7 @@ namespace Core
     : _log_level(LogLevel::debug)
     , _allocator(_raw_memory, _raw_size)
     , _memory   (_allocator, "LogMemory")
-    , _outputs  (_memory)
+    , _outputs  ()// #NewAlloc
     {
         createOutput<SpdLoggerOutput>(spdlog::stdout_color_mt("terminal"));
     }

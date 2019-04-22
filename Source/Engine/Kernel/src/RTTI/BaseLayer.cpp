@@ -4,9 +4,9 @@
 
 namespace RTTI
 {
-    BaseLayer::BaseLayer()
-        : Classes(Memory::GetDefaultBlock<BaseLayer>())
-        , Enums(Memory::GetDefaultBlock<BaseLayer>())
+    BaseLayer::BaseLayer() // #NewAlloc
+        : Classes()//Memory::GetDefaultBlock<BaseLayer>())
+        , Enums()//Memory::GetDefaultBlock<BaseLayer>())
     { }
 
     BaseLayer::~BaseLayer()
@@ -27,7 +27,7 @@ namespace RTTI
         if (_loaded)
             return;
 
-        Classes.add(clazz);
+        Classes.push_back(clazz);
     }
 
     void BaseLayer::RegisterType(EnumInfo* enumz)
@@ -35,6 +35,6 @@ namespace RTTI
         if (_loaded)
             return;
 
-        Enums.add(enumz);
+        Enums.push_back(enumz);
     }
 }

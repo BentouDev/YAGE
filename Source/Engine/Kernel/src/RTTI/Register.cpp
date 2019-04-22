@@ -33,7 +33,7 @@ namespace RTTI
 	}
 
     Register::Register(Memory::IMemoryBlock& memory)
-        : _memory(memory), Layers(memory)
+        : _memory(memory), Layers(/*memory*/) // #NewAlloc
     { }
 
     ClassInfo* Register::GetClass(const char* name)
@@ -80,7 +80,7 @@ namespace RTTI
 
     void Register::ResolveClass(Meta::detail::TResolver&& resolver)
     {
-        _currentResolvers->add(std::move(resolver));
+        _currentResolvers->push_back(std::move(resolver));
     }
 
     void Register::DefineClasses()
@@ -99,12 +99,12 @@ namespace RTTI
             return;
         }
 
-        _currentResolvers = std::make_unique<TLayerCache>(Memory::GetDefaultBlock<Register>());
+		_currentResolvers = std::make_unique<TLayerCache>();// Memory::GetDefaultBlock<Register>());
 
         if (layer->Load(ClassResolvePolicy::Strict))
         {
             DefineClasses();
-            Layers.add(layer);
+            Layers.push_back(layer);
         }
         else
         {
@@ -120,7 +120,7 @@ namespace RTTI
         {
             layer->Unload();
 
-            Layers.eraseAt(Layers.size() - 1);
+            Layers.erase(Layers.begin() + Layers.size() - 1);
         }
         else
         {

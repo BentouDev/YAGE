@@ -36,7 +36,7 @@ namespace Core
 			return;
 
 		_memory 	= &memory;
-		_eventQueue	= YAGE_CREATE_NEW(memory, Utils::List<Event>)(memory);
+		_eventQueue = YAGE_CREATE_NEW(memory, Utils::List<Event>)();// #NewAlloc  memory);
 		_pollIndex	= 0;
 	}
 
@@ -92,19 +92,19 @@ namespace Core
 	void EventQueue::enqueueInputEvent(Input::InputEvent& data, GLFWwindow* window)
 	{
 		YAGE_ASSERT(get()._eventQueue != nullptr, "EventQueue : Unable to enqueue event before initialization!");
-		get()._eventQueue->emplace(EventType::INPUT, data, window);
+		get()._eventQueue->emplace_back(EventType::INPUT, data, window);
 	}
 
 	void EventQueue::enqueueWindowEvent(Core::WindowEvent& data, GLFWwindow* window)
 	{
 		YAGE_ASSERT(get()._eventQueue != nullptr, "EventQueue : Unable to enqueue event before initialization!");
-		get()._eventQueue->emplace(EventType::WINDOW, data, window);
+		get()._eventQueue->emplace_back(EventType::WINDOW, data, window);
 	}
 
 	void EventQueue::enqueueAppEvent()
 	{
 		YAGE_ASSERT(get()._eventQueue != nullptr, "EventQueue : Unable to enqueue event before initialization!");
-		get()._eventQueue->emplace(EventType::APP, nullptr);
+		get()._eventQueue->emplace_back(EventType::APP, nullptr);
 	}
 
 	bool EventQueue::registerWindow(Core::Window* window)

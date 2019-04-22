@@ -54,7 +54,7 @@ namespace Resources
         unsigned int	lastChar;
 
     public:
-        explicit Font(Memory::IMemoryBlock& memory);
+        explicit Font(/*Memory::IMemoryBlock& memory*/);
         virtual ~Font();
 
         Font(Font&& other);

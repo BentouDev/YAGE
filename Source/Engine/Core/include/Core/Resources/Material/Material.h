@@ -80,7 +80,7 @@ namespace Core
 
         std::map<std::string, uint32_t> _uniformMap;
 
-        Memory::IMemoryBlock& _memory;
+        Memory::IMemoryBlock* _memory;
 
         // for uniform blocks
         Memory::LinearAllocator* _allocator;
@@ -98,8 +98,11 @@ namespace Core
         std::uint32_t _textureIndex;
 
     public:
-        inline explicit Material(Memory::IMemoryBlock& memory)
-            : _memory(memory), _allocator(nullptr), _uniforms(_memory), _textureIndex(0)
+		Material() : _memory{ nullptr }, _allocator{nullptr}
+		{ }
+        
+		inline explicit Material(Memory::IMemoryBlock& memory)
+            : _memory(&memory), _allocator(nullptr), _uniforms(), _textureIndex(0) // #NewAlloc
         { }
 
         Material(const Material&) = delete;
@@ -123,7 +126,7 @@ namespace Core
             for (IAutoUniform* uniform : _uniforms)
             {
                 Core::Logger::info("Delete uniform {}", uniform->getName());
-                Memory::Delete(_memory, uniform);
+                Memory::Delete(*_memory, uniform);
             }
 
             _uniforms.clear();
@@ -202,10 +205,10 @@ namespace Core
     template <typename T>
     Core::Material& Material::addUniform(const char* name, const Resources::ShaderManager& manager)
     {
-        IAutoUniform* uniform = YAGE_CREATE_NEW(_memory, AutoUniform<T>)(name, *this, manager);
+        IAutoUniform* uniform = YAGE_CREATE_NEW((*_memory), AutoUniform<T>)(name, *this, manager);
         Core::Logger::info("Created uniform {}", name);
         _uniformMap.emplace(name, _uniforms.size());
-        _uniforms.add(uniform);
+        _uniforms.push_back(uniform);
         return *this;
     }
 

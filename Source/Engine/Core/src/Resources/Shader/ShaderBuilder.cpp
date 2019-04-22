@@ -15,9 +15,9 @@ namespace Resources
     ShaderBuilder::ShaderBuilder(Core::Engine& engine, Memory::IMemoryBlock &memory)
         : _engine(engine),
           _memory(memory),
-          _shaders(_memory),
-          _temporaryShaders(_memory),
-          _forcedAttributeLocation(memory),
+          _shaders(),
+          _temporaryShaders(),
+          _forcedAttributeLocation(), // #NewAlloc
           _existing(nullptr)
     {
 
@@ -107,20 +107,20 @@ namespace Resources
 
     ShaderBuilder& ShaderBuilder::with(Gfx::Shader& shader)
     {
-        _shaders.emplace(&shader);
+        _shaders.emplace_back(&shader);
         return *this;
     }
 
     ShaderBuilder& ShaderBuilder::withAttributeLocation(std::uint32_t location, const char* attribute)
     {
-        _forcedAttributeLocation.emplace(location, attribute);
+        _forcedAttributeLocation.emplace_back(location, attribute);
         return *this;
     }
 
     ShaderBuilder& ShaderBuilder::withVertexFromSource(const char *source)
     {
         // new Shader
-        Gfx::Shader* shader = _temporaryShaders.emplace(YAGE_CREATE_NEW(_memory, Gfx::Shader)(Gfx::ShaderType::VERTEX));
+        Gfx::Shader* shader = _temporaryShaders.emplace_back(YAGE_CREATE_NEW(_memory, Gfx::Shader)(Gfx::ShaderType::VERTEX));
 
         // compile shader
         compileShader(*shader, source, strlen(source));
@@ -153,7 +153,7 @@ namespace Resources
     ShaderBuilder& ShaderBuilder::withFragmentFromSource(const char *source)
     {
         // new Shader
-        Gfx::Shader* shader = _temporaryShaders.emplace(YAGE_CREATE_NEW(_memory, Gfx::Shader)(Gfx::ShaderType::FRAGMENT));
+        Gfx::Shader* shader = _temporaryShaders.emplace_back(YAGE_CREATE_NEW(_memory, Gfx::Shader)(Gfx::ShaderType::FRAGMENT));
 
         // compile shader
         compileShader(*shader, source, strlen(source));
@@ -202,7 +202,7 @@ namespace Resources
             int bufferSize;
             gl::GetShaderiv(shader, gl::INFO_LOG_LENGTH, &bufferSize);
 
-            Utils::String string(_memory);
+			Utils::String string{};// #NewAlloc
             string.reserve(bufferSize);
 
             gl::GetShaderInfoLog(shader, bufferSize, &bufferSize, string.begin());
@@ -228,7 +228,7 @@ namespace Resources
             int bufferSize;
             gl::GetProgramiv(program, gl::INFO_LOG_LENGTH, &bufferSize);
 
-            Utils::String string(_memory);
+			Utils::String string{}; // #NewAlloc
             string.reserve(bufferSize);
 
             gl::GetProgramInfoLog(program, bufferSize, &bufferSize, string.begin());

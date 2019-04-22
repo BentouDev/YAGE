@@ -12,7 +12,7 @@ namespace Logic
 
     ISystem::ISystem(Memory::IMemoryBlock& memory, const char* name, type_t type,
                      std::size_t systemId, std::bitset<32> bits)
-        : componentBits(bits), _name(name), _systemId(systemId), _type(type), _entities(memory)
+        : componentBits(bits), _name(name), _systemId(systemId), _type(type), _entities()// #NewAlloc
     {
         Core::Logger::info("Created system '{}' with memory '{}'", this->name(), memory.getName());
     }
@@ -24,11 +24,11 @@ namespace Logic
 
     void ISystem::addEntity(entity_handle_t handle)
     {
-        _entities.add(handle);
+        _entities.push_back(handle);
     }
 
     void ISystem::removeEntity(entity_handle_t handle)
     {
-        _entities.eraseAddress(std::find(_entities.begin(), _entities.end(), handle));
+        _entities.erase(std::find(_entities.begin(), _entities.end(), handle));
     }
 }

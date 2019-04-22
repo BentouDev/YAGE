@@ -13,10 +13,12 @@
 #include "List.h"
 #include "Slice.h"
 #include "DefaultBlock.h"
+#include <EASTL/string.h>
 
 namespace Utils
 {
-	class String : public List<char>
+	using String = eastl::string;
+	class _broken_String : public _broken_List<char>
 	{
 	protected:
 		inline void ensureNullTerminator()
@@ -34,55 +36,55 @@ namespace Utils
 		}
 
 	public:
-		inline explicit String(Memory::IMemoryBlock &memory)
-			: List(memory)
+		inline explicit _broken_String(Memory::IMemoryBlock &memory)
+			: _broken_List(memory)
 		{ }
 
-		inline String(const String& other)
-			: List(other)
+		inline _broken_String(const _broken_String& other)
+			: _broken_List(other)
 		{ }
 
-		inline String(String&& other)
-			: List(other)
+		inline _broken_String(_broken_String&& other)
+			: _broken_List(other)
 		{ }
 
-		inline String(Memory::IMemoryBlock& memory, const char* string)
-			: List(memory)
+		inline _broken_String(Memory::IMemoryBlock& memory, const char* string)
+			: _broken_List(memory)
 		{
 			append(string);
 		}
 
-		inline String(Memory::IMemoryBlock& memory, Utils::Slice<char>& slice)
-			: List(memory)
+		inline _broken_String(Memory::IMemoryBlock& memory, Utils::Slice<char>& slice)
+			: _broken_List(memory)
 		{
 			append(slice.begin(), slice.size());
 		}
 
-		inline String()
-			: List(Memory::GetDefaultBlock<String>())
+		inline _broken_String()
+			: _broken_List(Memory::GetDefaultBlock<String>())
 		{
 
 		}
 
-		inline String(const char* string)
-			: List(Memory::GetDefaultBlock<String>())
+		inline _broken_String(const char* string)
+			: _broken_List(Memory::GetDefaultBlock<String>())
 		{
 			append(string);
 		}
 
-		inline String(Utils::Slice<char>& slice)
-			: List(Memory::GetDefaultBlock<String>())
+		inline _broken_String(Utils::Slice<char>& slice)
+			: _broken_List(Memory::GetDefaultBlock<String>())
 		{
 			append(slice.begin(), slice.size());
 		}
 
-		inline String& append(const String& str)
+		inline _broken_String& append(const _broken_String& str)
 		{
 			addMany(str);
 			return *this;
 		}
 
-		inline String& append(const char* c_str, std::size_t count)
+		inline _broken_String& append(const char* c_str, std::size_t count)
 		{
 			std::size_t oldSize = size();
 			reserve(oldSize + count + 1);
@@ -94,7 +96,7 @@ namespace Utils
 			return *this;
 		}
 
-		inline String& append(const char* c_str)
+		inline _broken_String& append(const char* c_str)
 		{
 			std::size_t len = std::strlen(c_str);
 			return append(c_str, len);
@@ -102,11 +104,11 @@ namespace Utils
 
 		const char* c_str() const
 		{
-			return List::_elements;
+			return _broken_List::_elements;
 		}
 
 		template <typename T, std::size_t size = 32>
-		String& stackSprintf(const char* format, const T& value)
+		_broken_String& stackSprintf(const char* format, const T& value)
 		{
 			char buffer[size];
 			std::snprintf(buffer, size, format, value);
@@ -146,33 +148,33 @@ namespace Utils
 		static void Tokenize(const String& string, Utils::List<Utils::Slice<char>>& list, const char* divider);
 	};
 
-	inline static String& operator<<(String& str, char c)
+	inline static _broken_String& operator<<(_broken_String& str, char c)
 	{
 		str.add(c);
 		return str;
 	}
 
-	inline static String& operator<<(String& str, const char *s)
+	inline static _broken_String& operator<<(_broken_String& str, const char *s)
 	{
 		return str.append(s);
 	}
 
-	inline static String& operator<<(String& str, float f)
+	inline static _broken_String& operator<<(_broken_String& str, float f)
 	{
 		return str.stackSprintf("%g", f);
 	}
 
-	inline static String& operator<<(String& str, int32_t i)
+	inline static _broken_String& operator<<(_broken_String& str, int32_t i)
 	{
 		return str.stackSprintf("%d", i);
 	}
 
-	inline static String& operator<<(String& str, uint32_t u)
+	inline static _broken_String& operator<<(_broken_String& str, uint32_t u)
 	{
 		return str.stackSprintf("%u", u);
 	}
 
-	inline static String& operator<<(String& str, uint64_t i)
+	inline static _broken_String& operator<<(_broken_String& str, uint64_t i)
 	{
 		// pad with zeroes, minimum 1 character, hex
 		return str.stackSprintf("%01llx", i);

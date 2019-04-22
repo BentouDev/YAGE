@@ -81,37 +81,37 @@ namespace Gfx
 
 	inline static TextBuilder& operator<<(TextBuilder& str, char c)
 	{
-		str.getString() << c;
+		str.getString() += c;
 		return str;
 	}
 
 	inline static TextBuilder& operator<<(TextBuilder& str, const char *s)
 	{
-		str.getString() << s;
+		str.getString() += s;
 		return str;
 	}
 
 	inline static TextBuilder& operator<<(TextBuilder& str, float f)
 	{
-		str.getString() << f;
+		str.getString() += f;
 		return str;
 	}
 
 	inline static TextBuilder& operator<<(TextBuilder& str, int32_t i)
 	{
-		str.getString() << i;
+		str.getString() += i;
 		return str;
 	}
 
 	inline static TextBuilder& operator<<(TextBuilder& str, uint32_t u)
 	{
-		str.getString() << u;
+		str.getString() += u;
 		return str;
 	}
 
 	inline static TextBuilder& operator<<(TextBuilder& str, uint64_t i)
 	{
-		str.getString() << i;
+		str.getString() += i;
 		return str;
 	}
 }

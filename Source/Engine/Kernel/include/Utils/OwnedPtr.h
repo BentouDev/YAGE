@@ -7,6 +7,7 @@
 #include "SafeDelete.h"
 #include "Assert.h"
 #include "List.h"
+#include "EASTL/unordered_set.h"
 
 namespace Utils
 {
@@ -37,15 +38,14 @@ namespace Utils
             void registerBorrowerImpl(borrowed_ptr_base* newBorrower);
 
             owned_ptr_base(TDeleter&& deleter)
-                : _borrowers(Memory::GetDefaultBlock<TOwnedPtrMemTag>())
+                : _borrowers()// TODO: Memory::GetDefaultBlock<TOwnedPtrMemTag>())
                 , _deleter(std::move(deleter))
             { }
 
             void destroy_type_erased(void* ptr);
 
         public:
-            virtual ~owned_ptr_base()
-            { }
+			virtual ~owned_ptr_base();
 
             virtual bool hasBorrowers() const = 0;
             virtual bool destroy() = 0;
@@ -88,7 +88,7 @@ namespace Utils
             , owned_ptr_base(std::move(deleter))
         { }
 
-        ~owned_ptr()
+        virtual ~owned_ptr()
         {
             YAGE_ASSERT(!hasBorrowers(), "Attempt to destroy owner_ptr with active borrowers!");
 

@@ -14,7 +14,7 @@
 namespace Resources
 {
     FontLoader::FontLoader(Resources::FontManager& manager, Memory::IMemoryBlock& memory)
-        : _manager(manager), _memory(memory), textureLoader(nullptr), filepath(nullptr), textures(memory)
+        : _manager(manager), _memory(memory), textureLoader(nullptr), filepath(nullptr), textures() // #NewAlloc
     {
         lookupMap["info"]	= &parseInfo;
         lookupMap["common"]	= &parseCommon;
@@ -153,7 +153,7 @@ namespace Resources
                     std::string filePath(loader.filepath);
                     std::string path = filePath.substr(0, filePath.find_last_of('/') + 1);
                                 path += value.substr(1, value.size() - 2);
-                    loader.textures.emplace(loader._memory, path.c_str());
+                    loader.textures.emplace_back(path.c_str()); // #NewAlloc loader._memory
                 }
             }
         }
@@ -221,7 +221,7 @@ namespace Resources
                 if (font.charset.size() == 0)
                     font.firstChar = charId;
 
-                font.charset.emplace();
+                font.charset.emplace_back();
             }
             else if (strcmp(key.c_str(), "x") == 0)
             {

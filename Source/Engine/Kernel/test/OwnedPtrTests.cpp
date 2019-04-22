@@ -27,7 +27,13 @@ namespace OwnedPtrTests
             virtual ~IFooMock() { }
         };
 
+		class IAMock : public IFooMock
+		{
+
+		};
+
         using FooMock = trompeloeil::deathwatched<IFooMock>;
+        using AMock = trompeloeil::deathwatched<IAMock>;
 
         SECTION("CanCreateAndDestroy")
         {
@@ -99,5 +105,10 @@ namespace OwnedPtrTests
 
             REQUIRE(!ptr.hasBorrowers());
         }
+
+		SECTION("CanBorrowBase")
+		{
+			auto ptr = Utils::owned_ptr<IFooMock>(new IFooMock());
+		}
     }
 }

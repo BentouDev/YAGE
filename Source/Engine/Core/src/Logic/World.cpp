@@ -10,7 +10,7 @@ namespace Logic
 {
     World::World(Memory::IMemoryBlock& memory)
         : _memory(memory), _entityManager(nullptr), _componentContainers{nullptr},
-          _registeredSystems(_memory), _dirtyEntities(_memory), _removedEntities(_memory)
+          _registeredSystems(), _dirtyEntities(), _removedEntities() // #NewAlloc
     {
         _entityManager = YAGE_CREATE_NEW(_memory, EntityManager)(_memory);
     }
@@ -102,7 +102,7 @@ namespace Logic
         if(!entity._status.dirty)
         {
             entity._status.dirty = true;
-            _dirtyEntities.add(entity.Handle);
+            _dirtyEntities.push_back(entity.Handle);
         }
     }
 
@@ -111,7 +111,7 @@ namespace Logic
         if(!entity._status.removed)
         {
             entity._status.removed = true;
-            _removedEntities.add(entity.Handle);
+            _removedEntities.push_back(entity.Handle);
         }
     }
 

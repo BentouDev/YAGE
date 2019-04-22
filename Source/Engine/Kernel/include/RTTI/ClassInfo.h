@@ -26,11 +26,11 @@ namespace RTTI
 
     protected:
         explicit ClassInfo(Utils::CompileString& name, Memory::IMemoryBlock& memory)
-            : TypeInfo(name)
-            , Interfaces(memory)
-            , Methods(memory)
-            , Fields(memory)
-            , Attributes(memory)
+            : TypeInfo(name)// #NewAlloc
+            , Interfaces()//memory)
+            , Methods()//memory)
+            , Fields()//memory)
+            , Attributes()//memory)
             , Super(nullptr)
         { }
 

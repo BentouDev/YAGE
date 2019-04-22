@@ -56,7 +56,7 @@ namespace Logic
 	public:
 		inline explicit RenderingComponent(Memory::IMemoryBlock& memory)
 				: _isVisible(true), _isDirty(false),
-				  _mesh(), _materials(memory), _cachedSubmeshInfo(memory)
+				  _mesh(), _materials(), _cachedSubmeshInfo() // #NewAlloc
 		{
 			setDirty();
 		}

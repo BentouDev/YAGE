@@ -10,11 +10,15 @@
 #include <utility>
 #include "MemoryBlock.h"
 #include "DebugSourceInfo.h"
+#include <EASTL/vector.h>
 
 namespace Utils
 {
+	template <typename T>
+	using List = eastl::vector<T, eastl::allocator>;
+
     template <typename T>
-    class List
+    class _broken_List
     {
     protected:
         Memory::IMemoryBlock* _memory;
@@ -109,19 +113,19 @@ namespace Utils
         }
 
     public:
-        inline explicit List(Memory::IMemoryBlock &memory)
+        inline explicit _broken_List(Memory::IMemoryBlock &memory)
             : _memory(&memory), _elements(nullptr), _size(0), _capacity(0)
         {
 
         }
 
-        inline List(Memory::IMemoryBlock &memory, std::size_t capacity)
+        inline _broken_List(Memory::IMemoryBlock &memory, std::size_t capacity)
             : _memory(&memory), _elements(nullptr), _size(0), _capacity(0)
         {
             reserve(capacity);
         }
 
-        inline List(const List& other)
+        inline _broken_List(const _broken_List& other)
             : _memory(other._memory), _elements(nullptr), _size(0), _capacity(0)
         {
             std::size_t otherSize = other._size;
@@ -130,7 +134,7 @@ namespace Utils
             _size = otherSize;
         }
 
-        inline List(List&& other)
+        inline _broken_List(_broken_List&& other)
             : _memory(other._memory), _elements(other._elements), _size(other._size), _capacity(other._capacity)
         {
             other._elements	= nullptr;
@@ -138,7 +142,7 @@ namespace Utils
             other._capacity	= 0;
         }
 
-        inline List<T>& operator=(const List<T>& other)
+        inline _broken_List<T>& operator=(const _broken_List<T>& other)
         {
             if (this != &other)
             {
@@ -156,7 +160,7 @@ namespace Utils
             return *this;
         }
 
-        inline List<T>& operator=(List<T>&& other) noexcept
+        inline _broken_List<T>& operator=(_broken_List<T>&& other) noexcept
         {
             if (this != &other)
             {
@@ -184,13 +188,13 @@ namespace Utils
                 
         }
 
-        inline virtual ~List() noexcept
+        inline virtual ~_broken_List() noexcept
         {
             destructElements();
             cleanUp();
         }
 
-        void addMany(const List<T>& other)
+        void addMany(const _broken_List<T>& other)
         {
             std::size_t size = _size;
             resize(size + other.size());

@@ -38,9 +38,9 @@ namespace Gfx
     Renderer::Renderer(Core::Engine& engine, Memory::IMemoryBlock& memory)
         : IManager(engine, memory),
           _queue(_memory, *this),
-          _spriteBatchManager(yage::GetManagerDeleter<SpriteBatchManager>(&engine)),
           lastIBO(0), lastVBO(0), lastVAO(0), lastProgram(0),
-          cameraProjectionUniformLocation(1), cameraViewUniformLocation(2)
+          cameraProjectionUniformLocation(1), cameraViewUniformLocation(2),
+		  _spriteBatchManager(yage::GetManagerDeleter<SpriteBatchManager>(&engine))
     {
         DebugResources._debug2DCamera = nullptr;
         DebugResources._debug3DCamera = nullptr;

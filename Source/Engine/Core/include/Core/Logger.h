@@ -103,7 +103,7 @@ namespace Core
             try
             {
                 auto* _output = YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...);
-                _outputs.add(_output);
+                _outputs.push_back(_output);
             }
             catch (std::exception e)
             {

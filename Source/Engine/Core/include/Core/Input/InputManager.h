@@ -31,7 +31,7 @@ namespace Core
 	struct InputDevice
 	{
 		explicit InputDevice(Memory::IMemoryBlock& memory, const char* name, Input::DeviceType::Enum type)
-			: name(memory, name), id(-1), scheme(nullptr), type(type)
+			: name(name), id(-1), scheme(nullptr), type(type)// #NewAlloc
 		{ }
 
 		explicit InputDevice(Memory::IMemoryBlock& memory, std::int32_t deviceId);

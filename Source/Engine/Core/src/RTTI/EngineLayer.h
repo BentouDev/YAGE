@@ -11,18 +11,19 @@ namespace Memory
     class IMemoryBlock;
 }
 
-namespace RTTI
-{
-    class EngineLayer : public BaseLayer
-    {
-    public:
-        explicit EngineLayer(){}
-        virtual ~EngineLayer(){}
 
-    protected:
-        // ILayer
-        virtual bool OnLoad() override;
-    };
-}
+//namespace RTTI
+//{
+//    class EngineLayer : public BaseLayer
+//    {
+//    public:
+//        explicit EngineLayer(){}
+//        virtual ~EngineLayer(){}
+//
+//    protected:
+//        // ILayer
+//        virtual bool OnLoad() override;
+//    };
+//}
 
 #endif // !YAGE_RTTI_ENGINE_LAYER_H

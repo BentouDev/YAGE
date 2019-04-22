@@ -9,7 +9,7 @@
 namespace Core
 {
     Config::Config(Memory::IMemoryBlock& memory)
-        : _memory(memory), _properties(_memory),
+        : _memory(memory), _properties(),// #NewAlloc
           RenderingApi(this, "Window.Api", "opengl"),
           WindowTitle(this, "Window.Title", "YAGE"),
           WindowWidth(this, "Window.Width", 800),
@@ -31,7 +31,7 @@ namespace Core
     template <typename T>
     auto Config::Register(ConfigProperty<T>* prop) -> void
     {
-        _properties.emplace(prop);
+        _properties.emplace_back(prop);
     }
 
     auto Config::Has(std::string name) -> bool

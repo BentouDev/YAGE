@@ -48,6 +48,12 @@ namespace Gfx
 		std::size_t	_usedIndices;
 
 	public:
+		StaticBuffer()
+			: _memory{nullptr}
+			, _vbo{nullptr}
+			, _ibo{nullptr}
+		{ }
+		
 		inline explicit StaticBuffer(Memory::IMemoryBlock& memory,
 		  std::size_t vertexSize, std::size_t indexSize,
 		  std::size_t vertexCount, std::size_t indexCount, Core::Context* context = nullptr)

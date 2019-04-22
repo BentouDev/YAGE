@@ -34,6 +34,8 @@ namespace Utils
 
             borrowed_ptr_base(borrowed_ptr_base&& other);
 
+			borrowed_ptr_base& operator=(borrowed_ptr_base&& other);
+
         public:
             virtual ~borrowed_ptr_base();
 
@@ -70,7 +72,7 @@ namespace Utils
             isDerived = true;
         }
 
-    public:
+	public:
         borrowed_ptr()
         { }
 
@@ -80,17 +82,33 @@ namespace Utils
 			, borrowed_ptr_base{ std::move(other) }
         { }
 
-        ~borrowed_ptr()
+        virtual ~borrowed_ptr()
         { }
 
         // Disable copy constructor
         borrowed_ptr(const borrowed_ptr& other) = delete;
 
-        // Disable copy assignment
-        auto operator=(borrowed_ptr && other) = delete;
+		// Disable move assignment
+		borrowed_ptr& operator=(borrowed_ptr&& other)
+		{
+			if (this != &other)
+			{
+				borrowed_ptr_base::operator=(std::move(other));
 
-        // Disable move assignment
-        auto operator=(const borrowed_ptr & other) = delete;
+				isDerived = other.isDerived;
+				
+				/*
+				YAGE_ASSERT(_owner == other._owner, "Cannot move between owners!");
+				if (_owner)
+				{
+					borrowed_ptr::borrowed_ptr(std::move(other));
+				}*/
+			}
+			return *this;
+		}
+
+		// Disable copy assignment
+		borrowed_ptr& operator=(const borrowed_ptr & other) = delete;
 
         explicit operator bool() const noexcept
         {

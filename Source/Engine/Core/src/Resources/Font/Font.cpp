@@ -6,8 +6,8 @@
 
 namespace Resources
 {
-    Font::Font(Memory::IMemoryBlock& memory)
-        : charset(memory),
+    Font::Font(/*Memory::IMemoryBlock& memory*/)
+        : charset(), // #NewAlloc
           size(1,1), lineHeight(0), base(0),
           width(0), height(0),
           firstChar(0), lastChar(0)

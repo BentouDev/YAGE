@@ -26,6 +26,9 @@ namespace Core
 		using handle_t = Utils::Handle<Window>;
 		using trait_t = Utils::DefaultTrait<Window>;
 
+		Window() : _memory { nullptr }, hWindow{ nullptr }, DefaultViewport { nullptr }
+		{ }
+
 		explicit Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height);
 		virtual ~Window();
 
@@ -53,7 +56,7 @@ namespace Core
 		auto GetDefaultViewport() const noexcept -> Gfx::Viewport&;
 		auto Resize(std::int32_t width, std::int32_t height) -> void;
 
-		Memory::IMemoryBlock&	_memory;
+		Memory::IMemoryBlock*	_memory;
 
 		bool					IsCloseRequested;
 

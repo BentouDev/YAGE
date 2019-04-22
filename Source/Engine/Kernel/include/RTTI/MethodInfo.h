@@ -11,7 +11,7 @@ namespace RTTI
 
     protected:
         MethodInfo(Utils::CompileString& name, Memory::IMemoryBlock& memory)
-            : MetaInfo(name), ReturnType(nullptr), Parameters(memory)
+            : MetaInfo(name), ReturnType(nullptr), Parameters()//memory)// #NewAlloc
         { }
 
         void Resolve();

@@ -2,6 +2,7 @@
 #define YAGE_RTTI_MANAGER_H
 
 #include <RTTI/RTTIRegister.h>
+#include "Core/RTTI/RTTIEngineLoader.h"
 #include "Core/IManager.h"
 
 namespace RTTI
@@ -20,7 +21,11 @@ namespace RTTI
             static_assert(std::is_base_of<ILayer, T>::value,
                 "RTTI: Can load only ILayer derivatives!");
 
-            auto* instance = YAGE_CREATE_NEW(Memory::GetDefaultBlock<Manager>(), T)();
+			T* instance = LayerHelper<T>::getInstance();
+			if (!instance)
+			{
+				instance = YAGE_CREATE_NEW(Memory::GetDefaultBlock<Manager>(), T)();
+			}
 
             RTTI::GetRegister()->LoadLayer(instance);
         }
@@ -32,7 +37,13 @@ namespace RTTI
 				"RTTI: Can delete only ILayer derivatives!");
 
 			T* ptr_t = reinterpret_cast<T*>(ptr);
-			Memory::Delete(Memory::GetDefaultBlock<Manager>(), ptr_t);
+
+			RTTI::GetRegister()->UnloadLayer(ptr_t);
+
+			if (LayerHelper<T>::getInstance() != ptr_t)
+			{
+				Memory::Delete(Memory::GetDefaultBlock<Manager>(), ptr_t);
+			}
 		}
     };
 }

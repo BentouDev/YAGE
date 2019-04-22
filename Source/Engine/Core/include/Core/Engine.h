@@ -19,8 +19,6 @@
 namespace RTTI
 {
 	class Manager;
-	class IntegralLayer;
-	class EngineLayer;
 }
 
 namespace Logic
@@ -77,9 +75,6 @@ namespace Core
 		borrowed_ptr<Logic::Scene> activeScene;
 
 		List<borrowed_ptr<IManager>> managers;
-
-		owned_ptr<RTTI::IntegralLayer> RTTIIntegralLayer;
-		owned_ptr<RTTI::EngineLayer>   RTTIEngineLayer;
 
 		bool _cleanedUp = false;
 		bool _isDone = false;

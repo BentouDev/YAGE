@@ -40,7 +40,7 @@ namespace Gfx
 	public:
 		inline explicit CommandQueue(Memory::IMemoryBlock& memory, Renderer& renderer)//, ICommandSorter<CommandKey>& sorter)
 			: _renderer(renderer), _camera(nullptr), _renderTarget(nullptr),
-			  _memory(memory), _frameMemory(nullptr), _keys(_memory), _data(memory) //, _sorter(sorter)
+			  _memory(memory), _frameMemory(nullptr), _keys(), _data() //, _sorter(sorter) // #NewAlloc
 		{
 
 		}
@@ -59,8 +59,8 @@ namespace Gfx
 
 		CommandData& createCommands(CommandKey key)
 		{
-			CommandData& data = _data.emplace();
-			_keys.emplace(key);
+			CommandData& data = _data.emplace_back();
+			_keys.emplace_back(key);
 			return data;
 		}
 

@@ -13,7 +13,7 @@
 namespace Core
 {
 	InputDevice::InputDevice(Memory::IMemoryBlock& memory, std::int32_t deviceId)
-		: name(memory, glfwGetJoystickName(deviceId)),
+		: name(glfwGetJoystickName(deviceId)),// #NewAlloc
 		  scheme(nullptr), type(Input::DeviceType::CONTROLLER)
 	{ }
 

@@ -4,6 +4,18 @@ namespace Utils
 {
     namespace detail
     {
+		owned_ptr_base::~owned_ptr_base()
+		{
+			for (auto* ptr : _borrowers)
+			{
+				YAGE_ASSERT(ptr, "borrowed_ptr is null!");
+				YAGE_ASSERT(ptr->_owner == this, "borrowed_ptr points to wrong parent [%p]", (void*) ptr->_owner);
+				ptr->_owner = nullptr;
+			}
+
+			_borrowers.clear();
+		}
+
         void owned_ptr_base::destroy_type_erased(void* ptr)
         {
             _deleter(ptr);
@@ -17,7 +29,7 @@ namespace Utils
             });
 
             if (itr == _borrowers.end())
-                _borrowers.add(borrower);
+                _borrowers.push_back(borrower);
         }
 
         void owned_ptr_base::unregisterBorrower(detail::borrowed_ptr_base* borrower)
@@ -26,7 +38,7 @@ namespace Utils
             {
                 if (_borrowers[i] == borrower)
                 {
-                    _borrowers.eraseAt(i);
+					_borrowers.erase(_borrowers.begin() + i);
                     borrower->_owner = nullptr;
                     break;
                 }

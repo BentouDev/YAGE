@@ -12,7 +12,7 @@
 namespace Gfx
 {
 	TextBuilder::TextBuilder(Memory::IMemoryBlock &memory)
-		: _memory(memory), text(memory), posOffset(0, 0), zOrder(0)
+		: _memory(memory), text(), posOffset(0, 0), zOrder(0) // #NewAlloc
 	{
 
 	}
@@ -84,8 +84,9 @@ namespace Gfx
 	{
 		auto& batch = renderer.getSpriteBatch(material, &camera);
 
-		Utils::List<Utils::Slice<char>> lines(_memory);
-		Utils::String::Tokenize(text, lines, "\n\r");
+		Utils::List<Utils::Slice<char>> lines{};// #NewAlloc
+		YAGE_ASSERT(false, "Unimplemented!");
+		// #NewAlloc Utils::String::Tokenize(text, lines, "\n\r");
 
 		glm::vec2 offset = posOffset;
 		glm::vec2 lineHeight(0, font->getLineHeight() / (float)font->getHeight());

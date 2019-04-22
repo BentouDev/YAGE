@@ -8,7 +8,7 @@
 namespace Resources
 {
 	MeshBuilder::MeshBuilder(Memory::IMemoryBlock& memory, MeshManager& manager)
-		: _memory(memory), _manager(manager), _data(nullptr), _scheme(nullptr), _storageType(Core::STATIC), _submeshes(_memory)
+		: _memory(memory), _manager(manager), _data(nullptr), _scheme(nullptr), _storageType(Core::STATIC), _submeshes()// #NewAlloc
 	{
 		_data = YAGE_CREATE_NEW(_memory, Core::MeshData)(_memory);
 		_scheme = YAGE_CREATE_NEW(_memory, Core::MeshScheme)(_memory);

@@ -14,7 +14,7 @@ namespace Resources
     ModelLoader::ModelLoader(Core::Engine &engine, Memory::IMemoryBlock &memory)
     : _engine(engine)
     , _memory(memory)
-    , filename(memory)
+    , filename() // #NewAlloc
     {
 
     }
@@ -26,7 +26,7 @@ namespace Resources
 
     ModelLoader& ModelLoader::loadFromFile(const char *path)
     {
-        filename << path;
+        filename += path;
         return *this;
     }
 

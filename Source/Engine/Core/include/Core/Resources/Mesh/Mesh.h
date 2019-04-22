@@ -34,17 +34,23 @@ namespace Core
     public:
         struct PropertyInfo
         {
-            explicit PropertyInfo(const char* Name, type_t Type, std::size_t propSize, uint32_t PropertyCount, bool Normalize)
+            explicit PropertyInfo(const Utils::String& Name, type_t Type, std::size_t propSize, uint32_t PropertyCount, bool Normalize)
                     : Name(Name), Type(Type), PropertyCount(PropertyCount), PropertySize(propSize), Normalize(Normalize)
             { }
 
-            const char* Name;
-            const type_t Type;
-            const uint32_t PropertyCount;
-            const std::size_t PropertySize;
-            const bool Normalize;
+			PropertyInfo(const PropertyInfo& other) = default;
+			PropertyInfo(PropertyInfo&& other) = default;
+			
+			PropertyInfo& operator=(const PropertyInfo&) = default;
+			PropertyInfo& operator=(PropertyInfo&&) = default;
 
-            inline bool operator==(const PropertyInfo& other)
+            Utils::String Name;
+            type_t Type;
+            uint32_t PropertyCount;
+            std::size_t PropertySize;
+            bool Normalize;
+
+            inline bool operator==(const PropertyInfo& other) const
             {
                 if(this == &other)
                     return true;
@@ -55,11 +61,11 @@ namespace Core
                     return false;
                 }
 
-                int result = std::strcmp(Name, other.Name);
+                int result = Name.compare(other.Name) == 0;
                 return result == 0;
             }
 
-            inline bool operator!=(const PropertyInfo& other)
+            inline bool operator!=(const PropertyInfo& other) const
             {
                 return !(*this == other);
             }
@@ -72,7 +78,7 @@ namespace Core
 
     public:
         explicit MeshScheme(Memory::IMemoryBlock& memory)
-            : PropertiesInfo(memory), IndexSize(0), IndexType(0)
+            : PropertiesInfo(), IndexSize(0), IndexType(0)// #NewAlloc
         {
 
         }
@@ -122,7 +128,7 @@ namespace Core
 
         inline void addPropertyInfo(const char* name, type_t type, std::size_t propSize, uint32_t propCount, bool normalize)
         {
-            PropertiesInfo.emplace(name, type, propSize, propCount, normalize);
+            PropertiesInfo.emplace_back(name, type, propSize, propCount, normalize);
         }
 
         inline const Utils::List<PropertyInfo>& getPropertiesInfo() const
@@ -137,14 +143,14 @@ namespace Core
         inline std::size_t vertexSize() const
         {
             std::size_t size = 0;
-            for(PropertyInfo& data : PropertiesInfo)
+            for (const PropertyInfo& data : PropertiesInfo)
             {
                 size += data.PropertyCount * data.PropertySize;
             }
             return size;
         }
 
-        inline bool operator==(const MeshScheme& other)
+        inline bool operator==(const MeshScheme& other) const
         {
             if(this == &other)
                 return true;
@@ -164,7 +170,7 @@ namespace Core
             return true;
         }
 
-        inline bool operator!=(const MeshScheme& other)
+        inline bool operator!=(const MeshScheme& other) const
         {
             return !(*this == other);
         }
@@ -205,7 +211,7 @@ namespace Core
 
     public:
         explicit MeshData(Memory::IMemoryBlock &memory)
-            : PropertiesData(memory)
+            : PropertiesData()// #NewAlloc
         {
 
         }
@@ -248,7 +254,7 @@ namespace Core
 
         inline void addPropertyData(const void* ptr, std::size_t vertexSize, std::uint32_t count)
         {
-            PropertiesData.emplace(ptr, vertexSize, count);
+            PropertiesData.emplace_back(ptr, vertexSize, count);
         }
 
         inline const Utils::List<PropertyData>& getPropertiesData() const
@@ -265,7 +271,7 @@ namespace Core
         inline std::size_t vertexSize() const
         {
             std::size_t size = 0;
-            for(PropertyData& data : PropertiesData)
+            for (const PropertyData& data : PropertiesData)
             {
                 size += data.vertexSize();
             }
@@ -278,15 +284,21 @@ namespace Core
         friend class Resources::MeshBuilder;
         friend class Resources::MeshManager;
 
-        const void*			_indicesPtr;
-        const std::size_t	_indiceCount;
+        const void*	_indicesPtr;
+        std::size_t	_indiceCount;
 
-        std::size_t 		_baseVertex;
+        std::size_t _baseVertex;
 
     public:
         inline explicit Submesh(const void* ptr, std::size_t count)
             : _indicesPtr(ptr), _indiceCount(count), _baseVertex(0)
         { }
+
+		Submesh(const Submesh&) = default;
+		Submesh(Submesh&&) = default;
+
+		Submesh& operator=(const Submesh&) = default;
+		Submesh& operator=(Submesh&&) = default;
 
         inline std::size_t getIndiceCount() const noexcept
         { return _indiceCount; }
@@ -319,8 +331,11 @@ namespace Core
         Utils::Handle<Gfx::StaticBuffer> _buffer;
 
     public:
-        inline explicit Mesh(Memory::IMemoryBlock &memory)
-            : _memory(&memory), _submeshes(memory), _data(nullptr), _storageType(STATIC), _schemeId(-1), _buffer()
+		Mesh() : _memory{ nullptr }, _data{ nullptr }
+		{ }
+        
+		inline explicit Mesh(Memory::IMemoryBlock &memory)
+            : _memory(&memory), _submeshes(), _data(nullptr), _storageType(STATIC), _schemeId(-1), _buffer() // #NewAlloc
         {
             _data = YAGE_CREATE_NEW((*_memory), MeshData)(*_memory);
         }
@@ -348,6 +363,9 @@ namespace Core
             _submeshes.clear();
             Memory::Delete(*_memory, _data);
         }
+
+		inline auto getSubmeshes() noexcept -> Utils::List<Submesh> &
+		{ return _submeshes; }
 
         inline auto getSubmeshes() const noexcept -> const Utils::List<Submesh>&
         { return _submeshes; }

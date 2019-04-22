@@ -110,8 +110,8 @@ namespace Gfx
                                            Memory::IMemoryBlock& memory)
         : IManager(engine, memory),
           _memory(memory),
-          _buffers(memory),
-          _batches(memory),
+          _buffers(), // #NewAlloc
+          _batches(),
           _currentBuffer(0)
     { }
 
@@ -150,7 +150,7 @@ namespace Gfx
 
     SpriteBuffer& SpriteBatchManager::createNewBuffer(std::uint32_t size)
     {
-        _buffers.emplace(YAGE_CREATE_NEW(_memory, SpriteBuffer)(_memory, SpriteBuffer::DEFAULT_BUFFER_SIZE));
+        _buffers.emplace_back(YAGE_CREATE_NEW(_memory, SpriteBuffer)(_memory, SpriteBuffer::DEFAULT_BUFFER_SIZE));
         _buffers.back()->mapMemory();
         _currentBuffer++;
 
@@ -179,7 +179,7 @@ namespace Gfx
                 minimalSize = SpriteBuffer::DEFAULT_BUFFER_SIZE;
 
             batchPtr = YAGE_CREATE_NEW(_memory, SpriteBatch)(createNewBuffer(std::min(minimalSize, SpriteBuffer::MAX_BUFFER_SIZE)));
-            _batches.add(batchPtr);
+            _batches.push_back(batchPtr);
         }
         else
         {

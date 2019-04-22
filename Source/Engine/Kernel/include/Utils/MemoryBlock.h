@@ -14,13 +14,17 @@
 #include <new>
 #include <type_traits>
 
+#define EASTL_USER_DEFINED_ALLOCATOR
+
+#include <EASTL/allocator.h>
+
 #include "DebugSourceInfo.h"
 #include "MemoryBoundChecker.h"
 #include "MemoryTracker.h"
 #include "Assert.h"
 
 #define YAGE_CREATE_NEW(MemBlock, T) \
-    new ( MemBlock.allocate ( sizeof ( T ) , alignof ( T ) , Utils::DebugSourceInfo ( __FILE__ , __LINE__ ) ) ) T
+    ::new ( MemBlock.allocate ( sizeof ( T ) , alignof ( T ) , Utils::DebugSourceInfo ( __FILE__ , __LINE__ ) ) ) T
 
 #define YAGE_CREATE_NEW_ARRAY(MemBlock, T, length) \
     Memory::CreateNewArray<decltype(MemBlock), T>(MemBlock, length, Utils::DebugSourceInfo(__FILE__, __LINE__))

@@ -47,9 +47,9 @@ namespace Logic
 		struct SceneInfo
 		{
 			SceneInfo(Scene* ptr, Memory::IMemoryBlock& memory, Entity::handle_t handle)
-				: scene(ptr), entities(memory)
+				: scene(ptr), entities() // #NewAlloc
 			{
-				entities.add(handle);
+				entities.push_back(handle);
 			}
 
 			Scene*							scene;

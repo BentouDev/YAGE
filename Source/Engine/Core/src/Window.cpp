@@ -10,7 +10,7 @@
 namespace Core
 {
     Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
-        : _memory(memory), Title {title}, Width {width}, Height {height},
+        : _memory(&memory), Title {title}, Width {width}, Height {height},
           DefaultViewport {nullptr}, hWindow {nullptr}, IsCloseRequested(false)
     {
         Create();
@@ -19,7 +19,7 @@ namespace Core
     Window::~Window()
     {
         Destroy();
-        Memory::Delete(_memory, DefaultViewport);
+        Memory::Delete(*_memory, DefaultViewport);
     }
 
     auto Window::Create() -> void
@@ -35,7 +35,7 @@ namespace Core
             return;
         }
 
-        DefaultViewport = YAGE_CREATE_NEW(_memory, Gfx::Viewport)(
+        DefaultViewport = YAGE_CREATE_NEW((*_memory), Gfx::Viewport)(
             Gfx::Rectangle<int32_t>(0, 0, Width, Height),
             *this
         );

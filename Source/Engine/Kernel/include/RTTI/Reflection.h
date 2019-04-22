@@ -2,11 +2,12 @@
 #define YAGE_REFLECTION_H
 
 #include <type_traits>
+#include <Utils/String.h>
 
-namespace Utils
-{
-    class String;
-}
+//namespace Utils
+//{
+//    class String;
+//}
 
 namespace RTTI
 {

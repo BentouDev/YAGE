@@ -11,7 +11,7 @@ namespace Resources
 {
     TextureLoader::TextureLoader(TextureManager& manager,
                                  Memory::IMemoryBlock& memory)
-        : _manager(manager), _data(memory)
+        : _manager(manager), _data() // #NewAlloc
     {
 
     }
@@ -58,7 +58,7 @@ namespace Resources
             lodepng_get_bpp(&color), imageWidth, imageHeight
         );
 
-        auto& texture = _data.emplace();
+        auto& texture = _data.emplace_back();
 
         switch (lodepng_get_bpp(&color))
         {

@@ -3,10 +3,10 @@
 
 namespace RTTI
 {
-    bool EngineLayer::OnLoad()
-    {
-        // Call generated method
-        Meta::Engine::RegisterClasses(*RTTI::GetRegister());
-        return true;
-    }
+    //bool EngineLayer::OnLoad()
+    //{
+    //    // Call generated method
+    //    Meta::Engine::RegisterClasses(*RTTI::GetRegister());
+    //    return true;
+    //}
 }

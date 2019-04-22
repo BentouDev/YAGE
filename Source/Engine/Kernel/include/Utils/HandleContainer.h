@@ -57,7 +57,7 @@ namespace Utils
 
             for (unsigned i = 0; i < container->maxSize; ++i)
             {
-                container->_indices.emplace();
+                container->_indices.emplace_back();
                 Trait::setIndex(container->_indices[i], i);
                 container->_indices[i].next = i + 1;
             }
@@ -68,7 +68,7 @@ namespace Utils
 
     public:
         explicit HandleContainer(Memory::IMemoryBlock& memory, uint16_t size = 16)
-            : _memory(memory), _indices(_memory), _elements(nullptr), maxSize(size)
+            : _memory(memory), _indices(), _elements(nullptr), maxSize(size)// #NewAlloc
         {
             _indices.reserve(maxSize);
 

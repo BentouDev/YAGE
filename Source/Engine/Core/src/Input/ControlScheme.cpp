@@ -11,8 +11,8 @@ namespace Input
 {
 	ControlScheme::ControlScheme(Memory::IMemoryBlock& memory)
 		: _memory(memory),
-		  _controlActions  (_memory),
-		  _buttonStateDatas(_memory)
+		  _controlActions  (), // #NewAlloc
+		  _buttonStateDatas()
 	{ }
 
 	ControlScheme::~ControlScheme()
@@ -47,8 +47,8 @@ namespace Input
 			action->actionName		= name;
 			action->boundScancode	= scancode;
 
-			_controlActions.add(action);
-			_buttonStateDatas.emplace();
+			_controlActions.push_back(action);
+			_buttonStateDatas.emplace_back();
 			_nameMap    [name]     = index;
 			codeMap     [scancode] = index;
 

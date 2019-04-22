@@ -35,11 +35,16 @@ namespace Utils
         using object_t = typename Trait::object_t;
         using handle_t = typename Trait::handle_t;
 
+		using TObjects = Utils::List<object_t>;
+
+		using iterator = typename TObjects::iterator;
+		using const_iterator = typename TObjects::const_iterator;
+
         static_assert(std::is_move_constructible<object_t>::value,
                       "Colony : Trait type must be move constructible! (due to internal swap)");
 
         Memory::IMemoryBlock&  _memory;
-        Utils::List<object_t>  _elements;
+        TObjects			   _elements;
         Utils::List<IndexInfo> _lookup;
 
         uint32_t freeListStart;
@@ -49,7 +54,7 @@ namespace Utils
 
     public:
         explicit Colony(Memory::IMemoryBlock& memory, std::size_t reserved_size = 0)
-           : _memory(memory), _elements(_memory, reserved_size), _lookup(_memory, reserved_size)
+           : _memory(memory), _elements(/*_memory, */reserved_size), _lookup(/*_memory, */reserved_size)// #NewAlloc
         {
             freeListStart = bad_pos;
         }
@@ -101,7 +106,7 @@ namespace Utils
                 index.liveId = 1;
                 index.next   = bad_pos;
 
-                auto& obj = _elements.emplace(std::move(original));
+                auto& obj = _elements.push_back(std::move(original));
 
                 Trait::setHandle(obj, index.liveId, _lookup.size() - 1);
 
@@ -121,7 +126,7 @@ namespace Utils
 
                 YAGE_ASSERT(index.pos == _elements.size(), "Fun!");
 
-                auto& obj = _elements.emplace(std::forward<Args>(args)...);
+                auto& obj = _elements.emplace_back(std::forward<Args>(args)...);
 
                 Trait::setHandle(obj, index.liveId, info_idx);
 
@@ -129,13 +134,13 @@ namespace Utils
             }
             else
             {
-                _lookup.emplace();
+                _lookup.emplace_back();
                 auto& index  = _lookup.back();
                 index.pos    = uint32_t(_elements.size());
                 index.liveId = 1;
                 index.next   = bad_pos;
 
-                auto& obj = _elements.emplace(std::forward<Args>(args)...);
+                auto& obj = _elements.emplace_back(std::forward<Args>(args)...);
 
                 Trait::setHandle(obj, index.liveId, _lookup.size() - 1);
 
@@ -245,17 +250,23 @@ namespace Utils
         object_t& back() const
         { return _elements.back(); }
 
-        object_t* begin()
+		iterator begin()
         { return _elements.begin(); }
 
-        object_t* begin() const
-        { return _elements.begin(); }
+		const_iterator begin() const
+        { return _elements.cbegin(); }
+		
+		const_iterator cbegin() const
+        { return _elements.cbegin(); }
 
-        object_t* end()
+		iterator end()
         { return _elements.end(); }
 
-        object_t* end() const
-        { return _elements.end(); }
+		const_iterator end() const
+        { return _elements.cend(); }
+
+		const_iterator cend() const
+        { return _elements.cend(); }
 
         size_t size() const noexcept
         { return _elements.size(); }

@@ -31,7 +31,7 @@ namespace Resources
 
     public:
         inline explicit SchemeBuffer(Memory::IMemoryBlock& memory, MeshSchemeId scheme)
-                : _scheme(scheme), _buffers(memory)
+                : _scheme(scheme), _buffers() // #NewAlloc
         { }
 
         inline Utils::List<Utils::Handle<Gfx::StaticBuffer>>& getBuffers()
