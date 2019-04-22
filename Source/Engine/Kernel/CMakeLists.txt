@@ -8,7 +8,7 @@ file (GLOB_RECURSE
     ${CMAKE_CURRENT_LIST_DIR}/src/*.c
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 
-add_library(Kernel STATIC ${KERNEL_SOURCES})
+add_library(Kernel SHARED ${KERNEL_SOURCES})
 add_library(YAGE::Kernel ALIAS Kernel)
 
 target_include_directories(Kernel PUBLIC
@@ -33,6 +33,11 @@ set_target_properties(Kernel PROPERTIES
 
 target_compile_definitions(Kernel PRIVATE ${YAGE_LIB_COMPILE_DEFS})
 target_compile_options(Kernel PRIVATE ${YAGE_ENFORCE_WARNINGS})
+
+target_link_libraries(Kernel
+    PUBLIC
+		CONAN_PKG::spdlog
+		CONAN_PKG::eastl)
 
 if(VALGRIND_FOUND)
     target_compile_definitions(Kernel PRIVATE YAGE_VALGRIND=1)

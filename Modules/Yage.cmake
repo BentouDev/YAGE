@@ -104,8 +104,10 @@ function(yage_setup_dependency NAME)
         if ((NOT DEP_PREFER STREQUAL "BUILD") AND ((NOT ${${DEP_VAR_NAME}_FOUND}) OR (DEP_NOT_OS)) AND (DEP_CONAN))
             message ("-- yage: Search for " ${NAME} " in conan repositories")
 
-            conan_cmake_run(REQUIRES ${DEP_CONAN}
-                BASIC_SETUP)
+			if (NOT ${CONAN_${DEP_VAR_NAME}_ROOT})
+				conan_cmake_run(REQUIRES ${DEP_CONAN}
+					BASIC_SETUP BUILD missing GENERATORS cmake)
+			endif()
 
             set(${DEP_VAR_NAME}_CONAN_FOUND TRUE)
             set(${DEP_VAR_NAME}_CONAN_FOUND TRUE CACHE BOOL "Is dependency found by Conan")
@@ -145,6 +147,8 @@ function(yage_setup_dependency NAME)
             set(${DEP_VAR_NAME}_LIBRARIES)
             set(${DEP_VAR_NAME}_LIBRARIES PARENT_SCOPE)
 
+			set(${DEP_VAR_NAME}_LIBRARIES ${${DEP_VAR_NAME}_LIBRARIES} ${CONAN_LIBS})
+
 			list(LENGTH CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR _LIB_DIR_COUNT)
             if (_LIB_DIR_COUNT)
                 message("-- yage: Conan package library search dir : " ${CONAN_${DEP_VAR_NAME}_LIBRARIES_DIR})
@@ -165,6 +169,9 @@ function(yage_setup_dependency NAME)
                     unset(YAGE_FOUND_LIBRARY CACHE)
                 endforeach()
             endif()
+			
+			message ("--yage: Found libs: " ${${DEP_VAR_NAME}_LIBRARIES})
+
         endif()
 
         if (DEP_OS_AFTER_CONAN)
@@ -178,11 +185,16 @@ function(yage_setup_dependency NAME)
         endif()
 
         if ((DEP_PREFER STREQUAL "BUILD") OR ((NOT ${DEP_VAR_NAME}_FOUND) AND (NOT ${DEP_VAR_NAME}_CONAN_FOUND)))
-            if (DEP_TARGET STREQUAL NAME)
-                message ("-- yage: Building " ${NAME} " from source!")
-            else()
-                message ("-- yage: Building " ${NAME} " from source as target " ${DEP_TARGET} "!")
-            endif()
+            
+			if (DEP_INCLUDE OR DEP_SOURCE)
+				if (DEP_TARGET STREQUAL NAME)
+					message ("-- yage: Building " ${NAME} " from source!")
+				else()
+					message ("-- yage: Building " ${NAME} " from source as target " ${DEP_TARGET} "!")
+				endif()
+			else()
+				message(FATAL_ERROR "-- yage: Failrue! " ${NAME} " not found...")
+			endif()
 
             if (DEP_INCLUDE)
                 foreach (incl IN ITEMS ${DEP_INCLUDE})
@@ -193,12 +205,8 @@ function(yage_setup_dependency NAME)
             if (DEP_SOURCE)
                 message("--   " ${NAME} " source dir " ${DEP_SOURCE})
                 
-                cmake_policy(PUSH)
-                cmake_policy(SET CMP0048 OLD)
 
                     add_subdirectory(${DEP_SOURCE} EXCLUDE_FROM_ALL)
-
-                cmake_policy(POP)
 
             endif()
 

@@ -12,14 +12,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH}
 include (Conan)
 include (Yage)
 
-# Configure conan
-if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    message ("-- yage: Using Conan!")
-    include (${CMAKE_CURRENT_BINARY_DIR}/conanbuildinfo.cmake)
-    conan_basic_setup()
-else()
-    message ("-- yage: No Conan!" ${YAGE_CONAN_INFO})
-endif()
 
 # Emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)

@@ -1,5 +1,10 @@
 [requires]
-Agnes/0.3@bentoudev/yage
+Agnes/[~0.4]@bentoudev/stable
+eastl/3.13.04-dev@bentoudev/stable
+glfw/3.3-dev@bentoudev/stable
+spdlog/1.3.1@bincrafters/stable
+assimp/Release3.1_RC1-5149-g36bce5fa@bentoudev/stable
+jsonformoderncpp/3.1.2@vthiery/stable
 
 [generators]
 cmake

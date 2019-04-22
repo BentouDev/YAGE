@@ -1,7 +1,7 @@
 ## Yet Another Game Engine
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.12 FATAL_ERROR)
 
-project(YAGE VERSION 0.1 LANGUAGES CXX C)
+project(YAGE VERSION 0.2 LANGUAGES CXX C)
 
 # Project setup
 include (${CMAKE_CURRENT_SOURCE_DIR}/Modules/YageSetupProject.cmake)
@@ -16,7 +16,7 @@ option(YAGE_BUILD_EDITOR "Build Editor" ON)
 option(YAGE_VALGRIND "Build with valgrind headers" ON)
 
 if (NOT YAGE_VERSION_PATCH)
-    set(YAGE_VERSION_PATCH dev)
+    set(YAGE_VERSION_PATCH 0-dev)
 endif()
 
 set(PROJECT_VERSION_PATCH ${YAGE_VERSION_PATCH})
@@ -36,6 +36,9 @@ message ("-- yage: Version ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${P
 # Define engine library
 add_library(YAGE INTERFACE)
 
+#============================#
+# Bundled Dependencies       #
+#============================#
 # Add Vulkan
 find_package(Vulkan)
 
@@ -46,29 +49,11 @@ find_package(OpenGL)
 # Add pThreads
 find_package(Threads)
 
-# Add Agnes
-yage_add_dependency(Dependencies/Agnes)
-
-# Add GLFW
-yage_add_dependency(Dependencies/GLFW)
-
 # Add GLM
 yage_add_dependency(Dependencies/GLM)
 
-# Add Assimp
-yage_add_dependency(Dependencies/Assimp)
-
-# Add Spdlog
-yage_add_dependency(Dependencies/Spdlog)
-
-# Add Json
-yage_add_dependency(Dependencies/Json)
-
 # Add Utf8
 yage_add_dependency(Dependencies/Utf8)
-
-# Add CppLinq
-yage_add_dependency(Dependencies/CppLinq)
 
 # Add LodePng
 yage_add_dependency(Dependencies/Lodepng)
@@ -77,6 +62,27 @@ yage_add_dependency(Dependencies/Lodepng)
 if(YAGE_VALGRIND)
     find_package(Valgrind)
 endif(YAGE_VALGRIND)
+
+#============================#
+# Conan Packages             #
+#============================#
+conan_add_remote(NAME yage
+            URL https://api.bintray.com/conan/bentoudev/yage)
+
+conan_add_remote(NAME bincrafters
+            URL https://api.bintray.com/conan/bincrafters/public-conan)
+
+# Configure conan
+conan_cmake_run(CONANFILE conanfile.txt  # or relative build/conanfile.txt
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
+
+# Add Agnes
+yage_add_dependency(Dependencies/Agnes)
+
+# Install Conan packages to correct location
+install(DIRECTORY ${CONAN_LIB_DIRS}/ DESTINATION ${YAGE_LIBRARY_DIR})
+install(DIRECTORY ${CONAN_BIN_DIRS}/ DESTINATION ${YAGE_BINARY_DIR})
 
 #============================#
 # Tests                      #

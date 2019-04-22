@@ -4,7 +4,7 @@
 find_program (
     AGNES_BINARY
     NAMES Agnes Agnes.exe agnes agnes.exe
-    PATHS ${CONAN_BIN_DIRS_AGNES}
+    PATHS ${CONAN_BIN_DIRS_AGNES} ${CONAN_AGNES_ROOT} ${CONAN_AGNES_ROOT}/bin
 )
 
 find_path (

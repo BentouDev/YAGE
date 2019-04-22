@@ -31,6 +31,8 @@ yage_add_ctti(Editor
     HEADERS ${EDITOR_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
+target_link_libraries(Editor_CTTI PUBLIC YAGE::Engine)
+
 target_include_directories(Editor_CTTI
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -76,6 +78,8 @@ set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
 target_link_libraries(Editor 
     YAGE::Engine
+	${SPDLOG_LIBRARIES}
+    ${EASTL_LIBRARIES}
     ${GLFW_LIBRARIES}
     Qt5::Core 
     Qt5::Widgets 
@@ -90,4 +94,4 @@ install(TARGETS Editor
         RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
 
 # This makes the project importable from the build directory
-export(TARGETS Editor Editor_CTTI FILE EditorConfig.cmake)
+export(TARGETS Editor FILE EditorConfig.cmake)

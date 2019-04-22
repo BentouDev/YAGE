@@ -27,10 +27,10 @@ yage_add_ctti(Engine
     HEADERS ${YAGE_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
+target_link_libraries(Engine_CTTI PUBLIC YAGE::Kernel YAGE::Core)
+
 target_include_directories(Engine_CTTI
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Core/include>
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Kernel/include>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 install(TARGETS Engine_CTTI
