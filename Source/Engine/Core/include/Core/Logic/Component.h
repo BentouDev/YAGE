@@ -5,6 +5,7 @@
 #ifndef GAME_COMPONENT_H
 #define GAME_COMPONENT_H
 
+#include <Utils/Defines.h>
 #include <Utils/Index.h>
 #include <Utils/String.h>
 #include <Utils/Handle.h>
@@ -16,7 +17,7 @@ namespace Logic
 {
 	using comp_id_t = type_t;
 
-	class IComponent
+	class YAGE_API IComponent
 	{
 		static std::atomic<comp_id_t> _lastTypeId;
 
