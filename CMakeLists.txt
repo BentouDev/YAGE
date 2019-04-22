@@ -73,7 +73,7 @@ conan_add_remote(NAME bincrafters
             URL https://api.bintray.com/conan/bincrafters/public-conan)
 
 # Configure conan
-conan_cmake_run(CONANFILE conanfile.txt  # or relative build/conanfile.txt
+conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS
                 BUILD missing)
 
