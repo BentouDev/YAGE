@@ -14,14 +14,14 @@ matrix:
     - os: linux
       compiler: clang-5
       script:
-        - docker run -it -v $PWD:/src --workdir /src bentou/ubuntuartfuldev sh ./Scripts/build_clang.sh
+        - docker run -it -v $PWD:/src --workdir /src bentou/ubuntu-bionic-dev sh ./Scripts/build_clang.sh
 
     - os: linux
       compiler: gcc-6
       script:
-        - docker run -it -v $PWD:/src --workdir /src bentou/ubuntuartfuldev sh ./Scripts/build_gcc.sh
+        - docker run -it -v $PWD:/src --workdir /src bentou/ubuntu-bionic-dev sh ./Scripts/build_gcc.sh
       after_success:
-        - docker run -it -v $PWD:/src --workdir /src bentou/ubuntuartfuldev sh ./Scripts/run_tests.sh
+        - docker run -it -v $PWD:/src --workdir /src bentou/ubuntu-bionic-dev sh ./Scripts/run_tests.sh
         - bash <(curl -s https://codecov.io/bash) -X gcov
 
 # before_install:
