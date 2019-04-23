@@ -13,7 +13,7 @@
 
 namespace Utils
 {
-    union RawHandle
+    struct RawHandle
     {
     public:
         RawHandle() : key(0)
@@ -22,15 +22,18 @@ namespace Utils
         RawHandle(uint32_t new_key) : key(new_key)
         { }
 
-        uint32_t key;
+		union
+		{
+			uint32_t key = { 0 };
 
-        struct
-        {
-            uint8_t liveId;
-            type_t typeId;
-            uint16_t index;
-        };
-
+			struct
+			{
+				uint8_t liveId;
+				type_t typeId;
+				uint16_t index;
+			};
+		};
+        
         static auto invalid() -> RawHandle
         {
             return RawHandle();
@@ -43,19 +46,22 @@ namespace Utils
     };
 
     template <typename Resource>
-    union Handle
+    struct Handle
     {
     public:
-        uint32_t key;
+		union
+		{
+			uint32_t key;
 
-        // ToDo : Make handle 64bit
-        struct
-        {
-            uint8_t  liveId;
-            type_t   typeId;
-            uint16_t index;
-        };
-
+			// ToDo : Make handle 64bit
+			struct
+			{
+				uint8_t  liveId;
+				type_t   typeId;
+				uint16_t index;
+			};
+		};
+        
     private:
         auto release() -> uint32_t
         {
@@ -126,20 +132,20 @@ namespace Utils
         left.swap(right);
     }
 
-    template <typename Handle>
-    Handle handle_cast(RawHandle handle)
-    {
-        Handle h;
+	template <typename T>
+	Utils::Handle<T> handle_cast(RawHandle handle)
+	{
+		Utils::Handle<T> h;
 
-        YAGE_ASSERT(h.typeId == handle.typeId,
-                    "handle_cast : Unable to cast handles from '{}' to '{}'!",
-                    h.typeId, h.typeId);
+		YAGE_ASSERT(h.typeId == handle.typeId,
+			"handle_cast : Unable to cast handles from '{}' to '{}'!",
+			h.typeId, h.typeId);
 
-        h.liveId	= handle.liveId;
-        h.index		= handle.index;
+		h.liveId = handle.liveId;
+		h.index = handle.index;
 
-        return h;
-    }
+		return h;
+	}
 }
 
 #endif //YAGE_HANDLE_H

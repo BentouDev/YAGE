@@ -43,7 +43,7 @@ namespace Resources
 
     void MeshManager::disposeMesh(Core::Mesh &mesh)
     {
-        disposeMesh(mesh.Handle);
+        disposeMesh(Utils::handle_cast<Core::Mesh>(mesh.Handle));
     }
 
     void MeshManager::disposeMesh(handle_t handle)
@@ -141,7 +141,7 @@ namespace Resources
 
         if(meshPtr->_buffer)
         {
-            disposeMesh(meshPtr->Handle);
+            disposeMesh(Utils::handle_cast<Core::Mesh>(meshPtr->Handle));
         }
 
         Core::MeshScheme* schemePtr = tryGetMeshScheme(meshPtr->getMeshSchemeId());

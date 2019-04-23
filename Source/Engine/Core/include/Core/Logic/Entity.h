@@ -6,7 +6,6 @@
 #define GAME_ENTITY_H_H
 
 #include <bitset>
-#include <Utils/DefaultTrait.h>
 
 #include "World.h"
 
@@ -16,7 +15,7 @@ namespace Logic
 
     class Scene;
 
-    class Entity
+    class Entity : public yage::SafeObject
     {
         friend class World;
 
@@ -37,12 +36,9 @@ namespace Logic
 
     public:
         using handle_t	= Utils::Handle<Entity>;
-        using trait_t	= Utils::DefaultTrait<Entity>;
-
-        handle_t Handle;
 
         explicit Entity(World* world, Scene* scene)
-            : _world(world), _scene(scene), Handle()
+            : _world(world), _scene(scene)
         { _status.dirty = false; }
 
         virtual ~Entity()
@@ -51,8 +47,7 @@ namespace Logic
         Entity(Entity&& other)
             : _status(other._status), _world(other._world), _scene(other._scene),
               componentBits(std::move(other.componentBits)),
-              cachedComponentBits(std::move(other.cachedComponentBits)),
-              Handle()
+              cachedComponentBits(std::move(other.cachedComponentBits))
         {
             other._world = nullptr;
             other._scene = nullptr;

@@ -17,6 +17,21 @@ struct ExternMockType
 Sth::~Sth()
 { }
 
+template <typename T>
+auto genericDeleter()
+{
+	return std::function {
+		[](void * ptr) {
+			delete reinterpret_cast<T*>(ptr);
+	}};
+}
+
+template <typename T>
+auto make_owned()
+{
+	return Utils::owned_ptr<T>(genericDeleter<T>(), new T());
+}
+
 namespace OwnedPtrTests
 {
     TEST_CASE("OwnedPtrTest")
@@ -37,7 +52,7 @@ namespace OwnedPtrTests
 
         SECTION("CanCreateAndDestroy")
         {
-            auto ptr = Utils::owned_ptr<FooMock>(new FooMock());
+            auto ptr = make_owned<FooMock>();
             REQUIRE(ptr);
             REQUIRE(ptr.get() != nullptr);
 
@@ -57,7 +72,7 @@ namespace OwnedPtrTests
 
         SECTION("CanBorrow")
         {
-            auto ptr = Utils::owned_ptr<IFooMock>(new IFooMock());
+            auto ptr = make_owned<IFooMock>();
             auto borrowed = ptr.borrow();
             REQUIRE(borrowed);
             REQUIRE(borrowed.get() != nullptr);
@@ -66,7 +81,7 @@ namespace OwnedPtrTests
 
         SECTION("CanInvalidate")
         {
-            auto ptr = Utils::owned_ptr<IFooMock>(new IFooMock());
+            auto ptr = make_owned<IFooMock>();
             auto borrowed = ptr.borrow();
 
             ptr.destroy();
@@ -78,7 +93,7 @@ namespace OwnedPtrTests
 
         SECTION("CanReplace")
         {
-            auto ptr = Utils::owned_ptr<IFooMock>(new IFooMock());
+            auto ptr = make_owned<IFooMock>();
             auto borrowed = ptr.borrow();
 
             ptr.destroy();
@@ -91,7 +106,7 @@ namespace OwnedPtrTests
 
         SECTION("CanMoveBorrowed")
         {
-            auto ptr = Utils::owned_ptr<IFooMock>(new IFooMock());
+            auto ptr = make_owned<IFooMock>();
             {
                 auto borrowed = ptr.borrow();
                 {
@@ -108,7 +123,7 @@ namespace OwnedPtrTests
 
 		SECTION("CanBorrowBase")
 		{
-			auto ptr = Utils::owned_ptr<IFooMock>(new IFooMock());
+			auto ptr = make_owned<IFooMock>();
 		}
     }
 }

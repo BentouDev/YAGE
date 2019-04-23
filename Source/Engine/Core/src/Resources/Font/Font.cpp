@@ -14,7 +14,7 @@ namespace Resources
     { }
 
     Font::Font(Font &&other)
-        : Resource(std::move(other)),
+        : IResource(std::move(other)),
           charset(std::move(other.charset)),
           textureAtlas(other.textureAtlas),
           size(other.size), lineHeight(other.lineHeight), base(other.base),

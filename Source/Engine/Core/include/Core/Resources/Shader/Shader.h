@@ -5,7 +5,6 @@
 #ifndef GAME_SHADER_H
 #define GAME_SHADER_H
 
-#include <Utils/DefaultTrait.h>
 #include <Utils/List.h>
 
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
@@ -14,6 +13,11 @@
 namespace Resources
 {
     class ShaderBuilder;
+}
+
+namespace Meta
+{
+	class RegisterClass;
 }
 
 namespace Gfx
@@ -76,8 +80,11 @@ namespace Gfx
         { return _isCompiled; }
     };
 
-    DECL_RESOURCE(ShaderProgram)
+	YClass(Serialize())
+    class ShaderProgram : public Core::IResource
     {
+		friend class Meta::RegisterClass;
+
         GLuint _handle;
 
     public:
@@ -88,7 +95,7 @@ namespace Gfx
         ShaderProgram& operator=(ShaderProgram&&) = delete;
 
         ShaderProgram(ShaderProgram&& other) noexcept
-            : Resource(std::move(other)),
+            : IResource(std::move(other)),
              _handle(other._handle)
         {
             other._handle = 0;
@@ -109,8 +116,6 @@ namespace Gfx
 
         inline void bind() const noexcept;
     };
-
-    class ShaderProgTrait : public Utils::DefaultTrait<ShaderProgram> {};
 }
 
 #endif //GAME_SHADER_H

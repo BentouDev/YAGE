@@ -10,7 +10,6 @@
 
 #include <Utils/MemoryBlock.h>
 #include <Utils/SmartHandle.h>
-#include <Utils/Container.h>
 
 namespace Resources
 {
@@ -19,11 +18,11 @@ namespace Resources
         MANAGER(FontManager);
 
     protected:
-        Utils::Container<FontTrait> _fontContainer;
+        Utils::Colony<Font> _fontContainer;
 
     public:
-        using handle_t = Font::handle_t;
-        using smart_t  = Utils::SmartHandle<FontTrait>;
+        using handle_t = Utils::Handle<Font>;
+        using smart_t  = Utils::SmartHandle<Font>;
 
         explicit FontManager(Core::Engine& engine, Memory::IMemoryBlock& memory);
         virtual ~FontManager();

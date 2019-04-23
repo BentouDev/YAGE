@@ -8,12 +8,17 @@
 #include "Core/Resources/Resource.h"
 #include "Core/Gfx/OpenGl/OpenGLBase.h"
 
-#include <Utils/DefaultTrait.h>
+namespace Meta
+{
+	class RegisterClass;
+}
 
 namespace Resources
 {
-    DECL_RESOURCE(Texture)
+	YClass(Serialize())
+    class Texture : public Core::IResource
     {
+		friend class Meta::RegisterClass;
         friend class TextureLoader;
 
         uint32_t _width;
@@ -25,8 +30,6 @@ namespace Resources
         GLenum _pixelFormat;
 
     public:
-        using trait_t	= Utils::DefaultTrait<Texture>;
-
         explicit Texture();
         Texture(Texture&& other) noexcept;
 

@@ -17,9 +17,8 @@ namespace Logic
 	class EntityManager
 	{
 	public:
-		using handle_t	= Entity::handle_t;
-		using trait_t	= Entity::trait_t;
-		using storage_t = Utils::HandleContainer<trait_t, Utils::RawHandle, 32>;
+		using handle_t	= Utils::Handle<Entity>;
+		using storage_t = Utils::HandleContainer<Entity, Utils::RawHandle, 32>;
 
 	protected:
 		Memory::IMemoryBlock&	_memory;

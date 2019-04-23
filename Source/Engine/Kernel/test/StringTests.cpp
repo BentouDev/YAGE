@@ -19,7 +19,7 @@
 
 namespace StringTests
 {
-#if YAGE_VALGRIND
+/*#if YAGE_VALGRIND
 typedef Memory::MemoryBlock
 			<Memory::FreeListAllocator,
 			 Memory::ValgrindMemoryBoundChecker,
@@ -124,5 +124,5 @@ typedef Memory::MemoryBlock <
                 }
             }
         }
-    }
+    }*/
 }

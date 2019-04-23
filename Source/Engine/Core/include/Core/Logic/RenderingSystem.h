@@ -5,8 +5,6 @@
 #ifndef GAME_RENDERINGSYSTEM_H
 #define GAME_RENDERINGSYSTEM_H
 
-#include <Utils/Container.h>
-
 #include "RenderingComponent.h"
 #include "Core/Logic/System.h"
 

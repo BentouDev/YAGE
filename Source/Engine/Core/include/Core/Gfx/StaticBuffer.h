@@ -9,10 +9,10 @@
 
 #include <Utils/Handle.h>
 #include <Utils/MemoryBlock.h>
-#include <Utils/DefaultTrait.h>
 
 #include "Core/Gfx/OpenGl/OpenGLBuffers.h"
 #include "Core/Context.h"
+#include "BaseObject.h"
 
 namespace Gfx
 {
@@ -23,7 +23,7 @@ namespace Gfx
 		OpenGL::IBO*	ibo;
 	};
 
-	class StaticBuffer
+	class StaticBuffer : public yage::SafeObject
 	{
 	public:
 		using handle_t = Utils::Handle<StaticBuffer>;
@@ -159,8 +159,6 @@ namespace Gfx
 		inline std::size_t getUsedIndexCount() const
 		{ return _usedIndices; }
 	};
-
-	class StaticBufferTrait : public Utils::DefaultTrait<StaticBuffer> { };
 }
 
 #endif //GAME_STATICBATCH_H

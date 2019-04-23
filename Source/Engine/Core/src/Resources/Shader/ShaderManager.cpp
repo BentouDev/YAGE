@@ -35,7 +35,7 @@ namespace Resources
 
     void ShaderManager::dispose(Gfx::ShaderProgram& program)
     {
-        dispose(program.Handle);
+        dispose(Utils::handle_cast<Gfx::ShaderProgram>(program.Handle));
     }
 
     Gfx::ShaderProgram* ShaderManager::tryGet(handle_t handle)

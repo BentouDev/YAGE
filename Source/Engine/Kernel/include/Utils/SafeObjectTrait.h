@@ -6,7 +6,6 @@
 #define YAGE_DEFAULTTRAIT_H
 
 #include <cstdint>
-#include "Index.h"
 #include "Handle.h"
 
 namespace Utils
@@ -15,27 +14,14 @@ namespace Utils
        maybe introduce base class (SafeObject?) and put all that code there?
        Colony would require stored class to derive from it
     */
-    template <typename T, typename THandle = Utils::Handle<T>>
-    class DefaultTrait
+    template <typename T>
+    class SafeObjectTrait
     {
-    public:
+		static_assert(std::is_base_of<yage::SafeObject, T>::value, "SafeObjectTrait can only be used for classes derived from SafeObject!");
+ 
+	public:
         using object_t = T;
-        using handle_t = THandle;
-
-        inline static void cleanUp(object_t& first)
-        { first.cleanUp(); }
-
-        inline static void swap(object_t& first, object_t& second) noexcept
-        { first.swap(second); }
-
-        inline static void incrementLiveId(Utils::Index<handle_t>& index) noexcept
-        { index.handle.liveId++; }
-
-        inline static void setIndex(Utils::Index<handle_t>& index, uint16_t i) noexcept
-        { index.handle.index = i; }
-
-        inline static uint16_t getIndex(Utils::Index<handle_t>& index) noexcept
-        { return index.handle.index; }
+        using handle_t = Utils::Handle<T>;
 
         inline static uint16_t getIndex(handle_t _handle) noexcept
         { return _handle.index; }
@@ -44,7 +30,7 @@ namespace Utils
         { obj.Handle.liveId = liveId; obj.Handle.index = index; }
 
         inline static handle_t getHandle(object_t& obj) noexcept
-        { return obj.Handle; }
+        { return Utils::handle_cast<T>(obj.Handle); }
     };
 }
 

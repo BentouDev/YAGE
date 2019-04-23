@@ -22,7 +22,7 @@ extern template struct trompeloeil::reporter<trompeloeil::specialized>;
 
 namespace ListTests
 {
-#ifdef YAGE_VALGRIND
+/*#ifdef YAGE_VALGRIND
 	typedef Memory::MemoryBlock
 			<Memory::FreeListAllocator,
 			 Memory::ValgrindMemoryBoundChecker,
@@ -181,5 +181,5 @@ namespace ListTests
 
             delete list;
         }
-    }
+    }*/
 }

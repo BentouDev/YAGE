@@ -5,6 +5,7 @@
 #include "Core/Resources/Texture/TextureLoader.h"
 #include "Core/Resources/Texture/TextureManager.h"
 #include "Core/Logger.h"
+#include "Utils/SafeDelete.h"
 #include <lodepng.h>
 
 namespace Resources
@@ -31,8 +32,8 @@ namespace Resources
 
         lodepng::State state;
 
-        std::uint8_t*	data;
-        std::size_t		size;
+        std::uint8_t*  data;
+        std::size_t	   size;
 
         // TODO : use custom file size check function
         // TODO : instead of using lodepngs load_file use their load buffer functions
@@ -109,7 +110,7 @@ namespace Resources
         auto& def = _data.front();
 
         if (def.pixels == nullptr)
-            return Texture::handle_t::invalid();
+            return handle_t::invalid();
 
         handle_t textureHandle	= _manager.createTexture();
         Texture& texture		= _manager.getTexture(textureHandle);
@@ -130,7 +131,7 @@ namespace Resources
             );
 
             gl::BindTexture(gl::TEXTURE_2D, 0);
-            return Texture::handle_t::invalid();
+            return handle_t::invalid();
         }
 
         setParameters(gl::TEXTURE_2D, texture);
@@ -160,7 +161,7 @@ namespace Resources
             );
 
             gl::BindTexture(gl::TEXTURE_2D, 0);
-            return Texture::handle_t::invalid();
+            return handle_t::invalid();
         }
 
         Core::Logger::info("TextureLoader : Texture '{}' created successfully!", texture._handle);
@@ -252,7 +253,7 @@ namespace Resources
             );
 
             gl::BindTexture(gl::TEXTURE_2D_ARRAY, 0);
-            return Texture::handle_t::invalid();
+            return handle_t::invalid();
         }
 
         gl::TexImage3D(gl::TEXTURE_2D_ARRAY, 0,
@@ -267,7 +268,7 @@ namespace Resources
 
             gl::BindTexture(gl::TEXTURE_2D_ARRAY, 1);
             gl::DeleteTextures(1, &texture._handle);
-            return Texture::handle_t::invalid();
+            return handle_t::invalid();
         }
 
         int zOffset = 0;
@@ -285,7 +286,7 @@ namespace Resources
 
                 gl::BindTexture(gl::TEXTURE_2D_ARRAY, 0);
                 gl::DeleteTextures(1, &texture._handle);
-                return Texture::handle_t::invalid();
+                return handle_t::invalid();
             }
 
             zOffset++;

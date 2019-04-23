@@ -10,7 +10,7 @@
 #include "MeshSchemeManager.h"
 
 #include <Utils/MemoryBlock.h>
-#include <Utils/Container.h>
+#include <Utils/Colony.h>
 
 namespace Core
 {
@@ -48,13 +48,13 @@ namespace Resources
         friend class MeshBuilder;
 
     public:
-        using handle_t = Core::Mesh::handle_t;
+        using handle_t = Utils::Handle<Core::Mesh>;
 
     protected:
         MeshSchemeManager		_schemeManager;
 
-        Utils::Container<Core::MeshTrait>	_meshContainer;
-        Utils::List<SchemeBuffer>			_schemeBuffers;
+        Utils::Colony<Core::Mesh> _meshContainer;
+        Utils::List<SchemeBuffer> _schemeBuffers;
 
         Gfx::StaticBuffer* findBestFitBuffer(MeshSchemeId scheme, std::size_t vertexCount, std::size_t indexCount);
 

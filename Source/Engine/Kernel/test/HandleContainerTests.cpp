@@ -4,7 +4,6 @@
 
 #include <catch.hpp>
 #include <trompeloeil.hpp>
-#include <Utils/DefaultTrait.h>
 
 #include "Utils/FreeListAllocator.h"
 #include "Utils/Handle.h"

@@ -5,10 +5,10 @@
 #ifndef GAME_WINDOWMANAGER_H
 #define GAME_WINDOWMANAGER_H
 
-#include <map>
 #include <cstdint>
 #include <Utils/MemoryBlock.h>
-#include <Utils/Container.h>
+#include <EASTL/hash_map.h>
+#include <Utils/Colony.h>
 #include "Core/Window.h"
 #include "Core/IManager.h"
 
@@ -23,10 +23,11 @@ namespace Core
 
 	public:
 		using handle_t = Utils::Handle<Core::Window>;
+		using id_mapper_t = eastl::hash_map<std::uintptr_t, handle_t>;
 
 	protected:
-		Utils::Container<Window::trait_t>			_windowContainer;
-		std::map<std::uintptr_t, Window::handle_t>	_windowIdMapper;
+		Utils::Colony<Window> _windowContainer;
+		id_mapper_t           _windowIdMapper;
 
 		Window* getWindowById(std::uintptr_t id);
 

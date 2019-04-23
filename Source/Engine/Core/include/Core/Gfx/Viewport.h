@@ -5,9 +5,9 @@
 #ifndef YAGE_VIEWPORT_H
 #define YAGE_VIEWPORT_H
 
-#include <Utils/DefaultTrait.h>
 #include "RenderTarget.h"
 #include "Rectangle.h"
+#include "BaseObject.h"
 
 namespace Core
 {
@@ -16,7 +16,7 @@ namespace Core
 
 namespace Gfx
 {
-	class Viewport : public RenderTarget
+	class Viewport : public yage::SafeObject, public RenderTarget
 	{
 		Rectangle<int32_t>	_pixelRect;
 		Rectangle<float>	_unitRect;
@@ -25,7 +25,6 @@ namespace Gfx
 		Rectangle<float> calcUnitRect();
 
 	public:
-		using trait_t	= Utils::DefaultTrait<Viewport>;
 		using handle_t	= Utils::Handle<Viewport>;
 
 		handle_t Handle;

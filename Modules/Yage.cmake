@@ -7,6 +7,12 @@ function (yage_add_ctti NAME)
     set(multiArg OUTPUT DEPENDS HEADERS)
     cmake_parse_arguments(AGNES "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
 
+	if (NOT AGNES_BINARY)
+		message(FATAL_ERROR "-- yage: Agnes not found!")
+	else()
+		message("-- yage: Agnes: " ${AGNES_BINARY})
+	endif()
+
     string(TOUPPER ${NAME} AGNES_VAR_NAME)
 
     file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/${NAME})

@@ -72,7 +72,7 @@ namespace Gfx
                     .withAttributeLocation(2, "color")
                     .debugBuild("Renderer::DebugMaterial");
 
-            if (!debug_mat || debugShader == ShaderProgram::handle_t::invalid())
+            if (!debug_mat || debugShader == Utils::Handle<ShaderProgram>::invalid())
                 return false;
 
             DebugResources._debugMaterial = debug_mat;
@@ -92,7 +92,7 @@ namespace Gfx
                     .withAttributeLocation(2, "color")
                     .debugBuild("Renderer::FontShader");
 
-            if (!font_mat || fontShader == ShaderProgram::handle_t::invalid())
+            if (!font_mat || fontShader == Utils::Handle<ShaderProgram>::invalid())
                 return false;
 
             DebugResources._debugFontMaterial = font_mat;
@@ -118,7 +118,7 @@ namespace Gfx
                 return false;
 
             DebugResources._debugFont = font;
-            DebugResources._debugFontMaterial->addUniform<Utils::SmartHandle<Resources::Texture::trait_t>>("diffuseTex", *_engine.ShaderManager.get());
+            DebugResources._debugFontMaterial->addUniform<Utils::SmartHandle<Resources::Texture>>("diffuseTex", *_engine.ShaderManager.get());
             DebugResources._debugFontMaterial->setUniform
             (
                 "diffuseTex",
@@ -187,17 +187,17 @@ namespace Gfx
         return *DebugResources._debug2DCamera;
     }
 
-    Utils::SmartHandle<Core::MaterialTrait> Renderer::getDebugMaterial()
+    Utils::SmartHandle<Core::Material> Renderer::getDebugMaterial()
     {
         return DebugResources._debugMaterial;
     }
 
-    Utils::SmartHandle<Core::MaterialTrait> Renderer::getDebugFontMaterial()
+    Utils::SmartHandle<Core::Material> Renderer::getDebugFontMaterial()
     {
         return DebugResources._debugFontMaterial;
     }
 
-    Utils::SmartHandle<Resources::FontTrait> Renderer::getDebugFont()
+    Utils::SmartHandle<Resources::Font> Renderer::getDebugFont()
     {
         return DebugResources._debugFont;
     }

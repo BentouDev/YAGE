@@ -7,11 +7,9 @@
 
 #include <map>
 #include <Utils/List.h>
-#include <Utils/DefaultTrait.h>
 #include <Utils/MemoryBlock.h>
 
 #include "Core/Resources/Resource.h"
-#include "Core/Resources/Texture/Texture.h"
 #include "Core/Gfx/Rectangle.h"
 
 namespace Meta
@@ -21,6 +19,8 @@ namespace Meta
 
 namespace Resources
 {
+	class Texture;
+
     struct CharData
     {
         CharData()
@@ -34,13 +34,13 @@ namespace Resources
     };
 
     YClass(Serialize());
-    class Font : public Core::Resource<Font>
+    class Font : public Core::IResource
     {
         friend class Meta::RegisterClass;
 
         friend class FontLoader;
 
-        Texture::handle_t					textureAtlas;
+        Utils::Handle<Texture>  			textureAtlas;
         Utils::List<CharData>				charset;
         std::map<wchar_t, std::uint32_t>	charLookup;
 
@@ -60,7 +60,7 @@ namespace Resources
         Font(Font&& other);
 
         CharData* lookupChar(wchar_t code);
-        Texture::handle_t getTextureAtlas()
+		Utils::Handle<Texture> getTextureAtlas()
         { return textureAtlas; }
 
         unsigned short getWidth() const { return width; }
@@ -71,9 +71,6 @@ namespace Resources
         Font& operator=(Font&&) = delete;
         Font& operator=(const Font&) = delete;
     };
-
-    class FontTrait : public Utils::DefaultTrait<Font>
-    { };
 }
 
 #endif //YAGE_FONT_H

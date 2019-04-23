@@ -46,13 +46,13 @@ namespace Logic
                 {
                     // If component wasn't in this system previously, add it!
                     if(!matchComponentSignature(entity.cachedComponentBits, info.instance->componentBits))
-                        info.instance->addEntity(entity.Handle);
+                        info.instance->addEntity(Utils::handle_cast<Entity>(entity.Handle));
                 }
                 else
                 {
                     // If component was in this system previously, remove it!
                     if(matchComponentSignature(entity.cachedComponentBits, info.instance->componentBits))
-                        info.instance->removeEntity(entity.Handle);
+                        info.instance->removeEntity(Utils::handle_cast<Entity>(entity.Handle));
                 }
             }
 
@@ -102,7 +102,7 @@ namespace Logic
         if(!entity._status.dirty)
         {
             entity._status.dirty = true;
-            _dirtyEntities.push_back(entity.Handle);
+            _dirtyEntities.push_back(Utils::handle_cast<Entity>(entity.Handle));
         }
     }
 
@@ -111,7 +111,7 @@ namespace Logic
         if(!entity._status.removed)
         {
             entity._status.removed = true;
-            _removedEntities.push_back(entity.Handle);
+            _removedEntities.push_back(Utils::handle_cast<Entity>(entity.Handle));
         }
     }
 
@@ -168,13 +168,13 @@ namespace Logic
 
     auto World::getComponent(Entity& entity, comp_id_t bit) const -> Utils::RawHandle
     {
-        return getComponent(entity.Handle, bit);
+        return getComponent(Utils::handle_cast<Entity>(entity.Handle), bit);
     }
 
     void World::addComponent(Entity& entity, comp_id_t bit, Utils::RawHandle handle)
     {
         entity.componentBits.set(bit, true);
-        _entityManager->setComponentHandle(entity.Handle, bit, handle);
+        _entityManager->setComponentHandle(Utils::handle_cast<Entity>(entity.Handle), bit, handle);
 
         setAsDirty(entity);
     }
@@ -182,7 +182,7 @@ namespace Logic
     void World::removeComponent(Entity& entity, comp_id_t bit)
     {
         entity.componentBits.set(bit, false);
-        _entityManager->setComponentHandle(entity.Handle, bit, Utils::RawHandle::invalid());
+        _entityManager->setComponentHandle(Utils::handle_cast<Entity>(entity.Handle), bit, Utils::RawHandle::invalid());
 
         setAsDirty(entity);
     }

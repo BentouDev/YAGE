@@ -9,7 +9,7 @@
 
 namespace Utils
 {
-	union Color
+	struct Color
 	{
 		Color(uint8_t r, uint8_t g, uint8_t b, uint8_t a)
 			: R(r), G(g), B(b), A(a)
@@ -23,14 +23,17 @@ namespace Utils
 			: R(255), G(255), B(255), A(255)
 		{ }
 
-		uint32_t Key;
-
-		struct
+		union
 		{
-			uint8_t R;
-			uint8_t G;
-			uint8_t B;
-			uint8_t A;
+			uint32_t Key;
+
+			struct
+			{
+				uint8_t R;
+				uint8_t G;
+				uint8_t B;
+				uint8_t A;
+			};
 		};
 	};
 }

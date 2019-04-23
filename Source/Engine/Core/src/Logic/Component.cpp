@@ -6,5 +6,5 @@
 
 namespace Logic
 {
-	std::atomic<type_t> (IComponent::_lastTypeId) { 0 };
+	std::atomic<type_t> (Component::_lastTypeId) { 0 };
 }

@@ -78,7 +78,12 @@ conan_cmake_run(CONANFILE conanfile.txt
                 BUILD missing)
 
 # Add Agnes
-yage_add_dependency(Dependencies/Agnes)
+# yage_add_dependency(Dependencies/Agnes)
+find_program(AGNES_BINARY 
+	NAME Agnes Agnes.exe agnes agnes.exe
+	PATHS ${CONAN_BIN_DIRS_AGNES})
+
+
 
 # Install Conan packages to correct location
 install(DIRECTORY ${CONAN_LIB_DIRS}/ DESTINATION ${YAGE_LIBRARY_DIR})

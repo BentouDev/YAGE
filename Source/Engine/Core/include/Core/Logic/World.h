@@ -6,8 +6,8 @@
 #define GAME_WORLD_H
 
 #include <bitset>
-#include <Utils/Container.h>
 #include <Utils/Assert.h>
+#include <Utils/Colony.h>
 
 #include "Component.h"
 
@@ -78,7 +78,7 @@ namespace Logic
             void operator()()
             {
                 Utils::IColony** containerPtr = &world->_componentContainers[IComponent::GetComponentId<T>()];
-                if((*containerPtr) == nullptr)
+                if ((*containerPtr) == nullptr)
                 {
                     (*containerPtr) = YAGE_CREATE_NEW(world->_memory, Utils::Container<trait_t>)(world->_memory);
                 }
@@ -92,14 +92,13 @@ namespace Logic
         }
 
         template <typename T>
-        Utils::Container<typename T::trait_t>& getComponentContainer() const
+        Utils::Colony<typename T>& getComponentContainer() const
         {
-            static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
-            using trait_t = typename T::trait_t;
+            static_assert(std::is_base_of<Component, T>::value, "T must derive from IComponent!");
+            
+            Utils::IColony* containerPtr = _componentContainers[Component::GetComponentId<T>()];
 
-            Utils::IColony* containerPtr = _componentContainers[IComponent::GetComponentId<T>()];
-
-            return *static_cast<Utils::Container<trait_t>*>(containerPtr);
+            return *static_cast<Utils::Colony<T>*>(containerPtr);
         }
 
         // TODO : better system handling, have a TypeIndexList, use it!
@@ -170,33 +169,33 @@ namespace Logic
         template <typename T>
         T& getComponent(entity_handle_t e) const
         {
-            static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
+            static_assert(std::is_base_of<Component, T>::value, "T must derive from IComponent!");
 
-            Utils::RawHandle	handle		= getComponent(e, IComponent::GetComponentId<T>());
+            Utils::RawHandle	handle		= getComponent(e, Component::GetComponentId<T>());
             auto&				container	= getComponentContainer<T>();
 
-            return container.get(Utils::handle_cast<typename T::handle_t>(handle));
+            return container.get(Utils::handle_cast<typename T>(handle));
         }
 
         template <typename T>
         T& getComponent(Entity& e) const
         {
-            static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
+            static_assert(std::is_base_of<Component, T>::value, "T must derive from IComponent!");
 
-            Utils::RawHandle	handle		= getComponent(e, IComponent::GetComponentId<T>());
+            Utils::RawHandle	handle		= getComponent(e, Component::GetComponentId<T>());
             auto&				container	= getComponentContainer<T>();
 
-            return container.get(Utils::handle_cast<typename T::handle_t>(handle));
+            return container.get(Utils::handle_cast<typename T>(handle));
         }
 
         template <typename T>
         T* tryGetComponent(Entity& e)
         {
-            static_assert(std::is_base_of<IComponent, T>::value, "T must derive from IComponent!");
+            static_assert(std::is_base_of<Component, T>::value, "T must derive from IComponent!");
 
-            Utils::RawHandle		rawhandle	= getComponent(e, IComponent::GetComponentId<T>());
-            typename T::handle_t	handle		= Utils::handle_cast<typename T::handle_t>(rawhandle);
-            auto&					container	= getComponentContainer<T>();
+            Utils::RawHandle rawhandle	= getComponent(e, Component::GetComponentId<T>());
+            Utils::Handle<T> handle		= Utils::handle_cast<typename T>(rawhandle);
+            auto&			 container	= getComponentContainer<T>();
 
             if((bool)handle && container.contains(handle))
                 return &container.get(handle);

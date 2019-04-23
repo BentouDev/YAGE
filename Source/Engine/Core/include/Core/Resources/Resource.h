@@ -6,39 +6,34 @@
 #define YAGE_RESOURCE_H
 
 #include <string>
-#include <Utils/Index.h>
+#include <BaseObject.h>
 #include <Utils/Handle.h>
 #include <Utils/Attribute.h>
 #include <Utils/CompileString.h>
 
-#define DECL_RESOURCE(name, ... ) class name : public Core::Resource<name>
-
 namespace Core
 {
-    template<typename Res>
-    class Resource
+    class IResource : public yage::SafeObject
     {
     public:
-        using handle_t = Utils::Handle<Res>;
+        using handle_t = Utils::RawHandle;
 
     protected:
-        explicit Resource() : Handle(), Name("none") { }
+        explicit IResource() : Name("none") { }
 
-        Resource(Resource&& other) noexcept
-            : Handle(std::move(other.Handle))
+		IResource(IResource&& other) noexcept
+			: yage::SafeObject(std::move(other))
             , Name(std::move(other.Name))
         { }
 
     public:
-        explicit Resource(const Resource&) = delete;
-        Resource& operator=(const Resource&) = delete;
-        Resource& operator=(Resource&&) = delete;
+        explicit IResource(const IResource&) = delete;
+		IResource& operator=(const IResource&) = delete;
+		IResource& operator=(IResource&&) = delete;
 
-        virtual ~Resource() = default;
+        virtual ~IResource() = default;
 
-        std::string Name;
-
-        handle_t Handle;
+		eastl::string Name;
     };
 }
 

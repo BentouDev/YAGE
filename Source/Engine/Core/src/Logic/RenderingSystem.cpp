@@ -29,7 +29,7 @@ namespace Logic
 		if(!comp._isDirty)
 		{
 			comp._isDirty = true;
-			_dirtyComponents.push_back(comp.Handle);
+			_dirtyComponents.push_back(Utils::handle_cast<RenderingComponent>(comp.Handle));
 		}
 	}
 

@@ -8,19 +8,30 @@
 #include <tuple>
 
 #include "TypeIndexList.h"
-#include "Index.h"
 #include "List.h"
 #include "Slice.h"
 #include "Assert.h"
 
 namespace Utils
 {
-    template <typename Trait, typename T, uint8_t N>
+	template<typename Handle>
+	struct Index
+	{
+		Handle   handle;
+		uint16_t index;
+		uint16_t next;
+		uint8_t  valid : 1;
+	};
+
+    template <typename TObject, typename T, uint8_t N>
     class HandleContainer
     {
     public:
-        using object_t = typename Trait::object_t;
-        using handle_t = typename Trait::handle_t;
+        using object_t = typename TObject;
+        using handle_t = typename Utils::Handle<TObject>;
+
+		static_assert(std::is_base_of<yage::SafeObject, TObject>::value,
+					  "T must derive from SafeObject!");
 
         static_assert(std::is_move_constructible<object_t>::value,
                       "Trait type must be move constructible! (due to internal swap)");
@@ -47,7 +58,7 @@ namespace Utils
             for(int i = 0; i < elementCount; i++)
             {
                 object_t& o = _elements[i];
-                remove(Trait::getHandle(o));
+                remove(Utils::handle_cast<TObject>(o.Handle));
             }
         }
 
@@ -58,7 +69,7 @@ namespace Utils
             for (unsigned i = 0; i < container->maxSize; ++i)
             {
                 container->_indices.emplace_back();
-                Trait::setIndex(container->_indices[i], i);
+				container->_indices[i].index = i;
                 container->_indices[i].next = i + 1;
             }
 
@@ -105,8 +116,8 @@ namespace Utils
             Index<handle_t> &in = _indices[freelistStart];
             freelistStart = in.next;
 
-            Trait::incrementLiveId(in);
-
+			in.handle.liveId++;
+            
             in.index = elementCount++;
             in.valid |= 1;
 
@@ -118,9 +129,11 @@ namespace Utils
             }
 
             object_t& o = _elements[in.index];
-            Trait::setHandle(o, in.handle.liveId, in.handle.index);
 
-            return Trait::getHandle(o);
+			o.Handle.liveId = in.handle.liveId;
+			o.Handle.index = in.handle.index;
+            
+            return Utils::handle_cast<TObject>(o.Handle);
         }
 
         inline void remove(handle_t handle)
@@ -128,7 +141,7 @@ namespace Utils
             YAGE_ASSERT(contains(handle),
                    "HandleContainer : Cannot remove element by invalid handle!");
 
-            Index<handle_t> &in = _indices[Trait::getIndex(handle)];
+            Index<handle_t> &in = _indices[handle.index];
             object_t &o = _elements[in.index];
 
             --elementCount;
@@ -145,18 +158,18 @@ namespace Utils
                 new (&old) T(std::move(lastT));
             }
 
-            _indices[Trait::getIndex(Trait::getHandle(o))].index = in.index;
+            _indices[o.Handle.index].index = in.index;
             in.index = elementCount;
             in.valid &= 0;
 
-            auto oldIndex = Trait::getIndex(handle);
+            auto oldIndex = handle.index;
             _indices[freelistEnd].next = oldIndex;
             freelistEnd = oldIndex;
         }
 
         inline auto contains(handle_t handle) const noexcept -> bool
         {
-            const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
+            const Index<handle_t> &in = _indices[handle.index];
             return in.handle.key == handle.key && (in.valid & 1) && in.index != maxSize;
         }
 
@@ -168,7 +181,7 @@ namespace Utils
                         "HandleContainer : Cannot get element by invalid handle!");
 #endif
 
-            const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
+            const Index<handle_t> &in = _indices[handle.index];
             return _elements[in.index];
         }
 
@@ -180,7 +193,7 @@ namespace Utils
                         "HandleContainer : Cannot get element by invalid handle!");
 #endif
 
-            const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
+            const Index<handle_t> &in = _indices[handle.index];
             return _array[index][in.index];
         }
 
@@ -191,7 +204,7 @@ namespace Utils
             YAGE_ASSERT(contains(handle),
                         "HandleContainer : Cannot set element by invalid handle!");
 #endif
-            const Index<handle_t> &in = _indices[Trait::getIndex(handle)];
+            const Index<handle_t> &in = _indices[handle.index];
             T& old = _array[index][in.index];
             new (&old) T(std::move(value));
         }

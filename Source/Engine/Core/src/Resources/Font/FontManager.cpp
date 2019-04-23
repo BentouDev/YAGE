@@ -23,6 +23,6 @@ namespace Resources
 
     FontManager::smart_t FontManager::createFont()
     {
-        return Utils::make_handle<FontTrait>(&_fontContainer); // #NewAlloc
+        return Utils::make_handle<Font>(&_fontContainer); // #NewAlloc
     }
 }

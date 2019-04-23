@@ -39,9 +39,10 @@ namespace Resources
         return result;
     }
 
-    Utils::SmartHandle<Resources::Texture::trait_t> TextureManager::toSmartHandle(
+    Utils::SmartHandle<Resources::Texture> TextureManager::toSmartHandle(
             Resources::TextureManager::handle_t handle) const
     {
-        return Utils::SmartHandle<Resources::Texture::trait_t>(const_cast<Utils::Colony<Resources::Texture::trait_t>*>(&_textureContainer), handle);
+		auto* _colony = const_cast<Utils::Colony<Resources::Texture>*>(&_textureContainer);
+		return Utils::SmartHandle<Resources::Texture>(_colony, handle);
     }
 }

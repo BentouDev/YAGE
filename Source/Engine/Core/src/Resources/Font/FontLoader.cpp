@@ -86,8 +86,12 @@ namespace Resources
             converter << value;
 
             // Todo : refactor to std::map or something...
-            if(strcmp(key.c_str(), "face") == 0)
-                converter >> font.Name;
+			if (strcmp(key.c_str(), "face") == 0)
+			{
+				std::string temp;
+				converter >> temp;
+				font.Name = eastl::string(temp.c_str());
+			}
         }
 
         return true;

@@ -46,7 +46,7 @@ namespace Core
         gl::Uniform4f(location, value.R / 255.f, value.G / 255.f, value.B / 255.f, value.A / 255.f);
     }
 
-    void Material::setUniform(GLint location, Utils::SmartHandle<Resources::Texture::trait_t> texture)
+    void Material::setUniform(GLint location, Utils::SmartHandle<Resources::Texture> texture)
     {
         if (!texture)
             return;

@@ -67,7 +67,7 @@ namespace Resources
         ShaderBuilder&	withFragmentFromFile(const char* path);
         ShaderBuilder&	withFragmentFromSource(const char* source);
 
-        handle_t		debugBuild(const std::string& programName);
+        handle_t		debugBuild(const eastl::string& programName);
     };
 }
 

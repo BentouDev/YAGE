@@ -6,7 +6,6 @@
 #define GAME_MATERIALMANAGER_H
 
 #include <Utils/MemoryBlock.h>
-#include <Utils/Container.h>
 #include <Utils/SmartHandle.h>
 #include "Material.h"
 #include "Core/IManager.h"
@@ -22,10 +21,10 @@ namespace Resources
     {
         MANAGER(MaterialManager);
 
-        using handle_t = Core::Material::handle_t;
-        using smart_t  = Utils::SmartHandle<Core::MaterialTrait>;
+        using handle_t = Utils::Handle<Core::Material>;
+        using smart_t  = Utils::SmartHandle<Core::Material>;
 
-        Utils::Container<Core::MaterialTrait> _materialContainer;
+        Utils::Colony<Core::Material> _materialContainer;
 
         void disposeMaterial(Core::Material& material);
 

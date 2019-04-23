@@ -11,12 +11,13 @@
 
 #include "Core/Gfx/Viewport.h"
 #include "Core/Gfx/RenderTarget.h"
+#include "BaseObject.h"
 
 struct GLFWwindow;
 
 namespace Core
 {
-	class Window
+	class Window : public yage::SafeObject
 	{
 		friend class WindowManager;
 
@@ -24,7 +25,6 @@ namespace Core
 
 	public:
 		using handle_t = Utils::Handle<Window>;
-		using trait_t = Utils::DefaultTrait<Window>;
 
 		Window() : _memory { nullptr }, hWindow{ nullptr }, DefaultViewport { nullptr }
 		{ }

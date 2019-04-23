@@ -1,6 +1,6 @@
 # Agnes
 yage_setup_dependency(Agnes
-        CONAN Agnes/0.3@bentoudev/yage
+        CONAN Agnes/0.4.2@bentoudev/stable
         OS_AFTER_CONAN True
         VAR_NAME AGNES
 )

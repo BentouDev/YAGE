@@ -9,14 +9,15 @@
 
 namespace Utils
 {
-    template <typename Trait>
+    template <typename Type>
     class SmartHandle
     {
-        using object_t = typename Trait::object_t;
-        using handle_t = typename Trait::handle_t;
+        using object_t = typename Type;
+        using handle_t = typename Utils::Handle<Type>;
+		using colony_t = typename Colony<Type>;
 
-        Colony<Trait>* Owner;
-        handle_t       Handle;
+		colony_t* Owner;
+        handle_t  Handle;
 
     public:
         SmartHandle() 
@@ -24,7 +25,7 @@ namespace Utils
             , Handle()
         { }
 
-        SmartHandle(Colony<Trait>* colony, handle_t handle)
+        SmartHandle(colony_t* colony, handle_t handle)
             : Owner(colony)
             , Handle(handle)
         { }
@@ -57,11 +58,11 @@ namespace Utils
         { return Owner ? Owner->contains(Handle) : false; }
     };
 
-    template <typename Trait, typename ... Args>
-    static SmartHandle<Trait> make_handle(Colony<Trait>* colony, Args&&... args)
+    template <typename Type, typename ... Args>
+	static SmartHandle<Type> make_handle(Colony <Type> * colony, Args&& ... args)
     {
         auto handle = colony->emplace(std::forward<Args>(args)...);
-        return SmartHandle<Trait>(colony, handle);
+        return SmartHandle<Type>(colony, handle);
     }
 }
 

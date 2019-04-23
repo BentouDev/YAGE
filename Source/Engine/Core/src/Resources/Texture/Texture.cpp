@@ -14,7 +14,7 @@ namespace Resources
     { }
 
     Texture::Texture(Texture&& other) noexcept
-        : Resource(std::move(other)),
+        : IResource(std::move(other)),
           _width(other._width), _height(other._height),
           _handle(other._handle), _mode(other._mode),
           _format(other._format), _pixelFormat(other._pixelFormat)

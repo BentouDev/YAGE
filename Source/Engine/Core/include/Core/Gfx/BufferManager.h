@@ -5,7 +5,7 @@
 #ifndef GAME_BUFFERMANAGER_H
 #define GAME_BUFFERMANAGER_H
 
-#include <Utils/Container.h>
+#include <Utils/Colony.h>
 #include "StaticBuffer.h"
 #include "Core/IManager.h"
 
@@ -24,7 +24,7 @@ namespace Gfx
         using handle_t = StaticBuffer::handle_t;
 
     protected:
-        Utils::Container<StaticBufferTrait>	_bufferContainer;
+        Utils::Colony<StaticBuffer>	_bufferContainer;
 
     public:
         explicit BufferManager(Core::Engine& engine, Memory::IMemoryBlock& memory);

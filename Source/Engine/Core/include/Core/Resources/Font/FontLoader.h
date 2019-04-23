@@ -20,7 +20,6 @@ namespace Core
 namespace Resources
 {
     class Font;
-    class FontTrait;
     class FontManager;
     class TextureLoader;
 
@@ -40,7 +39,7 @@ namespace Resources
         static bool parseChar	(std::string line, FontLoader& loader, Font& font);
 
     public:
-        using handle_t = Utils::SmartHandle<FontTrait>;
+        using handle_t = Utils::SmartHandle<Font>;
 
         explicit FontLoader(Resources::FontManager& manager, Memory::IMemoryBlock& memory);
         virtual ~FontLoader();

@@ -6,50 +6,35 @@
 #define GAME_COMPONENT_H
 
 #include <Utils/Defines.h>
-#include <Utils/Index.h>
-#include <Utils/String.h>
 #include <Utils/Handle.h>
-#include <Utils/DefaultTrait.h>
-
-#define DECL_COMP(name) class name : public Logic::Component<name>
+#include <BaseObject.h>
 
 namespace Logic
 {
 	using comp_id_t = type_t;
 
-	class YAGE_API IComponent
+	class YAGE_API Component : public yage::SafeObject
 	{
 		static std::atomic<comp_id_t> _lastTypeId;
+
+	protected:
+		explicit Component() { }
+		Component(Component&& other) noexcept { }
 
 	public:
 		template <typename T>
 		static comp_id_t GetComponentId()
 		{
-			static_assert(std::is_base_of<IComponent, T>::value, "T Must derive from System!");
+			static_assert(std::is_base_of<Component, T>::value, "T Must derive from System!");
 			static comp_id_t id = _lastTypeId++;
 			return id;
 		}
-	};
 
-	template <typename Comp>
-	class Component : public IComponent
-	{
-	public:
-		using handle_t	= Utils::Handle<Comp>;
-		using trait_t	= Utils::DefaultTrait<Comp>;
+		virtual ~Component() noexcept { }
 
-		handle_t Handle;
-
-	protected:
-		explicit Component() : Handle() { }
-		Component(Component&& other) : Handle() { }
-
-	public:
 		Component(const Component&) = delete;
 		Component& operator=(Component&&) = delete;
 		Component& operator=(const Component&) = delete;
-
-		virtual ~Component() noexcept { }
 	};
 }
 

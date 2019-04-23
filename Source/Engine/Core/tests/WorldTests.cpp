@@ -31,7 +31,7 @@ namespace WorldTests
         MAKE_MOCK0(Call, void());
     };
 
-    class MockComponent : public Logic::Component<MockComponent>
+    class MockComponent : public Logic::Component
     {
         MockCallback* dieCallback;
 

@@ -20,6 +20,9 @@ namespace Memory
 
 namespace eastl
 {
+	inline bool operator==(const allocator&, const allocator&)
+	{ return true; }
+
 	inline allocator::allocator(const char* EASTL_NAME(pName))
 	{
 #if EASTL_NAME_ENABLED

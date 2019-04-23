@@ -10,7 +10,6 @@
 
 #include <Utils/List.h>
 #include <Utils/String.h>
-#include <Utils/DefaultTrait.h>
 #include <Utils/SafeDelete.h>
 #include <Utils/MemoryBlock.h>
 
@@ -25,6 +24,11 @@ namespace Resources
 {
     class MeshBuilder;
     class MeshManager;
+}
+
+namespace Meta
+{
+	class RegisterClass;
 }
 
 namespace Core
@@ -316,8 +320,10 @@ namespace Core
         DYNAMIC
     };
 
-    DECL_RESOURCE(Mesh)
+	YClass(Serialize())
+    class Mesh : public IResource
     {
+		friend class Meta::RegisterClass;
         friend class Resources::MeshBuilder;
         friend class Resources::MeshManager;
 
@@ -345,7 +351,7 @@ namespace Core
         Mesh& operator=(Mesh&&) = delete;
 
         Mesh(Mesh&& other)
-            : Resource(std::move(other)),
+            : IResource(std::move(other)),
               _memory(other._memory),
               _submeshes(std::move(other._submeshes)),
               _data(other._data),
@@ -386,8 +392,6 @@ namespace Core
 
         std::size_t getVertexCount() const;
     };
-
-    class MeshTrait : public Utils::DefaultTrait<Mesh> { };
 }
 
 #endif

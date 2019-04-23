@@ -5,7 +5,6 @@
 #ifndef GAME_TEXTUREMANAGER_H
 #define GAME_TEXTUREMANAGER_H
 
-#include <Utils/Container.h>
 #include <Utils/SmartHandle.h>
 #include "Core/IManager.h"
 #include "Texture.h"
@@ -19,10 +18,10 @@ namespace Resources
         MANAGER(TextureManager);
 
     public:
-        using handle_t = Texture::handle_t;
+        using handle_t = Utils::Handle<Texture>;
 
     protected:
-        Utils::Container<Texture::trait_t> _textureContainer;
+        Utils::Colony<Texture> _textureContainer;
 
         void disposeTexture(Texture& texture);
 
@@ -37,7 +36,7 @@ namespace Resources
 
         void disposeTexture(handle_t texture);
 
-        Utils::SmartHandle<Resources::Texture::trait_t> toSmartHandle(handle_t handle) const;
+        Utils::SmartHandle<Resources::Texture> toSmartHandle(handle_t handle) const;
 
         Texture* tryGetTexture(handle_t);
 

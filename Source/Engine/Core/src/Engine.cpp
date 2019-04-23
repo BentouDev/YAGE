@@ -57,12 +57,14 @@ namespace Core
         , WindowManager(yage::GetManagerDeleter<Core::WindowManager>(this))
         , InputManager(yage::GetManagerDeleter<Core::InputManager>(this))
         , RTTIManager(yage::GetManagerDeleter<RTTI::Manager>(this))
-        
-		// RTTI::ILayer
-		//, RTTIIntegralLayer(RTTI::Manager::DeleteLayer<RTTI::IntegralLayer>)
-        //, RTTIEngineLayer(RTTI::Manager::DeleteLayer<RTTI::EngineLayer>)
     {
         RTTI::SetupRTTI();
+
+		// Integral types
+		RTTIManager->PushLayer<RTTI::IntegralLayer>();
+
+		// Engine CTTI
+		RTTIManager->PushLayer<RTTI::EngineLayer>();
 
         MemoryModule	.reset(new Core::MemoryModule(memorySize));
         Config			.reset(new Core::Config(
@@ -79,12 +81,6 @@ namespace Core
         yage::CreateManager<Core::WindowManager>       (*this, WindowManager,   Memory::KB(10));
         yage::CreateManager<Core::InputManager>        (*this, InputManager,    Memory::KB(10));
         yage::CreateManager<RTTI::Manager>             (*this, RTTIManager,     Memory::KB(10));
-
-        // Integral types
-        RTTIManager->PushLayer<RTTI::IntegralLayer>();
-
-        // Engine CTTI
-        RTTIManager->PushLayer<RTTI::EngineLayer>();
 
         glfwSetErrorCallback(&Engine::ErrorCallback);
     }

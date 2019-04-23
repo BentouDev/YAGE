@@ -6,7 +6,6 @@
 #define GAME_RENDERINGCOMPONENT_H
 
 #include <cstdint>
-#include <Utils/DefaultTrait.h>
 
 #include "Core/Logic/Component.h"
 #include "Core/Gfx/OpenGl/OpenGLBuffers.h"
@@ -36,14 +35,13 @@ namespace Logic
 		OpenGL::VAO* VAO;
 	};
 
-	DECL_COMP(RenderingComponent)
+	class RenderingComponent : public Component
 	{
 	public:
 		friend class Gfx::Renderer;
 		friend class RenderingSystem;
 
 		using handle_t	= Utils::Handle<RenderingComponent>;
-		using trait_t	= Utils::DefaultTrait<RenderingComponent>;
 
 	private:
 		bool _isVisible;

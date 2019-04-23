@@ -7,7 +7,7 @@
 
 #include <Utils/MemoryBlock.h>
 #include <Utils/Handle.h>
-#include <Utils/Container.h>
+#include <Utils/Colony.h>
 
 #include "Shader.h"
 #include "Core/IManager.h"
@@ -27,7 +27,7 @@ namespace Resources
         using handle_t = Utils::Handle<Gfx::ShaderProgram>;
 
     protected:
-        Utils::Container<Gfx::ShaderProgTrait> _shadersContainer;
+        Utils::Colony<Gfx::ShaderProgram> _shadersContainer;
 
         void dispose(Gfx::ShaderProgram&);
 

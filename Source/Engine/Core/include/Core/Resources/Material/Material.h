@@ -16,7 +16,6 @@
 #include <Utils/String.h>
 #include <Utils/Color.hpp>
 #include <Utils/SmartHandle.h>
-#include <Utils/DefaultTrait.h>
 #include <Utils/LinearAllocator.h>
 #include <Core/Logger.h>
 
@@ -35,6 +34,16 @@ namespace Resources
 namespace Gfx
 {
     class ShaderProgram;
+}
+
+namespace Memory
+{
+	class LinearAllocator;
+}
+
+namespace Meta
+{
+	class RegisterClass;
 }
 
 namespace Core
@@ -70,9 +79,12 @@ namespace Core
         const std::string& getName() const { return _debugName; }
     };
 
-    DECL_RESOURCE(Material)
+	YClass(Serialize())
+    class Material : public IResource
     {
-    protected:
+		friend class Meta::RegisterClass;
+
+	protected:
         // LOAD MAX BUFFER COUNT AND MAX BUFFER SIZE FROM DRIVER
 
         // Shader only has program ID
@@ -110,7 +122,7 @@ namespace Core
         Material& operator=(Material&&) = delete;
 
         Material(Material&& other)
-            : Resource(std::move(other)),
+            : IResource(std::move(other)),
               _memory(other._memory),
               _allocator(other._allocator),
               _uniforms(std::move(other._uniforms)),
@@ -164,10 +176,8 @@ namespace Core
         void setUniform(GLint location, glm::vec4 value);
         void setUniform(GLint location, glm::mat4x4 value);
         void setUniform(GLint location, Utils::Color value);
-        void setUniform(GLint location, Utils::SmartHandle<Resources::Texture::trait_t> texture);
+        void setUniform(GLint location, Utils::SmartHandle<Resources::Texture> texture);
     };
-
-    class MaterialTrait : public Utils::DefaultTrait<Material> {};
 
     template <typename T>
     class AutoUniform : public IAutoUniform

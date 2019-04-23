@@ -22,7 +22,7 @@ namespace Resources
 
 	Core::Mesh::handle_t MeshBuilder::build(const char *meshName)
 	{
-		Core::Mesh::handle_t mesh = _manager.createMesh();
+		Utils::Handle<Core::Mesh> mesh = _manager.createMesh();
 
 		Core::Mesh& instance = _manager.getMesh(mesh);
 

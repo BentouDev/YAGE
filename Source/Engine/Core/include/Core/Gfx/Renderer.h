@@ -13,7 +13,6 @@
 #include <Utils/BorrowedPtr.h>
 #include <Utils/MemoryBlock.h>
 #include <Utils/List.h>
-#include <Utils/Container.h>
 #include <Utils/Color.hpp>
 #include <Utils/Handle.h>
 #include <Utils/SmartHandle.h>
@@ -42,7 +41,6 @@ namespace Core
     class MeshData;
     class Material;
     class Window;
-    class MaterialTrait;
 }
 
 namespace Gfx
@@ -100,9 +98,9 @@ namespace Gfx
 
         struct
         {
-            Utils::SmartHandle<Core::MaterialTrait>  _debugMaterial;
-            Utils::SmartHandle<Core::MaterialTrait>  _debugFontMaterial;
-            Utils::SmartHandle<Resources::FontTrait> _debugFont;
+            Utils::SmartHandle<Core::Material>  _debugMaterial;
+            Utils::SmartHandle<Core::Material>  _debugFontMaterial;
+            Utils::SmartHandle<Resources::Font> _debugFont;
             Gfx::Camera*                             _debug2DCamera;
             Gfx::Camera*                             _debug3DCamera;
         } DebugResources;
@@ -124,9 +122,9 @@ namespace Gfx
 
         Gfx::Camera& getDebug3DCamera();
         Gfx::Camera& getDebug2DCamera();
-        auto getDebugMaterial() -> Utils::SmartHandle<Core::MaterialTrait>;
-        auto getDebugFontMaterial() -> Utils::SmartHandle<Core::MaterialTrait>;
-        auto getDebugFont() -> Utils::SmartHandle<Resources::FontTrait>;
+        auto getDebugMaterial() -> Utils::SmartHandle<Core::Material>;
+        auto getDebugFontMaterial() -> Utils::SmartHandle<Core::Material>;
+        auto getDebugFont() -> Utils::SmartHandle<Resources::Font>;
 
         Gfx::Camera& createCamera();
         SpriteBatch& getSpriteBatch(Utils::Handle<Core::Material> material, Camera* camera, std::int32_t minimalSize = -1);

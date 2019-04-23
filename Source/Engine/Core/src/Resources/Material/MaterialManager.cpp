@@ -45,7 +45,7 @@ namespace Resources
 
     void MaterialManager::disposeMaterial(Core::Material &material)
     {
-        disposeMaterial(material.Handle);
+        disposeMaterial(Utils::handle_cast<Core::Material>(material.Handle));
     }
 
     void MaterialManager::disposeMaterial(handle_t handle)
