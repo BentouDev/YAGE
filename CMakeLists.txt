@@ -79,6 +79,7 @@ conan_cmake_run(CONANFILE conanfile.txt
 
 # Add Agnes
 # yage_add_dependency(Dependencies/Agnes)
+message ("-- yage: debug Conan Agnes dir:" ${CONAN_BIN_DIRS_AGNES})
 find_program(AGNES_BINARY 
 	NAME Agnes Agnes.exe agnes agnes.exe
 	PATHS ${CONAN_BIN_DIRS_AGNES})
