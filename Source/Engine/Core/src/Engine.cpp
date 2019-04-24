@@ -7,6 +7,9 @@
 #include <RTTI/TypeInfo.h>
 #include <RTTI/IntegralLayer.h>
 #include <RTTI/EngineLayer.h>
+#include <Platform/EventQueue.h>
+#include <Platform/Logger.h>
+
 #include "Core/RTTI/RTTIManager.h"
 
 #include "Core/EngineApis.h"
@@ -22,10 +25,10 @@
 #include "Core/Gfx/BufferManager.h"
 #include "Core/Gfx/Renderer.h"
 #include "Core/Logic/Scene.h"
-#include "Core/EventQueue.h"
+
 #include "Core/GameTime.h"
 #include "Core/Engine.h"
-#include "Core/Logger.h"
+
 #include "Core/Config.h"
 
 #include "Core/ManagerFactory.h"
@@ -66,8 +69,8 @@ namespace Core
 		// Engine CTTI
 		RTTIManager->PushLayer<RTTI::EngineLayer>();
 
-        MemoryModule	.reset(new Core::MemoryModule(memorySize));
-        Config			.reset(new Core::Config(
+        MemoryModule.reset(new Core::MemoryModule(memorySize));
+        Config		.reset(new Core::Config(
             MemoryModule->requestMemoryBlock(Memory::KB(1), "Config Block"))
         );
 
@@ -118,7 +121,42 @@ namespace Core
 		}
 	}
 
-    auto Engine::CreateWindow() const noexcept -> Window::handle_t
+	void Engine::SetupWindow(Utils::Handle<Window> handle)
+	{
+		auto* window = WindowManager->tryGet(handle);
+		if (window != nullptr)
+		{
+			if (!Renderer->registerWindow(window))
+			{
+				Logger::error("Engine : Unable to register window in OpenGL!");
+			}
+
+			if (!EventQueue::registerWindow(window))
+			{
+				Logger::error("Engine : Unable to register window in EventQueue!");
+			}
+		}
+		else
+		{
+			Logger::error("Unable to create window!");
+		}
+	}
+
+	auto Engine::CreateWindowFromSurface(std::uintptr_t raw_handle) -> Window::handle_t
+	{
+		auto handle = WindowManager->createNew(
+			((std::string)Config->WindowTitle).c_str(),
+			raw_handle,
+			Config->WindowWidth,
+			Config->WindowHeight
+		);
+
+		SetupWindow(handle);
+
+		return handle;
+	}
+
+    auto Engine::CreateWindow() -> Window::handle_t
     {
         auto handle = WindowManager->createNew (
             ((std::string)Config->WindowTitle).c_str(),
@@ -126,23 +164,7 @@ namespace Core
              Config->WindowHeight
         );
 
-        auto* window = WindowManager->tryGet(handle);
-        if (window != nullptr)
-        {
-            if (!Renderer->registerWindow(window))
-            {
-                Logger::error("Engine : Unable to register window in OpenGL!");
-            }
-
-            if (!EventQueue::registerWindow(window))
-            {
-                Logger::error("Engine : Unable to register window in EventQueue!");
-            }
-        }
-        else
-        {
-            Logger::error("Unable to create window!");
-        }
+		SetupWindow(handle);
 
         return handle;
     }

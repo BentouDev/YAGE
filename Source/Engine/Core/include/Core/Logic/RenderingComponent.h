@@ -7,8 +7,9 @@
 
 #include <cstdint>
 
+#include <Platform/Graphics/OpenGl/OpenGLBuffers.h>
+
 #include "Core/Logic/Component.h"
-#include "Core/Gfx/OpenGl/OpenGLBuffers.h"
 
 namespace Gfx
 {

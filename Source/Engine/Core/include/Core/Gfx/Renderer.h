@@ -5,10 +5,11 @@
 #ifndef YAGE_RENDERER_H
 #define YAGE_RENDERER_H
 
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
+#include <Platform/Graphics/OpenGl/OpenGLBase.h>
+#include <Platform/Graphics/Rectangle.h>
+
 #include "Core/Gfx/CommandQueue.h"
 #include "Core/IManager.h"
-#include "Rectangle.h"
 
 #include <Utils/BorrowedPtr.h>
 #include <Utils/MemoryBlock.h>
@@ -17,15 +18,9 @@
 #include <Utils/Handle.h>
 #include <Utils/SmartHandle.h>
 
-// temporary
-#include "Core/Resources/Material/Material.h"
-#include "Core/Resources/Font/Font.h"
-
-#include <map>
-
 namespace Resources
 {
-    class FontTrait;
+    class Font;
 }
 
 namespace Logic

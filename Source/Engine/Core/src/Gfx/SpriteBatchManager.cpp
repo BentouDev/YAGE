@@ -3,13 +3,14 @@
 //
 
 #include <Utils/MemoryBlock.h>
+#include <Platform/Logger.h>
+
 #include "Core/Gfx/SpriteBatchManager.h"
 #include "Core/Gfx/SpriteBatch.h"
 #include "Core/Gfx/Sprite.h"
 #include "Core/Gfx/Camera.h"
 #include "Core/Resources/Material/MaterialManager.h"
 #include "Core/Engine.h"
-#include "Core/Logger.h"
 
 namespace Gfx
 {

@@ -2,12 +2,13 @@
 // Created by bentoo on 19.05.17.
 //
 
-#include "Core/Resources/Mesh/ModelLoader.h"
-#include "Core/Logger.h"
+#include <Platform/Logger.h>
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
+#include "Core/Resources/Mesh/ModelLoader.h"
 
 namespace Resources
 {

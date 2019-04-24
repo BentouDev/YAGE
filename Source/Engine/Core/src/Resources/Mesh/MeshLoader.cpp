@@ -2,7 +2,7 @@
 // Created by Bentoo on 2017-01-02.
 //
 
-#include "Core/Logger.h"
+#include <Platform/Logger.h>
 #include "Core/Resources/Mesh/MeshBuilder.h"
 #include "Core/Resources/Mesh/MeshLoader.h"
 #include "Core/Resources/Mesh/MeshManager.h"

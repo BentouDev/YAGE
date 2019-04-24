@@ -2,10 +2,11 @@
 // Created by Bentoo on 2017-02-11.
 //
 
+#include <Platform/Platform.h>
+#include <Platform/Logger.h>
+
 #include "Core/Input/ControlScheme.h"
-#include "Core/Platform.h"
 #include "Core/GameTime.h"
-#include "Core/Logger.h"
 
 namespace Input
 {

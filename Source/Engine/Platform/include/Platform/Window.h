@@ -5,12 +5,12 @@
 #ifndef YAGE_WINDOW_H
 #define YAGE_WINDOW_H
 
-#include <string>
 #include <vector>
 #include <Utils/List.h>
+#include <Utils/String.h>
 
-#include "Core/Gfx/Viewport.h"
-#include "Core/Gfx/RenderTarget.h"
+#include "Graphics/Viewport.h"
+#include "Graphics/RenderTarget.h"
 #include "BaseObject.h"
 
 struct GLFWwindow;
@@ -30,6 +30,7 @@ namespace Core
 		{ }
 
 		explicit Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height);
+		explicit Window(Memory::IMemoryBlock& memory, std::uintptr_t handle, const char* title, unsigned width, unsigned height);
 		virtual ~Window();
 
 		Window(Window&& other)
@@ -48,31 +49,33 @@ namespace Core
 		Window& operator=(Window&&) = delete;
 		Window& operator=(const Window&) = delete;
 
-		auto Create() -> void;
-		auto Destroy() -> void;
-		auto IsAlive() const noexcept -> bool;
-		auto ShouldClose() const noexcept -> bool;
-		auto Show() const noexcept -> void;
-		auto GetDefaultViewport() const noexcept -> Gfx::Viewport&;
-		auto Resize(std::int32_t width, std::int32_t height) -> void;
+		void Create();
+		void Destroy();
+		void Show() const noexcept;
+		void Close();
+		bool IsAlive() const noexcept;
+		bool ShouldClose() const noexcept;
+		void Resize(std::int32_t width, std::int32_t height);
+		auto GetDefaultViewport() const noexcept->Gfx::Viewport &;
 
-		Memory::IMemoryBlock*	_memory;
+		Utils::String Title;
+		unsigned      Width;
+		unsigned      Height;
 
-		bool					IsCloseRequested;
-
-		std::string				Title;
-		unsigned				Width;
-		unsigned				Height;
-
-		Gfx::Viewport*			DefaultViewport;
-
-		GLFWwindow*				hWindow;
-		handle_t				Handle;
+		GLFWwindow* hWindow;
+		handle_t    Handle;
 
 		auto operator==(const Window& other) -> bool
 		{
 			return this->hWindow == other.hWindow;
 		}
+
+	private:
+		Gfx::Viewport* DefaultViewport;
+
+		Memory::IMemoryBlock* _memory;
+
+		bool IsCloseRequested;
 	};
 }
 

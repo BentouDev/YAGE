@@ -2,8 +2,8 @@
 // Created by bentoo on 17.05.18.
 //
 
-#include "Core/Logger.h"
-#include "Core/FileLoggerOutput.h"
+#include "Platform/Logger.h"
+#include "Platform/FileLoggerOutput.h"
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>

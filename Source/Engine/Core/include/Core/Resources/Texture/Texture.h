@@ -5,8 +5,8 @@
 #ifndef GAME_TEXTURE_H
 #define GAME_TEXTURE_H
 
+#include <Platform/Graphics/OpenGl/OpenGLBase.h>
 #include "Core/Resources/Resource.h"
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
 
 namespace Meta
 {

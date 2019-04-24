@@ -4,7 +4,7 @@
 
 #include "../include/Core/Context.h"
 #include "../include/Core/Config.h"
-#include "../include/Core/Logger.h"
+#include "../include/Platform/Logger.h"
 
 namespace Core
 {

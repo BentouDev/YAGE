@@ -14,6 +14,7 @@ namespace Ui
 
 namespace Editor
 {
+	class EditorApp;
 	class EditorTabWidget;
 
 	class EditorWindow : public QMainWindow
@@ -26,7 +27,7 @@ namespace Editor
 		void addTabPage(const char* name = "New Scene.scn*");
 
 	public:
-		explicit EditorWindow(QWidget *parent = nullptr);
+		explicit EditorWindow(EditorApp* editor, QWidget *parent = nullptr);
 		~EditorWindow();
 	
 	private slots:
@@ -35,6 +36,7 @@ namespace Editor
 		void onCloseTabButtonClick(int);
 
 	private:
+		EditorApp* _editor;
 		Ui::EditorWindow *_ui;
 	};
 }

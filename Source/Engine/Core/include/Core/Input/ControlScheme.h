@@ -9,7 +9,7 @@
 
 #include <Utils/MemoryBlock.h>
 #include <Utils/List.h>
-#include <Core/Input/DeviceType.h>
+#include <Platform/DeviceType.h>
 
 namespace Core
 {

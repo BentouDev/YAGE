@@ -3,10 +3,11 @@
 //
 
 #include <fstream>
+
 #include <Utils/String.h>
+#include <Platform/Logger.h>
 
 #include "Core/Engine.h"
-#include "Core/Logger.h"
 #include "Core/Resources/Shader/ShaderBuilder.h"
 #include "Core/Resources/Shader/ShaderManager.h"
 

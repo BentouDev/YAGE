@@ -4,7 +4,7 @@
 
 #include "Core/Resources/Shader/ShaderManager.h"
 #include "Core/Engine.h"
-#include "Core/Logger.h"
+#include <Platform/Logger.h>
 
 namespace Resources
 {

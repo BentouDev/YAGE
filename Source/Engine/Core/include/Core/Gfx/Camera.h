@@ -11,8 +11,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <Utils/PropertyMacro.h>
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
-#include "Core/Gfx/Rectangle.h"
+#include "Platform/Graphics/OpenGl/OpenGLBase.h"
+#include "Platform/Graphics/Rectangle.h"
 
 namespace Gfx
 {

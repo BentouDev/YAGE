@@ -17,9 +17,9 @@
 #include <Utils/Color.hpp>
 #include <Utils/SmartHandle.h>
 #include <Utils/LinearAllocator.h>
-#include <Core/Logger.h>
+#include <Platform/Logger.h>
+#include <Platform/Graphics/OpenGl/OpenGLBase.h>
 
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
 #include "Core/Resources/Resource.h"
 
 // temporary

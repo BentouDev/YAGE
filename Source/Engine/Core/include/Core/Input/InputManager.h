@@ -8,9 +8,9 @@
 #include <map>
 #include <Utils/MemoryBlock.h>
 #include <Utils/String.h>
+#include <Platform/DeviceType.h>
 
 #include "Core/GameTime.h"
-#include "Core/Input/DeviceType.h"
 #include "Core/IManager.h"
 
 struct _SDL_GameController;

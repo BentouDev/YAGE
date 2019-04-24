@@ -3,11 +3,11 @@
 //
 
 #include <Utils/MemorySizes.h>
+#include <Platform/Logger.h>
 
 #include "Core/Resources/Mesh/MeshManager.h"
 #include "Core/Gfx/BufferManager.h"
 #include "Core/Engine.h"
-#include "Core/Logger.h"
 
 namespace Resources
 {

@@ -5,17 +5,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <Utils/MemorySizes.h>
 #include <Utils/SmartHandle.h>
-#include <Core/Gfx/Renderer.h>
+
+#include <Platform/Graphics/RenderTarget.h>
+#include <Platform/Window.h>
 
 #include "Core/Gfx/Renderer.h"
 #include "Core/Gfx/Camera.h"
-#include "Core/Gfx/RenderTarget.h"
+
 #include "Core/Gfx/Sprite.h"
 #include "Core/Gfx/SpriteBatch.h"
 #include "Core/Gfx/SpriteBatchManager.h"
 
 #include "Core/Engine.h"
-#include "Core/Window.h"
 #include "Core/Resources/Mesh/Mesh.h"
 #include "Core/Resources/Mesh/MeshManager.h"
 #include "Core/Resources/Material/Material.h"

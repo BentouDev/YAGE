@@ -32,8 +32,8 @@ set(CMAKE_AUTOMOC ON)
 
 yage_include(YAGE Dependencies/AdvancedDockingSystem/Source/include)
 
-add_library(ADS_LIB STATIC ${ADS_SOURCES} ${ADS_HEADERS})
-target_compile_definitions(ADS_LIB PRIVATE ADS_IMPORT)
+add_library(ADS_LIB SHARED ${ADS_SOURCES} ${ADS_HEADERS})
+target_compile_definitions(ADS_LIB PRIVATE ADS_EXPORT)
 target_link_libraries(ADS_LIB Qt5::Core Qt5::Widgets)
 
 install(TARGETS ADS_LIB

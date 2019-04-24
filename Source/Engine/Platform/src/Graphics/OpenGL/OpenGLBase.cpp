@@ -2,13 +2,13 @@
 // Created by Bentoo on 2016-09-22.
 //
 
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
+#include "Platform/Graphics/OpenGl/OpenGLBase.h"
 
-#include "Core/Window.h"
-#include "Core/Platform.h"
-#include "Core/Logger.h"
+#include "Platform/Window.h"
+#include "Platform/Platform.h"
+#include "Platform/Logger.h"
 
-#include <map>
+#include <EASTL/hash_map.h>
 
 namespace OpenGL
 {
@@ -123,7 +123,7 @@ namespace OpenGL
     GLenum toOpenGlType(type_t type)
     {
         // ToDo : Fix OpenGL type dispatching
-        static std::map<type_t, GLenum> dispatcher;/* = {
+        static eastl::hash_map<type_t, GLenum> dispatcher;/* = {
             { TypeInfo<float>::id(), gl::FLOAT },
             { TypeInfo<double>::id(), gl::DOUBLE },
             { TypeInfo<signed char>::id(), gl::BYTE },

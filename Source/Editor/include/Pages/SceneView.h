@@ -3,15 +3,24 @@
 
 #include "BasePage.h"
 #include <QSurface>
+#include <Utils/Handle.h>
+
+namespace Core
+{
+	class Window;
+}
 
 namespace Editor
 {
     class SceneView : public BasePage
     {
     public:
+		SceneView(EditorApp* editor, QWidget* parent = nullptr);
+		virtual ~SceneView();
 
-    protected:
+	protected:
         QSurface* _surface;
+		Utils::Handle<Core::Window> _window;
     };
 }
 

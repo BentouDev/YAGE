@@ -2,9 +2,9 @@
 // Created by bentoo on 10/28/16.
 //
 
+#include <Platform/Logger.h>
 #include "Core/Resources/Material/MaterialManager.h"
 #include "Core/Engine.h"
-#include "Core/Logger.h"
 
 namespace Resources
 {

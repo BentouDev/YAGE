@@ -2,9 +2,9 @@
 // Created by bentoo on 14.11.16.
 //
 
+#include <Platform/Logger.h>
 #include "Core/IManager.h"
 #include "Core/Engine.h"
-#include "Core/Logger.h"
 
 namespace Core
 {

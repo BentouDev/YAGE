@@ -16,6 +16,13 @@ file(GLOB_RECURSE
     ${CMAKE_CURRENT_SOURCE_DIR}/*.h
     ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 
+file(GLOB_RECURSE
+    EDITOR_SOURCES
+	CONFIGURE_DEPENDS
+	LIST_DIRECTORIES false
+    ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
+
 set(YAGE_REFLECTION_CONFIG
     ${CMAKE_SOURCE_DIR}/Data/Reflection/editor_main.mustache
     ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
@@ -46,7 +53,7 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(Editor ${OS_BUNDLE} src/main.cpp include/Editor.h src/Editor.cpp include/EditorWindow.h src/EditorWindow.cpp include/BasePage.h src/BasePage.cpp include/EditorTabBar.h src/EditorTabBar.cpp include/EditorTabWidget.h src/EditorTabWidget.cpp editorresources.qrc include/QProperty.h include/QClassView.h include/IconTitleWidget.h src/IconTitleWidget.cpp include/Pages/SceneView.h src/Pages/SceneView.cpp)
+add_executable(Editor ${OS_BUNDLE} ${EDITOR_SOURCES} ${EDITOR_ALL_HEADERS} ${EDITOR_GEN_FILES} editorresources.qrc)
 add_executable(YAGE::Editor ALIAS Editor)
 set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
 
@@ -78,9 +85,6 @@ set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
 target_link_libraries(Editor 
     YAGE::Engine
-	${SPDLOG_LIBRARIES}
-    ${EASTL_LIBRARIES}
-    ${GLFW_LIBRARIES}
     Qt5::Core 
     Qt5::Widgets 
     ADS_LIB 

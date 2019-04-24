@@ -2,9 +2,11 @@
 // Created by bentoo on 03.12.16.
 //
 
+#include <Platform/Logger.h>
+
 #include "Core/Resources/Texture/TextureLoader.h"
 #include "Core/Resources/Texture/TextureManager.h"
-#include "Core/Logger.h"
+
 #include "Utils/SafeDelete.h"
 #include <lodepng.h>
 

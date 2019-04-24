@@ -2,13 +2,20 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
-#include "Core/Logger.h"
-#include "Core/Window.h"
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
-#include "Core/Platform.h"
+#include "Platform/Logger.h"
+#include "Platform/Window.h"
+#include "Platform/Graphics/OpenGl/OpenGLBase.h"
+#include "Platform/Platform.h"
 
 namespace Core
 {
+	Window::Window(Memory::IMemoryBlock& memory, std::uintptr_t handle, const char* title, unsigned width, unsigned height)
+		: _memory(&memory), Title{ title }, Width{ width }, Height{ height },
+		DefaultViewport{ nullptr }, hWindow{ nullptr }, IsCloseRequested(false)
+	{
+		YAGE_ASSERT(false, "Not implemented!");
+	}
+
     Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
         : _memory(&memory), Title {title}, Width {width}, Height {height},
           DefaultViewport {nullptr}, hWindow {nullptr}, IsCloseRequested(false)

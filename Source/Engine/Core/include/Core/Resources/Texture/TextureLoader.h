@@ -5,10 +5,10 @@
 #ifndef GAME_TEXTURELOADER_H
 #define GAME_TEXTURELOADER_H
 
-#include <map>
+#include <EASTL/hash_map.h>
 #include <Utils/Handle.h>
 #include <Utils/List.h>
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
+#include <Platform/Graphics/OpenGl/OpenGLBase.h>
 
 namespace Resources
 {
@@ -50,7 +50,7 @@ namespace Resources
 		};
 
 		Utils::List<TextureData> _data;
-		std::map<GLenum, GLenum> parameters;
+		eastl::hash_map<GLenum, GLenum> parameters;
 
 		void setParameters(GLenum slot, const Texture& texture) const;
 

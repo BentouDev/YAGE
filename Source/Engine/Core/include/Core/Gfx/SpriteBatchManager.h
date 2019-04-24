@@ -6,7 +6,7 @@
 #define YAGE_SPRITEBATCHMANAGER_H
 
 #include "Core/IManager.h"
-#include "Core/Gfx/OpenGl/OpenGLBuffers.h"
+#include "Platform/Graphics/OpenGl/OpenGLBuffers.h"
 
 #include <map>
 #include <Utils/List.h>

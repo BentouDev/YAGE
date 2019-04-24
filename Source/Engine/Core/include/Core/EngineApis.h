@@ -13,10 +13,10 @@
 
 #ifdef YAGE_OPENGL
 // #include "Gfx/OpenGl/OpenGlContext.h"
-#include "Gfx/OpenGl/OpenGLBase.h"
+#include "Platform/Graphics//OpenGl/OpenGLBase.h"
 #endif
 
-#include "Platform.h"
+#include "Platform/Platform.h"
 
 #ifdef CreateWindow
 #undef CreateWindow

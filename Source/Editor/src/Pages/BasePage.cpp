@@ -2,7 +2,8 @@
 // Created by bentoo on 10/24/16.
 //
 
-#include "BasePage.h"
+#include "Pages/BasePage.h"
+#include "Editor.h"
 #include <QLayout>
 #include <QLineEdit>
 #include <QToolBar>
@@ -11,8 +12,8 @@
 
 namespace Editor
 {
-	BasePage::BasePage(QWidget *parent)
-		: QFrame(parent)
+	BasePage::BasePage(EditorApp* editor, QWidget *parent)
+		: QFrame(parent), _editor(editor)
 	{
 		QVBoxLayout* masterPageLayout = new QVBoxLayout();
 		_toolbarLayout = new QHBoxLayout();
@@ -86,6 +87,11 @@ namespace Editor
 		segmentedButton->layout()->addWidget(right);
 
 		toolbar->addWidget(segmentedButton);*/
+	}
+
+	Core::Engine* BasePage::engine()
+	{
+		return _editor->getEngine();
 	}
 
 	void BasePage::addButton(const char* text, const char* objName)

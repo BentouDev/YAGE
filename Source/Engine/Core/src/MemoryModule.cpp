@@ -5,7 +5,7 @@
 #include <malloc.h>
 #include <Utils/SafeDelete.h>
 #include <Utils/LinearAllocator.h>
-#include <Core/Logger.h>
+#include <Platform/Logger.h>
 #include "Core/MemoryModule.h"
 
 namespace Core

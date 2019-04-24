@@ -5,14 +5,14 @@
 #ifndef YAGE_MESH_H
 #define YAGE_MESH_H
 
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
-#include "Core/Resources/Resource.h"
+#include <Platform/Graphics/OpenGl/OpenGLBase.h>
 
 #include <Utils/List.h>
 #include <Utils/String.h>
 #include <Utils/SafeDelete.h>
 #include <Utils/MemoryBlock.h>
 
+#include "Core/Resources/Resource.h"
 #include "MeshScheme.h"
 
 namespace Gfx

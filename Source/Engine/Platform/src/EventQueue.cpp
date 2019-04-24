@@ -2,10 +2,10 @@
 // Created by Bentoo on 2017-02-14.
 //
 
-#include "Core/EventQueue.h"
-#include "Core/Platform.h"
-#include "Core/Window.h"
-#include "Core/Logger.h"
+#include "Platform/EventQueue.h"
+#include "Platform/Platform.h"
+#include "Platform/Window.h"
+#include "Platform/Logger.h"
 
 namespace Core
 {

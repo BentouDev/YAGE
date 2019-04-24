@@ -44,13 +44,14 @@ target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})
 target_link_libraries(Core
     PUBLIC
         YAGE::Kernel
-		CONAN_PKG::glfw
+        YAGE::Platform
 		CONAN_PKG::eastl
-		CONAN_PKG::assimp
 		glm
     PRIVATE
         lodepng
         utf8
+		CONAN_PKG::glfw
+		CONAN_PKG::assimp
 		CONAN_PKG::jsonformoderncpp
         ${CMAKE_THREAD_LIBS_INIT})
 

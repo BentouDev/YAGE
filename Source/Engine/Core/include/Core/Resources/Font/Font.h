@@ -9,8 +9,9 @@
 #include <Utils/List.h>
 #include <Utils/MemoryBlock.h>
 
+#include <Platform/Graphics/Rectangle.h>
+
 #include "Core/Resources/Resource.h"
-#include "Core/Gfx/Rectangle.h"
 
 namespace Meta
 {

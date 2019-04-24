@@ -82,6 +82,7 @@ namespace Core
 		static void ErrorCallback(int code, const char* description);
 
 		void ReleaseManagers();
+		void SetupWindow(Utils::Handle<Window> handle);
 
 	public:
 
@@ -110,7 +111,9 @@ namespace Core
 		Engine& operator=(Engine&&) = delete;
 
 		// Create Window based on current configuration
-		auto CreateWindow() const noexcept -> Utils::Handle<Window>;
+		auto CreateWindow() -> Utils::Handle<Window>;
+
+		auto CreateWindowFromSurface(std::uintptr_t handle) -> Utils::Handle<Window>;
 
 		// Load configuration
 		bool LoadConfig(const char* = "Config.json");

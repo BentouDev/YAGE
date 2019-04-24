@@ -5,7 +5,7 @@
 #ifndef YAGE_TEXTUREREGION_H
 #define YAGE_TEXTUREREGION_H
 
-#include <Core/Gfx/Rectangle.h>
+#include <Platform/Graphics/Rectangle.h>
 
 namespace Resources
 {

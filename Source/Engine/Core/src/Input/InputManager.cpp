@@ -2,13 +2,14 @@
 // Created by bentoo on 13.02.17.
 //
 
-#include <Core/Input/InputEvent.h>
-#include <Core/EventQueue.h>
+#include <Platform/InputEvent.h>
+#include <Platform/EventQueue.h>
+#include <Platform/InputEvent.h>
+#include <Platform/Platform.h>
+#include <Platform/Logger.h>
+
 #include "Core/Input/InputManager.h"
 #include "Core/Input/ControlScheme.h"
-#include "Core/Input/InputEvent.h"
-#include "Core/Platform.h"
-#include "Core/Logger.h"
 
 namespace Core
 {

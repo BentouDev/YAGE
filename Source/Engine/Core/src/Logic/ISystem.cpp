@@ -3,8 +3,8 @@
 //
 
 #include <algorithm>
+#include <Platform/Logger.h>
 #include "Core/Logic/ISystem.h"
-#include "Core/Logger.h"
 
 namespace Logic
 {

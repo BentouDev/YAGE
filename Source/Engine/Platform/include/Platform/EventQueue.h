@@ -8,8 +8,8 @@
 #include <Utils/MemoryBlock.h>
 #include <Utils/List.h>
 
-#include <Core/Input/InputEvent.h>
-#include <Core/WindowEvent.h>
+#include "Platform/InputEvent.h"
+#include "Platform/WindowEvent.h"
 
 struct GLFWwindow;
 struct GLFWmonitor;

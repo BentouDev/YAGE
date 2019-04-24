@@ -6,7 +6,7 @@
 #define YAGE_SPRITEBATCH_H
 
 #include <cstdint>
-#include "Core/Gfx/Rectangle.h"
+#include <Platform/Graphics/Rectangle.h>
 
 #include <Utils/MemoryBlock.h>
 #include <Utils/Color.hpp>

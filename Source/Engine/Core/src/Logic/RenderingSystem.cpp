@@ -2,12 +2,13 @@
 // Created by bentoo on 10/14/16.
 //
 
-#include <Core/Gfx/Viewport.h>
-#include <Core/Logic/Scene.h>
+#include <Platform/Graphics/Viewport.h>
+#include <Platform/Logger.h>
+
+#include "Core/Logic/Scene.h"
 #include "Core/Logic/RenderingSystem.h"
 
 #include "Core/Engine.h"
-#include "Core/Logger.h"
 #include "Core/Gfx/BufferManager.h"
 #include "Core/Gfx/Renderer.h"
 #include "Core/Resources/Mesh/Mesh.h"

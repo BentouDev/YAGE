@@ -18,9 +18,11 @@ namespace Editor
 
         int Exec(int argc, char** args);
 
+		Core::Engine* getEngine() { return _Engine; }
+
     private:
         EditorWindow* _MainWindow { nullptr };
-        Core::Engine* _Engine { nullptr };
+		Core::Engine* _Engine { nullptr };
     };
 }
 

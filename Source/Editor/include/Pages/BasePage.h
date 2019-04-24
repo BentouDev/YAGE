@@ -8,16 +8,29 @@
 #include <QFrame>
 #include <QtWidgets/QHBoxLayout>
 
+namespace Core
+{
+	class Engine;
+}
+
 namespace Editor
 {
+	class EditorApp;
+
 	class BasePage : public QFrame
 	{
 		Q_OBJECT
 
+	protected:
 		QHBoxLayout* _toolbarLayout;
+		EditorApp* _editor;
+
+		Core::Engine* engine();
 
 	public:
-		BasePage(QWidget *parent = nullptr);
+		BasePage(EditorApp* editor, QWidget *parent = nullptr);
+		virtual ~BasePage() {}
+		
 		void addButton(const char*, const char* = "");
 	};
 }

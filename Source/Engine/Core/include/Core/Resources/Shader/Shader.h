@@ -7,7 +7,7 @@
 
 #include <Utils/List.h>
 
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
+#include <Platform/Graphics/OpenGl/OpenGLBase.h>
 #include "Core/Resources/Resource.h"
 
 namespace Resources

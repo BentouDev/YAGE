@@ -2,10 +2,10 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
-#include "Core/Gfx/Viewport.h"
-#include "Core/Gfx/OpenGl/OpenGLBase.h"
-#include "Core/Window.h"
-#include "Core/Platform.h"
+#include "Platform/Graphics/Viewport.h"
+#include "Platform/Graphics/OpenGl/OpenGLBase.h"
+#include "Platform/Window.h"
+#include "Platform/Platform.h"
 
 namespace Gfx
 {

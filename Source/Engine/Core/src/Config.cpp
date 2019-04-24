@@ -3,8 +3,8 @@
 //
 
 #include <fstream>
-#include "../include/Core/Config.h"
-#include "../include/Core/Logger.h"
+#include "Core/Config.h"
+#include "Platform/Logger.h"
 
 namespace Core
 {

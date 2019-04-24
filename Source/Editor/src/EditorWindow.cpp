@@ -12,7 +12,7 @@
 
 #include "EditorWindow.h"
 #include "EditorTabWidget.h"
-#include "BasePage.h"
+#include "Pages/BasePage.h"
 
 #include "ui_EditorWindow.h"
 
@@ -51,13 +51,13 @@ namespace Editor
 		return sc;
 	}
 
-	static ADS_NS::SectionContent::RefPtr createBasePage(ADS_NS::ContainerWidget* container)
+	static ADS_NS::SectionContent::RefPtr createBasePage(ADS_NS::ContainerWidget* container, EditorApp* editor)
 	{
 		QWidget* w = new QWidget();
 		QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
 		w->setLayout(bl);
 
-		BasePage* p = new BasePage();
+		BasePage* p = new BasePage(editor);
 		bl->addWidget(p);
 
 		const int index = ++CONTENT_COUNT;
@@ -66,9 +66,10 @@ namespace Editor
 		return sc;
 	}
 
-	EditorWindow::EditorWindow(QWidget *parent) :
-			QMainWindow(parent),
-			_ui(new Ui::EditorWindow)
+	EditorWindow::EditorWindow(EditorApp* editor, QWidget *parent)
+		: QMainWindow(parent)
+		, _editor(editor)
+		, _ui(new Ui::EditorWindow)
 	{
 // #ifdef Q_OS_WIN
 // 		// Transparent background for windows
@@ -112,8 +113,8 @@ namespace Editor
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
 		sw = _container->addSectionContent(createLongTextLabelSC(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createBasePage(cw), sw, ADS_NS::CenterDropArea);
-		sw = _container->addSectionContent(createBasePage(cw), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createBasePage(cw, _editor), sw, ADS_NS::CenterDropArea);
+		sw = _container->addSectionContent(createBasePage(cw, _editor), sw, ADS_NS::CenterDropArea);
 	}
 
 	void EditorWindow::onAddButtonClick()
@@ -133,7 +134,7 @@ namespace Editor
 
 	void EditorWindow::addTabPage(const char* name)
 	{
-		BasePage* page = new BasePage(this);
+		BasePage* page = new BasePage(_editor, this);
 		_tabWidget->addTab(page, name);
 	}
 

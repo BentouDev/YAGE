@@ -5,6 +5,7 @@ add_library(Engine SHARED yage.h yage.cpp)
 add_library(YAGE::Engine ALIAS Engine)
 
 add_subdirectory(Kernel)
+add_subdirectory(Platform)
 add_subdirectory(Core)
 add_subdirectory(Script)
 
@@ -47,7 +48,8 @@ set_target_properties(Engine PROPERTIES
 
 target_link_libraries(Engine 
     PUBLIC
-        YAGE::Kernel 
+        YAGE::Kernel
+		YAGE::Platform
         YAGE::Script 
         YAGE::Core 
         CTTI::Engine)
