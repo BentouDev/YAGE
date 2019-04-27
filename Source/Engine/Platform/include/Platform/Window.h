@@ -9,11 +9,10 @@
 #include <Utils/List.h>
 #include <Utils/String.h>
 
+#include "Platform.h"
 #include "Graphics/Viewport.h"
 #include "Graphics/RenderTarget.h"
 #include "BaseObject.h"
-
-struct GLFWwindow;
 
 namespace Core
 {
@@ -57,13 +56,13 @@ namespace Core
 		bool ShouldClose() const noexcept;
 		void Resize(std::int32_t width, std::int32_t height);
 		auto GetDefaultViewport() const noexcept->Gfx::Viewport &;
+		auto GetNative() const -> yage::platform::WindowHandle;
 
 		Utils::String Title;
 		unsigned      Width;
 		unsigned      Height;
 
-		GLFWwindow* hWindow;
-		handle_t    Handle;
+		handle_t Handle;
 
 		auto operator==(const Window& other) -> bool
 		{
@@ -71,6 +70,8 @@ namespace Core
 		}
 
 	private:
+		yage::platform::WindowHandle hWindow;
+
 		Gfx::Viewport* DefaultViewport;
 
 		Memory::IMemoryBlock* _memory;

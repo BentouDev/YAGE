@@ -83,6 +83,7 @@ namespace Core
 
 		void ReleaseManagers();
 		void SetupWindow(Utils::Handle<Window> handle);
+		bool InitializeSubsystem();
 
 	public:
 

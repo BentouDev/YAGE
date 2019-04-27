@@ -38,11 +38,14 @@ namespace Core
 		std::int32_t			y;
 	};
 
-	union WindowEvent
+	struct WindowEvent
 	{
-		WindowEventType::Enum	type;
-		StatusData				status;
-		CoordData				coord;
+		union
+		{
+			WindowEventType::Enum	type;
+			StatusData				status;
+			CoordData				coord;
+		};
 	};
 }
 

@@ -11,6 +11,7 @@ namespace Core
     Config::Config(Memory::IMemoryBlock& memory)
         : _memory(memory), _properties(),// #NewAlloc
           RenderingApi(this, "Window.Api", "opengl"),
+		  Subsystem(this, "Window.Subsystem", "glfw_sys"),
           WindowTitle(this, "Window.Title", "YAGE"),
           WindowWidth(this, "Window.Width", 800),
           WindowHeight(this, "Window.Height", 600),
@@ -21,6 +22,7 @@ namespace Core
     Config::Config(Config&& other)
         : _memory(other._memory), _properties(std::move(other._properties)),
           RenderingApi(std::move(other.RenderingApi)),
+		  Subsystem(std::move(other.Subsystem)),
           WindowTitle(std::move(other.WindowTitle)),
           WindowWidth(std::move(other.WindowWidth)),
           WindowHeight(std::move(other.WindowHeight)),
@@ -34,24 +36,24 @@ namespace Core
         _properties.emplace_back(prop);
     }
 
-    auto Config::Has(std::string name) -> bool
+    auto Config::Has(const eastl::string& name) -> bool
     {
-        return json.find(name) != json.end();
+        return json.find(name.c_str()) != json.end();
     }
 
     template <typename T>
-    auto Config::Set(std::string name, T& value) -> void
+    auto Config::Set(const eastl::string& name, T& value) -> void
     {
-        json[name] = value;
+        json[name.c_str()] = value;
     }
 
     template <typename T>
-    auto Config::Get(std::string name, T def) -> T
+    auto Config::Get(const eastl::string& name, T def) -> T
     {
-        auto itr = json.find(name);
-        if(itr != json.end())
+        auto itr = json.find(name.c_str());
+        if (itr != json.end())
         {
-            auto value = json[name];
+            auto value = json[name.c_str()];
             return value;
         }
 
@@ -60,31 +62,31 @@ namespace Core
 
     auto Config::ReloadProperties() -> void
     {
-        for(auto prop : _properties)
+        for (auto prop : _properties)
         {
-            if(Has(prop->name()))
+            if (Has(prop->name()))
             {
                 prop->reload();
             }
         }
     }
 
-    auto Config::Load(std::string path) -> bool
+    auto Config::Load(const eastl::string& path) -> bool
     {
-        Logger::info("Attempt to load config from '{}'...", path);
+        Logger::info("Attempt to load config from '{}'...", path.c_str());
 
-        std::ifstream f(path);
+        std::ifstream f(path.c_str());
         try
         {
             json = nlohmann::json::parse(f);
 
             ReloadProperties();
         }
-        catch(const std::exception& e)
+        catch (const std::exception& e)
         {
             Logger::error("Unable to parse log, cause '{}'", e.what());
         }
-        catch(...)
+        catch (...)
         {
             Logger::critical("Uncaught exception while parsing config!");
         }
@@ -93,7 +95,7 @@ namespace Core
 
         auto result = !json.empty();
 
-        if(result)
+        if (result)
         {
             Logger::info("Config loaded successfully!");
         }
@@ -101,9 +103,9 @@ namespace Core
         return result;
     }
 
-    auto Config::Save(std::string path) -> bool
+    auto Config::Save(const eastl::string& path) -> bool
     {
-        std::ofstream o(path);
+        std::ofstream o(path.c_str());
         o << json.dump();
 
         bool result = !o.bad();

@@ -64,7 +64,7 @@ namespace Input
 		ControlAction*		action		= _controlActions[index];
 		ButtonStateData&	stateData	= _buttonStateDatas[index];
 
-		bool button		= state != GLFW_RELEASE;
+		bool button     = state != 0; // HACK: was GLFW_RELEASE;
 		bool clean		= action->buttonState == None;
 		bool changed	= stateData.Value != state;
 		bool buffered	= stateData.Frames < FramesInBuffer;

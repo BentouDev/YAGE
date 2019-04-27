@@ -5,6 +5,7 @@
 #include <Platform/InputEvent.h>
 #include <Platform/EventQueue.h>
 #include <Platform/InputEvent.h>
+#include <Platform/Subsystem/ISubsystem.h>
 #include <Platform/Platform.h>
 #include <Platform/Logger.h>
 
@@ -14,16 +15,17 @@
 namespace Core
 {
 	InputDevice::InputDevice(Memory::IMemoryBlock& memory, std::int32_t deviceId)
-		: name(glfwGetJoystickName(deviceId)),// #NewAlloc
-		  scheme(nullptr), type(Input::DeviceType::CONTROLLER)
-	{ }
+		: scheme(nullptr), type(Input::DeviceType::CONTROLLER)
+	{ 
+		name = yage::platform::getSubsystem().getDeviceName(deviceId);// #NewAlloc
+	}
 
 	InputDevice::~InputDevice()
 	{ }
 
 	InputManager::~InputManager()
 	{
-		for(auto itr : _controllerIdMap)
+		for (auto itr : _controllerIdMap)
 		{
 			Memory::Delete(_memory, itr.second);
 			itr.second = nullptr;
@@ -35,7 +37,7 @@ namespace Core
 		InputDevice*	result	= nullptr;
 		auto			itr		= _controllerIdMap.find(id);
 
-		if(itr != _controllerIdMap.end())
+		if (itr != _controllerIdMap.end())
 		{
 			result = itr->second;
 		}
@@ -47,7 +49,7 @@ namespace Core
 	{
 		InputDevice* result = nullptr;
 
-		switch(event.deviceType)
+		switch (event.deviceType)
 		{
 			case Input::DeviceType::MOUSE:
 				result = &Mouse;
@@ -68,7 +70,7 @@ namespace Core
 
 	auto InputManager::getSchemeForDevice(InputDevice* device) -> Input::ControlScheme*
 	{
-		if(device == nullptr)
+		if (device == nullptr)
 			return nullptr;
 
 		return device->scheme != nullptr ? device->scheme : _currentScheme;
@@ -76,8 +78,8 @@ namespace Core
 
 	void InputManager::onDeviceDisconnected(const Input::ConnectionEvent& event)
 	{
-		auto device = getDeviceForId(event.deviceId);
-		if(device != nullptr)
+		auto* device = getDeviceForId(event.deviceId);
+		if (device != nullptr)
 		{
 			Core::Logger::debug("Controller : Disconnected '{}', named '{}'.",
 								device->id, device->name.c_str());
@@ -89,8 +91,8 @@ namespace Core
 
 	void InputManager::onDeviceConnected(const Input::ConnectionEvent& event)
 	{
-		if(event.deviceId == Input::DeviceType::CONTROLLER
-	   	&& glfwJoystickPresent(event.deviceId))
+		if (event.deviceType == Input::DeviceType::CONTROLLER
+	   	&&  yage::platform::getSubsystem().isDevicePresent(event.deviceId))
 		{
 			auto inputDevice = YAGE_CREATE_NEW(_memory, InputDevice)(_memory, event.deviceId);
 
@@ -104,7 +106,7 @@ namespace Core
 	void InputManager::onKey(InputDevice* device, std::int32_t scancode, std::int32_t state, Core::GameTime& time)
 	{
 		Input::ControlScheme* scheme = getSchemeForDevice(device);
-		if(scheme != nullptr)
+		if (scheme != nullptr)
 		{
 			scheme->updateButtonByScancode(device->type, scancode, state, time);
 		}
@@ -113,7 +115,7 @@ namespace Core
 	void InputManager::onAxis(InputDevice* device, std::int32_t axis, std::int32_t x, std::int32_t y, Core::GameTime& time)
 	{
 		Input::ControlScheme* scheme = getSchemeForDevice(device);
-		if(scheme != nullptr)
+		if (scheme != nullptr)
 		{
 		//	scheme->updateAxisById(device->type, axis, x, y, time);
 		}
@@ -124,7 +126,7 @@ namespace Core
 		auto input  = event.inputData;
 		auto device = getDeviceForEvent(input);
 
-		switch(input.type)
+		switch (input.type)
 		{
 			case Input::EventType::BUTTON:
 				onKey(device, input.button.scancode, input.button.status, time);

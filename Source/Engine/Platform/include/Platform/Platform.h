@@ -13,8 +13,6 @@
 #define NOMINMAX
 #endif
 
-#include <GLFW/glfw3.h>
-
 #ifdef CREATE_NEW
 #undef CREATE_NEW
 #endif
@@ -26,5 +24,11 @@
 #ifdef GetCurrentTime
 #undef GetCurrentTime
 #endif
+
+namespace yage::platform
+{
+	typedef void* WindowHandle;
+	typedef int   DeviceHandle;
+}
 
 #endif //YAGE_PLATFORM_H

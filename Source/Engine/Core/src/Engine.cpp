@@ -9,6 +9,7 @@
 #include <RTTI/EngineLayer.h>
 #include <Platform/EventQueue.h>
 #include <Platform/Logger.h>
+#include <Platform/Subsystem/ISubsystem.h>
 
 #include "Core/RTTI/RTTIManager.h"
 
@@ -84,18 +85,11 @@ namespace Core
         yage::CreateManager<Core::WindowManager>       (*this, WindowManager,   Memory::KB(10));
         yage::CreateManager<Core::InputManager>        (*this, InputManager,    Memory::KB(10));
         yage::CreateManager<RTTI::Manager>             (*this, RTTIManager,     Memory::KB(10));
-
-        glfwSetErrorCallback(&Engine::ErrorCallback);
     }
 
     Engine::~Engine()
     {
         CleanUp();
-    }
-
-    void Engine::ErrorCallback(int code, const char* description)
-    {
-        Logger::critical("GLFW : Error '{}' occured :\n\t{}", code, description);
     }
 
     void Engine::RegisterManager(borrowed_ptr<IManager>&& manager)
@@ -174,10 +168,23 @@ namespace Core
         return Config->Load(path);
     }
 
-    auto Engine::Initialize() -> bool
+	bool Engine::InitializeSubsystem()
+	{
+		yage::platform::SSubsystemParams params;
+		params.eventQueue = &EventQueue::get();
+
+		return yage::platform::initialize
+		(
+			((std::string)Config->Subsystem).c_str(), 
+			&MemoryModule->requestMemoryBlock(Memory::KB(2), "SubsystemBlock"), 
+			params
+		);
+	}
+
+	bool Engine::Initialize()
     {
         bool result = true;
-        result &= OpenGL::initialize();
+        result &= InitializeSubsystem();
         result &= EventQueue::initialize(MemoryModule->requestMemoryBlock(Memory::KB(200), "EventQueueBlock"));
         return result;
     }
@@ -237,7 +244,7 @@ namespace Core
 
     double Engine::GetCurrentTime()
     {
-        return glfwGetTime();
+		return yage::platform::getSubsystem().getCurrentTime();
     }
 
     void Engine::Quit()
@@ -284,7 +291,7 @@ namespace Core
 
         ReleaseManagers();
 
-        glfwTerminate();
+		yage::platform::shutdown();
 
         Logger::info("Cleaned up!");
 

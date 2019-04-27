@@ -37,6 +37,12 @@ namespace Core
     // I hate this language so much...
     char Logger::_raw_memory[];
 
+	Logger& Logger::get()
+	{
+		static Logger instance;
+		return instance;
+	}
+
     Logger::Logger()
     : _log_level(LogLevel::debug)
     , _allocator(_raw_memory, _raw_size)

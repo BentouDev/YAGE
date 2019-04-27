@@ -19,7 +19,7 @@ typedef struct _SDL_GameController SDL_GameController;
 namespace Input
 {
 	class ControlScheme;
-	union InputEvent;
+	struct InputEvent;
 	struct ConnectionEvent;
 }
 

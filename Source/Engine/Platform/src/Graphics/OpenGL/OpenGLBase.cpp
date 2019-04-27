@@ -4,6 +4,7 @@
 
 #include "Platform/Graphics/OpenGl/OpenGLBase.h"
 
+#include "Platform/Subsystem/ISubsystem.h"
 #include "Platform/Window.h"
 #include "Platform/Platform.h"
 #include "Platform/Logger.h"
@@ -14,30 +15,14 @@ namespace OpenGL
 {
     gl::exts::LoadTest didLoadFunctions;
 
-    auto initialize() -> bool
-    {
-        if (!glfwInit())
-        {
-            Core::Logger::error("GLFW : unable to initialize!");
-            return false;
-        }
-
-        // todo: pick from config
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, gl::TRUE_);
-
-        return true;
-    }
-
     void beginDraw(const Core::Window& window)
     {
         if (!window.IsAlive())
             return;
 
-        glfwMakeContextCurrent(window.hWindow);
-        gl::ClearColor(0.5f, 0.75f, 0.25f, 0.0f);
+		yage::platform::getSubsystem().makeCurrent(window.GetNative());
+
+		gl::ClearColor(0.5f, 0.75f, 0.25f, 0.0f);
         gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
     }
 
@@ -46,7 +31,7 @@ namespace OpenGL
         if(!window.IsAlive())
             return;
 
-        glfwSwapBuffers(window.hWindow);
+		yage::platform::getSubsystem().endDraw(window.GetNative());
     }
 
     bool registerWindow(const Core::Window& window)
@@ -54,7 +39,7 @@ namespace OpenGL
         if (!window.IsAlive())
             return false;
 
-        glfwMakeContextCurrent(window.hWindow);
+		yage::platform::getSubsystem().makeCurrent(window.GetNative());
         if (!didLoadFunctions)
         {
             didLoadFunctions = gl::sys::LoadFunctions();
@@ -68,7 +53,7 @@ namespace OpenGL
         if (!window.IsAlive())
             return;
 
-        glfwMakeContextCurrent(window.hWindow);
+		yage::platform::getSubsystem().makeCurrent(window.GetNative());
         // for(auto& view : window.getViewports())
         auto& view = window.GetDefaultViewport();
         {

@@ -68,6 +68,11 @@ namespace Editor
 
         // init subsystems
 
+		if (!_Engine->Initialize())
+		{
+			return -1;
+		}
+
         _MainWindow = new EditorWindow(this);
 		_MainWindow->show();
 

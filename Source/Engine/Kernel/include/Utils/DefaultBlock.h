@@ -80,10 +80,11 @@ namespace eastl
 
 	inline void* allocator::allocate(size_t n, size_t alignment, size_t offset, int /*flags*/)
 	{
+		YAGE_ASSERT(offset == 0, "eastl::allocator offset is not supported!");
 		return Memory::detail::_getDefaultBlock().allocate(n, alignment, Utils::DebugSourceInfo{ "unknown", 0 });
 	}
 
-	inline void allocator::deallocate(void* p, size_t n)
+	inline void allocator::deallocate(void* p, size_t /*size*/)
 	{
 		Memory::detail::_getDefaultBlock().deallocate(p);
 	}

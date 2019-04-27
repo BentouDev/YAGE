@@ -7,6 +7,7 @@
 
 #include <exception>
 #include <Utils/String.h>
+#include <Utils/MacroDefines.h>
 #include <Utils/FreeListAllocator.h>
 #include <Utils/MemorySizes.h>
 
@@ -72,11 +73,7 @@ namespace Core
         static char _raw_memory[_raw_size];
 
     public:
-        static Logger& get()
-        {
-            static Logger instance;
-            return instance;
-        }
+		static Logger& get();
 
         LogLevel::TYPE              _log_level;
         TLoggerMemory               _memory;

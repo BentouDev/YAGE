@@ -6,6 +6,7 @@
 #include "Platform/Window.h"
 #include "Platform/Graphics/OpenGl/OpenGLBase.h"
 #include "Platform/Platform.h"
+#include "Platform/Subsystem/ISubsystem.h"
 
 namespace Core
 {
@@ -29,16 +30,28 @@ namespace Core
         Memory::Delete(*_memory, DefaultViewport);
     }
 
+	auto Window::GetNative() const -> yage::platform::WindowHandle
+	{
+		return hWindow;
+	}
+
     auto Window::Create() -> void
     {
         if (IsAlive())
             return;
 
-        hWindow = glfwCreateWindow(Width, Height, Title.c_str(), nullptr, nullptr);
+		yage::platform::SWindowParams params;
+		params.height = Height;
+		params.width = Width;
+		params.name = Title;
+
+		auto& sys = yage::platform::getSubsystem();
+
+		hWindow = sys.createWindow(params);
 
         if (hWindow == nullptr)
         {
-            Core::Logger::error("GLFW : Unable to create window!");
+            Core::Logger::error("Subsystem : Failed to create window!");
             return;
         }
 
@@ -53,7 +66,7 @@ namespace Core
         if (!IsAlive())
             return;
 
-        glfwShowWindow(hWindow);
+		yage::platform::getSubsystem().showWindow(hWindow);
     }
 
     void Window::OnResize(std::int32_t width, std::int32_t height)
@@ -71,7 +84,7 @@ namespace Core
 
     auto Window::Resize(std::int32_t width, std::int32_t height) -> void
     {
-        glfwSetWindowSize(hWindow, width, height);
+		yage::platform::getSubsystem().resizeWindow(hWindow, width, height);
     }
 
     auto Window::Destroy() -> void
@@ -79,9 +92,8 @@ namespace Core
         if (!IsAlive())
             return;
 
-#ifdef _MSC_VER
-        glfwDestroyWindow(hWindow);
-#endif
+		yage::platform::getSubsystem().destroyWindow(hWindow);
+
         hWindow = nullptr;
     }
 

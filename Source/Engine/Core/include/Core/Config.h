@@ -5,11 +5,13 @@
 #ifndef YAGE_CONFIG_H
 #define YAGE_CONFIG_H
 
-#include <string>
 #include <nlohmann/json.hpp>
 #include <Utils/Handle.h>
 #include <Utils/BorrowedPtr.h>
 #include <Utils/List.h>
+#include <Utils/MemoryBlock.h>
+#include <string>
+#include <EASTL/string.h>
 
 namespace Core
 {
@@ -25,9 +27,9 @@ namespace Core
 
 	protected:
 		Config& _config;
-		const char* _name;
+		eastl::string _name;
 
-		PropertyBase(Config* config, const char* name)
+		PropertyBase(Config* config, const eastl::string& name)
 			: _config(*config), _name(name)
 		{ }
 
@@ -38,7 +40,7 @@ namespace Core
 		virtual auto reload() -> void = 0;
 
 	public:
-		auto name() -> const char* { return _name; }
+		auto name() -> const char* { return _name.c_str(); }
 	};
 
 	template <typename T>
@@ -49,7 +51,7 @@ namespace Core
 		void reload();
 
 	public:
-		explicit ConfigProperty(Config* config, const char* name, T def);
+		explicit ConfigProperty(Config* config, const eastl::string& name, T def);
 		ConfigProperty(ConfigProperty&&);
 
 		ConfigProperty<T>& operator = (const T& new_value);
@@ -78,17 +80,17 @@ namespace Core
 		explicit Config(Memory::IMemoryBlock& memory);
 		Config(Config&&);
 
-		auto Load(std::string path) -> bool;
+		auto Load(const eastl::string& path) -> bool;
 
-		auto Save(std::string path) -> bool;
+		auto Save(const eastl::string& path) -> bool;
 
-		auto Has(std::string) -> bool;
-
-		template <typename T>
-		auto Set(std::string, T& value) -> void;
+		auto Has(const eastl::string&) -> bool;
 
 		template <typename T>
-		auto Get(std::string, T) -> T;
+		auto Set(const eastl::string&, T& value) -> void;
+
+		template <typename T>
+		auto Get(const eastl::string&, T) -> T;
 
 		template <typename T>
 		auto Register(ConfigProperty<T>* prop) -> void;
@@ -96,6 +98,7 @@ namespace Core
 		auto ReloadProperties() -> void;
 
 		ConfigProperty<std::string> RenderingApi;
+		ConfigProperty<std::string> Subsystem;
 		ConfigProperty<std::string> WindowTitle;
 		ConfigProperty<uint32_t> WindowWidth;
 		ConfigProperty<uint32_t> WindowHeight;
@@ -104,7 +107,7 @@ namespace Core
 	};
 
 	template <typename T>
-	ConfigProperty<T>::ConfigProperty(Config* config, const char* name, T def)
+	ConfigProperty<T>::ConfigProperty(Config* config, const eastl::string& name, T def)
 		: PropertyBase(config, name), _value(def)
 	{
 		_config.Register(this);

@@ -50,8 +50,8 @@ namespace Input
 		DeviceType::Enum	deviceType;
 
 		std::int16_t		axisId;
-		std::int32_t		x;
-		std::int32_t 		y;
+		float	            x;
+		float               y;
 	};
 
 	struct ConnectionEvent
@@ -61,18 +61,21 @@ namespace Input
 		DeviceType::Enum	deviceType;
 	};
 
-	union InputEvent
+	struct InputEvent
 	{
-		struct
+		union
 		{
-			EventType::Enum 	type;
-			std::int32_t 		deviceId;
-			DeviceType::Enum	deviceType;
-		};
+			struct 
+			{
+				EventType::Enum 	type;
+				std::int32_t 		deviceId;
+				DeviceType::Enum	deviceType;
+			};
 
-		ButtonEvent 		button;
-		AxisEvent			axis;
-		ConnectionEvent		connection;
+			ButtonEvent 		button;
+			AxisEvent			axis;
+			ConnectionEvent		connection;
+		};
 
 		inline bool isKeyboardAndMouseEvent() const noexcept
 		{

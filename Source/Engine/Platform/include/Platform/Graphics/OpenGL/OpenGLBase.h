@@ -5,7 +5,7 @@
 #ifndef GAME_OPENGLBASE_H
 #define GAME_OPENGLBASE_H
 
-#include "Platform/Graphics/OpenGL/Generated/gl_core_3_3.hpp"
+#include "Platform/Graphics/OpenGL/gl_core_3_3.hpp"
 #include <RTTI/Defines.h>
 
 #ifdef CREATE_NEW
@@ -29,8 +29,6 @@ namespace Core
 namespace OpenGL
 {
     extern gl::exts::LoadTest didLoadFunctions;
-
-    auto initialize() -> bool;
 
     void beginDraw(const Core::Window& window);
 

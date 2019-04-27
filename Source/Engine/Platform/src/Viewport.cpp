@@ -2,28 +2,29 @@
 // Created by MrJaqbq on 2016-02-14.
 //
 
+#include "Platform/Platform.h"
+#include "Platform/Subsystem/ISubsystem.h"
 #include "Platform/Graphics/Viewport.h"
 #include "Platform/Graphics/OpenGl/OpenGLBase.h"
 #include "Platform/Window.h"
-#include "Platform/Platform.h"
 
 namespace Gfx
 {
 	void Viewport::Clear(const Utils::Color& color)
 	{
-		glfwMakeContextCurrent(_window.hWindow);
+		yage::platform::getSubsystem().makeCurrent(_window.GetNative());
 		gl::ClearColor(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
 		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 	}
 
 	void Viewport::Submit()
 	{
-		glfwSwapBuffers(_window.hWindow);
+		yage::platform::getSubsystem().endDraw(_window.GetNative());
 	}
 
 	void Viewport::Bind()
 	{
-		glfwMakeContextCurrent(_window.hWindow);
+		yage::platform::getSubsystem().makeCurrent(_window.GetNative());
 		gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
 		gl::Viewport(_pixelRect.getLeft(), _pixelRect.getBottom(),
 					 _pixelRect.getWidth(), _pixelRect.getHeight());
