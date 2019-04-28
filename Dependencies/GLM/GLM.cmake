@@ -1,17 +1,4 @@
 # GLM
-if(FALSE)
-yage_setup_dependency(GLM
-        INCLUDE Dependencies/GLM/Source)
-
-add_library(glm INTERFACE IMPORTED)
-
-target_include_directories(glm
-	INTERFACE 
-		${GLM_INCLUDE_DIR})
-
-install(DIRECTORY ${GLM_INCLUDE_DIR}/glm DESTINATION include)
-endif()
-
 add_library(glm INTERFACE)
 target_include_directories(glm
     INTERFACE 

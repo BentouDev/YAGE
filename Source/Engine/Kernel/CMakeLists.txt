@@ -66,7 +66,7 @@ if(YAGE_BUILD_TESTS)
         ${CMAKE_CURRENT_LIST_DIR}/test/*.cpp)
 
     # Every library has unit tests, of course
-    add_executable(KernelTests ${KERNEL_TESTS_SOURCES})#test/KernelTests.cpp test/MemoryTests.cpp test/ContainerTests.cpp test/HandleTests.cpp test/UsingTests.cpp test/TypeInfoTests.cpp test/LinearAllocatorTest.cpp test/StackAllocatorTest.cpp test/PoolAllocatorTest.cpp test/FreeListAllocatorTest.cpp test/ListTests.cpp test/StringTests.cpp test/DictionaryTests.cpp test/TypeIndexListTests.cpp test/ForEachTypeTests.cpp test/HandleContainerTests.cpp test/MockHelper.h test/RelativePtrTest.cpp test/SmartHandleTests.cpp)
+    add_executable(KernelTests ${KERNEL_TESTS_SOURCES})
 
     target_link_libraries(KernelTests
             Kernel ${CMAKE_THREAD_LIBS_INIT})

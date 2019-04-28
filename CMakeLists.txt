@@ -78,30 +78,17 @@ conan_cmake_run(CONANFILE conanfile.txt
                 BUILD missing
 				GENERATORS cmake_find_package)
 
+yage_configure_conan()
+
+install(DIRECTORY ${CONAN_LIB_DIRS}/ DESTINATION ${YAGE_LIBRARY_DIR})
+install(DIRECTORY ${CONAN_BIN_DIRS}/ DESTINATION ${YAGE_BINARY_DIR})
+
 # Add Agnes
 # yage_add_dependency(Dependencies/Agnes)
 message ("-- yage: debug Conan Agnes dir:" ${CONAN_BIN_DIRS_AGNES})
 find_program(AGNES_BINARY 
 	NAME Agnes Agnes.exe agnes agnes.exe
 	PATHS ${CONAN_BIN_DIRS_AGNES})
-
-yage_configure_conan()
-
-#find_package(eastl REQUIRED)
-#find_package(spdlog REQUIRED)
-#find_package(assimp REQUIRED)
-#find_package(glfw REQUIRED)
-#find_package(sdl2 REQUIRED)
-#find_package(jsonformoderncpp REQUIRED)
-
-# Install Conan packages to correct location
-#yage_configure_conan()
-
-#install(TARGETS ${libraries_abs_path} DESTINATION ${YAGE_LIBRARY_DIR})
-
-install(DIRECTORY ${CONAN_LIB_DIRS}/ DESTINATION ${YAGE_LIBRARY_DIR})
-install(DIRECTORY ${CONAN_BIN_DIRS}/ DESTINATION ${YAGE_BINARY_DIR})
-#install(DIRECTORY ${CONAN_INCLUDE_DIRS}/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 #============================#
 # Tests                      #
@@ -134,10 +121,6 @@ target_include_directories(YAGE
 	INTERFACE
 		$<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
-
-#set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-#        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
-#        $<INSTALL_INTERFACE:"/">)
 
 # Export yage-targets.cmake, so engine user may use find_package
 install(EXPORT Engine

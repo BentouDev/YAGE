@@ -102,36 +102,21 @@ function(yage_configure_conan)
 	  string(TOUPPER ${_dep} _DEP)
 	  set(_YAGE_LIB_NAME ${_dep})
 
-	  message("-- yage: Processing " ${_dep} "...")
-	  
-	  #list(GET CONAN_LIB_DIRS ${idx} _dir)
-	  #list(GET CONAN_LIBS ${idx} _lib)
-	  
-	  #set(_imported_location ${YAGE_LIBRARY_DIR})
-	  
-	  #set_property(TARGET ${_target} PROPERTY IMPORTED_LOCATION ${_imported_location})
-	  
-	  #get_target_property(_target_linked_libs ${_target} INTERFACE_LINK_LIBRARIES)
+	  message("-- yage: Processing conan package " ${_dep} "...")
 
 	  if (EXISTS ${CMAKE_BINARY_DIR}/Find${_dep}.cmake)
-		# -- install(FILES ${CMAKE_BINARY_DIR}/Find${_dep}.cmake DESTINATION "${YAGE_LIBRARY_DIR}")
 
 		# Cmake find package generator
 		message("-- yage: Found package script Find'${_dep}'.cmake!")
-		# -- file(APPEND ${_config_file_path} "find_dependency("${_dep}")\n")
 
 		find_package(${_dep} REQUIRED)
-		#add_library(${_LIB_NAME} ALIAS ${_dep}::${_dep})
 
 		set(_dep_dep ${_dep}::${_dep})
 
-		#message("-- yage: ${_dep} Lib dir: " ${${_dep}_LIB_DIRS} " and libs: " ${${_dep}_LIBS})
         set(${_dep}_LIB_DIRS ${${_dep}_LIB_DIRS} PARENT_SCOPE)
 
         set(${_dep}_lib_kind INTERFACE)
 		set(_target_lib_file)
-
-		message("-- yage: Potential libs: " ${${_dep}_LIBS})
 
         foreach (_lib_file ${${_dep}_LIBS})
             string(FIND ${_lib_file} ".dll" _is_dll_pos REVERSE)
@@ -150,77 +135,33 @@ function(yage_configure_conan)
 			endif()
         endforeach()
 
-        message("-- yage: Lib ${_dep} is a ${${_dep}_lib_kind} library " ${_target_lib_file})
+        message("-- yage: Lib ${_dep} is a ${${_dep}_lib_kind} library ")
 
 	    if (NOT TARGET _dep_dep)
-
-
             add_library(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE IMPORTED)
-            #add_library(Yage::DEP::${_YAGE_LIB_NAME} ${${_dep}_lib_kind} IMPORTED GLOBAL)
             
 			target_link_libraries(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE ${_dep_dep})
 
-			#if(${_dep}_INCLUDE_DIRS)
-			#	set_target_properties(${_YAGE_LIB_NAME} PROPERTIES INTERFACE_INCLUDE_DIRECTORIES "${${_dep}_INCLUDE_DIRS}")
-			#endif()
-			
-			if (FALSE)
-			if (${_target_lib_file})
-				set_property(TARGET Yage::DEP::${_YAGE_LIB_NAME} PROPERTY IMPORTED_LOCATION ${_YAGE_LIB_NAME})
+			file(APPEND ${_config_file_path} "add_library(Yage::DEP::${_YAGE_LIB_NAME} ${${_dep}_lib_kind} IMPORTED)\n")
+			if (_target_lib_file)
+				file(APPEND ${_config_file_path} "set_target_properties(Yage::DEP::${_YAGE_LIB_NAME} PROPERTIES IMPORTED_LOCATION ${_target_lib_file})\n")
 			endif()
 
-            if (NOT (${${_dep}_lib_kind} STREQUAL "INTERFACE"))
-                set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY LINK_LIBRARIES ${${_dep}_LIBRARIES_TARGETS} "${${_dep}_LINKER_FLAGS_LIST}")
-
-				if (${_target_lib_file})
-					set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY IMPORTED_LOCATION ${_target_lib_file})
-				endif()
-
-                set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY COMPILE_DEFINITIONS ${${_dep}_COMPILE_DEFINITIONS})
-                set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY COMPILE_OPTIONS "${${_dep}_COMPILE_OPTIONS_LIST}")   
-            else()
-                set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY INTERFACE_LINK_LIBRARIES ${${_dep}_LIBRARIES_TARGETS} "${${_dep}_LINKER_FLAGS_LIST}")
-                set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY INTERFACE_COMPILE_DEFINITIONS ${${_dep}_COMPILE_DEFINITIONS})
-                set_property(TARGET ${_YAGE_LIB_NAME} PROPERTY INTERFACE_COMPILE_OPTIONS "${${_dep}_COMPILE_OPTIONS_LIST}")   
-            endif()
-			endif(FALSE)
-
-            if (TARGET Yage::DEP::${_YAGE_LIB_NAME})
-
-			
-			if (FALSE)
-                install(TARGETS Yage::DEP::${_YAGE_LIB_NAME}
-                    EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}"
-                    ARCHIVE  DESTINATION ${YAGE_LIBRARY_DIR}
-                    LIBRARY  DESTINATION ${YAGE_LIBRARY_DIR}
-                    RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
-                export(TARGETS Yage::DEP::${_YAGE_LIB_NAME} FILE ${_dep}Config.cmake)
-			endif()
-
-				file(APPEND ${_config_file_path} "add_library(Yage::DEP::${_YAGE_LIB_NAME} ${${_dep}_lib_kind} IMPORTED)\n")
-				if (_target_lib_file)
-					file(APPEND ${_config_file_path} "set_target_properties(Yage::DEP::${_YAGE_LIB_NAME} PROPERTIES IMPORTED_LOCATION ${_target_lib_file})\n")
-					
-					#INSTALL(FILES ${_target_lib_file} DESTINATION ${YAGE_BINARY_DIR})
-
-				endif()
-
-                # Get only first directory specified
-                list(GET ${_dep}_INCLUDE_DIRS "0" _include_header)
-                if (_include_header)
-                    if (${_include_header} MATCHES "include$")
-                        SET(_header_dir /)
-                    else()
-                        SET(_header_dir /include)
-                    endif()
-
-                    install(DIRECTORY ${_include_header} DESTINATION ${_header_dir})
-                    target_include_directories(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE 
-                        $<BUILD_INTERFACE:${_include_header}>
-                        $<INSTALL_INTERFACE:${_header_dir}>)
-					#file(APPEND ${_config_file_path} "target_include_directories(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE $<INSTALL_INTERFACE:${_header_dir}>)\n")
+            # Get only first directory specified
+            list(GET ${_dep}_INCLUDE_DIRS "0" _include_header)
+            if (_include_header)
+                if (${_include_header} MATCHES "include$")
+                    SET(_header_dir /)
+                else()
+                    SET(_header_dir /include)
                 endif()
+
+                install(DIRECTORY ${_include_header} DESTINATION ${_header_dir})
+                target_include_directories(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE 
+                    $<BUILD_INTERFACE:${_include_header}>
+                    $<INSTALL_INTERFACE:${_header_dir}>)
             endif()
+
 		endif()
 
 	  else()
@@ -246,33 +187,6 @@ function(yage_configure_conan)
 
 	  set(_YAGE_LIB_NAME)
 	  set(_DEP)
-
-	  #foreach(__target_lib ${_target_linked_libs})
-		#foreach(_dir ${CONAN_LIB_DIRS})
-		#	if(NOT _imported_location)
-		#		message("-- yage: Looking for Conan target '${__target_lib}' location: ${_dir}")
-		#		find_library(_found_lib NAME ${__target_lib} PATHS ${_dir} NO_DEFAULT_PATH NO_CMAKE_FIND_ROOT_PATH)
-		#		if(_found_lib)
-		#			set(_imported_location ${YAGE_LIBRARY_DIR}/${__target_lib})
-		#			message("-- yage: Found Conan target '${_target}' location: ${_found_lib}")
-		#			set(_found_lib)
-		#		endif()
-		#	endif()
-		#endforeach()
-	  #endforeach()
-
-	  #if (_imported_location)
-	  #    set(_LIB_NAME YAGE::${_target})
-	  #    add_library(${_LIB_NAME} UNKNOWN IMPORTED)
-      #    set_target_properties(${_LIB_NAME} PROPERTIES IMPORTED_LOCATION ${_imported_location})
-	  #	  #add_library( SHARED IMPORTED)
-	  #	  #set_target_properties(${_target} PROPERTIES IMPORTED_LOCATION ${_imported_location})
-	  #	  message("-- yage: Automatic Conan target '${_target}' install configure: ${_imported_location}")
-	  #else()
-	  #	  message("-- yage: Error: Unable to configure Conan target '${_target}'")
-	  #endif()
-
-	  #set(_imported_location)
 
 	endforeach()
 
