@@ -1,5 +1,5 @@
 #include "SDL2_Subsystem.h"
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 namespace yage::platform::sdl2
 {

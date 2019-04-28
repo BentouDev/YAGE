@@ -16,7 +16,7 @@ file(GLOB_RECURSE
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
 add_library(Core SHARED ${GRAPHICS_API} ${CORE_HEADERS} ${CORE_SOURCES})
-add_library(YAGE::Core ALIAS Core)
+add_library(Yage::Core ALIAS Core)
 
 target_include_directories(Core 
     PUBLIC
@@ -25,7 +25,7 @@ target_include_directories(Core
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
     PRIVATE
         src)
-
+	
 #set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
 target_compile_features(Core
     PUBLIC
@@ -43,16 +43,14 @@ target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 target_link_libraries(Core
     PUBLIC
-        YAGE::Kernel
-        YAGE::Platform
-		CONAN_PKG::eastl
+        Yage::Kernel
+        Yage::Platform
 		glm
     PRIVATE
         lodepng
         utf8
-		CONAN_PKG::glfw
-		CONAN_PKG::assimp
-		CONAN_PKG::jsonformoderncpp
+		Yage::DEP::assimp
+		Yage::DEP::jsonformoderncpp
         ${CMAKE_THREAD_LIBS_INIT})
 
 if(OPENGL_FOUND)
@@ -70,7 +68,7 @@ install(TARGETS Core
 install(DIRECTORY include/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 # This makes the project importable from the build directory
-export(TARGETS lodepng utf8 Core FILE CoreConfig.cmake)
+export(TARGETS lodepng glm utf8 Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course

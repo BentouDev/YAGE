@@ -16,7 +16,7 @@ file(GLOB_RECURSE
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
 add_library(Platform SHARED ${GRAPHICS_API} ${PLATFORM_HEADERS} ${PLATFORM_SOURCES})
-add_library(YAGE::Platform ALIAS Platform)
+add_library(Yage::Platform ALIAS Platform)
 
 target_include_directories(Platform 
     PUBLIC
@@ -41,16 +41,17 @@ target_compile_options(Platform PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 target_link_libraries(Platform
     PUBLIC
-        YAGE::Kernel
-		CONAN_PKG::eastl
+        Yage::Kernel
+		Yage::DEP::eastl
 		glm
     PRIVATE
-		CONAN_PKG::glfw
-		CONAN_PKG::jsonformoderncpp
+		Yage::DEP::glfw
+		Yage::DEP::sdl2
+		Yage::DEP::jsonformoderncpp
         ${CMAKE_THREAD_LIBS_INIT})
 
 if(OPENGL_FOUND)
-	add_library(OpenGLGen gen/Platform/Graphics/OpenGL/Generated/gl_core_3_3.cpp)
+	add_library(OpenGLGen gen/Platform/Graphics/OpenGL/gl_core_3_3.cpp)
 	target_include_directories(OpenGLGen
 	    PUBLIC
 		    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/gen>)
@@ -58,6 +59,9 @@ if(OPENGL_FOUND)
     target_compile_definitions(Platform PRIVATE YAGE_OPENGL=1)
     target_include_directories(Platform PRIVATE ${OPENGL_INCLUDE_DIR})
     target_link_libraries(Platform PUBLIC OpenGLGen PRIVATE ${OPENGL_LIBRARIES})
+
+	# Copy generated files on install
+	install(DIRECTORY gen/ DESTINATION ${YAGE_INCLUDE_DIR})
 	
 	set(OPENGL_GEN_TARGET OpenGLGen)
 endif()
@@ -70,6 +74,5 @@ install(TARGETS Platform ${OPENGL_GEN_TARGET}
     RUNTIME  DESTINATION ${YAGE_BINARY_DIR})
 install(DIRECTORY include/ DESTINATION ${YAGE_INCLUDE_DIR})
 
-message(${OPENGL_GEN_TARGET})
 # This makes the project importable from the build directory
 export(TARGETS Platform ${OPENGL_GEN_TARGET} FILE PlatformConfig.cmake)

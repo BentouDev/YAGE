@@ -104,7 +104,7 @@ namespace Core
             }
             catch (std::exception e)
             {
-                YAGE_ASSERT(false, "Unable to create logger output:\n {0}}", e.what());
+				YAGE_ASSERT(false, "Unable to create logger output:\n {}", e.what() != nullptr ? e.what() : "UNKNOWN");
             }
         }
 

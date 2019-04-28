@@ -38,7 +38,7 @@ yage_add_ctti(Editor
     HEADERS ${EDITOR_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
-target_link_libraries(Editor_CTTI PUBLIC YAGE::Engine)
+target_link_libraries(Editor_CTTI PUBLIC Yage::Engine)
 
 target_include_directories(Editor_CTTI
     PUBLIC
@@ -53,9 +53,12 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_executable(Editor ${OS_BUNDLE} ${EDITOR_SOURCES} ${EDITOR_ALL_HEADERS} ${EDITOR_GEN_FILES} editorresources.qrc)
-add_executable(YAGE::Editor ALIAS Editor)
+add_executable(Editor ${OS_BUNDLE} ${EDITOR_SOURCES} ${EDITOR_ALL_HEADERS} ${EDITOR_GEN_FILES} editorresources.qrc qt5.natvis)
+add_executable(Yage::Editor ALIAS Editor)
 set_target_properties(Editor PROPERTIES OUTPUT_NAME "YageEditor")
+	
+target_link_options(Editor PUBLIC 
+	"/NATVIS:${CMAKE_CURRENT_SOURCE_DIR}/qt5.natvis")
 
 target_include_directories(Editor 
     PUBLIC
@@ -84,7 +87,7 @@ target_compile_options(Editor PRIVATE ${YAGE_ENFORCE_WARNINGS})
 set_property(TARGET Editor PROPERTY QT5_NO_LINK_QTMAIN ON)
 
 target_link_libraries(Editor 
-    YAGE::Engine
+    Yage::Engine
     Qt5::Core 
     Qt5::Widgets 
     ADS_LIB 

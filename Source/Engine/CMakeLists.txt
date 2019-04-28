@@ -2,7 +2,7 @@
 project(YAGE VERSION 0.1 LANGUAGES CXX C)
 
 add_library(Engine SHARED yage.h yage.cpp)
-add_library(YAGE::Engine ALIAS Engine)
+add_library(Yage::Engine ALIAS Engine)
 
 add_subdirectory(Kernel)
 add_subdirectory(Platform)
@@ -28,7 +28,7 @@ yage_add_ctti(Engine
     HEADERS ${YAGE_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
-target_link_libraries(Engine_CTTI PUBLIC YAGE::Kernel YAGE::Core)
+target_link_libraries(Engine_CTTI PUBLIC Yage::Kernel Yage::Core)
 
 target_include_directories(Engine_CTTI
     PUBLIC
@@ -48,14 +48,16 @@ set_target_properties(Engine PROPERTIES
 
 target_link_libraries(Engine 
     PUBLIC
-        YAGE::Kernel
-		YAGE::Platform
-        YAGE::Script 
-        YAGE::Core 
+        Yage::Kernel
+		Yage::Platform
+        Yage::Script 
+        Yage::Core 
         CTTI::Engine)
 
 target_include_directories(Engine 
-    PUBLIC $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
+    PUBLIC 
+		$<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include>)
 
 # 'make install' to the correct location
 install(TARGETS Engine

@@ -75,7 +75,8 @@ conan_add_remote(NAME bincrafters
 # Configure conan
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS
-                BUILD missing)
+                BUILD missing
+				GENERATORS cmake_find_package)
 
 # Add Agnes
 # yage_add_dependency(Dependencies/Agnes)
@@ -84,11 +85,23 @@ find_program(AGNES_BINARY
 	NAME Agnes Agnes.exe agnes agnes.exe
 	PATHS ${CONAN_BIN_DIRS_AGNES})
 
+yage_configure_conan()
 
+#find_package(eastl REQUIRED)
+#find_package(spdlog REQUIRED)
+#find_package(assimp REQUIRED)
+#find_package(glfw REQUIRED)
+#find_package(sdl2 REQUIRED)
+#find_package(jsonformoderncpp REQUIRED)
 
 # Install Conan packages to correct location
+#yage_configure_conan()
+
+#install(TARGETS ${libraries_abs_path} DESTINATION ${YAGE_LIBRARY_DIR})
+
 install(DIRECTORY ${CONAN_LIB_DIRS}/ DESTINATION ${YAGE_LIBRARY_DIR})
 install(DIRECTORY ${CONAN_BIN_DIRS}/ DESTINATION ${YAGE_BINARY_DIR})
+#install(DIRECTORY ${CONAN_INCLUDE_DIRS}/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 #============================#
 # Tests                      #
@@ -116,13 +129,19 @@ set(YAGE_EXE_COMPILE_DEFS -DYAGE_EDITOR)
 # Include all engine modules
 add_subdirectory(Source/Engine)
 
-target_link_libraries(YAGE INTERFACE YAGE::Kernel YAGE::Script YAGE::Core)
-set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
-        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
+target_link_libraries(YAGE INTERFACE Yage::Script Yage::Core)
+target_include_directories(YAGE 
+	INTERFACE
+		$<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:include>)
 
-# Export yage-config.cmake, so engine user may use find_package
+#set_target_properties(YAGE PROPERTIES INTERFACE_INCLUDE_DIRECTORIES
+#        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
+#        $<INSTALL_INTERFACE:"/">)
+
+# Export yage-targets.cmake, so engine user may use find_package
 install(EXPORT Engine
-        FILE yage-config.cmake
+        FILE yage-targets.cmake
         NAMESPACE Yage::
         DESTINATION "${YAGE_LIBRARY_DIR}")
 

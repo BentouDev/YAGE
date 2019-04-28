@@ -9,12 +9,15 @@ file (GLOB_RECURSE
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
 
 add_library(Kernel SHARED ${KERNEL_SOURCES})
-add_library(YAGE::Kernel ALIAS Kernel)
+add_library(Yage::Kernel ALIAS Kernel)
 
 target_include_directories(Kernel PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
     PRIVATE src ${CMAKE_CURRENT_BINARY_DIR})
+
+target_link_options(Kernel PUBLIC 
+	"/NATVIS:${eastl_LIB_DIRS}/EASTL.natvis")
 
 target_compile_features(Kernel 
     PUBLIC
@@ -36,8 +39,9 @@ target_compile_options(Kernel PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 target_link_libraries(Kernel
     PUBLIC
-		CONAN_PKG::spdlog
-		CONAN_PKG::eastl)
+		Yage::DEP::eastl
+		Yage::DEP::spdlog
+		Yage::DEP::fmt)
 
 if(VALGRIND_FOUND)
     target_compile_definitions(Kernel PRIVATE YAGE_VALGRIND=1)

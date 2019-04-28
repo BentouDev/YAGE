@@ -8,10 +8,11 @@ if(NOT DEFINED PROJECT_NAME)
 endif()
 
 # Add modules
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules" ${CMAKE_BINARY_DIR} ${CMAKE_MODULE_PATH})
+set(CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR} ${CMAKE_PREFIX_PATH})
+
 include (Conan)
 include (Yage)
-
 
 # Emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
