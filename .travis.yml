@@ -12,12 +12,12 @@ services:
 matrix:
   include:
     - os: linux
-      compiler: clang-5
+      compiler: clang
       script:
         - docker run -it -v $PWD:/src --workdir /src bentou/ubuntu-bionic-dev sh ./Scripts/build_clang.sh
 
     - os: linux
-      compiler: gcc-6
+      compiler: gcc
       script:
         - docker run -it -v $PWD:/src --workdir /src bentou/ubuntu-bionic-dev sh ./Scripts/build_gcc.sh
       after_success:
