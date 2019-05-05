@@ -20,6 +20,10 @@ namespace RTTI
         virtual Memory::IMemoryBlock& GetMemory() override { return _memory; }
         virtual Meta::ClassResolver& GetClassResolver() override { return _resolver; }
 
+		virtual TypeInfo* GetType(const std::type_info& info) override;
+		virtual EnumInfo* GetEnum(const std::type_info& info) override;
+		virtual ClassInfo* GetClass(const std::type_info& info) override;
+
     protected:
         virtual TypeInfo*  GetType (const char* name) override;
         virtual EnumInfo*  GetEnum (const char* name) override;
@@ -27,6 +31,9 @@ namespace RTTI
 
         virtual void LoadLayer  (ILayer* layer) override;
         virtual void UnloadLayer(ILayer* layer) override;
+
+		virtual bool PushLayerInternal(const std::type_info& info) override;
+		virtual bool PopLayerInternal(const std::type_info& info) override;
 
     private:
         void DefineClasses();

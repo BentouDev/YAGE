@@ -15,6 +15,7 @@ namespace Logic
 
     class Scene;
 
+    YClass(Serialize())
     class Entity : public yage::SafeObject
     {
         friend class World;
@@ -60,13 +61,13 @@ namespace Logic
 
         inline Scene& getScene() const
         {
-            YAGE_ASSERT(_scene != nullptr, "Entity '{}' : Scene cannot be nullptr!", Handle.key);
+            YAGE_ASSERT(_scene != nullptr, "Entity '{}' : Scene cannot be nullptr!", Handle.key.raw);
             return *_scene;
         }
 
         inline World& getWorld() const
         {
-            YAGE_ASSERT(_world != nullptr, "Entity '{}' : World cannot be nullptr!", Handle.key);
+            YAGE_ASSERT(_world != nullptr, "Entity '{}' : World cannot be nullptr!", Handle.key.raw);
             return *_world;
         }
 
@@ -102,5 +103,7 @@ namespace Logic
         }
     };
 }
+
+#include "Entity.gen.h"
 
 #endif //GAME_ENTITY_H_H

@@ -2,6 +2,7 @@
 #define YAGE_RTTI_REGISTER_H
 
 #include <functional>
+#include <typeinfo>
 #include <memory>
 #include <Utils/Defines.h>
 #include <Utils/List.h>
@@ -55,27 +56,47 @@ namespace RTTI
         virtual EnumInfo*  GetEnum (const char* name) = 0;
         virtual ClassInfo* GetClass(const char* name) = 0;
 
+        virtual void LoadLayer(ILayer* layer) = 0;
+        virtual void UnloadLayer(ILayer* layer) = 0;
+
+        virtual bool PushLayerInternal(const std::type_info& info) = 0;
+        virtual bool PopLayerInternal(const std::type_info& info) = 0;
+
     public:
-        virtual ~IRegister() {}
+        virtual ~IRegister();
 
         virtual Meta::ClassResolver& GetClassResolver() = 0;
         virtual Memory::IMemoryBlock& GetMemory() = 0;
 
-        virtual void LoadLayer  (ILayer* layer) = 0;
-        virtual void UnloadLayer(ILayer* layer) = 0;
+        virtual TypeInfo* GetType(const std::type_info& info) = 0;
+        virtual EnumInfo* GetEnum(const std::type_info& info) = 0;
+        virtual ClassInfo* GetClass(const std::type_info& info) = 0;
 
         // Used by generated code
         virtual void ResolveClass(Meta::detail::TResolver&& resolver) = 0;
+
+        template <typename TLayer>
+        bool PushLayer();
+
+        template <typename TLayer>
+        bool PopLayer();
     };
 
-    namespace detail
-    {
-        extern IRegister* _registerInstance;
-    }
-    
     void SetupRTTI(Memory::IMemoryBlock& memory = Memory::GetDefaultBlock<Register>());
     void ShutdownRTTI();
-    IRegister* GetRegister();
+    IRegister& GetRegister();
+}
+
+template <typename TLayer>
+bool RTTI::IRegister::PushLayer()
+{
+    return PushLayerInternal(typeid(TLayer));
+}
+
+template <typename TLayer>
+bool RTTI::IRegister::PopLayer()
+{
+    return PopLayerInternal(typeid(TLayer));
 }
 
 #endif // !YAGE_RTTI_REGISTER_H

@@ -23,6 +23,7 @@ namespace Gfx
 		OpenGL::IBO*	ibo;
 	};
 
+    YClass(Serialize())
 	class StaticBuffer : public yage::SafeObject
 	{
 	public:
@@ -160,5 +161,7 @@ namespace Gfx
 		{ return _usedIndices; }
 	};
 }
+
+#include "StaticBuffer.gen.h"
 
 #endif //GAME_STATICBATCH_H

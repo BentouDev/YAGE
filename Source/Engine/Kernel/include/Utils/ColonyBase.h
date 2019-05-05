@@ -43,7 +43,7 @@ namespace Utils
                       "Colony : Trait type must be move constructible! (due to internal swap)");
 
         Memory::IMemoryBlock&  _memory;
-        TObjects			   _elements;
+        TObjects               _elements;
         Utils::List<IndexInfo> _lookup;
 
         uint32_t freeListStart;
@@ -53,8 +53,11 @@ namespace Utils
 
     public:
         explicit ColonyBase(Memory::IMemoryBlock& memory, std::size_t reserved_size = 0)
-           : _memory(memory), _elements(/*_memory, */reserved_size), _lookup(/*_memory, */reserved_size)// #NewAlloc
+           : _memory(memory)// #NewAlloc
         {
+            _elements.reserve(reserved_size);
+            _lookup.reserve(reserved_size);
+
             freeListStart = bad_pos;
         }
 
@@ -140,8 +143,9 @@ namespace Utils
                 index.next   = bad_pos;
 
                 auto& obj = _elements.emplace_back(std::forward<Args>(args)...);
+                auto  idx = _lookup.size() - 1;
 
-                Trait::setHandle(obj, index.liveId, _lookup.size() - 1);
+                Trait::setHandle(obj, index.liveId, idx);
 
                 return Trait::getHandle(obj);
             }
@@ -185,7 +189,7 @@ namespace Utils
                 return false;
 
             const IndexInfo& in = _lookup[idx_pos];
-            return in.liveId == handle.liveId && in.pos < _elements.size();
+            return in.liveId == handle.key.liveId && in.pos < _elements.size();
         }
 
         std::size_t erase(handle_t handle)

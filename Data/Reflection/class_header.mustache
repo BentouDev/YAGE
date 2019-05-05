@@ -1,0 +1,25 @@
+#ifndef _GEN_{{class_name}}_H_
+#define _GEN_{{class_name}}_H_
+#include <{{{include}}}>
+#include <RTTI/Reflection.h>
+#include <RTTI/ClassResolver.h>
+
+// YAGE_DECLARE_CLASS_RTTI({{{canonical_name}}});
+
+template <> 
+inline RTTI::ClassInfo* ::Meta::detail::GetClass<{{{canonical_name}}}>()
+{ 
+    return static_cast<RTTI::ClassInfo*>(::Meta::registerOrGetType("{{{canonical_name}}}"));
+}
+
+namespace Meta
+{
+    // Predeclare template specialization
+    template <>
+    void ClassResolver::Declare<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data);
+
+    template <>
+    void ClassResolver::Define<{{{canonical_name}}}>(RTTI::Register& reg, RTTI::ClassInfo& data);
+}
+
+#endif

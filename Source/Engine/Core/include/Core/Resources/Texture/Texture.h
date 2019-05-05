@@ -47,4 +47,6 @@ namespace Resources
     };
 }
 
+#include "Texture.gen.h"
+
 #endif //GAME_TEXTURE_H

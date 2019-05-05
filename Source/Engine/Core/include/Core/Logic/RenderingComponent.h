@@ -11,6 +11,10 @@
 
 #include "Core/Logic/Component.h"
 
+// temporary
+#include "Core/Resources/Material/Material.h"
+#include "Core/Resources/Mesh/Mesh.h"
+
 namespace Gfx
 {
 	class Renderer;
@@ -36,6 +40,7 @@ namespace Logic
 		OpenGL::VAO* VAO;
 	};
 
+    YClass(Serialize())
 	class RenderingComponent : public Component
 	{
 	public:
@@ -117,5 +122,7 @@ namespace Logic
 		{ return _materials; }
 	};
 }
+
+#include "RenderingComponent.gen.h"
 
 #endif //GAME_RENDERINGCOMPONENT_H

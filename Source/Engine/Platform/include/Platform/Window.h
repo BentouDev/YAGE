@@ -8,6 +8,7 @@
 #include <vector>
 #include <Utils/List.h>
 #include <Utils/String.h>
+#include <RTTI/Reflection.h>
 
 #include "Platform.h"
 #include "Graphics/Viewport.h"
@@ -48,7 +49,6 @@ namespace Core
 		Window& operator=(Window&&) = delete;
 		Window& operator=(const Window&) = delete;
 
-		void Create();
 		void Destroy();
 		void Show() const noexcept;
 		void Close();
@@ -70,6 +70,9 @@ namespace Core
 		}
 
 	private:
+		void Create();
+		void CreateFromHandle(std::uintptr_t rawHandle);
+
 		yage::platform::WindowHandle hWindow;
 
 		Gfx::Viewport* DefaultViewport;
@@ -79,5 +82,7 @@ namespace Core
 		bool IsCloseRequested;
 	};
 }
+
+YAGE_DECLARE_CLASS_RTTI(Core::Window);
 
 #endif //YAGE_WINDOW_H

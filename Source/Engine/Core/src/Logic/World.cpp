@@ -134,14 +134,14 @@ namespace Logic
 
     void World::removeEntity(entity_handle_t handle)
     {
-        YAGE_ASSERT(isAliveInCurrentFrame(handle), "Cannot remove Entity with invalid handle : '{}'!", handle.key);
+        YAGE_ASSERT(isAliveInCurrentFrame(handle), "Cannot remove Entity with invalid handle : '{}'!", handle.key.raw);
 
         setAsRemoved(getEntity(handle));
     }
 
     auto World::getEntity(entity_handle_t handle) const -> Entity&
     {
-        YAGE_ASSERT(isAliveInCurrentFrame(handle), "Cannot get Entity with invalid handle : '{}'!", handle.key);
+        YAGE_ASSERT(isAliveInCurrentFrame(handle), "Cannot get Entity with invalid handle : '{}'!", handle.key.raw);
 
         return _entityManager->getEntity(handle);
     }

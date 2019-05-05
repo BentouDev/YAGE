@@ -5,13 +5,10 @@
 #include <algorithm>
 #include <Utils/MemorySizes.h>
 #include <RTTI/TypeInfo.h>
-#include <RTTI/IntegralLayer.h>
-#include <RTTI/EngineLayer.h>
 #include <Platform/EventQueue.h>
 #include <Platform/Logger.h>
 #include <Platform/Subsystem/ISubsystem.h>
-
-#include "Core/RTTI/RTTIManager.h"
+#include <Platform/Filesystem.h>
 
 #include "Core/EngineApis.h"
 #include "Core/MemoryModule.h"
@@ -35,22 +32,23 @@
 #include "Core/ManagerFactory.h"
 #include "Core/DefaultDeleter.h"
 
+#include "Core/RTTI/RTTIIntegralLoader.h"
+#include "Core/RTTI/RTTIEngineLoader.h"
+
 #ifdef CreateWindow
 #undef CreateWindow
 #endif
-
-// template<> RTTI::IntegralLayer* LayerHelper<RTTI::IntegralLayer>::_instance{ nullptr };
 
 namespace Core
 {
     Engine::Engine(const char* name, std::size_t memorySize)
         : Name(name), _isDone(false), _cleanedUp(false), managers()// #NewAlloc Memory::GetDefaultBlock<Engine>())
         
-		// Raw objects
-		, MemoryModule(yage::DefaultDeleter<Core::MemoryModule>)
+        // Raw objects
+        , MemoryModule(yage::DefaultDeleter<Core::MemoryModule>)
         , Config(yage::DefaultDeleter<Core::Config>)
 
-		// Core::IManager
+        // Core::IManager
         , Renderer(yage::GetManagerDeleter<Gfx::Renderer>(this))
         , BufferManager(yage::GetManagerDeleter<Gfx::BufferManager>(this))
         , MeshManager(yage::GetManagerDeleter<Resources::MeshManager>(this))
@@ -60,18 +58,15 @@ namespace Core
         , ShaderManager(yage::GetManagerDeleter<Resources::ShaderManager>(this))
         , WindowManager(yage::GetManagerDeleter<Core::WindowManager>(this))
         , InputManager(yage::GetManagerDeleter<Core::InputManager>(this))
-        , RTTIManager(yage::GetManagerDeleter<RTTI::Manager>(this))
     {
+        Logger::info("Working directory : {}", fs::current_path().string().c_str());
+
         RTTI::SetupRTTI();
-
-		// Integral types
-		RTTIManager->PushLayer<RTTI::IntegralLayer>();
-
-		// Engine CTTI
-		RTTIManager->PushLayer<RTTI::EngineLayer>();
+        RTTI::GetRegister().PushLayer<RTTI::IntegralLayer>();
+        RTTI::GetRegister().PushLayer<RTTI::EngineLayer>();
 
         MemoryModule.reset(new Core::MemoryModule(memorySize));
-        Config		.reset(new Core::Config(
+        Config      .reset(new Core::Config(
             MemoryModule->requestMemoryBlock(Memory::KB(1), "Config Block"))
         );
 
@@ -84,7 +79,6 @@ namespace Core
         yage::CreateManager<Resources::ShaderManager>  (*this, ShaderManager,   Memory::KB(100));
         yage::CreateManager<Core::WindowManager>       (*this, WindowManager,   Memory::KB(10));
         yage::CreateManager<Core::InputManager>        (*this, InputManager,    Memory::KB(10));
-        yage::CreateManager<RTTI::Manager>             (*this, RTTIManager,     Memory::KB(10));
     }
 
     Engine::~Engine()
@@ -94,61 +88,61 @@ namespace Core
 
     void Engine::RegisterManager(borrowed_ptr<IManager>&& manager)
     {
-		// #NewAlloc
-		managers.push_back(eastl::move(manager));
+        // #NewAlloc
+        managers.push_back(eastl::move(manager));
     }
 
-	void Engine::UnregisterManager(detail::owned_ptr_base& owning_ptr)
-	{
-		auto* itr = std::find_if(managers.begin(), managers.end(), [&](borrowed_ptr<IManager>& ptr) {
-			return ptr.getBaseOwner() == &owning_ptr;
-		});
+    void Engine::UnregisterManager(Utils::detail::owned_ptr_base& owning_ptr)
+    {
+        auto* itr = std::find_if(managers.begin(), managers.end(), [&](borrowed_ptr<IManager>& ptr) {
+            return ptr.getBaseOwner() == &owning_ptr;
+        });
 
-		if (itr != managers.end())
-		{
-			// #NewAlloc 
-			managers.erase(itr);
-		}
-		else
-		{
-			YAGE_ASSERT(false, "Attempt to erase unregistered manager!");
-		}
-	}
+        if (itr != managers.end())
+        {
+            // #NewAlloc 
+            managers.erase(itr);
+        }
+        else
+        {
+            YAGE_ASSERT(false, "Attempt to erase unregistered manager!");
+        }
+    }
 
-	void Engine::SetupWindow(Utils::Handle<Window> handle)
-	{
-		auto* window = WindowManager->tryGet(handle);
-		if (window != nullptr)
-		{
-			if (!Renderer->registerWindow(window))
-			{
-				Logger::error("Engine : Unable to register window in OpenGL!");
-			}
+    void Engine::SetupWindow(Utils::Handle<Window> handle)
+    {
+        auto* window = WindowManager->tryGet(handle);
+        if (window != nullptr)
+        {
+            if (!Renderer->registerWindow(window))
+            {
+                Logger::error("Engine : Unable to register window in OpenGL!");
+            }
 
-			if (!EventQueue::registerWindow(window))
-			{
-				Logger::error("Engine : Unable to register window in EventQueue!");
-			}
-		}
-		else
-		{
-			Logger::error("Unable to create window!");
-		}
-	}
+            if (!EventQueue::registerWindow(window))
+            {
+                Logger::error("Engine : Unable to register window in EventQueue!");
+            }
+        }
+        else
+        {
+            Logger::error("Unable to create window!");
+        }
+    }
 
-	auto Engine::CreateWindowFromSurface(std::uintptr_t raw_handle) -> Window::handle_t
-	{
-		auto handle = WindowManager->createNew(
-			((std::string)Config->WindowTitle).c_str(),
-			raw_handle,
-			Config->WindowWidth,
-			Config->WindowHeight
-		);
+    auto Engine::CreateWindowFromSurface(std::uintptr_t raw_handle) -> Window::handle_t
+    {
+        auto handle = WindowManager->createNew(
+            ((std::string)Config->WindowTitle).c_str(),
+            raw_handle,
+            Config->WindowWidth,
+            Config->WindowHeight
+        );
 
-		SetupWindow(handle);
+        SetupWindow(handle);
 
-		return handle;
-	}
+        return handle;
+    }
 
     auto Engine::CreateWindow() -> Window::handle_t
     {
@@ -158,7 +152,7 @@ namespace Core
              Config->WindowHeight
         );
 
-		SetupWindow(handle);
+        SetupWindow(handle);
 
         return handle;
     }
@@ -168,20 +162,20 @@ namespace Core
         return Config->Load(path);
     }
 
-	bool Engine::InitializeSubsystem()
-	{
-		yage::platform::SSubsystemParams params;
-		params.eventQueue = &EventQueue::get();
+    bool Engine::InitializeSubsystem()
+    {
+        yage::platform::SSubsystemParams params;
+        params.eventQueue = &EventQueue::get();
 
-		return yage::platform::initialize
-		(
-			((std::string)Config->Subsystem).c_str(), 
-			&MemoryModule->requestMemoryBlock(Memory::KB(2), "SubsystemBlock"), 
-			params
-		);
-	}
+        return yage::platform::initialize
+        (
+            ((std::string)Config->Subsystem).c_str(), 
+            &MemoryModule->requestMemoryBlock(Memory::KB(2), "SubsystemBlock"), 
+            params
+        );
+    }
 
-	bool Engine::Initialize()
+    bool Engine::Initialize()
     {
         bool result = true;
         result &= InitializeSubsystem();
@@ -244,7 +238,7 @@ namespace Core
 
     double Engine::GetCurrentTime()
     {
-		return yage::platform::getSubsystem().getCurrentTime();
+        return yage::platform::getSubsystem().getCurrentTime();
     }
 
     void Engine::Quit()
@@ -258,23 +252,23 @@ namespace Core
         for (auto i = (std::int32_t) managers.size() - 1; i >= 0; i--)
         {
             Utils::borrowed_ptr<IManager>& ptr = managers[i];
-			if (ptr)
-			{
-				auto* owner = ptr.getBaseOwner();
+            if (ptr)
+            {
+                auto* owner = ptr.getBaseOwner();
 
-				ptr.~borrowed_ptr();
+                ptr.~borrowed_ptr();
 
-				if (owner->hasBorrowers())
-				{
-					Logger::error("Manager at '{}' has unreleased borrowed_ptr's!", i);
-				}
+                if (owner->hasBorrowers())
+                {
+                    Logger::error("Manager at '{}' has unreleased borrowed_ptr's!", i);
+                }
 
-				owner->destroy();
-			}
-			else
-			{
-				Logger::error("Orphaned borrowed ptr at '{}'!", i);
-			}
+                owner->destroy();
+            }
+            else
+            {
+                Logger::error("Orphaned borrowed ptr at '{}'!", i);
+            }
         }
 
         managers.clear();
@@ -291,7 +285,7 @@ namespace Core
 
         ReleaseManagers();
 
-		yage::platform::shutdown();
+        yage::platform::shutdown();
 
         Logger::info("Cleaned up!");
 

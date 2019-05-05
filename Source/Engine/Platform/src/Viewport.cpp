@@ -7,6 +7,9 @@
 #include "Platform/Graphics/Viewport.h"
 #include "Platform/Graphics/OpenGl/OpenGLBase.h"
 #include "Platform/Window.h"
+#include "RTTI/ClassInfo.h"
+
+YAGE_DEFINE_CLASS_RTTI(Gfx::Viewport);
 
 namespace Gfx
 {

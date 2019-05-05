@@ -1,6 +1,6 @@
 #include <Core/RTTI/RTTIEngineLoader.h>
 {{#classes}}
-#include "meta_{{class_name}}.h"
+#include "{{class_name}}.gen.h"
 {{/classes}}
 
 namespace Meta
@@ -16,4 +16,4 @@ namespace Meta
     }
 }
 
-IMPLEMENT_RTTI_LAYER(RTTI::EngineLayer, &Meta::Engine::RegisterClasses);
+PUBLISH_RTTI_LAYER(RTTI::EngineLayer, &Meta::Engine::RegisterClasses);

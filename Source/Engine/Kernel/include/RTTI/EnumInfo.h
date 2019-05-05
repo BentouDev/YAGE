@@ -1,10 +1,10 @@
 #ifndef YAGE_RTTI_ENUM_INFO_H
 #define YAGE_RTTI_ENUM_INFO_H
 
-#include "List.h"
-#include "Defines.h"
-#include "TypeInfo.h"
-#include "CompileString.h"
+#include <Utils/List.h>
+#include <Utils/Defines.h>
+#include <RTTI/TypeInfo.h>
+#include <Utils/CompileString.h>
 
 namespace RTTI
 {
@@ -22,7 +22,7 @@ namespace RTTI
         EnumInfo(Utils::CompileString& name, Memory::IMemoryBlock& memory)
             : TypeInfo(name)
             , Super(nullptr)
-            , Values(memory)
+            , Values() // #newalloc memory)
         { }
 
         TypeInfo*                  Super;

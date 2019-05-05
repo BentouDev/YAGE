@@ -1,20 +1,39 @@
 {
-  "patterns" : [
+  "patterns": [
     {
-      "class_template" : ["class_info.mustache"],
-      "class_out" : "meta_{{class_name}}.h",
-      "main_template" : "engine_main.mustache",
-      "main_out" : "register_reflection.cpp",
-      "output_dir" : "Generated",
-      "file" : "(\\W|\\w)*\\.h\\b",
-      "annotation" : ["__Y_CLASS__"],
-      "require_annotation" : "true",
+      "class_template": [ "class_header.mustache" ],
+      "class_out": "{{class_name}}.gen.h",
+      "main_template": "null.mustache",
+      "main_out": "register_reflection.cpp",
+      "output_dir": "Generated",
+      "file": "(\\W|\\w)*\\.h\\b",
+      "annotation": [ "__Y_CLASS__" ],
+      "require_annotation": "true",
       "include_directories": [
-          "Source/Engine/Kernel/include",
-          "Source/Engine/Core/include"
+        "Source/Engine/Kernel/include",
+        "Source/Engine/Platform/include",
+        "Source/Engine/Core/include"
       ],
-      "inject_includes" : [
-          "Utils/Attribute.h"
+      "inject_includes": [
+        "Utils/Attribute.h"
+      ]
+    },
+    {
+      "class_template": [ "class_info.mustache" ],
+      "class_out": "{{class_name}}.gen.cpp",
+      "main_template": "engine_main.mustache",
+      "main_out": "register_reflection.cpp",
+      "output_dir": "Generated",
+      "file": "(\\W|\\w)*\\.h\\b",
+      "annotation": [ "__Y_CLASS__" ],
+      "require_annotation": "true",
+      "include_directories": [
+        "Source/Engine/Kernel/include",
+        "Source/Engine/Platform/include",
+        "Source/Engine/Core/include"
+      ],
+      "inject_includes": [
+        "Utils/Attribute.h"
       ]
     }
   ]

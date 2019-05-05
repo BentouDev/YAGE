@@ -13,26 +13,32 @@
 
 namespace Utils
 {
+    union handle_t
+    {
+        handle_t(uint64_t data)
+            : raw(data)
+        { }
+
+        uint64_t raw = { 0 };
+
+        struct
+        {
+            uint16_t liveId;
+            type_t   typeId;
+            uint32_t index;
+        };
+    };
+
     struct RawHandle
     {
     public:
         RawHandle() : key(0)
         { }
 
-        RawHandle(uint32_t new_key) : key(new_key)
+        RawHandle(uint64_t new_key) : key(new_key)
         { }
 
-		union
-		{
-			uint32_t key = { 0 };
-
-			struct
-			{
-				uint8_t liveId;
-				type_t typeId;
-				uint16_t index;
-			};
-		};
+        handle_t key;
         
         static auto invalid() -> RawHandle
         {
@@ -41,7 +47,7 @@ namespace Utils
 
         operator bool()
         {
-            return key != invalid().key;
+            return key.raw != invalid().key.raw;
         }
     };
 
@@ -49,34 +55,23 @@ namespace Utils
     struct Handle
     {
     public:
-		union
-		{
-			uint32_t key;
+        handle_t key;
 
-			// ToDo : Make handle 64bit
-			struct
-			{
-				uint8_t  liveId;
-				type_t   typeId;
-				uint16_t index;
-			};
-		};
-        
     private:
-        auto release() -> uint32_t
+        auto release() -> uint64_t
         {
-            auto oldVal = key;
-            key = invalid().key;
+            auto oldVal = key.raw;
+            key.raw = invalid().key.raw;
             return oldVal;
         }
     public:
 
-        Handle() : key(0) 
+        Handle() : key(0)
         {
             // ToDo : provide a way to get just TypeInfo*
-            auto* type = Meta::GetType<Resource>();
+            RTTI::ClassInfo* type = Meta::GetType<Resource>();
             YAGE_ASSERT(type != nullptr, "Cannot create handle for non-registered type!");
-            typeId = type != nullptr ? type->GetId() : 0; 
+            key.typeId = type != nullptr ? type->GetId() : 0; 
         }
 
         Handle(Handle&& other) : key(other.release()) { }
@@ -87,7 +82,7 @@ namespace Utils
 
         operator RawHandle()
         {
-            return RawHandle(key);
+            return RawHandle(key.raw);
         }
 
         static auto invalid() -> Handle<Resource>
@@ -97,27 +92,27 @@ namespace Utils
 
         explicit operator bool() const
         {
-            return key != invalid().key;
+            return key.raw != invalid().key.raw;
         }
 
         auto operator==(const Handle<Resource>& other) -> bool
         {
-            return key == other.key;
+            return key.raw == other.key.raw;
         }
 
         auto operator!=(const Handle<Resource>& other) -> bool
         {
-            return key != other.key;
+            return key.raw != other.key.raw;
         }
 
         auto operator==(const Handle<Resource>& other) const -> bool
         {
-            return key == other.key;
+            return key.raw == other.key.raw;
         }
 
         auto operator!=(const Handle<Resource>& other) const -> bool
         {
-            return key != other.key;
+            return key.raw != other.key.raw;
         }
 
         auto swap(Handle<Resource>& other) noexcept -> void
@@ -132,20 +127,20 @@ namespace Utils
         left.swap(right);
     }
 
-	template <typename T>
-	Utils::Handle<T> handle_cast(RawHandle handle)
-	{
-		Utils::Handle<T> h;
+    template <typename T>
+    Utils::Handle<T> handle_cast(const RawHandle& handle)
+    {
+        Utils::Handle<T> h;
 
-		YAGE_ASSERT(h.typeId == handle.typeId,
-			"handle_cast : Unable to cast handles from '{}' to '{}'!",
-			h.typeId, h.typeId);
+        YAGE_ASSERT(h.key.typeId == handle.key.typeId,
+            "handle_cast : Unable to cast handles from '{}' to '{}'!",
+            h.key.typeId, h.key.typeId);
 
-		h.liveId = handle.liveId;
-		h.index = handle.index;
+        h.key.liveId = handle.key.liveId;
+        h.key.index = handle.key.index;
 
-		return h;
-	}
+        return h;
+    }
 }
 
 #endif //YAGE_HANDLE_H

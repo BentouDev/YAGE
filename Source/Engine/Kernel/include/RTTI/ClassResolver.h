@@ -4,6 +4,7 @@
 #include <RTTI/ClassInfo.h>
 #include <RTTI/RTTICommon.h>
 #include <RTTI/RTTIRegister.h>
+#include <Utils/MacroDefines.h>
 
 namespace Memory
 {
@@ -27,6 +28,11 @@ namespace RTTI
 
 namespace Meta
 {
+    namespace detail
+    {
+        YAGE_API void InjectTypeImpl(const char* name, RTTI::TypeInfo*);
+    }
+
     template <typename T>
     class ClassStorage
     {
@@ -40,8 +46,12 @@ namespace Meta
         }
     };
 
-    class ClassResolver
+    using TTypeId = unsigned long long;
+
+    class YAGE_API ClassResolver
     {
+        static TTypeId getUniqueId();
+
         template <typename T>
         friend void RTTI::RegisterType(Utils::CompileString name, RTTI::IRegister& rtti);
         friend class RTTI::Register;
@@ -54,6 +64,8 @@ namespace Meta
             auto* info = ClassStorage<T>::GetClassInfo();
             new (info) RTTI::ClassInfo(name, reg.GetMemory());
 
+            info->Id = getUniqueId();
+
             Declare<T>(*(reinterpret_cast<RTTI::Register*>(&reg)), *info);
 
             return
@@ -62,6 +74,7 @@ namespace Meta
                 [this](RTTI::IRegister& reg, RTTI::ClassInfo& info)
                 {
                     Define<T>(*(reinterpret_cast<RTTI::Register*>(&reg)), info);
+                    ::Meta::detail::InjectTypeImpl(info.CanonicalName.c_str(), &info);
                 }
             };
         }
@@ -77,11 +90,15 @@ namespace Meta
 
         template <typename T>
         void Declare(RTTI::Register& reg, RTTI::ClassInfo& data)
-        { }
+        {
+            static_assert(false, "Attempt to call ClassResolver::Declare<T>() for unregistered type!");
+        }
 
         template <typename T>
         void Define(RTTI::Register& reg, RTTI::ClassInfo& data)
-        { }
+        {
+            static_assert(false, "Attempt to call ClassResolver::Define<T>() for unregistered type!");
+        }
     };
 }
 
@@ -91,7 +108,11 @@ namespace RTTI
     void RegisterType(Utils::CompileString name, IRegister& rtti)
     {
         using TBase = typename std::remove_reference<T>::type;
-        if constexpr (std::is_class<TBase>::value)
+        if constexpr (std::is_integral<TBase>::value)
+        {
+            rtti.ResolveIntegral(std::move(rtti.CreateIntegralResolver<T>(name, rtti)));
+        }
+        else if constexpr (std::is_class<TBase>::value)
         {
             rtti.ResolveClass(std::move(rtti.GetClassResolver().PredeclareClass<T>(name, rtti)));
         }

@@ -118,4 +118,6 @@ namespace Gfx
     };
 }
 
+#include "ShaderProgram.gen.h"
+
 #endif //GAME_SHADER_H

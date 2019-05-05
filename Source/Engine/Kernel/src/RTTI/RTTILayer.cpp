@@ -2,7 +2,7 @@
 
 namespace RTTI
 {
-    bool ILayer::Load(ClassResolvePolicy policy)
+    bool ILayer::Load(RTTI::IRegister& rtti, ClassResolvePolicy policy)
     {
         if (_loaded)
         {
@@ -10,7 +10,7 @@ namespace RTTI
         }
 
         // pass container for some sort of intermediate representation
-        bool result = OnLoad();
+        bool result = OnLoad(rtti);
 
         // after all types are registered, resolve them
 

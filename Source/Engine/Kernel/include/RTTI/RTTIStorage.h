@@ -9,8 +9,9 @@ namespace RTTI
     class IStorage
     {
     public:
-        virtual void RegisterType(ClassInfo* info) = 0;
-        virtual void RegisterType(EnumInfo* info) = 0;
+		virtual ~IStorage() {}
+        virtual void RegisterType(const std::type_info& type_info, ClassInfo* class_info) = 0;
+        virtual void RegisterType(const std::type_info& type_info, EnumInfo* enum_info) = 0;
     };
 }
 

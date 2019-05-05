@@ -24,6 +24,7 @@
 
 // temporary
 #include "Core/Resources/Texture/Texture.h"
+#include "Core/Resources/Shader/Shader.h"
 
 namespace Resources
 {
@@ -110,12 +111,9 @@ namespace Core
         std::uint32_t _textureIndex;
 
     public:
-		Material() : _memory{ nullptr }, _allocator{nullptr}
-		{ }
+        Material();
         
-		inline explicit Material(Memory::IMemoryBlock& memory)
-            : _memory(&memory), _allocator(nullptr), _uniforms(), _textureIndex(0) // #NewAlloc
-        { }
+        explicit Material(Memory::IMemoryBlock& memory);
 
         Material(const Material&) = delete;
         Material& operator=(const Material&) = delete;
@@ -244,5 +242,7 @@ namespace Core
         }
     }
 }
+
+#include "Material.gen.h"
 
 #endif //GAME_MATERIAL_H

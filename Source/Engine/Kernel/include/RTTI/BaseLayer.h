@@ -4,24 +4,36 @@
 #include <RTTI/RTTILayer.h>
 #include <RTTI/RTTIStorage.h>
 #include <Utils/List.h>
+#include <EASTL/hash_map.h>
 
 namespace RTTI
 {
-    class BaseLayer : public ILayer, public IStorage
+	using TLoader = void(RTTI::IRegister& rtti);
+
+	class BaseLayer : public ILayer, public IStorage
     {
-    protected:
+		friend void InitializeLoader(BaseLayer*,TLoader*);
+
+		TLoader* _loader;
+
+	protected:
         explicit BaseLayer();
         virtual ~BaseLayer();
 
         // ILayer
         virtual bool OnUnload() override;
+        virtual bool OnLoad(RTTI::IRegister& rtti) override;
+
+		virtual bool TryGetType(const std::type_info&, TypeInfo*& ptr) override;
+		virtual bool TryGetEnum(const std::type_info&, EnumInfo*& ptr) override;
+		virtual bool TryGetClass(const std::type_info&, ClassInfo*& ptr) override;
 
         // IStorage
-        virtual void RegisterType(ClassInfo* clazz) override;
-        virtual void RegisterType(EnumInfo*  enumz) override;
+        virtual void RegisterType(const std::type_info& info, ClassInfo* clazz) override;
+        virtual void RegisterType(const std::type_info& info, EnumInfo*  enumz) override;
 
-        Utils::List<ClassInfo*> Classes;
-        Utils::List<EnumInfo*>  Enums;
+        eastl::hash_map<size_t, ClassInfo*> Classes;
+		eastl::hash_map<size_t, EnumInfo*>  Enums;
     };
 }
 

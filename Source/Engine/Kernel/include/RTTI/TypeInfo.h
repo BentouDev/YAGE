@@ -12,6 +12,11 @@
 
 #include "Defines.h"
 
+namespace Meta
+{
+	class ClassResolver;
+}
+
 namespace RTTI
 {
     class Register;
@@ -19,6 +24,7 @@ namespace RTTI
     class TypeInfo : public MetaInfo
     {
         friend class Register;
+        friend class Meta::ClassResolver;
 
         type_t Id;
 

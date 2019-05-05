@@ -3,6 +3,7 @@
 //
 
 #include "Core/Resources/Font/Font.h"
+#include "Core/Resources/Texture/Texture.h"
 
 namespace Resources
 {

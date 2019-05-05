@@ -15,6 +15,9 @@
 #include "Core/Resources/Resource.h"
 #include "MeshScheme.h"
 
+// temporary
+#include "Core/Gfx/StaticBuffer.h"
+
 namespace Gfx
 {
     class StaticBuffer;
@@ -337,14 +340,9 @@ namespace Core
         Utils::Handle<Gfx::StaticBuffer> _buffer;
 
     public:
-		Mesh() : _memory{ nullptr }, _data{ nullptr }
-		{ }
+        Mesh();
         
-		inline explicit Mesh(Memory::IMemoryBlock &memory)
-            : _memory(&memory), _submeshes(), _data(nullptr), _storageType(STATIC), _schemeId(-1), _buffer() // #NewAlloc
-        {
-            _data = YAGE_CREATE_NEW((*_memory), MeshData)(*_memory);
-        }
+        explicit Mesh(Memory::IMemoryBlock& memory);
 
         Mesh(const Mesh&) = delete;
         Mesh& operator=(const Mesh&) = delete;
@@ -393,5 +391,7 @@ namespace Core
         std::size_t getVertexCount() const;
     };
 }
+
+#include "Mesh.gen.h"
 
 #endif

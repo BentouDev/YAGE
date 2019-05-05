@@ -1,6 +1,36 @@
 ## Provides basic classes, like meshes, shaders, materials
 project(Core VERSION 0.1 LANGUAGES CXX)
 
+message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
+file(GLOB_RECURSE
+    YAGE_ALL_HEADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
+
+set(YAGE_REFLECTION_CONFIG
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/engine_main.mustache
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
+    ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
+
+yage_add_ctti(Engine
+    DIRECTORY Generated/Engine
+    PATTERN Data/Reflection/Yage.json
+    OUTPUT ${CMAKE_SOURCE_DIR}/Generated/Engine/register_reflection.cpp
+    HEADERS ${YAGE_ALL_HEADERS}
+    DEPENDS ${YAGE_REFLECTION_CONFIG})
+
+target_link_libraries(Engine_CTTI PUBLIC Yage::Kernel Yage::Platform)
+
+target_include_directories(Engine_CTTI
+    PUBLIC
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
+
+install(TARGETS Engine_CTTI
+        EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}")
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/Engine DESTINATION ${YAGE_INCLUDE_DIR}/CTTI/Engine)
+
 file(GLOB_RECURSE
     CORE_HEADERS
 	CONFIGURE_DEPENDS
@@ -15,18 +45,18 @@ file(GLOB_RECURSE
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
-add_library(Core SHARED ${GRAPHICS_API} ${CORE_HEADERS} ${CORE_SOURCES})
+add_library(Core SHARED ${GRAPHICS_API} ${CORE_HEADERS} ${CORE_SOURCES} $<TARGET_OBJECTS:Engine_CTTI>)
 add_library(Yage::Core ALIAS Core)
 
 target_include_directories(Core 
     PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Kernel/include>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Generated/Engine>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}/CTTI/Engine>
     PRIVATE
         src)
-	
-#set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
+
 target_compile_features(Core
     PUBLIC
         cxx_auto_type
@@ -43,9 +73,8 @@ target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 target_link_libraries(Core
     PUBLIC
-        Yage::Kernel
         Yage::Platform
-		glm
+        Yage::Kernel
     PRIVATE
         lodepng
         utf8
@@ -68,7 +97,7 @@ install(TARGETS Core
 install(DIRECTORY include/ DESTINATION ${YAGE_INCLUDE_DIR})
 
 # This makes the project importable from the build directory
-export(TARGETS lodepng glm utf8 Core FILE CoreConfig.cmake)
+export(TARGETS Engine_CTTI lodepng glm utf8 Core FILE CoreConfig.cmake)
 
 if(YAGE_BUILD_TESTS)
     # Every library has unit tests, of course

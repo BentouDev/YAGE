@@ -19,7 +19,9 @@ namespace yage
 	{
 	public:
 		virtual void cleanUp() {}
-		Utils::RawHandle Handle;
+        virtual inline Utils::RawHandle getHandle() { return Handle; }
+
+        Utils::RawHandle Handle;
 	};
 }
 

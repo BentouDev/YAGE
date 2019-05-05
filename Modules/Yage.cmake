@@ -48,9 +48,10 @@ function (yage_add_ctti NAME)
 
     file(GLOB
         ${AGNES_VAR_NAME}_GENERATED_CRTTI
-        ${CMAKE_SOURCE_DIR}/Generated/${NAME}/*.h)
+        ${CMAKE_SOURCE_DIR}/Generated/${NAME}/*.h
+        ${CMAKE_SOURCE_DIR}/Generated/${NAME}/*.cpp)
 
-    add_library(${NAME}_CTTI STATIC ${${AGNES_VAR_NAME}_GENERATED_CRTTI} ${AGNES_OUTPUT})
+    add_library(${NAME}_CTTI OBJECT ${${AGNES_VAR_NAME}_GENERATED_CRTTI} ${AGNES_OUTPUT})
     add_library(CTTI::${NAME} ALIAS ${NAME}_CTTI)
     add_dependencies(${NAME}_CTTI YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI)
     set_target_properties(${NAME}_CTTI PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)

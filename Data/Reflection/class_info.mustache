@@ -1,9 +1,12 @@
-#include <{{{include}}}>
+#include "{{{class_name}}}.gen.h"
 
 #include <RTTI/ClassInfo.h>
 #include <RTTI/RTTIRegister.h>
 #include <RTTI/ClassResolver.h>
+#include <RTTI/Reflection.h>
 #include <Core/Attributes.h>
+
+YAGE_DEFINE_CLASS_RTTI({{{canonical_name}}});
 
 namespace Meta
 {

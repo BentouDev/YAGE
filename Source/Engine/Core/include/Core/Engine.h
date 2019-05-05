@@ -102,7 +102,6 @@ namespace Core
 		owned_ptr<Resources::ShaderManager>		ShaderManager;
 		owned_ptr<Core::WindowManager>			WindowManager;
 		owned_ptr<Core::InputManager>			InputManager;
-		owned_ptr<RTTI::Manager>			    RTTIManager;
 
 		explicit Engine(const char* name, std::size_t memorySize);
 
@@ -149,7 +148,7 @@ namespace Core
 
 		void RegisterManager(borrowed_ptr<IManager>&& manager);
 		
-		void Engine::UnregisterManager(detail::owned_ptr_base& owning_ptr);
+		void Engine::UnregisterManager(Utils::detail::owned_ptr_base& owning_ptr);
 
 		//template <typename T>
 		//void LoadRTTI(owned_ptr<T>& ptr)

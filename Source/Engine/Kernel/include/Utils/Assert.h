@@ -38,7 +38,7 @@ namespace Utils
         template <typename ... Args>
         Assert(Utils::DebugSourceInfo info, const char* message, Args&& ... args)
         {
-            fmt::print(stderr, "Assert failed!\n\tfile {0}, line {1},\nreason : {2}",
+            fmt::print(stderr, "Assert failed!\n\tfile {0}, line {1},\nreason : {2}\n",
                        info.file, info.line, fmt::format(message, std::forward<Args>(args)...));
         }
     };

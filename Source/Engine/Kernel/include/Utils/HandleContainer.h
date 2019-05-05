@@ -116,7 +116,7 @@ namespace Utils
             Index<handle_t> &in = _indices[freelistStart];
             freelistStart = in.next;
 
-			in.handle.liveId++;
+			in.handle.key.liveId++;
             
             in.index = elementCount++;
             in.valid |= 1;
@@ -130,8 +130,8 @@ namespace Utils
 
             object_t& o = _elements[in.index];
 
-			o.Handle.liveId = in.handle.liveId;
-			o.Handle.index = in.handle.index;
+			o.Handle.key.liveId = in.handle.key.liveId;
+			o.Handle.key.index = in.handle.key.index;
             
             return Utils::handle_cast<TObject>(o.Handle);
         }
@@ -141,7 +141,7 @@ namespace Utils
             YAGE_ASSERT(contains(handle),
                    "HandleContainer : Cannot remove element by invalid handle!");
 
-            Index<handle_t> &in = _indices[handle.index];
+            Index<handle_t> &in = _indices[handle.key.index];
             object_t &o = _elements[in.index];
 
             --elementCount;
@@ -158,19 +158,19 @@ namespace Utils
                 new (&old) T(std::move(lastT));
             }
 
-            _indices[o.Handle.index].index = in.index;
+            _indices[o.Handle.key.index].index = in.index;
             in.index = elementCount;
             in.valid &= 0;
 
-            auto oldIndex = handle.index;
+            auto oldIndex = handle.key.index;
             _indices[freelistEnd].next = oldIndex;
             freelistEnd = oldIndex;
         }
 
         inline auto contains(handle_t handle) const noexcept -> bool
         {
-            const Index<handle_t> &in = _indices[handle.index];
-            return in.handle.key == handle.key && (in.valid & 1) && in.index != maxSize;
+            const Index<handle_t> &in = _indices[handle.key.index];
+            return in.handle.key.raw == handle.key.raw && (in.valid & 1) && in.index != maxSize;
         }
 
         inline auto get(handle_t handle) const -> object_t&
@@ -181,7 +181,7 @@ namespace Utils
                         "HandleContainer : Cannot get element by invalid handle!");
 #endif
 
-            const Index<handle_t> &in = _indices[handle.index];
+            const Index<handle_t> &in = _indices[handle.key.index];
             return _elements[in.index];
         }
 
@@ -193,7 +193,7 @@ namespace Utils
                         "HandleContainer : Cannot get element by invalid handle!");
 #endif
 
-            const Index<handle_t> &in = _indices[handle.index];
+            const Index<handle_t> &in = _indices[handle.key.index];
             return _array[index][in.index];
         }
 
@@ -204,7 +204,7 @@ namespace Utils
             YAGE_ASSERT(contains(handle),
                         "HandleContainer : Cannot set element by invalid handle!");
 #endif
-            const Index<handle_t> &in = _indices[handle.index];
+            const Index<handle_t> &in = _indices[handle.key.index];
             T& old = _array[index][in.index];
             new (&old) T(std::move(value));
         }

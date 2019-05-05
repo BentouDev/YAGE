@@ -21,7 +21,7 @@ namespace RTTI
             static_assert(std::is_base_of<ILayer, T>::value,
                 "RTTI: Can load only ILayer derivatives!");
 
-			T* instance = LayerHelper<T>::getInstance();
+			T* instance = ::detail::LayerDefinition<T>::getInstance();
 			if (!instance)
 			{
 				instance = YAGE_CREATE_NEW(Memory::GetDefaultBlock<Manager>(), T)();

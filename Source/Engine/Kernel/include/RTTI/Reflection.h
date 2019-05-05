@@ -3,11 +3,7 @@
 
 #include <type_traits>
 #include <Utils/String.h>
-
-//namespace Utils
-//{
-//    class String;
-//}
+#include <Utils/Defines.h>
 
 namespace RTTI
 {
@@ -23,16 +19,20 @@ namespace Meta
         template <typename T>
         RTTI::TypeInfo* GetIntegral()
         {
-            static_assert(std::is_integral<T>::value, "Cannot call GetIntegral() for non-integral types!");
+            static_assert(false, "Attempt to call GetIntegral() for unregistered type!");
             return nullptr;
         }
 
         template <typename T>
         RTTI::ClassInfo* GetClass()
         {
-            static_assert(std::is_class<T>::value, "Cannot call GetClass() for non-class types!");
+            static_assert(false, "Attempt to call GetClass() for unregistered type!");
             return nullptr;
         }
+
+        template <typename T>
+        struct define_rtti
+        { };
     }
 
     RTTI::TypeInfo*  FindType (const Utils::String& name);
@@ -57,6 +57,21 @@ namespace Meta
             return nullptr;
         }
     }
+
+    YAGE_API RTTI::TypeInfo* registerOrGetType(const char* name);
 }
+
+#define YAGE_DECLARE_CLASS_RTTI(clazz) \
+        template <> inline RTTI::ClassInfo* ::Meta::detail::GetClass<typename clazz>() \
+        { return static_cast<RTTI::ClassInfo*>(::Meta::registerOrGetType(#clazz)); }
+
+#define YAGE_DEFINE_CLASS_RTTI_IMPL(clazz, name) \
+        template<> \
+        struct ::Meta::detail::define_rtti<clazz> { \
+            define_rtti() { ::Meta::detail::GetClass<clazz>(); } \
+        }; \
+        static const ::Meta::detail::define_rtti<clazz> name{}
+
+#define YAGE_DEFINE_CLASS_RTTI(clazz) YAGE_DEFINE_CLASS_RTTI_IMPL( clazz, YAGE_MAKE_UNIQUE( rtti_def_ ) )
 
 #endif // !YAGE_REFLECTION_H

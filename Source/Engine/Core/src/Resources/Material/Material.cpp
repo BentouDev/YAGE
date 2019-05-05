@@ -11,6 +11,14 @@
 
 namespace Core
 {
+    Material::Material()
+        : _memory{ nullptr }, _allocator{ nullptr }
+    { }
+
+    Material::Material(Memory::IMemoryBlock& memory)
+        : _memory(&memory), _allocator(nullptr), _uniforms(), _textureIndex(0) // #NewAlloc
+    { }
+
     void Material::setUniform(GLint location, float value)
     {
         gl::Uniform1f(location, value);

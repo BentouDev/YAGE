@@ -164,7 +164,7 @@ namespace Gfx
 
         YAGE_ASSERT(camera != nullptr && mat != nullptr, "SpriteBatchManager : Tried to create SpriteBatch without material or camera!");
 
-        BatchIndex index(camera->sortIndex, material.index);
+        BatchIndex index(camera->sortIndex, material.key.index);
         SpriteBatch* batchPtr = nullptr;
 
         auto batchItr = _batchMap.find(index.key);

@@ -13,6 +13,9 @@
 
 #include "Core/Resources/Resource.h"
 
+// temporary
+#include "Core/Resources/Texture/Texture.h"
+
 namespace Meta
 {
     class RegisterClass;
@@ -73,5 +76,7 @@ namespace Resources
         Font& operator=(const Font&) = delete;
     };
 }
+
+#include "Font.gen.h"
 
 #endif //YAGE_FONT_H

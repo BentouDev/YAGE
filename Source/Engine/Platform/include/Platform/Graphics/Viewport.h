@@ -5,6 +5,7 @@
 #ifndef YAGE_VIEWPORT_H
 #define YAGE_VIEWPORT_H
 
+#include <RTTI/Reflection.h>
 #include "RenderTarget.h"
 #include "Rectangle.h"
 #include "BaseObject.h"
@@ -43,5 +44,7 @@ namespace Gfx
 		void	setRect(const Rectangle<int32_t>& rect);
 	};
 }
+
+YAGE_DECLARE_CLASS_RTTI(Gfx::Viewport);
 
 #endif //YAGE_VIEWPORT_H

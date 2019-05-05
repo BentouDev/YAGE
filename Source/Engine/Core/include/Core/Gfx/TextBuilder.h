@@ -10,6 +10,9 @@
 #include <Utils/Color.hpp>
 #include <Utils/MemoryBlock.h>
 
+// temporary
+#include <Core/Resources/Material/Material.h>
+
 namespace Core
 {
 	class Material;
