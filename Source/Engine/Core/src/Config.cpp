@@ -84,7 +84,7 @@ namespace Core
         }
         catch (const std::exception& e)
         {
-            Logger::error("Unable to parse log, cause '{}'", e.what());
+            Logger::error("Unable to parse config, cause '{}'", e.what());
         }
         catch (...)
         {

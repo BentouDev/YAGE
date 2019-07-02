@@ -104,6 +104,6 @@ namespace Logic
     };
 }
 
-#include "Entity.gen.h"
+#include "CTTI/Core/Entity.gen.h"
 
 #endif //GAME_ENTITY_H_H

@@ -2,7 +2,7 @@
 #define YAGE_GLFW_WINDOW_H
 
 #include <Platform/Subsystem/ISubsystem.h>
-#include <Subsystem/SubsystemDefinition.h>
+#include <Platform/Subsystem/SubsystemDefinition.h>
 #include <EASTL/hash_map.h>
 
 struct GLFWwindow;

@@ -1,64 +1,76 @@
 #include "Platform/Subsystem/ISubsystem.h"
+#include "Platform/Subsystem/SubsystemDefinition.h"
 #include "Platform/Logger.h"
-#include "SubsystemDefinition.h"
 #include <EASTL/hash_map.h>
 
 namespace yage::platform
 {
-	namespace detail
-	{
-		ISubsystem* _selectedSubsystem = nullptr;
-		detail::define_subsystem* _selectedDef = nullptr;
+    namespace detail
+    {
+        ISubsystem* _selectedSubsystem = { nullptr };
+        detail::define_subsystem* _selectedDef = { nullptr };
 
-		using TSubsystemCache = eastl::hash_map<eastl::string, define_subsystem*>;
+        using TSubsystemCache = eastl::hash_map<eastl::string, define_subsystem*>;
 
-		TSubsystemCache& getCache()
-		{
-			static TSubsystemCache _known_subsystems{};
-			return _known_subsystems;
-		}
+        TSubsystemCache* _subsystemCache = { nullptr };
 
-		define_subsystem::define_subsystem(Utils::CompileString name, TCreator* creator, TDeleter* deleter)
-			: _create(creator), _destroy(deleter)
-		{
-			getCache()[name.c_str()] = this;
-		}
-	}
+        TSubsystemCache& getCache()
+        {
+            if (!_subsystemCache)
+                _subsystemCache = new TSubsystemCache;
+            return (*_subsystemCache);
+        }
 
-	bool initialize(const eastl::string& name, Memory::IMemoryBlock* block, SSubsystemParams& params)
-	{
-		auto itr = detail::getCache().find(name);
-		if (itr == detail::getCache().end())
-		{
-			Core::Logger::critical("Unable to create subsystem '{}', shutting down.", name.c_str());
-			return false;
-		}
+        define_subsystem::define_subsystem(Utils::CompileString name, TCreator* creator, TDeleter* deleter)
+            : _create(creator), _destroy(deleter)
+        {
+            bool hasInstance = getCache().find(name.c_str()) != getCache().end();
 
-		Core::Logger::info("Creating {} subsystem...", name.c_str());
+            YAGE_ASSERT(!hasInstance, "Duplicated subsystem {} registered!", name.c_str());
 
-		detail::_selectedDef = (*itr).second;
-		detail::_selectedSubsystem = detail::_selectedDef->_create(block, params);
+            if (!hasInstance)
+                getCache()[name.c_str()] = this;
+            else
+                std::exit(-1);
+        }
+    }
 
-		return getSubsystem().initialize();
-	}
+    bool initialize(const eastl::string& name, Memory::IMemoryBlock* block, SSubsystemParams& params)
+    {
+        auto itr = detail::getCache().find(name);
+        if (itr == detail::getCache().end())
+        {
+            Core::Logger::critical("Unable to create subsystem '{}', shutting down.", name.c_str());
+            return false;
+        }
 
-	void shutdown()
-	{
-		if (detail::_selectedSubsystem != nullptr)
-		{
-			Core::Logger::info("Destroying subsystem...");
+        Core::Logger::info("Creating {} subsystem...", name.c_str());
 
-			detail::_selectedSubsystem->shutdown();
-			detail::_selectedDef->_destroy(detail::_selectedSubsystem);
+        detail::_selectedDef = (*itr).second;
+        detail::_selectedSubsystem = detail::_selectedDef->_create(block, params);
 
-			detail::_selectedSubsystem = nullptr;
-			detail::_selectedDef = nullptr;
-		}
-	}
+        return getSubsystem().initialize();
+    }
 
-	ISubsystem& getSubsystem()
-	{
-		YAGE_ASSERT(detail::_selectedSubsystem != nullptr, "Fatal Error, no subsystem!");
-		return *detail::_selectedSubsystem;
-	}
+    void shutdown()
+    {
+        if (detail::_selectedSubsystem != nullptr)
+        {
+            Core::Logger::info("Destroying subsystem...");
+
+            detail::_selectedSubsystem->shutdown();
+            detail::_selectedDef->_destroy(detail::_selectedSubsystem);
+
+            detail::_selectedSubsystem = nullptr;
+            detail::_selectedDef = nullptr;
+        }
+
+        delete detail::_subsystemCache;
+    }
+
+    ISubsystem& getSubsystem()
+    {
+        YAGE_ASSERT(detail::_selectedSubsystem != nullptr, "Fatal Error, no subsystem!");
+        return *detail::_selectedSubsystem;
+    }
 }

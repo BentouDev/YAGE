@@ -7,16 +7,12 @@
 #include "Platform/Graphics/OpenGl/OpenGLBase.h"
 #include "Platform/Platform.h"
 #include "Platform/Subsystem/ISubsystem.h"
+#include "RTTI/ClassInfo.h"
+
+YAGE_DEFINE_CLASS_RTTI(Core::Window);
 
 namespace Core
 {
-	Window::Window(Memory::IMemoryBlock& memory, std::uintptr_t handle, const char* title, unsigned width, unsigned height)
-		: _memory(&memory), Title{ title }, Width{ width }, Height{ height },
-		DefaultViewport{ nullptr }, hWindow{ nullptr }, IsCloseRequested(false)
-	{
-		YAGE_ASSERT(false, "Not implemented!");
-	}
-
     Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
         : _memory(&memory), Title {title}, Width {width}, Height {height},
           DefaultViewport {nullptr}, hWindow {nullptr}, IsCloseRequested(false)
@@ -30,24 +26,24 @@ namespace Core
         Memory::Delete(*_memory, DefaultViewport);
     }
 
-	auto Window::GetNative() const -> yage::platform::WindowHandle
-	{
-		return hWindow;
-	}
+    auto Window::GetNative() const -> yage::platform::WindowHandle
+    {
+        return hWindow;
+    }
 
-    auto Window::Create() -> void
+    void Window::Create()
     {
         if (IsAlive())
             return;
 
-		yage::platform::SWindowParams params;
-		params.height = Height;
-		params.width = Width;
-		params.name = Title;
+        yage::platform::SWindowParams params;
+        params.height = Height;
+        params.width = Width;
+        params.name = Title;
 
-		auto& sys = yage::platform::getSubsystem();
+        auto& sys = yage::platform::getSubsystem();
 
-		hWindow = sys.createWindow(params);
+        hWindow = sys.createWindow(params);
 
         if (hWindow == nullptr)
         {
@@ -66,7 +62,7 @@ namespace Core
         if (!IsAlive())
             return;
 
-		yage::platform::getSubsystem().showWindow(hWindow);
+        yage::platform::getSubsystem().showWindow(hWindow);
     }
 
     void Window::OnResize(std::int32_t width, std::int32_t height)
@@ -78,13 +74,12 @@ namespace Core
         Height = height;
 
         DefaultViewport->setRect(Gfx::Rectangle<int32_t>(0, 0, Width, Height));
-
-        // OpenGL::resizeWindow(*this);
+        OpenGL::resizeWindow(*this);
     }
 
     auto Window::Resize(std::int32_t width, std::int32_t height) -> void
     {
-		yage::platform::getSubsystem().resizeWindow(hWindow, width, height);
+        yage::platform::getSubsystem().resizeWindow(hWindow, width, height);
     }
 
     auto Window::Destroy() -> void
@@ -92,7 +87,7 @@ namespace Core
         if (!IsAlive())
             return;
 
-		yage::platform::getSubsystem().destroyWindow(hWindow);
+        yage::platform::getSubsystem().destroyWindow(hWindow);
 
         hWindow = nullptr;
     }

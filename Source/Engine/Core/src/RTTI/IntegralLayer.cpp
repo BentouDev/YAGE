@@ -1,6 +1,7 @@
 #include "Core/RTTI/RTTIIntegralLoader.h"
 #include "RTTI/ClassResolver.h"
 #include "Platform/Window.h"
+#include "Platform/Graphics/Viewport.h"
 
 #define YAGE_DEFINE_INTEGRAL_RTTI_IMPL(clazz, name) \
         template<> \
@@ -21,9 +22,17 @@ namespace Meta
 
     template <>
     void ClassResolver::Define<Core::Window>(RTTI::Register& reg, RTTI::ClassInfo& data)
-    {
+    { }
 
+    template <>
+    void ClassResolver::Declare<Gfx::Viewport>(RTTI::Register& reg, RTTI::ClassInfo& data)
+    {
+        data.CanonicalName = "Gfx::Viewport";
     }
+
+    template <>
+    void ClassResolver::Define<Gfx::Viewport>(RTTI::Register& reg, RTTI::ClassInfo& data)
+    { }
 }
 
 namespace yage::kernel
@@ -47,6 +56,9 @@ namespace yage::kernel
 
         // Window
         ::RTTI::RegisterType<typename Core::Window>(Utils::CompileString("Core::Window"), reg);
+
+        // Viewport
+        ::RTTI::RegisterType<typename Gfx::Viewport>(Utils::CompileString("Gfx::Viewport"), reg);
     }
 }
 

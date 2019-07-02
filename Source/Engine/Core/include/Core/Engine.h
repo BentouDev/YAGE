@@ -13,6 +13,7 @@
 #include <Utils/Handle.h>
 #include <Utils/List.h>
 #include <Utils/OwnedPtr.h>
+#include <Platform/Platform.h>
 
 #include "MemoryModule.h"
 
@@ -112,8 +113,6 @@ namespace Core
 
 		// Create Window based on current configuration
 		auto CreateWindow() -> Utils::Handle<Window>;
-
-		auto CreateWindowFromSurface(std::uintptr_t handle) -> Utils::Handle<Window>;
 
 		// Load configuration
 		bool LoadConfig(const char* = "Config.json");

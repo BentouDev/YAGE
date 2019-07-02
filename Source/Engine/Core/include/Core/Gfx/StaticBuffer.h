@@ -162,6 +162,6 @@ namespace Gfx
 	};
 }
 
-#include "StaticBuffer.gen.h"
+#include "CTTI/Core/StaticBuffer.gen.h"
 
 #endif //GAME_STATICBATCH_H

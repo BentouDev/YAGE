@@ -8,12 +8,13 @@
 #include <QLineEdit>
 #include <QToolBar>
 #include <QToolButton>
+#include <QStackedLayout>
 #include <QtWidgets/QFrame>
 
 namespace Editor
 {
 	BasePage::BasePage(EditorApp* editor, QWidget *parent)
-		: QFrame(parent), _editor(editor)
+		: QFrame(parent), _editor(editor), _contentWidget(nullptr)
 	{
 		QVBoxLayout* masterPageLayout = new QVBoxLayout();
 		_toolbarLayout = new QHBoxLayout();
@@ -22,10 +23,10 @@ namespace Editor
 		masterPageLayout->setSpacing(0);
 
 		QFrame* toolbar = new QFrame();
-		QFrame* content = new QFrame();
+		_contentFrame = new QFrame();
 
 		toolbar->setObjectName("pageToolbar");
-		content->setObjectName("pageContent");
+		_contentFrame->setObjectName("pageContent");
 
 		QLineEdit* search = new QLineEdit();
 		search->setAccessibleDescription("Type to search...");
@@ -59,10 +60,13 @@ namespace Editor
 		toolbar->setLayout(_toolbarLayout);
 		toolbar->setFixedHeight(36);
 
+		_contentFrame->setLayout(new QStackedLayout());
+
 		masterPageLayout->addWidget(toolbar);
-		masterPageLayout->addWidget(content);
+		masterPageLayout->addWidget(_contentFrame);
 
 		this->setLayout(masterPageLayout);
+
 		/*QToolBar* toolbar = new QToolBar(this);
 
 		QWidget* segmentedButton = new QWidget(this);
@@ -100,5 +104,19 @@ namespace Editor
 		button->setText(text);
 		button->setObjectName(objName);
 		_toolbarLayout->addWidget(button);
+	}
+
+	QWidget* BasePage::getContent()
+	{
+		return _contentWidget;
+	}
+
+	void BasePage::setContent(QWidget* widget)
+	{
+		if (_contentWidget)
+			_contentFrame->layout()->removeWidget(_contentWidget);
+
+		_contentWidget = widget;
+		_contentFrame->layout()->addWidget(_contentWidget);
 	}
 }

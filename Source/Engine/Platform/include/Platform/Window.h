@@ -30,7 +30,6 @@ namespace Core
 		{ }
 
 		explicit Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height);
-		explicit Window(Memory::IMemoryBlock& memory, std::uintptr_t handle, const char* title, unsigned width, unsigned height);
 		virtual ~Window();
 
 		Window(Window&& other)
@@ -71,7 +70,6 @@ namespace Core
 
 	private:
 		void Create();
-		void CreateFromHandle(std::uintptr_t rawHandle);
 
 		yage::platform::WindowHandle hWindow;
 

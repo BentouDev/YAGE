@@ -102,7 +102,7 @@ namespace Core
                 auto* _output = YAGE_CREATE_NEW(_memory, T)(std::forward<Args>(args)...);
                 _outputs.push_back(_output);
             }
-            catch (std::exception e)
+            catch (const std::exception& e)
             {
 				YAGE_ASSERT(false, "Unable to create logger output:\n {}", e.what() != nullptr ? e.what() : "UNKNOWN");
             }
@@ -113,15 +113,18 @@ namespace Core
 
         template <typename... Args> static void log(LogLevel::TYPE lvl, const char* str_format, const Args&... args)
         {
-            using TBuffer = fmt::memory_buffer;
-            if (lvl < get()._log_level) return;
+            //using TBuffer = fmt::memory_buffer;
 
-            TBuffer raw;
-            fmt::format_to(raw, str_format, args...);
+			if (lvl < get()._log_level) return;
+
+            //TBuffer raw;
+            //fmt::format_to(raw, str_format, args...);
+
+			auto formatted = fmt::format(str_format, args...);
 
             for (auto* output : get()._outputs)
             {
-                output->PrintMessage(lvl, raw.data());
+                output->PrintMessage(lvl, formatted.c_str());
             }
         }
 

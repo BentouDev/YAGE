@@ -74,15 +74,20 @@ namespace yage::platform::glfw
 		return glfwJoystickPresent(handle);
 	}
 
-	WindowHandle GLFW::createWindow(const SWindowParams& params)
-	{
-		GLFWwindow* handle = glfwCreateWindow(params.width, params.height, params.name.c_str(), nullptr, nullptr);
+    WindowHandle GLFW::createWindow(const SWindowParams& params)
+    {
+        GLFWwindow* handle = glfwCreateWindow(params.width, params.height, params.name.c_str(), nullptr, nullptr);
+        if (handle == nullptr)
+        {
+            Core::Logger::error("GLFW : Unable to create window!");
+            return nullptr;
+        }
 
-		glfwSetWindowUserPointer(handle, this);
-		registerWindowCallbacks(handle);
+        glfwSetWindowUserPointer(handle, this);
+        registerWindowCallbacks(handle);
 
-		return handle;
-	}
+        return handle;
+    }
 
 	bool GLFW::destroyWindow(WindowHandle handle)
 	{

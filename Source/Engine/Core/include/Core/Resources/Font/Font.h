@@ -77,6 +77,6 @@ namespace Resources
     };
 }
 
-#include "Font.gen.h"
+#include "CTTI/Core/Font.gen.h"
 
 #endif //YAGE_FONT_H

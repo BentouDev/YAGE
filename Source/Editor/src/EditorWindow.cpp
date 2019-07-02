@@ -13,6 +13,7 @@
 #include "EditorWindow.h"
 #include "EditorTabWidget.h"
 #include "Pages/BasePage.h"
+#include "Pages/SceneView.h"
 
 #include "ui_EditorWindow.h"
 
@@ -57,7 +58,7 @@ namespace Editor
 		QBoxLayout* bl = new QBoxLayout(QBoxLayout::TopToBottom);
 		w->setLayout(bl);
 
-		BasePage* p = new BasePage(editor);
+		BasePage* p = new SceneView(editor);
 		bl->addWidget(p);
 
 		const int index = ++CONTENT_COUNT;

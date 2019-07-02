@@ -392,6 +392,6 @@ namespace Core
     };
 }
 
-#include "Mesh.gen.h"
+#include "CTTI/Core/Mesh.gen.h"
 
 #endif

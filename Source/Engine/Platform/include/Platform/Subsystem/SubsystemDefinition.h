@@ -29,7 +29,7 @@ namespace yage::platform::detail
 	template <typename T>
 	struct define_subsystem_impl : public define_subsystem
 	{
-		static_assert(std::is_base_of<ISubsystem, T>::value, "Must derive from ISystem");
+		static_assert(std::is_base_of<ISubsystem, T>::value, "Must derive from ISubsystem");
 
 		YAGE_API static ISubsystem* Create(Memory::IMemoryBlock* block, SSubsystemParams& params)
 		{
@@ -41,7 +41,7 @@ namespace yage::platform::detail
 			Memory::Delete(*sys->owningBlock(), sys);
 		}
 
-		define_subsystem_impl(Utils::CompileString name)
+		constexpr define_subsystem_impl(Utils::CompileString name)
 			: define_subsystem(name, &define_subsystem_impl::Create, &define_subsystem_impl::Destroy)
 		{ }
 	};

@@ -43,7 +43,7 @@ namespace Core
 {
     Engine::Engine(const char* name, std::size_t memorySize)
         : Name(name), _isDone(false), _cleanedUp(false), managers()// #NewAlloc Memory::GetDefaultBlock<Engine>())
-        
+
         // Raw objects
         , MemoryModule(yage::DefaultDeleter<Core::MemoryModule>)
         , Config(yage::DefaultDeleter<Core::Config>)
@@ -128,20 +128,6 @@ namespace Core
         {
             Logger::error("Unable to create window!");
         }
-    }
-
-    auto Engine::CreateWindowFromSurface(std::uintptr_t raw_handle) -> Window::handle_t
-    {
-        auto handle = WindowManager->createNew(
-            ((std::string)Config->WindowTitle).c_str(),
-            raw_handle,
-            Config->WindowWidth,
-            Config->WindowHeight
-        );
-
-        SetupWindow(handle);
-
-        return handle;
     }
 
     auto Engine::CreateWindow() -> Window::handle_t

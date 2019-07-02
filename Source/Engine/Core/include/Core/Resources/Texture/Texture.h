@@ -47,6 +47,6 @@ namespace Resources
     };
 }
 
-#include "Texture.gen.h"
+#include "CTTI/Core/Texture.gen.h"
 
 #endif //GAME_TEXTURE_H

@@ -2,8 +2,11 @@
 #define YAGE_EDITOR_BASEPAGE_H
 
 #include "BasePage.h"
-#include <QSurface>
+
 #include <Utils/Handle.h>
+#include <Core/GameTime.h>
+
+#include <QTimer>
 
 namespace Core
 {
@@ -12,6 +15,8 @@ namespace Core
 
 namespace Editor
 {
+    class FramebufferWidget;
+
     class SceneView : public BasePage
     {
     public:
@@ -19,8 +24,12 @@ namespace Editor
 		virtual ~SceneView();
 
 	protected:
-        QSurface* _surface;
-		Utils::Handle<Core::Window> _window;
+		void Render();
+
+        FramebufferWidget* _engineSurface;
+		Core::GameTime _gameTime;
+
+		QTimer* _timer;
     };
 }
 

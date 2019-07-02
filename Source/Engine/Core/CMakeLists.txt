@@ -14,9 +14,9 @@ set(YAGE_REFLECTION_CONFIG
     ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
 
 yage_add_ctti(Engine
-    DIRECTORY Generated/Engine
+    DIRECTORY Generated/CTTI/Core
     PATTERN Data/Reflection/Yage.json
-    OUTPUT ${CMAKE_SOURCE_DIR}/Generated/Engine/register_reflection.cpp
+    OUTPUT ${CMAKE_SOURCE_DIR}/Generated/CTTI/Core/register_reflection.cpp
     HEADERS ${YAGE_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
@@ -24,24 +24,25 @@ target_link_libraries(Engine_CTTI PUBLIC Yage::Kernel Yage::Platform)
 
 target_include_directories(Engine_CTTI
     PUBLIC
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Generated>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 install(TARGETS Engine_CTTI
         EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}")
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/Engine DESTINATION ${YAGE_INCLUDE_DIR}/CTTI/Engine)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/CTTI DESTINATION ${YAGE_INCLUDE_DIR}/)
 
 file(GLOB_RECURSE
     CORE_HEADERS
-	CONFIGURE_DEPENDS
-	LIST_DIRECTORIES false
+    CONFIGURE_DEPENDS
+    LIST_DIRECTORIES false
     ${CMAKE_CURRENT_LIST_DIR}/include/*.h
     ${CMAKE_CURRENT_LIST_DIR}/include/*.hpp)
 
 file(GLOB_RECURSE
     CORE_SOURCES
-	CONFIGURE_DEPENDS
-	LIST_DIRECTORIES false
+    CONFIGURE_DEPENDS
+    LIST_DIRECTORIES false
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
     ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
@@ -51,9 +52,8 @@ add_library(Yage::Core ALIAS Core)
 target_include_directories(Core 
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Generated/Engine>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Generated>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
-        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}/CTTI/Engine>
     PRIVATE
         src)
 
@@ -78,8 +78,8 @@ target_link_libraries(Core
     PRIVATE
         lodepng
         utf8
-		Yage::DEP::assimp
-		Yage::DEP::jsonformoderncpp
+        Yage::DEP::assimp
+        Yage::DEP::jsonformoderncpp
         ${CMAKE_THREAD_LIBS_INIT})
 
 if(OPENGL_FOUND)

@@ -7,6 +7,7 @@
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
+#include <spdlog/sinks/msvc_sink.h>
 
 namespace Core
 {
@@ -50,6 +51,13 @@ namespace Core
     , _outputs  ()// #NewAlloc
     {
         createOutput<SpdLoggerOutput>(spdlog::stdout_color_mt("terminal"));
+
+#if defined(_WIN32)
+#ifndef NDEBUG
+		createOutput<SpdLoggerOutput>(spdlog::create<spdlog::sinks::msvc_sink_mt>("debug"));
+#endif
+#endif
+
     }
 
     void Logger::destroy()

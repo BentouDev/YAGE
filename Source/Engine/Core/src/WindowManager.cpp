@@ -29,15 +29,6 @@ namespace Core
         return handle;
     }
 
-	WindowManager::handle_t WindowManager::createNew(const char* name, std::uintptr_t raw_handle, unsigned width, unsigned height)
-	{
-		handle_t handle = _windowContainer.emplace(_memory, raw_handle, name, width, height);
-
-		_windowIdMapper[reinterpret_cast<std::uintptr_t>(get(handle).hWindow)] = handle;
-
-		return handle;
-	}
-
     Window* WindowManager::tryGet(handle_t handle)
     {
         Window* result = nullptr;
@@ -97,7 +88,7 @@ namespace Core
                 window->IsCloseRequested = true;
                 break;
             default:
-                Core::Logger::debug("Window : '{}' UNKNOWN EVENT", window->Handle.key);
+                Core::Logger::debug("Window : '{}' UNKNOWN EVENT", window->Handle.key.raw);
                 break;
         }
     }

@@ -2,7 +2,7 @@
 #define YAGE_SDL2_SUBSYSTEM_H
 
 #include <Platform/Subsystem/ISubsystem.h>
-#include <Subsystem/SubsystemDefinition.h>
+#include <Platform/Subsystem/SubsystemDefinition.h>
 #include <Utils/MacroDefines.h>
 #include <EASTL/hash_map.h>
 
@@ -17,10 +17,17 @@ namespace yage::platform::sdl2
 	public:
 		SDL2(Memory::IMemoryBlock* block, SSubsystemParams& params);
 
+		// General
 		virtual bool initialize() override;
+		virtual void shutdown() override;
 
+		// Devices
 		virtual void pollEvents(Core::EventQueue* queue) override;
+		virtual double getCurrentTime() override;
+		virtual const char* getDeviceName(DeviceHandle handle) override;
+		virtual bool isDevicePresent(DeviceHandle handle) override;
 
+		// Windowing
 		virtual WindowHandle createWindow(const SWindowParams& params) override;
 		virtual bool destroyWindow(WindowHandle handle) override;
 
@@ -31,6 +38,7 @@ namespace yage::platform::sdl2
 	};
 }
 
-// PUBLISH_SUBSYSTEM(::yage::platform::sdl2::SDL2);
+using sdl2_sys = ::yage::platform::sdl2::SDL2;
+PUBLISH_SUBSYSTEM(sdl2_sys);
 
 #endif//YAGE_SDL2_SUBSYSTEM_H

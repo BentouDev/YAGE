@@ -123,6 +123,6 @@ namespace Logic
 	};
 }
 
-#include "RenderingComponent.gen.h"
+#include "CTTI/Core/RenderingComponent.gen.h"
 
 #endif //GAME_RENDERINGCOMPONENT_H

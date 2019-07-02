@@ -1,0 +1,9 @@
+{
+  "Window": {
+    "Title": "YAGE"
+  },
+
+  "Window.Title": "YAGE Game",
+  "Window.Api": "opengl",
+  "Window.Subsystem": "sdl2_sys"
+}

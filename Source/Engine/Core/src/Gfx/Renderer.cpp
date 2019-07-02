@@ -152,6 +152,7 @@ namespace Gfx
     {
         bool result = true;
         result &= _spriteBatchManager->initialize();
+        result &= (bool) gl::sys::LoadFunctions();
         result &= loadDebugAssets();
         result &= createDebugCameras();
 

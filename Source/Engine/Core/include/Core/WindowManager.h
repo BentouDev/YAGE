@@ -38,7 +38,6 @@ namespace Core
 		virtual ~WindowManager();
 
 		handle_t createNew(const char* name, unsigned width, unsigned height);
-		handle_t createNew(const char* name, std::uintptr_t raw_handle, unsigned width, unsigned height);
 
 		Window& get(handle_t handle)
 		{ return _windowContainer.get(handle); }

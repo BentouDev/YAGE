@@ -7,9 +7,6 @@
 [submodule "Dependencies/GLM/Source"]
 	path = Dependencies/GLM/Source
 	url = https://github.com/g-truc/glm.git
-[submodule "Dependencies/GLFW/Source"]
-	path = Dependencies/GLFW/Source
-	url = https://github.com/glfw/glfw.git
 [submodule "Dependencies/Spdlog/Source"]
 	path = Dependencies/Spdlog/Source
 	url = https://github.com/gabime/spdlog.git

@@ -22,9 +22,13 @@ namespace yage::platform
 
 	struct SWindowParams
 	{
-		eastl::string name;
-		unsigned width;
-		unsigned height;
+        eastl::string name;
+        unsigned width;
+        unsigned height;
+        bool hidden : 1;
+        bool borderless : 1;
+        bool fullscreen : 1;
+        bool resizeable : 1;
 	};
 
 	class ISubsystem

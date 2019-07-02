@@ -1,6 +1,10 @@
 #include "Editor.h"
 #include <Utils/MemorySizes.h>
 #include <Utils/SafeDelete.h>
+
+#include <Platform/Logger.h>
+#include <Platform/FileLoggerOutput.h>
+
 #include <Core/Engine.h>
 
 #include <QApplication>
@@ -8,6 +12,8 @@
 #include <QFile>
 
 #include "EditorWindow.h"
+
+#include <ctime>
 
 namespace Editor
 {
@@ -64,7 +70,19 @@ namespace Editor
 
         // show splash
 
+		time_t rawtime;
+		time(&rawtime);
+		struct tm* start_date = localtime(&rawtime);
+
+		Core::Logger::get().createOutput<Core::FileLoggerOutput>
+		(
+			fmt::format("Log/Log-{}.{}.{}-[{}.{}.{}].txt",
+			start_date->tm_year, start_date->tm_mon, start_date->tm_mday,
+			start_date->tm_hour, start_date->tm_min, start_date->tm_sec
+		).c_str());
+
         _Engine = new Core::Engine("Editor", Memory::MB(20));
+		_Engine->LoadConfig("Config/EditorConfig.json");
 
         // init subsystems
 

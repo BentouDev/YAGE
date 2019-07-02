@@ -6,3 +6,8 @@ sdl2/2.0.9@bincrafters/stable
 spdlog/1.3.1@bincrafters/stable
 assimp/Release3.1_RC1-dev@bentoudev/stable
 jsonformoderncpp/3.1.2@vthiery/stable
+
+[imports]
+bin, *.dll -> ./bin
+lib, *.dll -> ./bin
+lib, *.so* -> ./bin

@@ -243,6 +243,6 @@ namespace Core
     }
 }
 
-#include "Material.gen.h"
+#include "CTTI/Core/Material.gen.h"
 
 #endif //GAME_MATERIAL_H
