@@ -1,6 +1,6 @@
 #!/bin/bash
-export CXX=clang++-5.0
-export CC=clang-5.0
+export CXX=clang++
+export CC=clang
 $CXX --version
 cmake --version
 conan --version
