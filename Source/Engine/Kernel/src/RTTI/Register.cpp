@@ -11,11 +11,16 @@ namespace kernel::rtti::detail
     namespace impl
     {
         using TLayerCache = eastl::hash_map<size_t, define_layer*>;
+        TLayerCache* _layerCache{ nullptr };
 
         TLayerCache& getCache()
         {
-            static TLayerCache _known_subsystems{};
-            return _known_subsystems;
+            if (!_layerCache)
+            {
+                _layerCache = new eastl::hash_map<size_t, define_layer*>;
+            }
+
+            return *_layerCache;
         }
     }
 
@@ -42,6 +47,11 @@ namespace kernel::rtti::detail
         YAGE_ASSERT(itr != impl::getCache().end(), "Destructor of RTTI layer definiton not present in cache!");
 
         impl::getCache().erase(itr);
+
+        if (impl::getCache().empty())
+        {
+            delete& impl::getCache();
+        }
     }
 }
 
@@ -49,7 +59,21 @@ namespace RTTI
 {
     namespace detail
     {
-        IRegister* _registerInstance{ nullptr };
+        IRegister* _registerInstance { nullptr };
+
+        using TRTTISubsystemsCleanups = eastl::vector<TRTTIShutdownCallback*>;
+
+        TRTTISubsystemsCleanups* _cleanupCallbacks { nullptr };
+
+        void CallOnRTTIShutdown(TRTTIShutdownCallback* callback)
+        {
+            if (!_cleanupCallbacks)
+            {
+                _cleanupCallbacks = new TRTTISubsystemsCleanups;
+            }
+
+            _cleanupCallbacks->push_back(callback);
+        }
     }
 
     void InitializeLoader(BaseLayer* layer, TLoader* loader)
@@ -78,6 +102,15 @@ namespace RTTI
             IRegister* tmp = detail::_registerInstance;
             detail::_registerInstance = nullptr;
             delete tmp;
+
+            // Shutdown 'global' RTTI helpers
+            for (auto* callback : (*detail::_cleanupCallbacks))
+            {
+                callback();
+            }
+
+            delete detail::_cleanupCallbacks;
+            detail::_cleanupCallbacks = nullptr;
         }
     }
 

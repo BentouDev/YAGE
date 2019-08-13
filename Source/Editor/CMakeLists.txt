@@ -90,7 +90,7 @@ target_link_libraries(Editor
     Yage::Engine
     Qt5::Core 
     Qt5::Widgets 
-    ADS_LIB 
+    Yage::DEP::qt-advanced-docking-system
     ${OS_LIBS} 
     CTTI::Editor)
 

@@ -3,6 +3,7 @@
 #include <RTTI/ClassResolver.h>
 #include <EASTL/hash_map.h>
 #include <EASTL/string.h>
+#include "RTTI/Register.h"
 
 namespace Meta
 {
@@ -12,17 +13,38 @@ namespace Meta
         RTTI::TypeInfo* info{ nullptr };
     };
 
-    eastl::hash_map<eastl::string, STypeDefinition*> _definedTypes;
+    namespace detail
+    {
+        using TTypeDefinitons = eastl::hash_map<eastl::string, STypeDefinition*>;
+
+        TTypeDefinitons* _definedTypes{ nullptr };
+    }
+
+    detail::TTypeDefinitons& getCache()
+    {
+        using namespace detail;
+
+        if (!_definedTypes)
+        {
+            _definedTypes = new TTypeDefinitons;
+
+            RTTI::detail::CallOnRTTIShutdown([]() {
+                delete _definedTypes;
+            });
+        }
+
+        return (*_definedTypes);
+    }
 
     YAGE_API RTTI::TypeInfo* registerOrGetType(const char* name)
     {
-        auto itr = _definedTypes.find(name);
-        if (itr == _definedTypes.end())
+        auto itr = getCache().find(name);
+        if (itr == getCache().end())
         {
             STypeDefinition* def = YAGE_CREATE_NEW(Memory::GetDefaultBlock<STypeDefinition>(), STypeDefinition)();
             def->name = name;
 
-            _definedTypes[name] = def;
+            getCache()[name] = def;
 
             return nullptr;
         }
@@ -40,8 +62,8 @@ namespace Meta
     {
         YAGE_API void InjectTypeImpl(const char* name, RTTI::TypeInfo* info)
         {
-            auto itr = _definedTypes.find(name);
-            if (itr != _definedTypes.end())
+            auto itr = getCache().find(name);
+            if (itr != getCache().end())
             {
                 (*itr).second->info = info;
             }

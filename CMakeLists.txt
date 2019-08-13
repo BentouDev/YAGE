@@ -76,7 +76,7 @@ conan_add_remote(NAME bincrafters
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS
                 BUILD missing
-				GENERATORS cmake_find_package)
+                GENERATORS cmake_find_package)
 
 yage_configure_conan()
 
@@ -87,8 +87,8 @@ install(DIRECTORY ${CONAN_BIN_DIRS}/ DESTINATION ${YAGE_BINARY_DIR})
 # yage_add_dependency(Dependencies/Agnes)
 message ("-- yage: debug Conan Agnes dir:" ${CONAN_BIN_DIRS_AGNES})
 find_program(AGNES_BINARY 
-	NAME Agnes Agnes.exe agnes agnes.exe
-	PATHS ${CONAN_BIN_DIRS_AGNES})
+    NAME Agnes Agnes.exe agnes agnes.exe
+    PATHS ${CONAN_BIN_DIRS_AGNES})
 
 #============================#
 # Tests                      #
@@ -144,9 +144,6 @@ if(YAGE_BUILD_EDITOR)
         yage_add_dependency(Dependencies/WinDeployQt)
         find_package(Qt5WinExtras)
     endif(WIN32)
-
-    # Add AdvancedDockingSystem
-    yage_add_dependency(Dependencies/AdvancedDockingSystem)
 
     # Add Mustache
     yage_add_dependency(Dependencies/Mustache)

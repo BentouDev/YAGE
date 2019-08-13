@@ -76,7 +76,7 @@ namespace Editor
 
 		Core::Logger::get().createOutput<Core::FileLoggerOutput>
 		(
-			fmt::format("Log/Log-{}.{}.{}-[{}.{}.{}].txt",
+			fmt::format("../../Log/Log-{}.{}.{}-[{}.{}.{}].txt",
 			start_date->tm_year, start_date->tm_mon, start_date->tm_mday,
 			start_date->tm_hour, start_date->tm_min, start_date->tm_sec
 		).c_str());

@@ -47,6 +47,12 @@ namespace RTTI
         Utils::List<ILayer*>         Layers;
         std::unique_ptr<TLayerCache> _currentResolvers;
     };
+
+    namespace detail
+    {
+        using TRTTIShutdownCallback = void(void);
+        void CallOnRTTIShutdown(TRTTIShutdownCallback* callback);
+    }
 }
 
 #endif // REGISTER_H_
