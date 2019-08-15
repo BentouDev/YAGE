@@ -47,7 +47,10 @@ namespace yage::platform::detail
 	};
 }
 
+#define PUBLISH_SUBSYSTEM_DETAIL(varname, name) \
+	yage::platform::detail::define_subsystem_impl<name> YAGE_MAKE_UNIQUE(varname) {#name};
+
 #define PUBLISH_SUBSYSTEM(name) \
-	yage::platform::detail::define_subsystem_impl<name> _sys {#name};
+    PUBLISH_SUBSYSTEM_DETAIL(YAGE_CONCATENATE(_sys_, name), name)
 
 #endif//YAGE_SUBSYSTEM_DEF_H
