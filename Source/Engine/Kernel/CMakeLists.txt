@@ -1,12 +1,19 @@
 ## Provides various utilities, such as memory management, logger etc.
 project(Kernel VERSION 0.1 LANGUAGES CXX)
 
-file (GLOB_RECURSE
+yage_glob_files(
+    KERNEL_HEADERS
+    PATTERNS
+        ${CMAKE_CURRENT_LIST_DIR}/include/*.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/*.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/*.hxx)
+
+yage_glob_files(
     KERNEL_SOURCES
-	CONFIGURE_DEPENDS
-	LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_LIST_DIR}/src/*.c
-    ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp)
+    PATTERNS
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.c
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
 add_library(Kernel SHARED ${KERNEL_SOURCES})
 add_library(Yage::Kernel ALIAS Kernel)
@@ -17,7 +24,8 @@ target_include_directories(Kernel PUBLIC
     PRIVATE src ${CMAKE_CURRENT_BINARY_DIR})
 
 target_link_options(Kernel PUBLIC 
-	"/NATVIS:${eastl_LIB_DIRS}/EASTL.natvis")
+    $<BUILD_INTERFACE:/NATVIS:${eastl_LIB_DIRS}/EASTL.natvis>
+    $<INSTALL_INTERFACE:/NATVIS:\${_IMPORT_PREFIX}/${YAGE_LIBRARY_DIR}/EASTL.natvis>)
 
 target_compile_features(Kernel 
     PUBLIC
@@ -39,9 +47,9 @@ target_compile_options(Kernel PRIVATE ${YAGE_ENFORCE_WARNINGS})
 
 target_link_libraries(Kernel
     PUBLIC
-		Yage::DEP::eastl
-		Yage::DEP::spdlog
-		Yage::DEP::fmt)
+        Yage::DEP::eastl
+        Yage::DEP::spdlog
+        Yage::DEP::fmt)
 
 if(VALGRIND_FOUND)
     target_compile_definitions(Kernel PRIVATE YAGE_VALGRIND=1)

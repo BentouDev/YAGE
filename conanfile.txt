@@ -12,3 +12,5 @@ qt-advanced-docking-system/v0.1-dev@bentoudev/stable
 bin, *.dll -> ./bin
 lib, *.dll -> ./bin
 lib, *.so* -> ./bin
+pdb, *.pdb -> ./bin
+lib, *.pdb -> ./bin

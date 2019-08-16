@@ -9,19 +9,16 @@ if(WIN32)
 endif(WIN32)
 
 message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
-file(GLOB_RECURSE
-    EDITOR_ALL_HEADERS
-    CONFIGURE_DEPENDS
-	LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
 
-file(GLOB_RECURSE
-    EDITOR_SOURCES
-	CONFIGURE_DEPENDS
-	LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
+yage_glob_files(EDITOR_ALL_HEADERS
+    PATTERNS
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
+
+yage_glob_files(EDITOR_SOURCES
+    PATTERNS
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
 set(YAGE_REFLECTION_CONFIG
     ${CMAKE_SOURCE_DIR}/Data/Reflection/editor_main.mustache

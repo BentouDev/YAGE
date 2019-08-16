@@ -58,6 +58,25 @@ function (yage_add_ctti NAME)
 
 endfunction()
 
+# Glob
+#
+# Glob files matching given patterns and put them into variable
+function(yage_glob_files NAME)
+    set(options )
+    set(oneArg )
+    set(multiArg PATTERNS)
+    cmake_parse_arguments(YAGE "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
+
+    file(GLOB_RECURSE
+        ${NAME}
+        CONFIGURE_DEPENDS
+        LIST_DIRECTORIES false
+        ${YAGE_PATTERNS})
+
+    # Make this visible outside funtion
+    set(${NAME} ${${NAME}} PARENT_SCOPE)
+endfunction()
+
 # Include
 #
 # Includes directories both in current scope and for target
@@ -96,6 +115,16 @@ function(yage_configure_conan)
 	file(WRITE ${_config_file_path} "set(CMAKE_MODULE_PATH $")
 	file(APPEND ${_config_file_path} "{CMAKE_MODULE_PATH} $")
 	file(APPEND ${_config_file_path} "{CMAKE_CURRENT_LIST_DIR})\ninclude(CMakeFindDependencyMacro)\n")
+    file(APPEND ${_config_file_path} """
+# Compute relative path
+get_filename_component(_IMPORT_PREFIX "\${CMAKE_CURRENT_LIST_FILE}" PATH)
+get_filename_component(_IMPORT_PREFIX "\${_IMPORT_PREFIX}" PATH)
+get_filename_component(_IMPORT_PREFIX "\${_IMPORT_PREFIX}" PATH)
+if(_IMPORT_PREFIX STREQUAL "/")
+    set(_IMPORT_PREFIX "")
+endif()
+"""
+    )
 
 	foreach(idx RANGE ${targets_len})
 	  list(GET CONAN_DEPENDENCIES ${idx} _dep)
@@ -119,34 +148,46 @@ function(yage_configure_conan)
         set(${_dep}_lib_kind INTERFACE)
 		set(_target_lib_file)
 
-        foreach (_lib_file ${${_dep}_LIBS})
-            string(FIND ${_lib_file} ".dll" _is_dll_pos REVERSE)
-            string(FIND ${_lib_file} ".lib" _is_lib_pos REVERSE)
+        foreach (_lib_path ${${_dep}_LIBS})
+            #string(FIND ${_lib_path} ".dll" _is_dll_pos REVERSE)
+            #string(FIND ${_lib_path} ".lib" _is_lib_pos REVERSE)
 
-			if (NOT (${_is_dll_pos} EQUAL -1))
-				set(${_dep}_lib_kind SHARED)
-				set(_target_lib_file ${_lib_file})
-			endif()
+            get_filename_component(_lib_file ${_lib_path} NAME)
+            get_filename_component(_lib_ext ${_lib_path} EXT)
 
-			if (${${_dep}_lib_kind} STREQUAL "INTERFACE")
-				if(NOT (${_is_lib_pos} EQUAL -1))
-					set(${_dep}_lib_kind STATIC)
-					set(_target_lib_file ${_lib_file})
-				endif()
-			endif()
+            if (_lib_ext)
+                
+                message ("-- yage: DEBUG: " ${_lib_file} " and " ${_lib_ext})
+
+                string(FIND ".dll .so" ${_lib_ext} _is_dynamic_pos REVERSE)
+                string(FIND ".lib .d" ${_lib_ext} _is_static_pos REVERSE)
+
+			    if (NOT (${_is_dynamic_pos} EQUAL -1))
+				    set(${_dep}_lib_kind SHARED)
+				    set(_target_lib_file "\${_IMPORT_PREFIX}//${YAGE_BINARY_DIR}//${_lib_file}")
+			    endif()
+
+			    if (${${_dep}_lib_kind} STREQUAL "INTERFACE")
+				    if(NOT (${_is_static_pos} EQUAL -1))
+					    set(${_dep}_lib_kind STATIC)
+					    set(_target_lib_file "\${_IMPORT_PREFIX}//${YAGE_LIBRARY_DIR}//${_lib_file}")
+				    endif()
+			    endif()
+            endif()
+
         endforeach()
 
         message("-- yage: Lib ${_dep} is a ${${_dep}_lib_kind} library ")
 
-	    if (NOT TARGET _dep_dep)
+        if (NOT TARGET _dep_dep)
             add_library(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE IMPORTED)
-            
-			target_link_libraries(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE ${_dep_dep})
 
-			file(APPEND ${_config_file_path} "add_library(Yage::DEP::${_YAGE_LIB_NAME} ${${_dep}_lib_kind} IMPORTED)\n")
-			if (_target_lib_file)
-				file(APPEND ${_config_file_path} "set_target_properties(Yage::DEP::${_YAGE_LIB_NAME} PROPERTIES IMPORTED_LOCATION ${_target_lib_file})\n")
-			endif()
+            target_link_libraries(Yage::DEP::${_YAGE_LIB_NAME} INTERFACE ${_dep_dep})
+
+            file(APPEND ${_config_file_path} "add_library(Yage::DEP::${_YAGE_LIB_NAME} ${${_dep}_lib_kind} IMPORTED)\n")
+            if (_target_lib_file)
+                file(APPEND ${_config_file_path} "set_target_properties(Yage::DEP::${_YAGE_LIB_NAME} PROPERTIES IMPORTED_LOCATION ${_target_lib_file})\n")
+            endif()
 
             # Get only first directory specified
             list(GET ${_dep}_INCLUDE_DIRS "0" _include_header)
@@ -196,6 +237,12 @@ function(yage_configure_conan)
 	file(APPEND ${_config_file_path} "/yage-targets.cmake)")
 	install(FILES ${_config_file_path} DESTINATION "${YAGE_LIBRARY_DIR}")
 
+    foreach(_lib_itr ${CONAN_LIB_DIRS})
+        install(DIRECTORY ${_lib_itr}/ DESTINATION ${YAGE_LIBRARY_DIR})
+    endforeach()
+
+    install(DIRECTORY ${CONAN_BIN_DIRS} DESTINATION ${YAGE_BINARY_DIR})
+    
 endfunction()
 
 # Setup Dependency

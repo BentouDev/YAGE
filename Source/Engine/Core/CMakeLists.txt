@@ -2,10 +2,14 @@
 project(Core VERSION 0.1 LANGUAGES CXX)
 
 message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
-file(GLOB_RECURSE
+
+# Engine CTTI
+yage_glob_files(
     YAGE_ALL_HEADERS
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp)
+    PATTERNS
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/*.hxx)
 
 set(YAGE_REFLECTION_CONFIG
     ${CMAKE_SOURCE_DIR}/Data/Reflection/engine_main.mustache
@@ -32,19 +36,19 @@ install(TARGETS Engine_CTTI
         EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}")
 install(DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/CTTI DESTINATION ${YAGE_INCLUDE_DIR}/)
 
-file(GLOB_RECURSE
+# Core
+yage_glob_files(
     CORE_HEADERS
-    CONFIGURE_DEPENDS
-    LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_LIST_DIR}/include/*.h
-    ${CMAKE_CURRENT_LIST_DIR}/include/*.hpp)
+    PATTERNS
+        ${CMAKE_CURRENT_LIST_DIR}/include/*.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/*.hpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/*.hxx)
 
-file(GLOB_RECURSE
+yage_glob_files(
     CORE_SOURCES
-    CONFIGURE_DEPENDS
-    LIST_DIRECTORIES false
-    ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
+    PATTERNS
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
 add_library(Core SHARED ${GRAPHICS_API} ${CORE_HEADERS} ${CORE_SOURCES} $<TARGET_OBJECTS:Engine_CTTI>)
 add_library(Yage::Core ALIAS Core)

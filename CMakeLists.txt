@@ -80,9 +80,6 @@ conan_cmake_run(CONANFILE conanfile.txt
 
 yage_configure_conan()
 
-install(DIRECTORY ${CONAN_LIB_DIRS}/ DESTINATION ${YAGE_LIBRARY_DIR})
-install(DIRECTORY ${CONAN_BIN_DIRS}/ DESTINATION ${YAGE_BINARY_DIR})
-
 # Add Agnes
 # yage_add_dependency(Dependencies/Agnes)
 message ("-- yage: debug Conan Agnes dir:" ${CONAN_BIN_DIRS_AGNES})
