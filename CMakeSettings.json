@@ -1,11 +1,17 @@
 ﻿{
+    "environments":[
+        {
+            "BuildDir" : "${projectDir}\\out\\build\\vs",
+            "InstallDir" : "${projectDir}\\out\\install"
+        }
+    ],
     "configurations": [
         {
             "name": "x64-Debug",
             "generator": "Ninja",
             "configurationType": "Debug",
-            "buildRoot": "${projectDir}\\build\\vs\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${env.BuildDir}\\${name}",
+            "installRoot": "${env.InstallDir}\\${name}",
             "cmakeCommandArgs": "",
             "buildCommandArgs": "-v",
             "ctestCommandArgs": "",
@@ -16,8 +22,8 @@
             "name": "x64-Release",
             "generator": "Ninja",
             "configurationType": "Release",
-            "buildRoot": "${projectDir}\\build\\vs\\${name}",
-            "installRoot": "${projectDir}\\install\\${name}",
+            "buildRoot": "${env.BuildDir}\\${name}",
+            "installRoot": "${env.InstallDir}\\${name}",
             "cmakeCommandArgs": "",
             "buildCommandArgs": "-v",
             "ctestCommandArgs": "",

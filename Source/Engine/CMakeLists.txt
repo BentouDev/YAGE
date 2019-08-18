@@ -20,14 +20,14 @@ set_target_properties(Engine PROPERTIES
 target_link_libraries(Engine 
     PUBLIC
         Yage::Kernel
-		Yage::Platform
+        Yage::Platform
         Yage::Script 
         Yage::Core 
         CTTI::Engine)
 
 target_include_directories(Engine 
     PUBLIC 
-		$<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
+        $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
         $<INSTALL_INTERFACE:include>)
 
 # 'make install' to the correct location

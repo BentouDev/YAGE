@@ -18,9 +18,9 @@ set(YAGE_REFLECTION_CONFIG
     ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
 
 yage_add_ctti(Engine
-    DIRECTORY Generated/CTTI/Core
+    DIRECTORY out/gen/CTTI/Core
     PATTERN Data/Reflection/Yage.json
-    OUTPUT ${CMAKE_SOURCE_DIR}/Generated/CTTI/Core/register_reflection.cpp
+    OUTPUT ${CMAKE_SOURCE_DIR}/out/gen/CTTI/Core/register_reflection.cpp
     HEADERS ${YAGE_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
@@ -29,12 +29,12 @@ target_link_libraries(Engine_CTTI PUBLIC Yage::Kernel Yage::Platform)
 target_include_directories(Engine_CTTI
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Generated>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/out/gen>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>)
 
 install(TARGETS Engine_CTTI
         EXPORT Engine DESTINATION "${YAGE_LIBRARY_DIR}")
-install(DIRECTORY ${CMAKE_SOURCE_DIR}/Generated/CTTI DESTINATION ${YAGE_INCLUDE_DIR}/)
+install(DIRECTORY ${CMAKE_SOURCE_DIR}/out/gen/CTTI DESTINATION ${YAGE_INCLUDE_DIR}/)
 
 # Core
 yage_glob_files(
@@ -56,7 +56,7 @@ add_library(Yage::Core ALIAS Core)
 target_include_directories(Core 
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/Generated>
+        $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/out/gen>
         $<INSTALL_INTERFACE:${YAGE_INCLUDE_DIR}>
     PRIVATE
         src)
