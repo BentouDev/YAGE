@@ -45,8 +45,8 @@ install:
       $env:SDL2_PATH = "$SDL_PREFIX"
 
 before_build:
- #- cmd: conan remote add yage https://api.bintray.com/conan/bentoudev/yage
- #- cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
+  - cmd: conan remote add yage https://api.bintray.com/conan/bentoudev/yage
+  - cmd: conan remote add bincrafters https://api.bintray.com/conan/bincrafters/public-conan
   - cmd: msbuild /version
   - cmd: mkdir Build && cd Build
   - cmd: cmake -G "Visual Studio 16 2019" -DSDL2_PATH=%SDL2_PATH% -DCMAKE_PREFIX_PATH=%QTDIR% -DYAGE_VERSION_PATCH=%PATCH_VER% -DYAGE_BUILD_TESTS=On ..
