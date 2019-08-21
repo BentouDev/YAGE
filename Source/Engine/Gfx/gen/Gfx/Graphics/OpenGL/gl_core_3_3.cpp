@@ -2,7 +2,7 @@
 #include <vector>
 #include <string.h>
 #include <stddef.h>
-#include "Platform/Graphics/OpenGl/gl_core_3_3.hpp"
+#include "Gfx/Graphics/OpenGl/gl_core_3_3.hpp"
 
 #if defined(__APPLE__)
 #include <dlfcn.h>

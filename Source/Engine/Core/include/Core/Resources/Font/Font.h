@@ -9,7 +9,7 @@
 #include <Utils/List.h>
 #include <Utils/MemoryBlock.h>
 
-#include <Platform/Graphics/Rectangle.h>
+#include <Gfx/Graphics/Rectangle.h>
 
 #include "Core/Resources/Resource.h"
 

@@ -142,4 +142,22 @@ namespace Core
 				break;
 		}
 	}
+
+    void InputManager::update(const Core::GameTime& time)
+    {
+        if (Mouse.scheme)
+        {
+            Mouse.scheme->update(time);
+        }
+        
+        if (Keyboard.scheme)
+        {
+            Keyboard.scheme->update(time);
+        }
+
+        if (_currentScheme)
+        {
+            _currentScheme->update(time);
+        }
+    }
 }

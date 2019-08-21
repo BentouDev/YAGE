@@ -11,74 +11,67 @@
 #include <RTTI/Reflection.h>
 
 #include "Platform.h"
-#include "Graphics/Viewport.h"
-#include "Graphics/RenderTarget.h"
 #include "BaseObject.h"
 
 namespace Core
 {
-	class Window : public yage::SafeObject
-	{
-		friend class WindowManager;
+    class Window : public yage::SafeObject
+    {
+        friend class WindowManager;
 
-		void OnResize(std::int32_t width, std::int32_t);
+        void OnResize(std::int32_t width, std::int32_t);
 
-	public:
-		using handle_t = Utils::Handle<Window>;
+    public:
+        using handle_t = Utils::Handle<Window>;
 
-		Window() : _memory { nullptr }, hWindow{ nullptr }, DefaultViewport { nullptr }
-		{ }
+        Window() : _memory{ nullptr }, hWindow{ nullptr }
+        { }
 
-		explicit Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height);
-		virtual ~Window();
+        explicit Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height);
+        virtual ~Window();
 
-		Window(Window&& other)
-			: _memory(other._memory),
-			  Title(std::move(other.Title)),
-			  Width(other.Width), Height(other.Height),
-			  DefaultViewport(other.DefaultViewport),
-			  hWindow(other.hWindow),
-			  Handle(other.Handle)
-		{
-			other.DefaultViewport = nullptr;
-			other.hWindow = nullptr;
-		}
+        Window(Window&& other)
+            : _memory(other._memory)
+            , Title(std::move(other.Title))
+            , Width(other.Width), Height(other.Height)
+            , hWindow(other.hWindow)
+            , Handle(other.Handle)
+        {
+            other.hWindow = nullptr;
+        }
 
-		Window(const Window&) = delete;
-		Window& operator=(Window&&) = delete;
-		Window& operator=(const Window&) = delete;
+        Window(const Window&) = delete;
+        Window& operator=(Window&&) = delete;
+        Window& operator=(const Window&) = delete;
 
-		void Destroy();
-		void Show() const noexcept;
-		void Close();
-		bool IsAlive() const noexcept;
-		bool ShouldClose() const noexcept;
-		void Resize(std::int32_t width, std::int32_t height);
-		auto GetDefaultViewport() const noexcept->Gfx::Viewport &;
-		auto GetNative() const -> yage::platform::WindowHandle;
+        void Show() const noexcept;
+        void Close();
+        bool IsAlive() const noexcept;
+        bool ShouldClose() const noexcept;
+        void Resize(std::int32_t width, std::int32_t height);
+        auto GetNative() const->yage::platform::WindowHandle;
 
-		Utils::String Title;
-		unsigned      Width;
-		unsigned      Height;
+        Utils::String Title;
+        unsigned      Width;
+        unsigned      Height;
 
-		handle_t Handle;
+        handle_t Handle;
 
-		auto operator==(const Window& other) -> bool
-		{
-			return this->hWindow == other.hWindow;
-		}
+        auto operator==(const Window& other) -> bool
+        {
+            return this->hWindow == other.hWindow;
+        }
 
-	private:
-		void Create();
+    private:
+        void Destroy();
+        void Create();
 
-		yage::platform::WindowHandle hWindow;
+        yage::platform::WindowHandle hWindow;
 
-		Gfx::Viewport* DefaultViewport;
+        Memory::IMemoryBlock* _memory;
 
-		Memory::IMemoryBlock* _memory;
-
-		bool IsCloseRequested;
-	};
+        bool IsCloseRequested;
+    };
 }
 
 YAGE_DECLARE_CLASS_RTTI(Core::Window);

@@ -1,11 +1,12 @@
-## Yet Another Game Engine
-project(YAGE VERSION 0.1 LANGUAGES CXX C)
+## Yet Another Game Engine - entry point dll project
+project(YAGE_ENGINE VERSION 0.1 LANGUAGES CXX C)
 
 add_library(Engine SHARED yage.h yage.cpp)
 add_library(Yage::Engine ALIAS Engine)
 
 add_subdirectory(Kernel)
 add_subdirectory(Platform)
+add_subdirectory(Gfx)
 add_subdirectory(Core)
 add_subdirectory(Script)
 
@@ -21,6 +22,7 @@ target_link_libraries(Engine
     PUBLIC
         Yage::Kernel
         Yage::Platform
+        Yage::Gfx
         Yage::Script 
         Yage::Core 
         CTTI::Engine)

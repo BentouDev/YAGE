@@ -2,7 +2,6 @@
 #include <Platform/Subsystem/SubsystemDefinition.h>
 #include <EASTL/hash_map.h>
 
-#include "Platform/Graphics/OpenGL/OpenGLBase.h"
 #include "Platform/Logger.h"
 #include "Platform/EventQueue.h"
 
@@ -74,7 +73,7 @@ namespace yage::platform::glfw
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, gl::TRUE_);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
 
 		// Set callbacks
 		registerGlobalCallbacks();

@@ -2,7 +2,7 @@
 // Created by Bentoo on 2016-09-22.
 //
 
-#include "Platform/Graphics/OpenGl/OpenGLBase.h"
+#include "Gfx/Graphics/OpenGl/OpenGLBase.h"
 
 #include "Platform/Subsystem/ISubsystem.h"
 #include "Platform/Window.h"
@@ -55,10 +55,12 @@ namespace OpenGL
 
 		yage::platform::getSubsystem().makeCurrent(window.GetNative());
         // for(auto& view : window.getViewports())
-        auto& view = window.GetDefaultViewport();
+        
+        // renderer::getRenderTargetsForWindow(window);
+        //auto& view = window.GetDefaultViewport();
         {
-            const auto& rect = view.getPixelRect();
-            gl::Viewport(rect.getLeft(), rect.getBottom(), rect.getWidth(), rect.getHeight());
+        //    const auto& rect = view.getPixelRect();
+        //    gl::Viewport(rect.getLeft(), rect.getBottom(), rect.getWidth(), rect.getHeight());
         }
     }
 

@@ -215,6 +215,8 @@ namespace Core
 
     void Engine::Update(GameTime& time)
     {
+        InputManager->update(time);
+
         if (activeScene)
             activeScene->Update(time);
 

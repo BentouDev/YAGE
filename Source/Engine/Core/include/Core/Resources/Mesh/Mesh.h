@@ -5,7 +5,7 @@
 #ifndef YAGE_MESH_H
 #define YAGE_MESH_H
 
-#include <Platform/Graphics/OpenGl/OpenGLBase.h>
+#include <Gfx/Graphics/OpenGl/OpenGLBase.h>
 
 #include <Utils/List.h>
 #include <Utils/String.h>

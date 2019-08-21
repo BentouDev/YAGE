@@ -108,7 +108,7 @@ namespace Yage
         window = &engine->WindowManager->get(windowHandle);
         window->Show();
 
-        getDefaultCamera().setRenderTarget(window->GetDefaultViewport());
+        defaultCamera->setRenderTarget(engine->Renderer->getWindowRenderTarget(window));
 
         this->OnInit();
     }
@@ -138,10 +138,10 @@ namespace Yage
         time.Time 	  += elapsed;
         time.FrameTime = elapsed;
 
-        engine->ProcessEvents(time);
-
         while (lagAccumulator >= time.FixedDeltaTime)
         {
+            engine->ProcessEvents(time);
+
             engine->Update(time);
 
             time.DeltaTime = time.FixedDeltaTime * time.Speed;
@@ -175,7 +175,7 @@ namespace Yage
         // engine->MemoryModule->freeMemoryBlock(persistentBlock);
         // engine->MemoryModule->freeMemoryBlock(frameBlock);
 
-        window->Destroy();
+        window->Close();
         engine->CleanUp();
 
         window = nullptr;

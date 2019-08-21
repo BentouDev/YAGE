@@ -18,7 +18,8 @@
 #include <Utils/SmartHandle.h>
 #include <Utils/LinearAllocator.h>
 #include <Platform/Logger.h>
-#include <Platform/Graphics/OpenGl/OpenGLBase.h>
+
+#include <Gfx/Graphics/OpenGl/OpenGLBase.h>
 
 #include "Core/Resources/Resource.h"
 

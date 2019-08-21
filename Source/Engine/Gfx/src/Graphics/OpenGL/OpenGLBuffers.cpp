@@ -2,7 +2,7 @@
 // Created by bentoo on 10/14/16.
 //
 
-#include "Platform/Graphics/OpenGl/OpenGLBuffers.h"
+#include "Gfx/Graphics/OpenGl/OpenGLBuffers.h"
 #include <Utils/DebugSourceInfo.h>
 #include <Utils/MemoryBlock.h>
 

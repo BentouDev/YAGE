@@ -41,6 +41,9 @@ namespace Gfx
 		Utils::Color		color;
 
 	public:
+        static constexpr std::uint32_t VERTEX_COUNT = 6;
+        using TVertexArray = SpriteVertex[Sprite::VERTEX_COUNT];
+
 				 Sprite();
 		explicit Sprite(Rectangle<float> rect);
 				 Sprite(Rectangle<float> rect, Resources::TextureRegion texRegion,
@@ -54,9 +57,9 @@ namespace Gfx
 		float getScale() const { return scale; }
 		float getRotation() const { return rotation; }
 
-		inline void fillVertexData(SpriteVertex (&array)[6]) const { fillVertexData(array, rect, textureRegion.coordinates,
+		inline void fillVertexData(TVertexArray& array) const { fillVertexData(array, rect, textureRegion.coordinates,
 																					textureRegion.layer, zOrder, color); }
-		static void fillVertexData(SpriteVertex (&array)[6], Rectangle<float> rect,
+		static void fillVertexData(TVertexArray& array, Rectangle<float> rect,
 								   Rectangle<float> texRect, std::uint8_t texLayer, float zOrder, Utils::Color color);
 	};
 }

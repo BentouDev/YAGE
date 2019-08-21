@@ -6,7 +6,7 @@
 #define YAGE_SPRITEBATCHMANAGER_H
 
 #include "Core/IManager.h"
-#include "Platform/Graphics/OpenGl/OpenGLBuffers.h"
+#include "Gfx/Graphics/OpenGl/OpenGLBuffers.h"
 
 #include <map>
 #include <Utils/List.h>
@@ -48,6 +48,7 @@ namespace Gfx
         void 				clear();
         void 				mapMemory();
         void 				unmapMemory();
+        void                resize(std::int32_t newSize);
         inline OpenGL::VBO&	getVBO() const { return *_vbo; }
         inline OpenGL::VAO&	getVAO() const { return *_vao; }
         inline void*		getMappedMemory() const { return _mappedPtr; }

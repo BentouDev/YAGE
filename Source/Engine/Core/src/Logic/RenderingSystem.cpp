@@ -2,7 +2,7 @@
 // Created by bentoo on 10/14/16.
 //
 
-#include <Platform/Graphics/Viewport.h>
+#include <Gfx/Graphics/Viewport.h>
 #include <Platform/Logger.h>
 
 #include "Core/Logic/Scene.h"

@@ -17,11 +17,13 @@ namespace Core
 
 namespace Gfx
 {
+    // ToDo: this class is dangerous -> we should have only one base here
+    // if needed split this into association
 	class Viewport : public yage::SafeObject, public RenderTarget
 	{
 		Rectangle<int32_t>	_pixelRect;
 		Rectangle<float>	_unitRect;
-		Core::Window&		_window;
+		const Core::Window*		_window;
 
 		Rectangle<float> calcUnitRect();
 
@@ -30,8 +32,8 @@ namespace Gfx
 
 		handle_t Handle;
 
-		explicit Viewport(const Rectangle<int32_t>& rect, Core::Window& window)
-			: _pixelRect(rect), _unitRect(calcUnitRect()), _window(window)
+		explicit Viewport(const Rectangle<int32_t>& rect, const Core::Window& window)
+			: _pixelRect(rect), _unitRect(calcUnitRect()), _window(&window)
 		{ }
 
 		void	Clear(const Utils::Color& color) override;

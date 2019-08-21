@@ -10,7 +10,7 @@
 #include <Utils/Handle.h>
 #include <Utils/MemoryBlock.h>
 
-#include "Platform/Graphics/OpenGl/OpenGLBuffers.h"
+#include "Gfx/Graphics/OpenGl/OpenGLBuffers.h"
 #include "Core/Context.h"
 #include "BaseObject.h"
 

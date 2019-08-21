@@ -3,11 +3,12 @@
 //
 
 #include <utf8.h>
-#include <Utils/Slice.h>
+#include <Utils/String.h>
 #include "Core/Resources/Font/Font.h"
 #include "Core/Gfx/TextBuilder.h"
 #include "Core/Gfx/Renderer.h"
 #include "Core/Gfx/SpriteBatch.h"
+#include "Core/Gfx/Sprite.h"
 
 namespace Gfx
 {
@@ -35,12 +36,6 @@ namespace Gfx
 	TextBuilder& TextBuilder::clearText()
 	{
 		text.clear();
-		return *this;
-	}
-
-	TextBuilder& TextBuilder::appendText(const char* string)
-	{
-		text.append(string);
 		return *this;
 	}
 
@@ -80,13 +75,36 @@ namespace Gfx
 		return *this;
 	}
 
+    std::uint32_t TextBuilder::computeBatchSize(const eastl::vector<eastl::string_view>& lines) const
+    {
+        std::uint32_t size = 0;
+
+        for (eastl::string_view line : lines)
+        {
+            if (!utf8::is_valid(line.begin(), line.end()))
+                continue;
+
+            auto itr = line.begin();
+            do {
+                auto* charData = font->lookupChar(utf8::next(itr, line.end()));
+
+                if (charData == nullptr)
+                    continue;
+
+                size += Gfx::Sprite::VERTEX_COUNT;
+            } while (itr != line.end());
+        }
+
+        return size;
+    }
+
 	void TextBuilder::drawAsSpriteBatch(Renderer& renderer, Gfx::Camera& camera)
 	{
-		auto& batch = renderer.getSpriteBatch(material, &camera);
+        eastl::vector<eastl::string_view> lines{};
+        Utils::StringUtils::Tokenize(text, lines, "\n\r");
 
-		Utils::List<Utils::Slice<char>> lines{};// #NewAlloc
-		YAGE_ASSERT(false, "Unimplemented!");
-		// #NewAlloc Utils::String::Tokenize(text, lines, "\n\r");
+        std::uint32_t size = -1;// computeBatchSize(lines);
+		auto& batch = renderer.getSpriteBatch(material, &camera, size);
 
 		glm::vec2 offset = posOffset;
 		glm::vec2 lineHeight(0, font->getLineHeight() / (float)font->getHeight());
@@ -109,7 +127,7 @@ namespace Gfx
 		}
 	}
 
-	int TextBuilder::lineLength(Utils::Slice<char> line)
+	int TextBuilder::lineLength(eastl::string_view line)
 	{
 		if (font == nullptr)
 			return 0;
@@ -128,7 +146,7 @@ namespace Gfx
 		return length;
 	}
 
-	void TextBuilder::drawTextInternal(Utils::Slice<char> line, Gfx::SpriteBatch &batch, glm::vec2 offset)
+	void TextBuilder::drawTextInternal(eastl::string_view line, Gfx::SpriteBatch &batch, glm::vec2 offset)
 	{
 		if (!utf8::is_valid(line.begin(), line.end()))
 			return;

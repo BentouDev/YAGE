@@ -2,7 +2,7 @@
 // Created by bentoo on 06.11.16.
 //
 
-#include <Platform/Graphics/RenderTarget.h>
+#include <Gfx/Graphics/RenderTarget.h>
 #include "Core/Gfx/Camera.h"
 
 namespace Gfx

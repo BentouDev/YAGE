@@ -1,7 +1,7 @@
 #include "Core/RTTI/RTTIIntegralLoader.h"
 #include "RTTI/ClassResolver.h"
 #include "Platform/Window.h"
-#include "Platform/Graphics/Viewport.h"
+#include "Gfx/Graphics/Viewport.h"
 
 #define YAGE_DEFINE_INTEGRAL_RTTI_IMPL(clazz, name) \
         template<> \

@@ -80,6 +80,7 @@ namespace Core
 		{ return _currentScheme; }
 
 		void handleInputEvent(const Core::Event& event, Core::GameTime& gameTime);
+        void update(const Core::GameTime& time);
 	};
 };
 

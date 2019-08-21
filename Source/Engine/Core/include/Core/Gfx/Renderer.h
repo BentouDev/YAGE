@@ -5,8 +5,10 @@
 #ifndef YAGE_RENDERER_H
 #define YAGE_RENDERER_H
 
-#include <Platform/Graphics/OpenGl/OpenGLBase.h>
-#include <Platform/Graphics/Rectangle.h>
+#include <Platform/Platform.h>
+
+#include <Gfx/Graphics/OpenGl/OpenGLBase.h>
+#include <Gfx/Graphics/Rectangle.h>
 
 #include "Core/Gfx/CommandQueue.h"
 #include "Core/IManager.h"
@@ -17,6 +19,8 @@
 #include <Utils/Color.hpp>
 #include <Utils/Handle.h>
 #include <Utils/SmartHandle.h>
+
+#include <EASTL/hash_map.h>
 
 namespace Resources
 {
@@ -44,6 +48,8 @@ namespace Gfx
     class SpriteBatch;
     class SpriteBuffer;
     class SpriteBatchManager;
+    class RenderTarget;
+    class Viewport;
 
     union RenderKey
     {
@@ -79,6 +85,7 @@ namespace Gfx
 
     protected:
         Utils::owned_ptr<SpriteBatchManager> _spriteBatchManager;
+        eastl::hash_map<yage::platform::WindowHandle, Gfx::Viewport*> _viewports;
 
         queue_t _queue;
 
@@ -111,6 +118,8 @@ namespace Gfx
 		queue_t& getQueue();
 
         bool registerWindow(const Core::Window*);
+        void Renderer::unregisterWindow(const Core::Window* windowPtr);
+        RenderTarget* getWindowRenderTarget(const Core::Window* windowPtr);
 
         void draw();
         void drawCall(RenderData&);

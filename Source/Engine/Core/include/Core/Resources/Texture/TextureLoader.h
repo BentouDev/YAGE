@@ -8,7 +8,7 @@
 #include <EASTL/hash_map.h>
 #include <Utils/Handle.h>
 #include <Utils/List.h>
-#include <Platform/Graphics/OpenGl/OpenGLBase.h>
+#include <Gfx/Graphics/OpenGl/OpenGLBase.h>
 
 namespace Resources
 {

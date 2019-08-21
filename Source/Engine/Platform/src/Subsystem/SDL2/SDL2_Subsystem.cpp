@@ -1,10 +1,10 @@
 #include <Platform/Subsystem/ISubsystem.h>
 #include <Platform/Subsystem/SubsystemDefinition.h>
+#include "Platform/Logger.h"
+
 #include <Utils/MacroDefines.h>
 #include <EASTL/hash_map.h>
 
-#include "Platform/Graphics/OpenGL/OpenGLBase.h"
-#include "Platform/Logger.h"
 #include <SDL2/SDL.h>
 
 namespace yage::platform::sdl2

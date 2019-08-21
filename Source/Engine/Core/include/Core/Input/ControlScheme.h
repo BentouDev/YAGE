@@ -29,13 +29,12 @@ namespace Input
 		Rapid
 	};
 
-	struct ButtonStateData
-	{
-		int		RapidPotential;
-		int		Frames;
-		float	Elapsed;
-		int		Value;
-	};
+    struct ButtonStateData
+    {
+        int     RapidPotential { 0 };
+        float   LastPressTime  { -1 };
+        int     Value          { 0 };
+    };
 
 	class ControlAction
 	{
@@ -86,6 +85,8 @@ namespace Input
 		void updateButtonByIndex	(std::uint32_t index, std::uint32_t state,
 									 const Core::GameTime& time);
 
+        void update(const Core::GameTime& time);
+
 		// 1, 32
 		int FramesInBuffer { 4 };
 
@@ -93,10 +94,10 @@ namespace Input
 		float FrameTime { 0.01666667f };
 
 		// 1.0f / 60.0f, 1.f
-		float RapidTimeTreshold { 0.02f };
+		float RapidTimeTreshold { 0.16f };
 
 		// 1, 32
-		int RapidFrameRequirement { 25 };
+		int RapidRequirement { 5 };
 
 		// 1.0f / 60.0f, 1.f
 		float HoldTimeRequirement { 0.05f };
@@ -104,6 +105,8 @@ namespace Input
 	public:
 		explicit ControlScheme(Memory::IMemoryBlock& memory);
 		virtual ~ControlScheme();
+
+        auto getActions() const -> const eastl::vector<ControlAction*>&;
 
 		ControlAction* getAction(std::string name);
 

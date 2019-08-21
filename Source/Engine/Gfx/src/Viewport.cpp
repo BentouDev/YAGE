@@ -4,9 +4,11 @@
 
 #include "Platform/Platform.h"
 #include "Platform/Subsystem/ISubsystem.h"
-#include "Platform/Graphics/Viewport.h"
-#include "Platform/Graphics/OpenGl/OpenGLBase.h"
 #include "Platform/Window.h"
+
+#include "Gfx/Graphics/Viewport.h"
+#include "Gfx/Graphics/OpenGl/OpenGLBase.h"
+
 #include "RTTI/ClassInfo.h"
 
 YAGE_DEFINE_CLASS_RTTI(Gfx::Viewport);
@@ -15,19 +17,19 @@ namespace Gfx
 {
 	void Viewport::Clear(const Utils::Color& color)
 	{
-		yage::platform::getSubsystem().makeCurrent(_window.GetNative());
+		yage::platform::getSubsystem().makeCurrent(_window->GetNative());
 		gl::ClearColor(color.R / 255.0f, color.G / 255.0f, color.B / 255.0f, color.A / 255.0f);
 		gl::Clear(gl::COLOR_BUFFER_BIT | gl::DEPTH_BUFFER_BIT);
 	}
 
 	void Viewport::Submit()
 	{
-		yage::platform::getSubsystem().endDraw(_window.GetNative());
+		yage::platform::getSubsystem().endDraw(_window->GetNative());
 	}
 
 	void Viewport::Bind()
 	{
-		yage::platform::getSubsystem().makeCurrent(_window.GetNative());
+		yage::platform::getSubsystem().makeCurrent(_window->GetNative());
 		gl::BindFramebuffer(gl::FRAMEBUFFER, 0);
 		gl::Viewport(_pixelRect.getLeft(), _pixelRect.getBottom(),
 					 _pixelRect.getWidth(), _pixelRect.getHeight());

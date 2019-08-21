@@ -6,7 +6,7 @@
 #define GAME_SHADERBUILDER_H
 
 #include <Utils/MemoryBlock.h>
-#include <Platform/Graphics/OpenGl/OpenGLBase.h>
+#include <Gfx/Graphics/OpenGl/OpenGLBase.h>
 
 #include <string>
 

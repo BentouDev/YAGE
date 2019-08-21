@@ -1,5 +1,5 @@
 #include "Qt_Subsystem.h"
-#include "Platform/Graphics/OpenGL/OpenGLBase.h"
+#include "Gfx/Graphics/OpenGL/OpenGLBase.h"
 #include "Platform/Logger.h"
 
 /*

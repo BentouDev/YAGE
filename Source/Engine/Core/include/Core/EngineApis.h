@@ -13,7 +13,7 @@
 
 #ifdef YAGE_OPENGL
 // #include "Gfx/OpenGl/OpenGlContext.h"
-#include "Platform/Graphics//OpenGl/OpenGLBase.h"
+#include "Gfx/Graphics//OpenGl/OpenGLBase.h"
 #endif
 
 #include "Platform/Platform.h"

@@ -6,7 +6,8 @@
 #include <Utils/MemorySizes.h>
 #include <Utils/SmartHandle.h>
 
-#include <Platform/Graphics/RenderTarget.h>
+#include <Gfx/Graphics/RenderTarget.h>
+#include <Gfx/Graphics/Viewport.h>
 #include <Platform/Window.h>
 
 #include "Core/Gfx/Renderer.h"
@@ -50,7 +51,12 @@ namespace Gfx
 
     Renderer::~Renderer()
     {
-		yage::UnregisterManager(_engine, _spriteBatchManager);
+        for (auto itr : _viewports)
+        {
+            Memory::Delete(_memory, itr.second);
+        }
+
+        yage::UnregisterManager(_engine, _spriteBatchManager);
         Memory::Delete(_memory, DebugResources._debug2DCamera);
         Memory::Delete(_memory, DebugResources._debug3DCamera);
     }
@@ -86,8 +92,8 @@ namespace Gfx
 
             Resources::ShaderBuilder builder(_engine, _memory);
             auto fontShader = builder
-                    .withVertexFromFile("../Data/Shaders/FontVertex.glsl")
-                    .withFragmentFromFile("../Data/Shaders/FontFragment.glsl")
+                    .withVertexFromFile("Data/Shaders/FontVertex.glsl")
+                    .withFragmentFromFile("Data/Shaders/FontFragment.glsl")
                     .withAttributeLocation(0, "position")
                     .withAttributeLocation(1, "texcoord")
                     .withAttributeLocation(2, "color")
@@ -112,7 +118,7 @@ namespace Gfx
             Resources::FontLoader fontLoader(*_engine.FontManager.get(), _memory);
             auto font = fontLoader
                     .withTextureLoader(textureLoader)
-                    .loadFromFile("../Data/Fonts/fantasque.fnt")
+                    .loadFromFile("Data/Fonts/fantasque.fnt")
                     .build();
 
             if (!font)
@@ -165,7 +171,40 @@ namespace Gfx
         result &= OpenGL::registerWindow(*windowPtr);
         result &= initialize();
 
+        if (result)
+        {
+            auto* viewport = (YAGE_CREATE_NEW(_memory, Gfx::Viewport)(
+                Gfx::Rectangle<int32_t>(0, 0, windowPtr->Width, windowPtr->Height),
+                (*windowPtr)
+            ));
+
+            _viewports[windowPtr->GetNative()] = viewport;
+        }
+
         return result;
+    }
+
+    void Renderer::unregisterWindow(const Core::Window* windowPtr)
+    {
+        auto itr = _viewports.find(windowPtr->GetNative());
+
+        if (itr != _viewports.end())
+        {
+            Memory::Delete(_memory, itr->second);
+            _viewports.erase(itr);
+        }
+    }
+
+    RenderTarget* Renderer::getWindowRenderTarget(const Core::Window* windowPtr)
+    {
+        auto itr = _viewports.find(windowPtr->GetNative());
+
+        if (itr != _viewports.end())
+        {
+            return static_cast<RenderTarget*>(itr->second);
+        }
+
+        return nullptr;
     }
 
     Gfx::Camera& Renderer::createCamera()

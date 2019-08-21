@@ -2,7 +2,7 @@
 // Created by mrjaqbq on 07.03.16.
 //
 
-#include "Platform/Graphics/RenderTarget.h"
+#include "Gfx/Graphics/RenderTarget.h"
 
 namespace Gfx
 {

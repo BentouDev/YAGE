@@ -9,7 +9,7 @@
 #include <Utils/MacroDefines.h>
 
 // #define CODEGEN_FUNCPTR APIENTRY YAGE_API
-#include "Platform/Graphics/OpenGL/gl_core_3_3.hpp"
+#include "Gfx/Graphics/OpenGL/gl_core_3_3.hpp"
 
 #include <RTTI/Defines.h>
 

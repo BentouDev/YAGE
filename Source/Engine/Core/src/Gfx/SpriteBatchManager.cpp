@@ -97,6 +97,39 @@ namespace Gfx
         OpenGL::checkError();
     }
 
+    void SpriteBuffer::resize(std::int32_t newSize)
+    {
+        // ToDo: this sucks, implemented to ease API changes on already exisitng code
+        // To be removed entirely, data should be computed on CPU side and copied to GPU at actual upload
+        if (_mappedPtr == nullptr)
+            return;
+
+        if (newSize <= maximumSize)
+            return;
+
+        std::int32_t oldSizeBytes = maximumSize * sizeof(SpriteVertex);
+
+        // ToDo: use alloca
+        void* newMem = malloc(oldSizeBytes);
+
+        memcpy(newMem, _mappedPtr, oldSizeBytes);
+
+        unmapMemory();
+
+        maximumSize = newSize;
+        
+        gl::BindBuffer(gl::ARRAY_BUFFER, getVBO());
+        OpenGL::checkError();
+
+        gl::BufferData(gl::ARRAY_BUFFER, maximumSize * sizeof(SpriteVertex), nullptr, gl::DYNAMIC_DRAW);
+        OpenGL::checkError();
+
+        mapMemory();
+
+        memcpy(_mappedPtr, newMem, oldSizeBytes);
+        free(newMem);
+    }
+
     void SpriteBuffer::copyData(SpriteVertex (&array)[6])
     {
         SpriteVertex* buffer = static_cast<SpriteVertex*>(_mappedPtr);

@@ -44,7 +44,7 @@ namespace Core
     {
         for (auto& window : _windowContainer)
         {
-            window.Destroy();
+            window.Close();
         }
     }
 

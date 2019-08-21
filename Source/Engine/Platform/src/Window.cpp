@@ -4,9 +4,9 @@
 
 #include "Platform/Logger.h"
 #include "Platform/Window.h"
-#include "Platform/Graphics/OpenGl/OpenGLBase.h"
 #include "Platform/Platform.h"
 #include "Platform/Subsystem/ISubsystem.h"
+
 #include "RTTI/ClassInfo.h"
 
 YAGE_DEFINE_CLASS_RTTI(Core::Window);
@@ -15,7 +15,7 @@ namespace Core
 {
     Window::Window(Memory::IMemoryBlock& memory, const char* title, unsigned width, unsigned height)
         : _memory(&memory), Title {title}, Width {width}, Height {height},
-          DefaultViewport {nullptr}, hWindow {nullptr}, IsCloseRequested(false)
+          hWindow {nullptr}, IsCloseRequested(false)
     {
         Create();
     }
@@ -23,7 +23,6 @@ namespace Core
     Window::~Window()
     {
         Destroy();
-        Memory::Delete(*_memory, DefaultViewport);
     }
 
     auto Window::GetNative() const -> yage::platform::WindowHandle
@@ -50,11 +49,6 @@ namespace Core
             Core::Logger::error("Subsystem : Failed to create window!");
             return;
         }
-
-        DefaultViewport = YAGE_CREATE_NEW((*_memory), Gfx::Viewport)(
-            Gfx::Rectangle<int32_t>(0, 0, Width, Height),
-            *this
-        );
     }
 
     auto Window::Show() const noexcept -> void
@@ -73,13 +67,21 @@ namespace Core
         Width  = width;
         Height = height;
 
+    /*
+        // Renderer should subscribe for this event
         DefaultViewport->setRect(Gfx::Rectangle<int32_t>(0, 0, Width, Height));
         OpenGL::resizeWindow(*this);
+    */
     }
 
     auto Window::Resize(std::int32_t width, std::int32_t height) -> void
     {
         yage::platform::getSubsystem().resizeWindow(hWindow, width, height);
+    }
+
+    void Window::Close()
+    {
+        IsCloseRequested = true;
     }
 
     auto Window::Destroy() -> void
@@ -90,11 +92,6 @@ namespace Core
         yage::platform::getSubsystem().destroyWindow(hWindow);
 
         hWindow = nullptr;
-    }
-
-    auto Window::GetDefaultViewport() const noexcept -> Gfx::Viewport&
-    {
-        return *DefaultViewport;
     }
 
     auto Window::IsAlive() const noexcept -> bool

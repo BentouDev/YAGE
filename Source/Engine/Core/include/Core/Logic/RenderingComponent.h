@@ -7,7 +7,7 @@
 
 #include <cstdint>
 
-#include <Platform/Graphics/OpenGl/OpenGLBuffers.h>
+#include <Gfx/Graphics/OpenGl/OpenGLBuffers.h>
 
 #include "Core/Logic/Component.h"
 

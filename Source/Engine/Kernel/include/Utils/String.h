@@ -13,7 +13,15 @@
 #include "List.h"
 #include "Slice.h"
 #include "DefaultBlock.h"
+
+#include <EASTL/vector.h>
 #include <EASTL/string.h>
+#include <EASTL/string_view.h>
+
+namespace Utils::StringUtils
+{
+    void Tokenize(const eastl::string& string, eastl::vector<eastl::string_view>& list, const char* divider);
+}
 
 namespace Utils
 {

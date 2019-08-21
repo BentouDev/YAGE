@@ -41,9 +41,11 @@ namespace Gfx
 
     SpriteBatch& SpriteBatch::ensureCapacity(std::int32_t minimalCapacity)
     {
-        YAGE_ASSERT(_buffer.maximumSize - _buffer.currentSize >= minimalCapacity,
-                    "TODO : Batch resize, '{}' was smaller than expected capacity '{}'.",
-                    _buffer.maximumSize - _buffer.currentSize, minimalCapacity);
+        //YAGE_ASSERT(_buffer.maximumSize - _buffer.currentSize >= minimalCapacity,
+        //            "TODO : Batch resize, '{}' was smaller than expected capacity '{}'.",
+        //            _buffer.maximumSize - _buffer.currentSize, minimalCapacity);
+
+        _buffer.resize(minimalCapacity);
 
         _bufferSize += minimalCapacity;
         _bufferOffset = _buffer.offset;
@@ -65,8 +67,8 @@ namespace Gfx
     SpriteBatch& SpriteBatch::drawSprite(Rectangle<float> rect, glm::vec2 pivot, Rectangle<float> texRect,
                                          std::uint8_t texLayer, float scale, float rotation, float zOrder, Utils::Color color)
     {
-        ensureCapacity(6);
-        SpriteVertex data[6];
+        ensureCapacity(Sprite::VERTEX_COUNT);
+        SpriteVertex data[Sprite::VERTEX_COUNT];
         Sprite::fillVertexData(data, rect, texRect, texLayer, zOrder, color);
         scaleAndRotateSpriteVertex(data, rect.localToWorld(pivot), scale, rotation);
         _buffer.copyData(data);
@@ -76,8 +78,8 @@ namespace Gfx
 
     SpriteBatch& SpriteBatch::drawSprite(const Sprite& sprite)
     {
-        ensureCapacity(6);
-        SpriteVertex data[6];
+        ensureCapacity(Sprite::VERTEX_COUNT);
+        SpriteVertex data[Sprite::VERTEX_COUNT];
         sprite.fillVertexData(data);
         scaleAndRotateSpriteVertex(data, sprite.getRect().localToWorld(sprite.getPivot()),
                                    sprite.getScale(), sprite.getRotation());
@@ -86,14 +88,14 @@ namespace Gfx
         return *this;
     }
 
-    void SpriteBatch::scaleAndRotateSpriteVertex(SpriteVertex (&data)[6], glm::vec2 pivot, float scale, float rotation)
+    void SpriteBatch::scaleAndRotateSpriteVertex(SpriteVertex (&data)[Sprite::VERTEX_COUNT], glm::vec2 pivot, float scale, float rotation)
     {
         if(abs(rotation) > Math::Epsilon)
         {
             const float sine	= sinf(Math::AngleToRadian(rotation));
             const float cosine	= cosf(Math::AngleToRadian(rotation));
 
-            for(int i = 0; i < 6; i++)
+            for(int i = 0; i < Sprite::VERTEX_COUNT; i++)
             {
                 data[i].position.x	-= pivot.x;
                 data[i].position.y	-= pivot.y;
@@ -111,7 +113,7 @@ namespace Gfx
         }
         else
         {
-            for(int i = 0; i < 6; i++)
+            for(int i = 0; i < Sprite::VERTEX_COUNT; i++)
             {
                 data[i].position.x  -= pivot.x;
                 data[i].position.y  -= pivot.y;

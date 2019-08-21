@@ -42,10 +42,11 @@ namespace Resources
 			"\n"
 			"in vec2 Texcoord;\n"
 			"in vec4 Color;\n"
+            "out vec4 out_Color;"
 			"\n"
 			"void main() {\n"
 	//		"\tgl_FragColor = Color;\n"
-			"\tgl_FragColor = Color * texture(diffuseTex, Texcoord);\n"
+			"\tout_Color = Color * texture(diffuseTex, Texcoord);\n"
 			"}";
 }
 

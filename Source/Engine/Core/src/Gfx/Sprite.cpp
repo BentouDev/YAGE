@@ -34,7 +34,7 @@ namespace Gfx
 	Sprite::~Sprite()
 	{ }
 
-	void Sprite::fillVertexData(SpriteVertex (&array)[6], Rectangle<float> rect,
+	void Sprite::fillVertexData(TVertexArray& array, Rectangle<float> rect,
 								Rectangle<float> texRect, std::uint8_t texLayer, float zOrder, Utils::Color color)
 	{
 		auto br = rect.getBottomRight();

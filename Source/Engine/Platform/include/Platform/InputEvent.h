@@ -26,9 +26,9 @@ namespace Input
 	{
 		enum Enum : std::int16_t
 		{
-			PRESSED,
-			RELEASED,
-			REPEAT
+			RELEASED = 0,
+            PRESSED = 1,
+			REPEAT = 2
 		};
 	}
 
