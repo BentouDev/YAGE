@@ -1,30 +1,30 @@
 ## Provides basic classes, like meshes, shaders, materials
 project(Core VERSION 0.1 LANGUAGES CXX)
 
-message("-- yage: Collecting headers from " ${CMAKE_CURRENT_SOURCE_DIR})
+message("-- yage: Collecting headers from " ${YAGE_SOURCE_DIR})
 
 # Engine CTTI
 yage_glob_files(
     YAGE_ALL_HEADERS
     PATTERNS
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.hpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/*.hxx)
+        ${YAGE_ENGINE_SOURCE_DIR}/*.h
+        ${YAGE_ENGINE_SOURCE_DIR}/*.hpp
+        ${YAGE_ENGINE_SOURCE_DIR}/*.hxx)
 
 set(YAGE_REFLECTION_CONFIG
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/engine_main.mustache
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
+    ${YAGE_SOURCE_DIR}/Data/Reflection/engine_main.mustache
+    ${YAGE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
+    ${YAGE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
+    ${YAGE_SOURCE_DIR}/Data/Reflection/Yage.json)
 
 yage_add_ctti(Engine
-    DIRECTORY out/gen/CTTI/Core
-    PATTERN Data/Reflection/Yage.json
+    DIRECTORY ${CMAKE_SOURCE_DIR}/out/gen/CTTI/Core
+    PATTERN ${YAGE_SOURCE_DIR}/Data/Reflection/Yage.json
     OUTPUT ${CMAKE_SOURCE_DIR}/out/gen/CTTI/Core/register_reflection.cpp
     HEADERS ${YAGE_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
 
-target_link_libraries(Engine_CTTI PUBLIC Yage::Kernel Yage::Platform)
+target_link_libraries(Engine_CTTI PUBLIC Yage::Kernel Yage::Platform Yage::Gfx)
 
 target_include_directories(Engine_CTTI
     PUBLIC
@@ -78,6 +78,7 @@ target_compile_options(Core PRIVATE ${YAGE_ENFORCE_WARNINGS})
 target_link_libraries(Core
     PUBLIC
         Yage::Platform
+        Yage::Gfx
         Yage::Kernel
     PRIVATE
         lodepng

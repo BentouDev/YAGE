@@ -72,12 +72,15 @@ conan_add_remote(NAME yage
 conan_add_remote(NAME bincrafters
             URL https://api.bintray.com/conan/bincrafters/public-conan)
 
-# Configure conan
+# Configure conan - create cmake targets from installed packages
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS
                 BUILD missing
                 GENERATORS cmake_find_package)
-
+                
+# Conan cmake generator is far from perfect
+# Recreate those targets with proper install support
+# Creates yage-config.cmake
 yage_configure_conan()
 
 # Add Agnes

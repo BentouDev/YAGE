@@ -1,63 +1,3 @@
-# Add CTTI
-#
-# Creates and setups command to generate CTTI using Agnes
-function (yage_add_ctti NAME)
-    set(options TEST)
-    set(oneArg PATTERN DIRECTORY)
-    set(multiArg OUTPUT DEPENDS HEADERS)
-    cmake_parse_arguments(AGNES "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
-
-	if (NOT AGNES_BINARY)
-		message(FATAL_ERROR "-- yage: Agnes not found!")
-	else()
-		message("-- yage: Agnes: " ${AGNES_BINARY})
-	endif()
-
-    string(TOUPPER ${NAME} AGNES_VAR_NAME)
-
-    file(MAKE_DIRECTORY ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY})
-
-    if (AGNES_DIRECTORY)
-        set(DIR_PARAM "-d " ${AGNES_DIRECTORY})
-    endif()
-
-    set(INPUT_FILE_CONTENT)
-    foreach(HEADER_FILE ${AGNES_HEADERS})
-        string (CONCAT INPUT_FILE_CONTENT ${INPUT_FILE_CONTENT} "\n" ${HEADER_FILE})
-    endforeach()
-
-    string (CONCAT INPUT_FILE ${CMAKE_SOURCE_DIR} "/" ${AGNES_DIRECTORY} "/headers.txt")
-    message("-- yage: Creating Agnes input file: " ${INPUT_FILE})
-
-    file(WRITE ${INPUT_FILE} ${INPUT_FILE_CONTENT})
-
-    add_custom_command(
-        OUTPUT ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY}/generated.timestamp ${AGNES_OUTPUT}
-        DEPENDS ${AGNES_DEPENDS} ${INPUT_FILE} ${AGNES_HEADERS}
-        COMMENT "Generating CTTI for ${NAME}..."
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMAND ${AGNES_BINARY} ARGS ${DIR_PARAM} ${AGNES_PATTERN} "-i " ${INPUT_FILE}
-        COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY}/generated.timestamp)
-
-    add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI
-        DEPENDS 
-            ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY}/generated.timestamp 
-            ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY}/headers.txt
-        COMMENT
-            "Checking if ${NAME} CTTI needs regeneration...")
-
-    file(GLOB
-        ${AGNES_VAR_NAME}_GENERATED_CRTTI
-        ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY}/*.h
-        ${CMAKE_SOURCE_DIR}/${AGNES_DIRECTORY}/*.cpp)
-
-    add_library(${NAME}_CTTI OBJECT ${${AGNES_VAR_NAME}_GENERATED_CRTTI} ${AGNES_OUTPUT})
-    add_library(CTTI::${NAME} ALIAS ${NAME}_CTTI)
-    add_dependencies(${NAME}_CTTI YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI)
-    set_target_properties(${NAME}_CTTI PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
-
-endfunction()
-
 # Glob
 #
 # Glob files matching given patterns and put them into variable
@@ -75,6 +15,67 @@ function(yage_glob_files NAME)
 
     # Make this visible outside funtion
     set(${NAME} ${${NAME}} PARENT_SCOPE)
+endfunction()
+
+# Add CTTI
+#
+# Creates and setups command to generate CTTI using Agnes
+function (yage_add_ctti NAME)
+    set(options TEST)
+    set(oneArg PATTERN DIRECTORY)
+    set(multiArg OUTPUT DEPENDS HEADERS)
+    cmake_parse_arguments(AGNES "${options}" "${oneArg}" "${multiArg}" ${ARGN} )
+
+    if (NOT AGNES_BINARY)
+        message(FATAL_ERROR "-- yage: Agnes not found!")
+    else()
+        message("-- yage: Agnes: " ${AGNES_BINARY})
+    endif()
+
+    string(TOUPPER ${NAME} AGNES_VAR_NAME)
+
+    file(MAKE_DIRECTORY ${AGNES_DIRECTORY})
+
+    if (AGNES_DIRECTORY)
+        set(DIR_PARAM "-d " ${AGNES_DIRECTORY})
+    endif()
+
+    set(INPUT_FILE_CONTENT)
+    foreach(HEADER_FILE ${AGNES_HEADERS})
+        string (CONCAT INPUT_FILE_CONTENT ${INPUT_FILE_CONTENT} "\n" ${HEADER_FILE})
+    endforeach()
+
+    string (CONCAT INPUT_FILE ${AGNES_DIRECTORY} "/headers.txt")
+    message("-- yage: Creating Agnes input file: " ${INPUT_FILE})
+
+    file(WRITE ${INPUT_FILE} ${INPUT_FILE_CONTENT})
+
+    add_custom_command(
+        OUTPUT ${AGNES_DIRECTORY}/generated.timestamp ${AGNES_OUTPUT}
+        DEPENDS ${AGNES_DEPENDS} ${INPUT_FILE} ${AGNES_HEADERS}
+        COMMENT "Generating CTTI for ${NAME}..."
+        WORKING_DIRECTORY ${YAGE_SOURCE_DIR}
+        COMMAND ${AGNES_BINARY} ARGS ${DIR_PARAM} ${AGNES_PATTERN} "-i " ${INPUT_FILE}
+        COMMAND ${CMAKE_COMMAND} -E touch ${AGNES_DIRECTORY}/generated.timestamp)
+
+    add_custom_target(YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI
+        DEPENDS 
+            ${AGNES_DIRECTORY}/generated.timestamp 
+            ${AGNES_DIRECTORY}/headers.txt
+        COMMENT
+            "Checking if ${NAME} CTTI needs regeneration...")
+
+    yage_glob_files(
+        ${AGNES_VAR_NAME}_GENERATED_CRTTI
+        PATTERNS
+            ${AGNES_DIRECTORY}/*.h
+            ${AGNES_DIRECTORY}/*.cpp)
+
+    add_library(${NAME}_CTTI OBJECT ${${AGNES_VAR_NAME}_GENERATED_CRTTI} ${AGNES_OUTPUT})
+    add_library(CTTI::${NAME} ALIAS ${NAME}_CTTI)
+    add_dependencies(${NAME}_CTTI YAGE_GENERATE_${AGNES_VAR_NAME}_CTTI)
+    set_target_properties(${NAME}_CTTI PROPERTIES LINKER_LANGUAGE CXX CXX_STANDARD 17)
+
 endfunction()
 
 # Include
@@ -101,6 +102,7 @@ endfunction()
 #
 # Conan cmake support is subpar, we can do better
 function(yage_configure_conan)
+if (true)#${NOT_SUBPROJECT})
 
 	list(LENGTH CONAN_DEPENDENCIES targets_len_abs)
 	math(EXPR targets_len "${targets_len_abs} - 1")
@@ -115,16 +117,23 @@ function(yage_configure_conan)
 	file(WRITE ${_config_file_path} "set(CMAKE_MODULE_PATH $")
 	file(APPEND ${_config_file_path} "{CMAKE_MODULE_PATH} $")
 	file(APPEND ${_config_file_path} "{CMAKE_CURRENT_LIST_DIR})\ninclude(CMakeFindDependencyMacro)\n")
-    file(APPEND ${_config_file_path} """
+    file(APPEND ${_config_file_path} 
+
+"
 # Compute relative path
-get_filename_component(_IMPORT_PREFIX "\${CMAKE_CURRENT_LIST_FILE}" PATH)
-get_filename_component(_IMPORT_PREFIX "\${_IMPORT_PREFIX}" PATH)
-get_filename_component(_IMPORT_PREFIX "\${_IMPORT_PREFIX}" PATH)
-if(_IMPORT_PREFIX STREQUAL "/")
-    set(_IMPORT_PREFIX "")
+get_filename_component(_IMPORT_PREFIX " \${CMAKE_CURRENT_LIST_FILE} " PATH)
+get_filename_component(_IMPORT_PREFIX " \${_IMPORT_PREFIX} " PATH)
+get_filename_component(_IMPORT_PREFIX " \${_IMPORT_PREFIX} " PATH)
+if(_IMPORT_PREFIX STREQUAL " \"/\" ")
+    set(_IMPORT_PREFIX " ")
 endif()
-"""
+"
     )
+
+    if (NOT NOT_SUBPROJECT)
+        message("-- yage: Configuring as subproject!")
+        set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
 
 	foreach(idx RANGE ${targets_len})
 	  list(GET CONAN_DEPENDENCIES ${idx} _dep)
@@ -134,7 +143,7 @@ endif()
 
 	  message("-- yage: Processing conan package " ${_dep} "...")
 
-	  if (EXISTS ${CMAKE_BINARY_DIR}/Find${_dep}.cmake)
+	  if (EXISTS ${CMAKE_CURRENT_BINARY_DIR}/Find${_dep}.cmake)
 
 		# Cmake find package generator
 		message("-- yage: Found package script Find'${_dep}'.cmake!")
@@ -157,7 +166,7 @@ endif()
 
             if (_lib_ext)
                 
-                message ("-- yage: DEBUG: " ${_lib_file} " and " ${_lib_ext})
+                message ("-- yage: FOUND: " ${_lib_file})
 
                 string(FIND ".dll .so" ${_lib_ext} _is_dynamic_pos REVERSE)
                 string(FIND ".lib .d" ${_lib_ext} _is_static_pos REVERSE)
@@ -215,7 +224,7 @@ endif()
 		if (_found_lib)
 			set(_imported_location ${_dir}/${_dep})
 			add_library(${_YAGE_LIB_NAME} UNKNOWN IMPORTED)
-			add_library(Yage::${_YAGE_LIB_NAME} ALIAS ${_YAGE_LIB_NAME})
+			add_library(Yage::DEP::${_YAGE_LIB_NAME} ALIAS ${_YAGE_LIB_NAME})
 			set_target_properties(${_YAGE_LIB_NAME} PROPERTIES IMPORTED_LOCATION ${_imported_location})
 			#add_library( SHARED IMPORTED)
 			#set_target_properties(${_target} PROPERTIES IMPORTED_LOCATION ${_imported_location})
@@ -232,17 +241,30 @@ endif()
 
 	endforeach()
 
-	file(APPEND ${_config_file_path} "include($")
-	file(APPEND ${_config_file_path} "{CMAKE_CURRENT_LIST_DIR}")
-	file(APPEND ${_config_file_path} "/yage-targets.cmake)")
-	install(FILES ${_config_file_path} DESTINATION "${YAGE_LIBRARY_DIR}")
+    file(APPEND ${_config_file_path} "include($")
+    file(APPEND ${_config_file_path} "{CMAKE_CURRENT_LIST_DIR}")
+    file(APPEND ${_config_file_path} "/yage-targets.cmake)")
+    install(FILES ${_config_file_path} DESTINATION "${YAGE_LIBRARY_DIR}")
 
     foreach(_lib_itr ${CONAN_LIB_DIRS})
         install(DIRECTORY ${_lib_itr}/ DESTINATION ${YAGE_LIBRARY_DIR})
     endforeach()
 
     install(DIRECTORY ${CONAN_BIN_DIRS} DESTINATION ${YAGE_BINARY_DIR})
+
+else()
     
+    foreach(idx RANGE ${targets_len})
+        list(GET CONAN_DEPENDENCIES ${idx} _dep)
+
+        string(TOUPPER ${_dep} _DEP)
+        set(_YAGE_LIB_NAME ${_dep})
+        add_library(${_YAGE_LIB_NAME} UNKNOWN IMPORTED)
+        add_library(Yage::${_YAGE_LIB_NAME} ALIAS ${_YAGE_LIB_NAME})
+
+    endforeach()
+
+endif()
 endfunction()
 
 # Setup Dependency
