@@ -17,6 +17,8 @@ include (Yage)
 # Emit additional metadata for debug builds
 include(CMakeToolsHelpers OPTIONAL)
 
+cmake_policy(SET CMP0077 OLD)
+
 # Pick either lib or lib64
 include("GNUInstallDirs")
 

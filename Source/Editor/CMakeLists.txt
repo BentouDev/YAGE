@@ -21,16 +21,16 @@ yage_glob_files(EDITOR_SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/*.cxx)
 
 set(YAGE_REFLECTION_CONFIG
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/editor_main.mustache
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
-    ${CMAKE_SOURCE_DIR}/Data/Reflection/Yage.json)
+    ${YAGE_SOURCE_DIR}/Data/Reflection/editor_main.mustache
+    ${YAGE_SOURCE_DIR}/Data/Reflection/reflection_header.mustache
+    ${YAGE_SOURCE_DIR}/Data/Reflection/reflection_unit.mustache
+    ${YAGE_SOURCE_DIR}/Data/Reflection/Yage.json)
 
 set_property(SOURCE ${CMAKE_SOURCE_DIR}/out/gen/Editor/register_reflection.cpp PROPERTY SKIP_AUTOGEN ON)
 
 yage_add_ctti(Editor
-    DIRECTORY out/gen/Editor
-    PATTERN Data/Reflection/Editor.json
+    DIRECTORY ${CMAKE_SOURCE_DIR}/out/gen/Editor
+    PATTERN ${YAGE_SOURCE_DIR}/Data/Reflection/Editor.json
     OUTPUT ${CMAKE_SOURCE_DIR}/out/gen/Editor/register_reflection.cpp
     HEADERS ${EDITOR_ALL_HEADERS}
     DEPENDS ${YAGE_REFLECTION_CONFIG})
