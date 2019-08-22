@@ -8,9 +8,6 @@ assimp/Release3.1_RC1-dev@bentoudev/stable
 jsonformoderncpp/3.1.2@vthiery/stable
 qt-advanced-docking-system/v0.1-dev@bentoudev/stable
 
-[options]
-assimp:shared=False
-
 [imports]
 bin, *.dll -> ./bin
 lib, *.dll -> ./bin

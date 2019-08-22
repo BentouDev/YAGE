@@ -45,9 +45,8 @@ namespace Gfx
         //            "TODO : Batch resize, '{}' was smaller than expected capacity '{}'.",
         //            _buffer.maximumSize - _buffer.currentSize, minimalCapacity);
 
-        _buffer.resize(minimalCapacity);
+        _buffer.resize(_bufferSize + minimalCapacity);
 
-        _bufferSize += minimalCapacity;
         _bufferOffset = _buffer.offset;
 
         return *this;
@@ -72,6 +71,7 @@ namespace Gfx
         Sprite::fillVertexData(data, rect, texRect, texLayer, zOrder, color);
         scaleAndRotateSpriteVertex(data, rect.localToWorld(pivot), scale, rotation);
         _buffer.copyData(data);
+        _bufferSize += Sprite::VERTEX_COUNT;
 
         return *this;
     }
@@ -84,6 +84,7 @@ namespace Gfx
         scaleAndRotateSpriteVertex(data, sprite.getRect().localToWorld(sprite.getPivot()),
                                    sprite.getScale(), sprite.getRotation());
         _buffer.copyData(data);
+        _bufferSize += Sprite::VERTEX_COUNT;
 
         return *this;
     }

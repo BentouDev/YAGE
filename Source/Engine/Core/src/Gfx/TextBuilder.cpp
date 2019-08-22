@@ -103,7 +103,7 @@ namespace Gfx
         eastl::vector<eastl::string_view> lines{};
         Utils::StringUtils::Tokenize(text, lines, "\n\r");
 
-        std::uint32_t size = -1;// computeBatchSize(lines);
+        std::uint32_t size = computeBatchSize(lines);
 		auto& batch = renderer.getSpriteBatch(material, &camera, size);
 
 		glm::vec2 offset = posOffset;

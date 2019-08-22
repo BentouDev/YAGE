@@ -125,11 +125,6 @@ namespace Input
 
             if (elapsed > RapidTimeTreshold)
             {
-                if (stateData.RapidPotential != 0)
-                {
-                    Core::Logger::info("rapid: {} elapsed: {}", stateData.RapidPotential, elapsed);
-                }
-
                 stateData.RapidPotential = 0;
             }
 
