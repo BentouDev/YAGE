@@ -6,7 +6,7 @@ sdl2/2.0.9@bincrafters/stable
 spdlog/1.3.1@bincrafters/stable
 assimp/Release3.1_RC1-dev@bentoudev/stable
 jsonformoderncpp/3.1.2@vthiery/stable
-qt-advanced-docking-system/v0.1-dev@bentoudev/stable
+# qt-advanced-docking-system/v0.1-dev@bentoudev/stable
 
 [imports]
 bin, *.dll -> ./bin
