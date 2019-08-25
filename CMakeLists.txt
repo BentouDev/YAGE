@@ -75,7 +75,7 @@ conan_add_remote(NAME bincrafters
 # Configure conan - create cmake targets from installed packages
 conan_cmake_run(CONANFILE conanfile.txt
                 BASIC_SETUP CMAKE_TARGETS
-                BUILD missing
+                BUILD fmt*
                 GENERATORS cmake_find_package)
 
 # Conan cmake generator is far from perfect
