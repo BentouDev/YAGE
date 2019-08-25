@@ -139,6 +139,11 @@ endif()
 	  list(GET CONAN_DEPENDENCIES ${idx} _dep)
 	  
 	  string(TOUPPER ${_dep} _DEP)
+
+      if (${_DEP} STREQUALS "NOTFOUND")
+        message ("-- yage: Failed to obtain target. Entine list was:\n" ${CONAN_DEPENDENCIES} FATAL_ERROR)
+      endif()
+
 	  set(_YAGE_LIB_NAME ${_dep})
 
 	  message("-- yage: Processing conan package " ${_dep} "...")
